@@ -13,6 +13,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { log } from "util";
+import BankSelector from "./BankSelector";
 
 interface ContractFormProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
@@ -25,12 +26,14 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
   const shop = pathname[1];
   const handlerSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('hi');
-    
-    rounter.push(`/${shop}/${page}`)
+    console.log("hi");
+
+    rounter.push(`/${shop}/${page}`);
   };
 
-  const handlerPrevious = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlerPrevious = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
     e.preventDefault();
     setCurrentPage(1);
   };
@@ -53,7 +56,6 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           <div className="col-span-2">
             <FormControl required>
               <FormLabel>Position</FormLabel>
-
               <Input
                 type="text"
                 sx={{ "--Input-focusedThickness": 0 }}
@@ -83,6 +85,48 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
                   }}
                 />
               </LocalizationProvider>
+            </FormControl>
+          </div>
+
+          <div className="col-span-1 ">
+            <FormControl required>
+              <FormLabel>Bank</FormLabel>
+              <BankSelector />
+            </FormControl>
+          </div>
+
+          <div className="col-span-2">
+            <FormControl required>
+              <FormLabel>ฺBank Account</FormLabel>
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="ฺBank Account"
+              />
+            </FormControl>
+          </div>
+          <div className="col-span-2">
+            <FormControl required>
+              <FormLabel>Account Owner</FormLabel>
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="account Owner"
+              />
+            </FormControl>
+          </div>
+
+          <div className="col-span-2">
+            <FormControl required>
+              <FormLabel>Promtpay (Phone ,ID)</FormLabel>
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="promtpay"
+              />
             </FormControl>
           </div>
         </div>

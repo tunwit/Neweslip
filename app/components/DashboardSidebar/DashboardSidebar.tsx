@@ -50,12 +50,12 @@ export default function DashboardSidebar({
   params: Promise<{ shopId: string }>;
 }) {
   const pathname = usePathname().split("/");
-  const page = pathname[2];
-  const shop = pathname[1];
+  const page = pathname.pop();
+  const shop = pathname.pop();
 
   return (
     <>
-      <div className="flex flex-col bg-[#f2f6fc] text-black h-screen min-w-36  border-r border-[#d4d4d4] sticky top-0 left-0">
+      <div className="flex flex-col bg-[#fcfdff] text-black h-screen min-w-36  border-r border-[#d4d4d4] sticky top-0 left-0">
         <p className="pl-4 text-xs text-[#797979] font-bold mt-10 mb-4">
           DASHBOARD
         </p>
