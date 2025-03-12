@@ -5,6 +5,7 @@ interface EmployeesElementProps {
   name: string;
   email: string;
   nickname: string;
+  amount:number;
   branch: string;
   status: number;
 }
@@ -49,21 +50,24 @@ export default function EmployeesElement({
   name,
   email,
   nickname,
+  amount,
   branch,
   status,
 }: EmployeesElementProps) {
   const statusInfo = EmployeeStatus[status] || {};
   const randomColor = getRandomPastelColor();
-
+  const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
   return (
     <>
-      <tr className="bg-[#fdfeff] text-sm h-14 border-b border-b-[#d4d4d4] opacity-75 font-semibold hover:bg-[#f0f4f8]">
-        <td className="text-center flex justify-center items-center h-12">
-          <div
-            className="bg-teal-400 w-9 h-9 text-center rounded-full flex items-center justify-center"
-            style={{ backgroundColor: randomColor }}
-          >
-            {name.charAt(0)}
+      <tr>
+        <td>
+          <div className="flex justify-center items-center">
+            <div
+              className="bg-teal-400 w-9 h-9 text-center rounded-full flex items-center justify-center"
+              style={{ backgroundColor: randomColor }}
+            >
+              {name.charAt(0)}
+            </div>
           </div>
         </td>
         <td>
@@ -73,16 +77,18 @@ export default function EmployeesElement({
           </div>
         </td>
         <td>{nickname}</td>
-        <td>1,3000 ฿</td>
+        <td>{moneyFormat} ฿</td>
         <td>{branch}</td>
-        <div
-          className={`flex flex-row justify-center items-center gap-1 px-2 py-[1px] rounded-2xl w-fit ${statusInfo.bg}`}
-        >
-          <Icon className={statusInfo.textColor} icon={statusInfo.icon} />
-          <p className={`font-semibold ${statusInfo.textColor}`}>
-            {statusInfo.text}
-          </p>
-        </div>
+        <td>
+          <div
+            className={`flex flex-row justify-center items-center gap-1 px-2 py-[1px] rounded-2xl w-fit ${statusInfo.bg}`}
+          >
+            <Icon className={statusInfo.textColor} icon={statusInfo.icon} />
+            <p className={`font-semibold ${statusInfo.textColor}`}>
+              {statusInfo.text}
+            </p>
+          </div>
+        </td>
       </tr>
     </>
   );

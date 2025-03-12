@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Sarabun } from "next/font/google";
 import "./globals.css";
-import ShopSidebar from "./components/ShopSidebar";
+import ShopSidebar from "./components/ShopSidebar/ShopSidebar";
 import DashboardSidebar from "./components/DashboardSidebar/DashboardSidebar";
 
 const sarabun = Sarabun({

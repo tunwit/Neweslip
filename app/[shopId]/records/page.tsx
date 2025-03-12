@@ -9,7 +9,6 @@ import PendingElement from "@/app/components/Payrolls/PendingElement";
 import dayjs from "dayjs";
 import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
-import { Add } from "@mui/icons-material";
 
 export default function Home() {
   return (
@@ -20,11 +19,14 @@ export default function Home() {
             {" "}
             Haris {">"} Dashboard {">"}&nbsp;
           </p>
-          <p className="text-blue-800">Payrolls</p>
+          <p className="text-blue-800">Records</p>
         </div>
         <div className="mt-5 flex flex-row justify-between">
-          <p className="text-black text-4xl font-bold">Payrolls</p>
-          <Button startDecorator={<Add sx={{fontSize:"20px"}}/>} sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>New Payroll</Button>
+          <p className="text-black text-4xl font-bold">Records</p>
+        </div>
+
+        <div>
+            card
         </div>
 
         <div className="mt-8 flex flex-row gap-2">
@@ -70,10 +72,7 @@ export default function Home() {
           </div>
         </div>
 
-        <p className="mt-2">Pending</p>
-        <div className="max-h-96">
-          <PendingSection />
-        </div>
+        
       </div>
     </main>
   );

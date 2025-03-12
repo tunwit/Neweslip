@@ -1,5 +1,5 @@
 "use client";
-import { Checkbox } from "@mui/joy";
+import { Button, Checkbox } from "@mui/joy";
 import React, { useState } from "react";
 import PendingElement from "./PendingElement";
 import dayjs from "dayjs";
@@ -122,13 +122,10 @@ export default function PendingSection() {
       )}
 
       {test.length !== 0 && (
-        <button
-          disabled={!checkboxs.some((v) => v === true)}
-          className="bg-red-700 w-fit font-semibold text-white px-2 py-1 rounded-sm flex flex-row items-center gap-2 hover:bg-red-800 active:bg-red-900 disabled:bg-[#7e4747] disabled:text-gray-300"
-        >
-          <Icon icon={"mingcute:delete-line"} />
-          <p>Delete</p>
-        </button>
+        // <Button disabled={!checkboxs.some((v) => v === true)} color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
+      <div>
+        <Button disabled={!checkboxs.some((v) => v === true)} color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
+      </div>
       )}
     </div>
   );

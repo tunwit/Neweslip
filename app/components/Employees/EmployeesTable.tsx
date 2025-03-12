@@ -1,228 +1,54 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
 import EmployeesElement from "./EmployeesElement";
+import { Table } from "@mui/joy";
 
 export default function EmployeesTable() {
+  const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
   return (
     <>
-      <table className="table-auto w-full text-black text-left whitespace-nowrap">
-        <thead className="sticky top-0 bg-[#f0f4f8] z-50 border-b border-b-[#d4d4d4]">
-          <tr className=" h-11 font-black ">
+      <Table stickyHeader stickyFooter variant="plain">
+        <thead>
+          <tr>
             <th className="w-[8.6%]"></th>
-            <th className="font-medium min-w-48">Name</th>
-            <th className="font-medium min-w-32">Nickname</th>
-            <th className="font-medium min-w-32">Base Salary</th>
-            <th className="font-medium min-w-32">Branch</th>
-            <th className="font-medium min-w-32">Status</th>
+            <th className="font-medium w-[25%]">Name</th>
+            <th className="font-medium">Nickname</th>
+            <th className="font-medium">Base Salary</th>
+            <th className="font-medium">Branch</th>
+            <th className="font-medium">Status</th>
           </tr>
         </thead>
 
         <tbody>
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={1}
-          />
-          <EmployeesElement
-            name="Worrapon Gonnak"
-            nickname="Ja"
-            email="worrapon5478@gmail.com"
-            branch="Pakkret"
-            status={1}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={2}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
-          <EmployeesElement
-            name="Thanut Thappota"
-            nickname="Wit"
-            email="Tunwit2458@gmail.com"
-            branch="Pakkret"
-            status={3}
-          />
+          {Array(15).fill(0).map(() => {
+            return (
+              <EmployeesElement
+                name="Thanut Thappota"
+                nickname="Wit"
+                email="Tunwit2458@gmail.com"
+                amount={13000}
+                branch="Pakkret"
+                status={1}
+              />
+            );
+          })}
         </tbody>
-      </table>
+        <tfoot>
+          <tr>
+            <th scope="row">Totals</th>
+            <td>
+              <div className="flex flex-row gap-1 items-center ">
+                <p>56</p>
+                <Icon icon={"mdi:users"} />
+              </div>
+            </td>
+            <td></td>
+            <td>{moneyFormat} ฿</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </Table>
     </>
   );
 }

@@ -5,29 +5,23 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import EmployeesTable from "@/app/components/Employees/EmployeesTable";
+import { Add } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const rounter = useRouter();
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
-            {" "}
             Haris {">"} Dashboard {">"}&nbsp;
           </p>
           <p className="text-blue-800">Employees</p>
         </div>
         <div className=" mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Orders</p>
-          <button
-            onClick={() => console.log("sd")}
-            className="flex justify-center text-white bg-blue-700 hover:bg-blue-800 active:bg-blue-900 px-2 rounded-sm text-sm h-8"
-          >
-            <div className="flex flex-row items-center gap-1 font-semibold shadow-sm">
-              <Icon className="text-lg" icon={"ic:baseline-plus"} />
-              <p>Add Employee</p>
-            </div>
-          </button>
+          <Button onClick={() => rounter.push('employees/new')}  startDecorator={<Add sx={{fontSize:"20px"}}/>} sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>New Employee</Button>
         </div>
 
         <div className="mt-8 flex flex-row gap-2">
@@ -73,7 +67,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center mt-5">
-          <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[60vh] overflow-x-auto overflow-y-auto shadow-sm">
+          <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
             <EmployeesTable />
           </div>
         </div>
