@@ -24,7 +24,12 @@ export default function Home() {
         </div>
         <div className="mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Payrolls</p>
-          <Button startDecorator={<Add sx={{fontSize:"20px"}}/>} sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>New Payroll</Button>
+          <Button
+            startDecorator={<Add sx={{ fontSize: "20px" }} />}
+            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
+          >
+            New Payroll
+          </Button>
         </div>
 
         <div className="mt-8 flex flex-row gap-2">

@@ -50,8 +50,8 @@ export default function DashboardSidebar({
   params: Promise<{ shopId: string }>;
 }) {
   const pathname = usePathname().split("/");
-  const page = pathname.pop();
-  const shop = pathname.pop();
+  const page = pathname[2];
+  const shop = pathname[1];
 
   return (
     <>

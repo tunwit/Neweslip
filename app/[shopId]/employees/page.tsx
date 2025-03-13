@@ -20,8 +20,14 @@ export default function Home() {
           <p className="text-blue-800">Employees</p>
         </div>
         <div className=" mt-5 flex flex-row justify-between">
-          <p className="text-black text-4xl font-bold">Orders</p>
-          <Button onClick={() => rounter.push('employees/new')}  startDecorator={<Add sx={{fontSize:"20px"}}/>} sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>New Employee</Button>
+          <p className="text-black text-4xl font-bold">Employees</p>
+          <Button
+            onClick={() => rounter.push("employees/new")}
+            startDecorator={<Add sx={{ fontSize: "20px" }} />}
+            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
+          >
+            New Employee
+          </Button>
         </div>
 
         <div className="mt-8 flex flex-row gap-2">

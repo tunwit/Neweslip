@@ -1,42 +1,20 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React from "react";
+import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
+import React, { useMemo, useState } from "react";
+import EmployeeDetailsModal from "./EmployeeDetailsModal";
+import EmployeeStatus from "./EmployeeStatus";
 
 interface EmployeesElementProps {
+  id: number;
   name: string;
   email: string;
   nickname: string;
-  amount:number;
+  amount: number;
   branch: string;
   status: number;
+  checkboxs: boolean[];
+  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
-
-interface EmployeeStatusType {
-  icon: string;
-  text: string;
-  bg: string;
-  textColor: string;
-}
-
-const EmployeeStatus: { [key: number]: EmployeeStatusType } = {
-  1: {
-    icon: "mdi:check-bold",
-    text: "Active",
-    bg: "bg-green-200",
-    textColor: "text-green-950",
-  },
-  2: {
-    icon: "maki:cross",
-    text: "Inactive",
-    bg: "bg-gray-200",
-    textColor: "text-gray-950",
-  },
-  3: {
-    icon: "tabler:clock",
-    text: "Part Time",
-    bg: "bg-amber-200",
-    textColor: "text-amber-950",
-  },
-};
 
 function getRandomPastelColor() {
   const r = Math.floor(Math.random() * 128) + 127; // Random red value (127-255)
@@ -47,21 +25,47 @@ function getRandomPastelColor() {
 }
 
 export default function EmployeesElement({
+  id,
   name,
   email,
   nickname,
   amount,
   branch,
   status,
+  checkboxs,
+  setCheckboxs,
 }: EmployeesElementProps) {
-  const statusInfo = EmployeeStatus[status] || {};
-  const randomColor = getRandomPastelColor();
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
+
+  const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const state: boolean = e.currentTarget.checked;
+    setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
+  };
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const randomColor = useMemo(() => getRandomPastelColor(), []);
   return (
     <>
-      <tr>
+      <EmployeeDetailsModal
+        name={name}
+        email={email}
+        nickname={nickname}
+        amount={amount}
+        branch={branch}
+        status={status}
+        open={open}
+        setOpen={setOpen}
+      />
+      <tr className="cursor-pointer" onClick={() => setOpen(true)}>
         <td>
-          <div className="flex justify-center items-center">
+          <div className="flex gap-4  items-center">
+            <Checkbox
+              checked={checkboxs[id]}
+              onChange={(e) => {
+                updateCheckboxAtIndex(e);
+              }}
+            />
             <div
               className="bg-teal-400 w-9 h-9 text-center rounded-full flex items-center justify-center"
               style={{ backgroundColor: randomColor }}
@@ -80,14 +84,7 @@ export default function EmployeesElement({
         <td>{moneyFormat} ฿</td>
         <td>{branch}</td>
         <td>
-          <div
-            className={`flex flex-row justify-center items-center gap-1 px-2 py-[1px] rounded-2xl w-fit ${statusInfo.bg}`}
-          >
-            <Icon className={statusInfo.textColor} icon={statusInfo.icon} />
-            <p className={`font-semibold ${statusInfo.textColor}`}>
-              {statusInfo.text}
-            </p>
-          </div>
+          <EmployeeStatus status={status} />
         </td>
       </tr>
     </>

@@ -21,7 +21,9 @@ export default function AddressForm({ setCurrentPage }: AddressFormProps) {
     setCurrentPage(2);
   };
 
-  const handlerPrevious = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlerPrevious = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
     e.preventDefault();
     setCurrentPage(0);
   };
@@ -29,27 +31,76 @@ export default function AddressForm({ setCurrentPage }: AddressFormProps) {
     <>
       <form onSubmit={(e) => handlerNext(e)}>
         <div className="grid grid-cols-4 gap-x-3 gap-y-5 mt-4 px-5">
-          <div className="col-span-2">
+          <div className="col-span-1">
             <FormControl required>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>House Number</FormLabel>
               <Input
                 type="text"
                 sx={{ "--Input-focusedThickness": 0 }}
                 size="md"
-                placeholder="address"
+                placeholder="house number"
               />
             </FormControl>
           </div>
 
           <div className="col-span-2">
             <FormControl required>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>Village</FormLabel>
 
               <Input
                 type="text"
                 sx={{ "--Input-focusedThickness": 0 }}
                 size="md"
-                placeholder="address"
+                placeholder="village"
+              />
+            </FormControl>
+          </div>
+
+          <div className="col-span-1">
+            <FormControl required>
+              <FormLabel>Sub Distract (Tambon)</FormLabel>
+
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="sub distract"
+              />
+            </FormControl>
+          </div>
+
+          <div className="col-span-1">
+            <FormControl required>
+              <FormLabel>Distract (Amphoe)</FormLabel>
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="distract"
+              />
+            </FormControl>
+          </div>
+
+          <div className="col-span-1">
+            <FormControl required>
+              <FormLabel>Province</FormLabel>
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="province"
+              />
+            </FormControl>
+          </div>
+
+          <div className="col-span-1">
+            <FormControl required>
+              <FormLabel>Zipcode</FormLabel>
+              <Input
+                type="text"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="zipcode"
               />
             </FormControl>
           </div>
