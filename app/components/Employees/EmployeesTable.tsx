@@ -39,6 +39,7 @@ export default function EmployeesTable() {
             .map((v, i) => {
               return (
                 <EmployeesElement
+                  key={i}
                   id={i}
                   name="Thanut Thappota"
                   nickname="Wit"

@@ -2,6 +2,14 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
 
+interface Employees {
+  id: number;
+  name: string;
+  nickname: string;
+  email: string;
+  branch: string;
+}
+
 interface PayrollsAllEmployeesElementProps {
   id: number;
   name: string;
@@ -12,6 +20,7 @@ interface PayrollsAllEmployeesElementProps {
   status: number;
   checkboxs: boolean[];
   setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
+  setSelectedEm: React.Dispatch<React.SetStateAction<Employees[]>>;
 }
 
 function getRandomPastelColor() {
@@ -32,12 +41,22 @@ export default function PayrollsAllEmployeesElement({
   status,
   checkboxs,
   setCheckboxs,
+  setSelectedEm,
 }: PayrollsAllEmployeesElementProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
 
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
     const state: boolean = e.currentTarget.checked;
     setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
+    setSelectedEm((prev) => {
+      if (state) {
+        // Add item if checked
+        return [...prev, { id: id, name, nickname, email, branch }];
+      } else {
+        // Remove item if unchecked
+        return prev.filter((item) => item.id !== id);
+      }
+    });
   };
 
   const [open, setOpen] = useState<boolean>(false);

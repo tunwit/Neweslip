@@ -6,10 +6,15 @@ import EmployeesTable from "./components/Employees/EmployeesTable";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
   const rounter = useRouter();
-  rounter.push("/haris/employees");
+
+  useEffect(() => {
+    rounter.push("/haris/employees");
+  }, []);
+
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       nothing here

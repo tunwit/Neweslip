@@ -8,23 +8,42 @@ import {
   Select,
   Typography,
 } from "@mui/joy";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EmployeesTable from "../../Employees/EmployeesTable";
 import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
 import PayrollsAllEmployeeTable from "./PayrollsAllEmployeeTable";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
+interface Employees {
+  id: number;
+  name: string;
+  nickname: string;
+  email: string;
+  branch: string;
+}
+
 interface PayrollsAddEmployeeModal {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  employees: Employees[];
+  setEmployee: React.Dispatch<React.SetStateAction<Employees[]>>;
 }
 export default function PayrollsAddEmployeeModal({
   open,
   setOpen,
+  employees,
+  setEmployee,
 }: PayrollsAddEmployeeModal) {
   const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
   const selected = checkboxs.filter(Boolean).length;
-
+  const [selectedEm, setSelectedEm] = useState<Employees[]>([]);
+  const handlerConfirm = () => {
+    setEmployee([...employees, ...selectedEm]);
+    setOpen(false);
+  };
+  useEffect(() => {
+    console.log(selectedEm);
+  }, [selectedEm]);
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -69,6 +88,7 @@ export default function PayrollsAddEmployeeModal({
               <PayrollsAllEmployeeTable
                 checkboxs={checkboxs}
                 setCheckboxs={setCheckboxs}
+                setSelectedEm={setSelectedEm}
               />
             </div>
             <div className="flex flex-row gap-2 ml-auto mt-2">
@@ -79,7 +99,7 @@ export default function PayrollsAddEmployeeModal({
               >
                 Close
               </Button>
-              <Button size="sm" onClick={() => setOpen(false)}>
+              <Button size="sm" onClick={() => handlerConfirm()}>
                 Confirm
               </Button>
             </div>

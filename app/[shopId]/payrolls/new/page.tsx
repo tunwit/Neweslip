@@ -14,12 +14,32 @@ import PayrollsEmployeesTable from "@/app/components/Payrolls/new/PayrollsEmploy
 import { useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/PayrollsAddEmployeeModal";
 
+interface Employees {
+  id: number;
+  name: string;
+  nickname: string;
+  email: string;
+  branch: string;
+}
+
 export default function Home() {
   const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
   const [open, setOpen] = useState(false);
+  const [employees, setEmployee] = useState<Employees[]>([]);
+
+  // const handlerDelete = ()=>{
+  //   setEmployee((prev)=>{
+  //     return employees.filter((item)=>{item.id!=})
+  //   })
+  // }
   return (
     <main className="min-h-screen w-full bg-white font-medium">
-      <PayrollsAddEmployeeModal open={open} setOpen={setOpen} />
+      <PayrollsAddEmployeeModal
+        open={open}
+        setOpen={setOpen}
+        employees={employees}
+        setEmployee={setEmployee}
+      />
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
@@ -86,6 +106,7 @@ export default function Home() {
             <PayrollsEmployeesTable
               checkboxs={checkboxs}
               setCheckboxs={setCheckboxs}
+              employees={employees}
             />
           </div>
         </div>

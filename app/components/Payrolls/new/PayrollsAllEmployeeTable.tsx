@@ -3,19 +3,32 @@ import React, { useEffect, useState } from "react";
 import { Checkbox, Table } from "@mui/joy";
 import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
 
+interface Employees {
+  id: number;
+  name: string;
+  nickname: string;
+  email: string;
+  branch: string;
+}
+
 interface PayrollsAllEmployeesTableProps {
   checkboxs: boolean[];
   setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
+  setSelectedEm: React.Dispatch<React.SetStateAction<Employees[]>>;
 }
 
 export default function PayrollsAllEmployeeTable({
   checkboxs,
   setCheckboxs,
+  setSelectedEm,
 }: PayrollsAllEmployeesTableProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
+    // setSelectedEm((prev)=>{
+    //   return [...prev, { id: id, name, nickname, email, branch }]
+    // })
   };
 
   return (
@@ -53,6 +66,7 @@ export default function PayrollsAllEmployeeTable({
                   status={2}
                   checkboxs={checkboxs}
                   setCheckboxs={setCheckboxs}
+                  setSelectedEm={setSelectedEm}
                 />
               );
             })}

@@ -5,14 +5,23 @@ import { Button, Checkbox, Table } from "@mui/joy";
 import PayrollsEmployeesElement from "./PayrollsEmployeeElement";
 import { Delete } from "@mui/icons-material";
 
+interface Employees {
+  name: string;
+  nickname: string;
+  email: string;
+  branch: string;
+}
+
 interface PayrollsEmployeesTableProps {
   checkboxs: boolean[];
   setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
+  employees: Employees[];
 }
 
 export default function PayrollsEmployeesTable({
   checkboxs,
   setCheckboxs,
+  employees,
 }: PayrollsEmployeesTableProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,9 +51,18 @@ export default function PayrollsEmployeesTable({
         </thead>
 
         <tbody>
-          {Array(15)
-            .fill(0)
-            .map((v, i) => {
+          {employees.length === 0 ? (
+            <tr>
+              <td></td>
+              <td></td>
+              <td className="font-medium opacity-60">
+                Please Add New Employee
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+          ) : (
+            employees.map((v, i) => {
               return (
                 <PayrollsEmployeesElement
                   id={i}
@@ -58,7 +76,8 @@ export default function PayrollsEmployeesTable({
                   setCheckboxs={setCheckboxs}
                 />
               );
-            })}
+            })
+          )}
         </tbody>
         <tfoot>
           <tr>
