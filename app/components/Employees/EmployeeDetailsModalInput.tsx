@@ -12,7 +12,7 @@ export default function EmployeeDetailsModalInput({
     <input
       disabled={disabled}
       defaultValue={value}
-      className="rounded-sm  p-1 text-sm opacity-55 focus:outline-none enabled:bg-[#e2e2e2] disabled:p-0"
+      className="rounded-sm  py-[1px] px-[2px] text-sm opacity-55 focus:outline-none enabled:bg-[#e2e2e2]"
     />
   );
 }

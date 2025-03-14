@@ -10,8 +10,10 @@ import dayjs from "dayjs";
 import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const rounter = useRouter();
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10 flex flex-col min-h-screen ">
@@ -25,6 +27,7 @@ export default function Home() {
         <div className="mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Payrolls</p>
           <Button
+            onClick={() => rounter.push("payrolls/new")}
             startDecorator={<Add sx={{ fontSize: "20px" }} />}
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >

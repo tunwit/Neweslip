@@ -1,10 +1,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
-import EmployeeDetailsModal from "./EmployeeDetailsModal";
-import EmployeeStatus from "./EmployeeStatus";
 
-interface EmployeesElementProps {
+interface PayrollsEmployeesElementProps {
   id: number;
   name: string;
   email: string;
@@ -24,7 +22,7 @@ function getRandomPastelColor() {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-export default function EmployeesElement({
+export default function PayrollsEmployeesElement({
   id,
   name,
   email,
@@ -34,7 +32,7 @@ export default function EmployeesElement({
   status,
   checkboxs,
   setCheckboxs,
-}: EmployeesElementProps) {
+}: PayrollsEmployeesElementProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
 
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,16 +45,6 @@ export default function EmployeesElement({
   const randomColor = useMemo(() => getRandomPastelColor(), []);
   return (
     <>
-      <EmployeeDetailsModal
-        name={name}
-        email={email}
-        nickname={nickname}
-        amount={amount}
-        branch={branch}
-        status={status}
-        open={open}
-        setOpen={setOpen}
-      />
       <tr className="cursor-pointer">
         <td>
           <div className="flex gap-4  items-center">
@@ -82,10 +70,10 @@ export default function EmployeesElement({
           </div>
         </td>
         <td onClick={() => setOpen(true)}>{nickname}</td>
-        <td onClick={() => setOpen(true)}>{moneyFormat} ฿</td>
         <td onClick={() => setOpen(true)}>{branch}</td>
+        <td onClick={() => setOpen(true)}>{moneyFormat}</td>
         <td onClick={() => setOpen(true)}>
-          <EmployeeStatus status={status} />
+          <button className="text-blue-700 underline font-medium">Edit</button>
         </td>
       </tr>
     </>

@@ -4,7 +4,7 @@ import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton from "@mui/joy/ListItemButton";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
-import { Icon } from "@iconify/react";
+import { Icon, loadIcon } from "@iconify/react";
 import DashboardButton from "./DashboardButton";
 import { usePathname, useRouter } from "next/navigation";
 

@@ -1,11 +1,18 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
-import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
+import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
 
-export default function EmployeesTable() {
+interface PayrollsAllEmployeesTableProps {
+  checkboxs: boolean[];
+  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
+}
+
+export default function PayrollsAllEmployeeTable({
+  checkboxs,
+  setCheckboxs,
+}: PayrollsAllEmployeesTableProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
-  const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
@@ -13,10 +20,10 @@ export default function EmployeesTable() {
 
   return (
     <>
-      <Table stickyHeader stickyFooter hoverRow variant="plain" noWrap>
+      <Table stickyHeader hoverRow variant="plain" noWrap>
         <thead>
           <tr>
-            <th className="w-[8%]">
+            <th className="w-[7%]">
               <Checkbox
                 checked={checkboxs.every((v) => v === true)}
                 indeterminate={
@@ -25,11 +32,9 @@ export default function EmployeesTable() {
                 onChange={(e) => handleAllCheckbox(e)}
               />
             </th>
-            <th className="font-medium w-[25%]">Name</th>
+            <th className="font-medium w-[30%]">Name</th>
             <th className="font-medium">Nickname</th>
-            <th className="font-medium">Base Salary</th>
             <th className="font-medium">Branch</th>
-            <th className="font-medium">Status</th>
           </tr>
         </thead>
 
@@ -38,7 +43,7 @@ export default function EmployeesTable() {
             .fill(0)
             .map((v, i) => {
               return (
-                <EmployeesElement
+                <PayrollsAllEmployeesElement
                   id={i}
                   name="Thanut Thappota"
                   nickname="Wit"
@@ -52,21 +57,6 @@ export default function EmployeesTable() {
               );
             })}
         </tbody>
-        <tfoot>
-          <tr>
-            <th scope="row">Totals</th>
-            <td>
-              <div className="flex flex-row gap-1 items-center ">
-                <p>56</p>
-                <Icon icon={"mdi:users"} />
-              </div>
-            </td>
-            <td></td>
-            <td>{moneyFormat} ฿</td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tfoot>
       </Table>
     </>
   );

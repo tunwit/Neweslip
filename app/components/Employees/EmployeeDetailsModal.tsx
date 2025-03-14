@@ -1,4 +1,5 @@
 import {
+  Button,
   Divider,
   Modal,
   ModalClose,
@@ -6,9 +7,10 @@ import {
   ModalOverflow,
   Typography,
 } from "@mui/joy";
-import React from "react";
+import React, { useState } from "react";
 import EmployeeStatus from "./EmployeeStatus";
 import EmployeeDetailsModalInput from "./EmployeeDetailsModalInput";
+import { Edit, Save } from "@mui/icons-material";
 
 interface EmployeeDetailsModalProps {
   name: string;
@@ -30,163 +32,203 @@ export default function EmployeeDetailsModal({
   open,
   setOpen,
 }: EmployeeDetailsModalProps) {
+  const [editmode, setEditmode] = useState(false);
+
+  const handlerEdit = () => {
+    setEditmode(!editmode);
+  };
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
         <ModalOverflow>
           <ModalDialog sx={{ background: "#fafafa" }}>
             <ModalClose />
-            <div className="flex flex-row gap-10 items-center p-2">
-              <div className="flex gap-4  items-center">
-                <div className="bg-teal-400 w-20 h-20 text-center rounded-full flex items-center justify-center">
-                  <p className="text-xl">{name.charAt(0)}</p>
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex flex-row gap-10 items-center p-2">
+                <div className="flex gap-4  items-center">
+                  <div className="bg-teal-400 w-20 h-20 text-center rounded-full flex items-center justify-center">
+                    <p className="text-xl">{name.charAt(0)}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1 ">
+                  <div className="flex flex-row gap-2">
+                    <p className="font-bold text-xl">{name}</p>
+                    <EmployeeStatus status={status} />
+                  </div>
+                  <EmployeeDetailsModalInput
+                    disabled={!editmode}
+                    value="Manager"
+                  />
                 </div>
               </div>
-
-              <div className="flex flex-col gap-1">
-                <div className="flex flex-row gap-2 justify-center">
-                  <p className="font-bold text-xl">{name}</p>
-                  <EmployeeStatus status={status} />
-                </div>
-
-                {/* <p className="text-sm opacity-55">Manager</p> */}
-                <EmployeeDetailsModalInput disabled={false} value="Manager" />
+              <div className="ml-auto">
+                {editmode ? (
+                  <Button
+                    onClick={() => handlerEdit()}
+                    startDecorator={<Save sx={{ fontSize: "16px" }} />}
+                    sx={{ fontSize: "12px", gap: 0 }}
+                    size="sm"
+                    variant="outlined"
+                  >
+                    Save
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handlerEdit()}
+                    startDecorator={<Edit sx={{ fontSize: "16px" }} />}
+                    sx={{ fontSize: "12px", gap: 0 }}
+                    size="sm"
+                    variant="outlined"
+                  >
+                    Edit
+                  </Button>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col gap-3 ">
               <div className="bg-white rounded-sm shadow-sm py-3 px-4">
-                <p>Personal Infomation</p>
+                <p className="font-semibold mb-2">Personal Infomation</p>
                 <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Employee ID</p>
+                    <p>Employee ID</p>
                     <p>EMP0001</p>
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Email</p>
-                    <EmployeeDetailsModalInput disabled={false} value={email} />
+                    <p>Email</p>
+                    <EmployeeDetailsModalInput
+                      disabled={!editmode}
+                      value={email}
+                    />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Nick name</p>
+                    <p>Nick name</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={nickname}
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Gender</p>
-                    <EmployeeDetailsModalInput disabled={false} value="Male" />
+                    <p>Gender</p>
+                    <EmployeeDetailsModalInput
+                      disabled={!editmode}
+                      value="Male"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Phone</p>
+                    <p>Phone</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value="0952475183"
                     />
                   </div>
                 </div>
               </div>
               <div className="bg-white rounded-sm shadow-sm py-3 px-4">
-                <p>Address</p>
+                <p className="font-semibold mb-2">Address</p>
                 <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">House number</p>
+                    <p>House number</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value="58/297"
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Village</p>
+                    <p>Village</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value="สราญสิริ"
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Subdistrict (Tambon)</p>
+                    <p>Subdistrict (Tambon)</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value="บางตะไนย์"
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">District (Amphoe)</p>
+                    <p>District (Amphoe)</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value="ปากเกร็ด"
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Province</p>
+                    <p>Province</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value="นนทบุรี"
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Zipcode</p>
-                    <EmployeeDetailsModalInput disabled={false} value="11120" />
+                    <p>Zipcode</p>
+                    <EmployeeDetailsModalInput
+                      disabled={!editmode}
+                      value="11120"
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="bg-white rounded-sm shadow-sm py-3 px-4">
-                <p>Job Information</p>
+                <p className="font-semibold mb-2">Job Information</p>
                 <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Base Salary</p>
+                    <p>Base Salary</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={amount}
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Date Employ</p>
+                    <p>Date Employ</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={"15 มกราคม 2566"}
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Branch</p>
+                    <p>Branch</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={"Pakkret"}
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Bank</p>
+                    <p>Bank</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={"กสิกรไทย"}
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Bank Account</p>
+                    <p>Bank Account</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={"4199 5688 4758"}
                     />
                   </div>
 
                   <div className="grid grid-cols-2">
-                    <p className="font-semibold">Account Owner</p>
+                    <p>Account Owner</p>
                     <EmployeeDetailsModalInput
-                      disabled={false}
+                      disabled={!editmode}
                       value={"Thanut Thappota"}
                     />
                   </div>

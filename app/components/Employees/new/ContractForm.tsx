@@ -129,6 +129,17 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
               />
             </FormControl>
           </div>
+
+          <div className="col-span-2">
+            <FormControl required>
+              <FormLabel>Status</FormLabel>
+              <Select defaultValue={"active"}>
+                <Option value="active">Active</Option>
+                <Option value="parttime">Part time</Option>
+                <Option value="inactive">Inactive</Option>
+              </Select>
+            </FormControl>
+          </div>
         </div>
 
         <div className="flex justify-end items-center mt-2 gap-3 mr-5">

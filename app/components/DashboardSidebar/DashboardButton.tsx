@@ -26,6 +26,7 @@ export default function DashboardButton({
           <Icon
             className={`text-[#7a7a7a] text-lg ${selected ? "text-[#464646]" : ""}`}
             icon={icon}
+            inline
           />
           <p className={`text-[#7a7a7a] ${selected ? "text-[#464646]" : ""}`}>
             {title}

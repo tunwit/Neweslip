@@ -1,38 +1,47 @@
 "use client";
 import Image from "next/image";
 import Button from "@mui/joy/Button";
-import { Icon, loadIcon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import EmployeesTable from "@/app/components/Employees/EmployeesTable";
+import PendingElement from "@/app/components/Payrolls/PendingElement";
+import dayjs from "dayjs";
+import { Checkbox } from "@mui/joy";
+import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+import PayrollsEmployeesTable from "@/app/components/Payrolls/new/PayrollsEmployeeTable";
+import { useState } from "react";
+import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/PayrollsAddEmployeeModal";
 
 export default function Home() {
-  const rounter = useRouter();
+  const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
+  const [open, setOpen] = useState(false);
   return (
     <main className="min-h-screen w-full bg-white font-medium">
-      <div className="mx-10">
+      <PayrollsAddEmployeeModal open={open} setOpen={setOpen} />
+      <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
-            Haris {">"} Dashboard {">"}&nbsp;
+            {" "}
+            Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
           </p>
-          <p className="text-blue-800">Employees</p>
+          <p className="text-blue-800">New Payrolls</p>
         </div>
-        <div className=" mt-5 flex flex-row justify-between">
-          <p className="text-black text-4xl font-bold">Employees</p>
+        <div className="mt-5 flex flex-row justify-between">
+          <p className="text-black text-4xl font-bold">Payroll - 015</p>
           <Button
-            onClick={() => rounter.push("employees/new")}
+            onClick={() => setOpen(true)}
             startDecorator={<Add sx={{ fontSize: "20px" }} />}
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >
-            New Employee
+            Add Employee
           </Button>
         </div>
 
         <div className="mt-8 flex flex-row gap-2">
           <div className="w-[60%]">
-            <p className="text-black text-xs mb-1">Search Employee</p>
+            <p className="text-black text-xs mb-1">Search Payrolls</p>
             <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
               <Icon
                 className="text-[#424242]"
@@ -74,8 +83,21 @@ export default function Home() {
         </div>
         <div className="flex justify-center mt-5">
           <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-            <EmployeesTable />
+            <PayrollsEmployeesTable
+              checkboxs={checkboxs}
+              setCheckboxs={setCheckboxs}
+            />
           </div>
+        </div>
+
+        <div className="mt-2">
+          <Button
+            disabled={!checkboxs.some((v) => v === true)}
+            color="danger"
+            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
+          >
+            Delete
+          </Button>
         </div>
       </div>
     </main>

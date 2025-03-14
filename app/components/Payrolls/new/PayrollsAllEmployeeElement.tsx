@@ -1,10 +1,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
-import EmployeeDetailsModal from "./EmployeeDetailsModal";
-import EmployeeStatus from "./EmployeeStatus";
 
-interface EmployeesElementProps {
+interface PayrollsAllEmployeesElementProps {
   id: number;
   name: string;
   email: string;
@@ -24,7 +22,7 @@ function getRandomPastelColor() {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-export default function EmployeesElement({
+export default function PayrollsAllEmployeesElement({
   id,
   name,
   email,
@@ -34,7 +32,7 @@ export default function EmployeesElement({
   status,
   checkboxs,
   setCheckboxs,
-}: EmployeesElementProps) {
+}: PayrollsAllEmployeesElementProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
 
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,16 +45,6 @@ export default function EmployeesElement({
   const randomColor = useMemo(() => getRandomPastelColor(), []);
   return (
     <>
-      <EmployeeDetailsModal
-        name={name}
-        email={email}
-        nickname={nickname}
-        amount={amount}
-        branch={branch}
-        status={status}
-        open={open}
-        setOpen={setOpen}
-      />
       <tr className="cursor-pointer">
         <td>
           <div className="flex gap-4  items-center">
@@ -66,13 +54,6 @@ export default function EmployeesElement({
                 updateCheckboxAtIndex(e);
               }}
             />
-            <div
-              className="w-9 aspect-square min-w-8 text-center rounded-full flex items-center justify-center"
-              style={{ backgroundColor: randomColor }}
-              onClick={() => setOpen(true)}
-            >
-              {name.charAt(0)}
-            </div>
           </div>
         </td>
         <td onClick={() => setOpen(true)}>
@@ -82,11 +63,7 @@ export default function EmployeesElement({
           </div>
         </td>
         <td onClick={() => setOpen(true)}>{nickname}</td>
-        <td onClick={() => setOpen(true)}>{moneyFormat} ฿</td>
         <td onClick={() => setOpen(true)}>{branch}</td>
-        <td onClick={() => setOpen(true)}>
-          <EmployeeStatus status={status} />
-        </td>
       </tr>
     </>
   );
