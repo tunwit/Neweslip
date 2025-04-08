@@ -9,24 +9,15 @@ import {
   Typography,
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
-import EmployeesTable from "../../Employees/EmployeesTable";
-import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
-import PayrollsAllEmployeeTable from "./PayrollsAllEmployeeTable";
 import { Icon } from "@iconify/react/dist/iconify.js";
-
-interface Employees {
-  id: number;
-  name: string;
-  nickname: string;
-  email: string;
-  branch: string;
-}
+import { Employee } from "@/types/employee";
+import PayrollsAllEmployeeTable from "./PayrollsAllEmployeeTable";
 
 interface PayrollsAddEmployeeModal {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  employees: Employees[];
-  setEmployee: React.Dispatch<React.SetStateAction<Employees[]>>;
+  employees: Employee[];
+  setEmployee: React.Dispatch<React.SetStateAction<Employee[]>>;
 }
 export default function PayrollsAddEmployeeModal({
   open,
@@ -36,10 +27,13 @@ export default function PayrollsAddEmployeeModal({
 }: PayrollsAddEmployeeModal) {
   const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
   const selected = checkboxs.filter(Boolean).length;
-  const [selectedEm, setSelectedEm] = useState<Employees[]>([]);
+  const [selectedEm, setSelectedEm] = useState<Employee[]>([]);
   const handlerConfirm = () => {
     setEmployee([...employees, ...selectedEm]);
     setOpen(false);
+    //Reset Checkbox when comfirm
+    setCheckboxs(Array(15).fill(false));
+    setSelectedEm([]);
   };
   useEffect(() => {
     console.log(selectedEm);

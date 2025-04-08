@@ -1,7 +1,9 @@
+"use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
+import data from "@/assets/employee";
 
 export default function EmployeesTable() {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
@@ -34,24 +36,22 @@ export default function EmployeesTable() {
         </thead>
 
         <tbody>
-          {Array(15)
-            .fill(0)
-            .map((v, i) => {
-              return (
-                <EmployeesElement
-                  key={i}
-                  id={i}
-                  name="Thanut Thappota"
-                  nickname="Wit"
-                  email="Tunwit2458@gmail.com"
-                  amount={13000}
-                  branch="Pakkret"
-                  status={2}
-                  checkboxs={checkboxs}
-                  setCheckboxs={setCheckboxs}
-                />
-              );
-            })}
+          {data.map((v, i) => {
+            return (
+              <EmployeesElement
+                key={v.id}
+                id={v.id}
+                name={v.name}
+                nickname={v.nickname}
+                email={v.email}
+                amount={v.amount}
+                branch={v.branch}
+                status={v.status}
+                checkboxs={checkboxs}
+                setCheckboxs={setCheckboxs}
+              />
+            );
+          })}
         </tbody>
         <tfoot>
           <tr>

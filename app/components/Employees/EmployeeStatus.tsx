@@ -32,6 +32,7 @@ const EmployeeStatuses: { [key: number]: EmployeeStatusType } = {
 interface EmployeeStatusProps {
   status: number;
 }
+
 export default function EmployeeStatus({ status }: EmployeeStatusProps) {
   const statusInfo = EmployeeStatuses[status] || {};
   return (

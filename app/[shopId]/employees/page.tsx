@@ -24,7 +24,11 @@ export default function Home() {
           <Button
             onClick={() => rounter.push("employees/new")}
             startDecorator={<Add sx={{ fontSize: "20px" }} />}
-            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
+            sx={{
+              fontSize: "13px",
+              "--Button-gap": "5px",
+              padding: 1.2,
+            }}
           >
             New Employee
           </Button>

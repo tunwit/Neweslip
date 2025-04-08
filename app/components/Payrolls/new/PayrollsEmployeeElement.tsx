@@ -1,6 +1,8 @@
+import { Employee } from "@/types/employee";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
+import PayrollEditEmployeeModal from "./EditModal/PayrollEditEmployeeModal";
 
 interface PayrollsEmployeesElementProps {
   id: number;
@@ -12,6 +14,7 @@ interface PayrollsEmployeesElementProps {
   status: number;
   checkboxs: boolean[];
   setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
+  setSelectedEm: React.Dispatch<React.SetStateAction<Employee[]>>;
 }
 
 function getRandomPastelColor() {
@@ -32,12 +35,33 @@ export default function PayrollsEmployeesElement({
   status,
   checkboxs,
   setCheckboxs,
+  setSelectedEm,
 }: PayrollsEmployeesElementProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
 
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
     const state: boolean = e.currentTarget.checked;
     setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
+    setSelectedEm((prev) => {
+      if (state) {
+        // Add item if checked
+        return [
+          ...prev,
+          {
+            id: id,
+            name: name,
+            nickname: nickname,
+            email: email,
+            amount: amount,
+            status: status,
+            branch: branch,
+          },
+        ];
+      } else {
+        // Remove item if unchecked
+        return prev.filter((item) => item.id !== id);
+      }
+    });
   };
 
   const [open, setOpen] = useState<boolean>(false);
@@ -46,6 +70,12 @@ export default function PayrollsEmployeesElement({
   return (
     <>
       <tr className="cursor-pointer">
+        <PayrollEditEmployeeModal
+          name={name}
+          amount={amount}
+          open={open}
+          setOpen={setOpen}
+        />
         <td>
           <div className="flex gap-4  items-center">
             <Checkbox

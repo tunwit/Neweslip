@@ -1,14 +1,7 @@
+import { Employee } from "@/types/employee";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
-
-interface Employees {
-  id: number;
-  name: string;
-  nickname: string;
-  email: string;
-  branch: string;
-}
 
 interface PayrollsAllEmployeesElementProps {
   id: number;
@@ -20,7 +13,7 @@ interface PayrollsAllEmployeesElementProps {
   status: number;
   checkboxs: boolean[];
   setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
-  setSelectedEm: React.Dispatch<React.SetStateAction<Employees[]>>;
+  setSelectedEm: React.Dispatch<React.SetStateAction<Employee[]>>;
 }
 
 function getRandomPastelColor() {
@@ -51,7 +44,18 @@ export default function PayrollsAllEmployeesElement({
     setSelectedEm((prev) => {
       if (state) {
         // Add item if checked
-        return [...prev, { id: id, name, nickname, email, branch }];
+        return [
+          ...prev,
+          {
+            id: id,
+            name: name,
+            nickname: nickname,
+            email: email,
+            amount: amount,
+            status: status,
+            branch: branch,
+          },
+        ];
       } else {
         // Remove item if unchecked
         return prev.filter((item) => item.id !== id);

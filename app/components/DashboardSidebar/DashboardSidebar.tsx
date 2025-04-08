@@ -1,12 +1,10 @@
 "use client";
 import React from "react";
-import List from "@mui/joy/List";
-import ListItem from "@mui/joy/ListItem";
-import ListItemButton from "@mui/joy/ListItemButton";
-import ListItemDecorator from "@mui/joy/ListItemDecorator";
-import { Icon, loadIcon } from "@iconify/react";
 import DashboardButton from "./DashboardButton";
 import { usePathname, useRouter } from "next/navigation";
+import ShopSidebarElement from "./ShopSidebarElement";
+
+const shops = [{ title: "Haris premium buffet" }, { title: "ตุ๊กแก" }];
 
 const DashboardRails = [
   {
@@ -23,7 +21,7 @@ const DashboardRails = [
   },
   {
     title: "Records",
-    icon: "vaadin:records",
+    icon: "ic:round-history",
     id: "records",
     href: "/records",
   },
@@ -39,7 +37,7 @@ const ConfigureRails = [
   {
     title: "Setting",
     icon: "tdesign:setting-1-filled",
-    id: "setting",
+    id: "settings",
     href: "/settings",
   },
 ];
@@ -55,13 +53,22 @@ export default function DashboardSidebar({
 
   return (
     <>
-      <div className="flex flex-col bg-[#fcfdff] text-black h-screen min-w-36  border-r border-[#d4d4d4] sticky top-0 left-0">
-        <p className="pl-4 text-xs text-[#797979] font-bold mt-10 mb-4">
-          DASHBOARD
-        </p>
+      <div className="flex flex-col bg-[#1f1f1f] text-black h-screen min-w-36 w-56  border-r border-[#d4d4d4] sticky top-0 left-0 shadow-2xl">
+        <div className="my-5 px-3">
+          <hr className="border-t border-[#747474] h-[2px]" />
+        </div>
+        <div className="pl-3 flex flex-col text-sm gap-1">
+          {shops.map((v, i) => {
+            return <ShopSidebarElement key={i} title={v.title} />;
+          })}
+        </div>
+        <div className="my-5 px-3">
+          <hr className="border-t border-[#747474] h-[2px]" />
+        </div>
+
+        <p className="pl-4 text-xs text-[#797979] font-bold mb-4">DASHBOARD</p>
         <div className="pl-3 flex flex-col text-sm gap-1">
           {DashboardRails.map((v, i) => {
-            console.log(`/${shop}${v.href}`);
             return (
               <DashboardButton
                 key={i}

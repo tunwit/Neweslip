@@ -2,6 +2,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Dayjs } from "dayjs";
 import React from "react";
 import Checkbox from "@mui/joy/Checkbox";
+import { log } from "node:console";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface PendingElementProps {
   id: number;
@@ -48,11 +51,16 @@ export default function PendingElement({
 }: PendingElementProps) {
   const statusInfo = PayrollStatus[status] || {};
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
+  const pathname = usePathname();
 
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
     const state: boolean = e.currentTarget.checked;
 
     setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
+  };
+
+  const editHandler = () => {
+    console.log("hi");
   };
   return (
     <>
@@ -87,7 +95,12 @@ export default function PendingElement({
             </p>
           </div>
 
-          <button className="text-blue-700 underline">Edit</button>
+          <Link
+            className="text-blue-700 underline"
+            href={`${pathname}/new?id=${id}`}
+          >
+            Edit
+          </Link>
         </div>
       </div>
     </>

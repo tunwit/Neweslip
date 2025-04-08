@@ -21,14 +21,14 @@ export default function DashboardButton({
     <>
       <Link href={href}>
         <div
-          className={`flex flex-row rounded-sm font-semibold gap-3 w-[120px] py-2 pl-1 items-center hover:bg-[#e9e9e9] ${selected ? "bg-[#d3dae8] rounded-sm" : ""}`}
+          className={`flex flex-row rounded-sm font-semibold gap-3 mr-3  py-2 pl-1 items-center hover:bg-[#2b2b2b] ${selected ? "bg-[#d9a241] rounded-sm " : ""}`}
         >
           <Icon
-            className={`text-[#7a7a7a] text-lg ${selected ? "text-[#464646]" : ""}`}
+            className={`text-[#7a7a7a] text-lg ${selected ? "text-[#363636]" : ""}`}
             icon={icon}
             inline
           />
-          <p className={`text-[#7a7a7a] ${selected ? "text-[#464646]" : ""}`}>
+          <p className={`text-[#7a7a7a] ${selected ? "text-[#363636]" : ""}`}>
             {title}
           </p>
         </div>

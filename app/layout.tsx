@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Sarabun } from "next/font/google";
 import "./globals.css";
-import ShopSidebar from "./components/ShopSidebar/ShopSidebar";
 import DashboardSidebar from "./components/DashboardSidebar/DashboardSidebar";
 
 const sarabun = Sarabun({
@@ -22,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sarabun.className} antialiased flex`}>
-        <ShopSidebar />
+        {/* <ShopSidebar /> */}
         <DashboardSidebar />
         {children}
       </body>

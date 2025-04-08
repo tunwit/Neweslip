@@ -1,37 +1,28 @@
 "use client";
-import Image from "next/image";
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import EmployeesTable from "@/app/components/Employees/EmployeesTable";
-import PendingElement from "@/app/components/Payrolls/PendingElement";
-import dayjs from "dayjs";
-import { Checkbox } from "@mui/joy";
-import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import PayrollsEmployeesTable from "@/app/components/Payrolls/new/PayrollsEmployeeTable";
 import { useState } from "react";
-import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/PayrollsAddEmployeeModal";
-
-interface Employees {
-  id: number;
-  name: string;
-  nickname: string;
-  email: string;
-  branch: string;
-}
+import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
+import { Employee } from "@/types/employee";
 
 export default function Home() {
   const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
   const [open, setOpen] = useState(false);
-  const [employees, setEmployee] = useState<Employees[]>([]);
+  const [employees, setEmployee] = useState<Employee[]>([]);
+  const [selectedEm, setSelectedEm] = useState<Employee[]>([]);
 
-  // const handlerDelete = ()=>{
-  //   setEmployee((prev)=>{
-  //     return employees.filter((item)=>{item.id!=})
-  //   })
-  // }
+  const handlerDelete = () => {
+    setEmployee((prevEmployees) =>
+      prevEmployees.filter(
+        (emp) => !selectedEm.some((selected) => selected.id === emp.id),
+      ),
+    );
+  };
+
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <PayrollsAddEmployeeModal
@@ -107,12 +98,14 @@ export default function Home() {
               checkboxs={checkboxs}
               setCheckboxs={setCheckboxs}
               employees={employees}
+              setSelectedEm={setSelectedEm}
             />
           </div>
         </div>
 
         <div className="mt-2">
           <Button
+            onClick={() => handlerDelete()}
             disabled={!checkboxs.some((v) => v === true)}
             color="danger"
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}

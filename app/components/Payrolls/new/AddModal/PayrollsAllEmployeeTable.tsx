@@ -2,19 +2,13 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { Checkbox, Table } from "@mui/joy";
 import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
-
-interface Employees {
-  id: number;
-  name: string;
-  nickname: string;
-  email: string;
-  branch: string;
-}
+import { Employee } from "@/types/employee";
+import data from "@/assets/employee";
 
 interface PayrollsAllEmployeesTableProps {
   checkboxs: boolean[];
   setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
-  setSelectedEm: React.Dispatch<React.SetStateAction<Employees[]>>;
+  setSelectedEm: React.Dispatch<React.SetStateAction<Employee[]>>;
 }
 
 export default function PayrollsAllEmployeeTable({
@@ -26,9 +20,9 @@ export default function PayrollsAllEmployeeTable({
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
-    // setSelectedEm((prev)=>{
-    //   return [...prev, { id: id, name, nickname, email, branch }]
-    // })
+    setSelectedEm((prev) => {
+      return [...data];
+    });
   };
 
   return (
@@ -52,24 +46,22 @@ export default function PayrollsAllEmployeeTable({
         </thead>
 
         <tbody>
-          {Array(15)
-            .fill(0)
-            .map((v, i) => {
-              return (
-                <PayrollsAllEmployeesElement
-                  id={i}
-                  name="Thanut Thappota"
-                  nickname="Wit"
-                  email="Tunwit2458@gmail.com"
-                  amount={13000}
-                  branch="Pakkret"
-                  status={2}
-                  checkboxs={checkboxs}
-                  setCheckboxs={setCheckboxs}
-                  setSelectedEm={setSelectedEm}
-                />
-              );
-            })}
+          {data.map((v, i) => {
+            return (
+              <PayrollsAllEmployeesElement
+                id={v.id}
+                name={v.name}
+                nickname={v.nickname}
+                email={v.email}
+                amount={v.amount}
+                branch={v.branch}
+                status={v.status}
+                checkboxs={checkboxs}
+                setCheckboxs={setCheckboxs}
+                setSelectedEm={setSelectedEm}
+              />
+            );
+          })}
         </tbody>
       </Table>
     </>

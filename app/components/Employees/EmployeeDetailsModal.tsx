@@ -1,3 +1,4 @@
+"use client";
 import {
   Button,
   Divider,
@@ -88,7 +89,7 @@ export default function EmployeeDetailsModal({
             </div>
 
             <div className="flex flex-col gap-3 ">
-              <div className="bg-white rounded-sm shadow-sm py-3 px-4">
+              <div className="bg-white rounded-sm shadow-md py-3 px-4">
                 <p className="font-semibold mb-2">Personal Infomation</p>
                 <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   <div className="grid grid-cols-2">
@@ -129,7 +130,7 @@ export default function EmployeeDetailsModal({
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-sm shadow-sm py-3 px-4">
+              <div className="bg-white rounded-sm shadow-md py-3 px-4">
                 <p className="font-semibold mb-2">Address</p>
                 <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   <div className="grid grid-cols-2">
@@ -182,7 +183,7 @@ export default function EmployeeDetailsModal({
                 </div>
               </div>
 
-              <div className="bg-white rounded-sm shadow-sm py-3 px-4">
+              <div className="bg-white rounded-sm shadow-md py-3 px-4">
                 <p className="font-semibold mb-2">Job Information</p>
                 <div className="grid grid-cols-2 gap-y-4 gap-x-3">
                   <div className="grid grid-cols-2">
