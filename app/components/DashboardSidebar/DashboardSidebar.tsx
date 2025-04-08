@@ -49,7 +49,6 @@ export default function DashboardSidebar({
 }) {
   const pathname = usePathname().split("/");
   const page = pathname[2];
-  const shop = pathname[1];
 
   return (
     <>
@@ -59,7 +58,13 @@ export default function DashboardSidebar({
         </div>
         <div className="pl-3 flex flex-col text-sm gap-1">
           {shops.map((v, i) => {
-            return <ShopSidebarElement key={i} title={v.title} />;
+            return (
+              <ShopSidebarElement
+                key={i}
+                title={v.title}
+                selected={v.title == "Haris premium buffet"}
+              />
+            );
           })}
         </div>
         <div className="my-5 px-3">
@@ -76,7 +81,7 @@ export default function DashboardSidebar({
                 icon={v.icon}
                 id={v.id}
                 selected={page == v.id}
-                href={`/${shop}${v.href}`}
+                href={`${v.href}`}
               />
             );
           })}
@@ -94,11 +99,15 @@ export default function DashboardSidebar({
                 icon={v.icon}
                 id={v.id}
                 selected={page == v.id}
-                href={`/${shop}${v.href}`}
+                href={`${v.href}`}
               />
             );
           })}
         </div>
+
+        <span className="absolute bottom-5 text-center w-full text-[#797979] text-xs">
+          v 0.0.1 @alpha
+        </span>
       </div>
     </>
   );

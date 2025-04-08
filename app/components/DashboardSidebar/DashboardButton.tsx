@@ -21,7 +21,7 @@ export default function DashboardButton({
     <>
       <Link href={href}>
         <div
-          className={`flex flex-row rounded-sm font-semibold gap-3 mr-3  py-2 pl-1 items-center hover:bg-[#2b2b2b] ${selected ? "bg-[#d9a241] rounded-sm " : ""}`}
+          className={`flex flex-row rounded-sm font-semibold gap-3 mr-3  py-2 pl-1 items-center hover:bg-[#2b2b2b] ${selected ? "bg-[#d9a241] rounded-sm hover:bg-[#d9a241] " : ""}`}
         >
           <Icon
             className={`text-[#7a7a7a] text-lg ${selected ? "text-[#363636]" : ""}`}

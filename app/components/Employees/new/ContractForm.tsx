@@ -68,7 +68,13 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           <div className="col-span-1 ">
             <FormControl required>
               <FormLabel>Dath Employ</FormLabel>
-              <LocalizationProvider
+              <Input
+                type="date"
+                sx={{ "--Input-focusedThickness": 0 }}
+                size="md"
+                placeholder="promtpay"
+              />
+              {/* <LocalizationProvider
                 dateAdapter={AdapterDayjs}
                 adapterLocale="th"
               >
@@ -84,7 +90,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
                     },
                   }}
                 />
-              </LocalizationProvider>
+              </LocalizationProvider> */}
             </FormControl>
           </div>
 
