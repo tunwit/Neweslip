@@ -40,7 +40,7 @@ export default [
     name: "Saharat Leo Nalumphon",
     nickname: "Leo",
     email: "sahxrxt@gmail.com",
-    amount: 12000,
+    amount: 30000,
     status: 2,
     branch: "pakkret",
   },

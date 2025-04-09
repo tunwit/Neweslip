@@ -42,6 +42,7 @@ export default function PayrollsAllEmployeeTable({
             <th className="font-medium w-[30%]">Name</th>
             <th className="font-medium">Nickname</th>
             <th className="font-medium">Branch</th>
+            <th className="font-medium"></th>
           </tr>
         </thead>
 

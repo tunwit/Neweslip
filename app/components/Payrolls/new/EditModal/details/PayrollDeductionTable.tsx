@@ -29,6 +29,30 @@ export default function PayrollDeductionTable() {
                 </tr>
               );
             })}
+            <tr>
+              <td>ขาด</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
+            <tr>
+              <td>สาย</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
+            <tr>
+              <td>ลาป่วย</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
+            <tr>
+              <td>ลากิจ</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
           </tbody>
           <tfoot className="bg-red-100">
             <tr>

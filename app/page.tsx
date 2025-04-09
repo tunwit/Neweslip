@@ -12,7 +12,7 @@ export default function Home() {
   const rounter = useRouter();
 
   useEffect(() => {
-    rounter.push("/haris/employees");
+    rounter.push("/employees");
   }, []);
 
   return (

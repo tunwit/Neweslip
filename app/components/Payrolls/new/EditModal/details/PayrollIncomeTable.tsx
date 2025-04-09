@@ -46,6 +46,24 @@ export default function PayrollIncomeTable({
                 </tr>
               );
             })}
+            <tr>
+              <td>OT (ชั่วโมง)</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
+            <tr>
+              <td>OT (วัน)</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
+            <tr>
+              <td>OT (x3)</td>
+              <td>
+                <p className="w-full px-3 py-1">0.00</p>
+              </td>
+            </tr>
           </tbody>
           <tfoot className="bg-red-100">
             <tr>

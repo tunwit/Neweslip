@@ -1,3 +1,4 @@
+import EmployeeStatus from "@/app/components/Employees/EmployeeStatus";
 import { Employee } from "@/types/employee";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
@@ -87,6 +88,9 @@ export default function PayrollsAllEmployeesElement({
         </td>
         <td onClick={() => setOpen(true)}>{nickname}</td>
         <td onClick={() => setOpen(true)}>{branch}</td>
+        <td>
+          <EmployeeStatus status={status} />
+        </td>
       </tr>
     </>
   );

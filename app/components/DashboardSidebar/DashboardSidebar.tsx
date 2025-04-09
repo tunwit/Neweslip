@@ -3,6 +3,7 @@ import React from "react";
 import DashboardButton from "./DashboardButton";
 import { usePathname, useRouter } from "next/navigation";
 import ShopSidebarElement from "./ShopSidebarElement";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const shops = [{ title: "Haris premium buffet" }, { title: "ตุ๊กแก" }];
 
@@ -48,11 +49,17 @@ export default function DashboardSidebar({
   params: Promise<{ shopId: string }>;
 }) {
   const pathname = usePathname().split("/");
-  const page = pathname[2];
+  const page = pathname[1];
 
   return (
     <>
       <div className="flex flex-col bg-[#1f1f1f] text-black h-screen min-w-36 w-56  border-r border-[#d4d4d4] sticky top-0 left-0 shadow-2xl">
+        <div className="px-4 font-bold mt-4">
+          <div className="flex flex-row items-center justify-between">
+            <p className="text-white">E-slip</p>
+            <Icon icon={"material-symbols:menu-rounded"} className="text-white text-xl" />
+          </div>
+        </div>
         <div className="my-5 px-3">
           <hr className="border-t border-[#747474] h-[2px]" />
         </div>

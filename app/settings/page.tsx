@@ -7,10 +7,11 @@ import Option from "@mui/joy/Option";
 import EmployeesTable from "@/app/components/Employees/EmployeesTable";
 import PendingElement from "@/app/components/Payrolls/PendingElement";
 import dayjs from "dayjs";
-import { Checkbox } from "@mui/joy";
+import { Checkbox, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import SalaraTabs from "../components/Setting/SalaraTabs";
 
 export default function Page() {
   const rounter = useRouter();
@@ -24,9 +25,39 @@ export default function Page() {
           </p>
           <p className="text-blue-800">Settings</p>
         </div>
-        <div className="mt-5 flex flex-row justify-between">
+        <div className="my-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Settings</p>
         </div>
+
+        <Tabs aria-label="Basic tabs" defaultValue={0}>
+          <TabList
+            sx={{
+              [`& .${tabClasses.root}`]: {
+                fontSize: "sm",
+                fontWeight: "lg",
+                [`&[aria-selected="true"]`]: {
+                  bgcolor: "background.surface",
+                },
+                [`&.${tabClasses.focusVisible}`]: {
+                  outlineOffset: "-4px",
+                },
+              },
+            }}
+          >
+            <Tab>Merchant</Tab>
+            <Tab>Salary</Tab>
+            <Tab>Slip</Tab>
+          </TabList>
+          <TabPanel value={0}>
+            <b>First</b> tab panel
+          </TabPanel>
+          <TabPanel value={1}>
+            <SalaraTabs />
+          </TabPanel>
+          <TabPanel value={2}>
+            <b>Third</b> tab panel
+          </TabPanel>
+        </Tabs>
       </div>
     </main>
   );

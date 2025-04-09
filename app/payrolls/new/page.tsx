@@ -103,7 +103,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-2">
+        <div className="mt-2 flex justify-between">
           <Button
             onClick={() => handlerDelete()}
             disabled={!checkboxs.some((v) => v === true)}
@@ -111,6 +111,13 @@ export default function Home() {
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >
             Delete
+          </Button>
+
+          <Button
+            color="primary"
+            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
+          >
+            Save draft
           </Button>
         </div>
       </div>
