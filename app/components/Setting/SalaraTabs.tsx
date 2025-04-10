@@ -1,8 +1,9 @@
 import { Button, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import React from "react";
-import IncomeTable from "./Salary/IncomeTable";
-import OTTable from "./Salary/OTTable";
-import DeductionTable from "./Salary/DeductionTable";
+import IncomeTable from "./Salary/Income/IncomeTable";
+import OTTable from "./Salary/OT/OTTable";
+import DeductionTable from "./Salary/Deduction/DeductionTable";
+import AbsentTable from "./Salary/Absent/AbsentTable";
 
 export default function SalaraTabs() {
   return (
@@ -30,24 +31,15 @@ export default function SalaraTabs() {
         </TabList>
         <TabPanel value={0}>
           <IncomeTable />
-          <div className="mt-2">
-            <Button>Add Income</Button>
-          </div>
         </TabPanel>
         <TabPanel value={1}>
-          <DeductionTable/>
-          <div className="mt-2">
-            <Button>Add Deduction</Button>
-          </div>
+          <DeductionTable />
         </TabPanel>
         <TabPanel value={2}>
           <OTTable />
-          <div className="mt-2">
-            <Button>Add OT</Button>
-          </div>
         </TabPanel>
         <TabPanel value={3}>
-          <b>Forth</b> tab panel
+          <AbsentTable />
         </TabPanel>
       </Tabs>
     </>

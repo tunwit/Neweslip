@@ -1,32 +1,34 @@
-import { Table } from "@mui/joy";
+import { Checkbox, Table } from "@mui/joy";
 import React from "react";
 
-const OT_ABSENT = [
-  "OT (day)",
-  "OT (hour)",
-  "OT (x3)",
-  "ขาด",
-  "สาย",
-  "ลาป่วย",
-  "ลากิจ",
-  "ลาพักร้อน",
-];
+const OT = ["OT (day)", "OT (hour)", "OT (x3)"];
 
-export default function PayrollOTAbsentTable() {
+export default function PayrollOTTable() {
   return (
     <>
-      <div className="max-h-96 overflow-auto">
+      <div className="max-h-[calc(100vh-350px)] overflow-auto ">
         <Table aria-label="basic table" stickyHeader stickyFooter>
           <thead>
             <tr>
-              <th style={{ width: "80%" }}>Title</th>
+              <th className="w-[5%]"></th>
+              <th style={{ width: "70%" }}>Title</th>
               <th>Amount</th>
             </tr>
           </thead>
           <tbody>
-            {OT_ABSENT.map((v, i) => {
+            {OT.map((v, i) => {
               return (
                 <tr>
+                  <td>
+                    <div className="flex">
+                      <Checkbox
+                        checked={true}
+                        style={{
+                          transform: "scale(0.9)",
+                        }}
+                      />
+                    </div>
+                  </td>
                   <td>{v}</td>
                   <td>
                     <input
@@ -41,8 +43,8 @@ export default function PayrollOTAbsentTable() {
           </tbody>
           <tfoot className="bg-red-100">
             <tr>
-              <th>Totals</th>
-              <td>1,319</td>
+              <th colSpan={2}>Totals</th>
+              <th>1,319</th>
             </tr>
           </tfoot>
         </Table>
