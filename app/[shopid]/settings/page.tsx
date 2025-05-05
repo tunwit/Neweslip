@@ -12,6 +12,7 @@ import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import SalaraTabs from "../components/Setting/SalaraTabs";
+import MerchantTabs from "../components/Setting/MerchantTabs";
 
 export default function Page() {
   const rounter = useRouter();
@@ -49,7 +50,7 @@ export default function Page() {
             <Tab>Slip</Tab>
           </TabList>
           <TabPanel value={0}>
-            <b>First</b> tab panel
+            <MerchantTabs/>
           </TabPanel>
           <TabPanel value={1}>
             <SalaraTabs />

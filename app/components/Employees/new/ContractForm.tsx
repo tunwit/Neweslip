@@ -24,10 +24,9 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
   const pathname = usePathname().split("/");
   const page = pathname[2];
   const shop = pathname[1];
+
   const handlerSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("hi");
-
     rounter.push(`/${shop}/${page}`);
   };
 

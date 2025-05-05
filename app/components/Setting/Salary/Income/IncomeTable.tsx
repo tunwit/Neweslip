@@ -14,7 +14,7 @@ export default function IncomeTable() {
     <>
       <AddIncomeModal open={open} setOpen={setOpen} />
       <div>
-        <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-300px)] overflow-auto">
+        <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-350px)] overflow-auto">
           <Table stickyHeader hoverRow variant="plain" noWrap>
             <thead>
               <tr>

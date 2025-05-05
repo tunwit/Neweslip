@@ -1,11 +1,9 @@
-import { Button, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
+import { Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import React from "react";
-import IncomeTable from "./Salary/Income/IncomeTable";
-import OTTable from "./Salary/OT/OTTable";
-import DeductionTable from "./Salary/Deduction/DeductionTable";
-import AbsentTable from "./Salary/Absent/AbsentTable";
+import Profilesetting from "./Merchant/Profile/Profilesetting";
+import OwnersTable from "./Merchant/Owners/OwnersTable";
 
-export default function SalaraTabs() {
+export default function MerchantTabs() {
   return (
     <>
       <Tabs aria-label="Basic tabs" defaultValue={0} orientation="vertical">
@@ -23,23 +21,17 @@ export default function SalaraTabs() {
             },
           }}
         >
-          <Tab>Income</Tab>
-          <Tab>Deduction</Tab>
-          <Tab>OT</Tab>
-          <Tab>Absent</Tab>
+          <Tab>Profile</Tab>
+          <Tab>Owners</Tab>
+          <Tab>Email Service</Tab>
         </TabList>
         <TabPanel value={0}>
-          <IncomeTable />
+          <Profilesetting/>
         </TabPanel>
         <TabPanel value={1}>
-          <DeductionTable />
+          <OwnersTable/>
         </TabPanel>
-        <TabPanel value={2}>
-          <OTTable />
-        </TabPanel>
-        <TabPanel value={3}>
-          <AbsentTable />
-        </TabPanel>
+        <TabPanel value={2}></TabPanel>
       </Tabs>
     </>
   );
