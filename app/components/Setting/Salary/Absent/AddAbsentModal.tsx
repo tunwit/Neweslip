@@ -80,7 +80,7 @@ export default function AddAbsentModal({ open, setOpen }: AddAbsentModalProps) {
                 <FormControl>
                   <FormLabel>Type</FormLabel>
                   <Select
-                   value={type}
+                    value={type}
                     onChange={(event, newValue) => {
                       setType(newValue);
                     }}
@@ -94,7 +94,7 @@ export default function AddAbsentModal({ open, setOpen }: AddAbsentModalProps) {
               {type === "constant" && (
                 <div>
                   <FormControl required>
-                    <FormLabel>Rate of Pay</FormLabel>
+                    <FormLabel>Rate of Deduction</FormLabel>
                     <Input
                       type="number"
                       sx={{ "--Input-focusedThickness": 0 }}

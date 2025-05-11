@@ -10,7 +10,7 @@ export default function DeductionTable() {
   };
   return (
     <>
-      <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-300px)] overflow-auto">
+      <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-400px)] overflow-auto">
         <AddDeductionModal open={open} setOpen={setOpen} />
         <Table stickyHeader hoverRow variant="plain" noWrap>
           <thead>
@@ -42,7 +42,7 @@ export default function DeductionTable() {
         </Table>
       </div>
       <div className="mt-2">
-        <Button onClick={()=>addDeductionhandler()}>Add Deduction</Button>
+        <Button onClick={() => addDeductionhandler()}>Add Deduction</Button>
       </div>
     </>
   );

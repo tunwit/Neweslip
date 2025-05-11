@@ -11,8 +11,8 @@ import { Checkbox, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import SalaraTabs from "../components/Setting/SalaraTabs";
-import MerchantTabs from "../components/Setting/MerchantTabs";
+import MerchantTabs from "@/app/components/Setting/MerchantTabs";
+import SalaraTabs from "@/app/components/Setting/SalaraTabs";
 
 export default function Page() {
   const rounter = useRouter();
@@ -50,7 +50,7 @@ export default function Page() {
             <Tab>Slip</Tab>
           </TabList>
           <TabPanel value={0}>
-            <MerchantTabs/>
+            <MerchantTabs />
           </TabPanel>
           <TabPanel value={1}>
             <SalaraTabs />

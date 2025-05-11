@@ -8,9 +8,15 @@ import EmployeesTable from "@/app/components/Employees/EmployeesTable";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useUser } from "@/hooks/useUser";
+import { log } from "node:console";
+import { useEffect } from "react";
 
 export default function Home() {
   const rounter = useRouter();
+  const user = useUser();
+  console.log(user.data);
+
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10">
@@ -20,6 +26,7 @@ export default function Home() {
           </p>
           <p className="text-blue-800">Employees</p>
         </div>
+        <p>{user.data?.message}</p>
         <div className=" mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Employees</p>
           <Button

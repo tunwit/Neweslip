@@ -1,5 +1,7 @@
-export { default } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
+// Authenticate all routes except for /api, /_next/static, /_next/image, and .png files
 export const config = {
-  matcher: ["/((?!api|_next|static|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
+s;

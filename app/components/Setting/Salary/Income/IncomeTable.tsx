@@ -6,15 +6,15 @@ import AddIncomeModal from "./AddIncomeModal";
 
 export default function IncomeTable() {
   const [open, setOpen] = useState<boolean>(false);
-  const addIncomeHandler = () =>{
+  const addIncomeHandler = () => {
     setOpen(true);
-  }
+  };
 
   return (
     <>
       <AddIncomeModal open={open} setOpen={setOpen} />
       <div>
-        <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-350px)] overflow-auto">
+        <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-400px)] overflow-auto">
           <Table stickyHeader hoverRow variant="plain" noWrap>
             <thead>
               <tr>
@@ -131,7 +131,7 @@ export default function IncomeTable() {
           </Table>
         </div>
         <div className="mt-2">
-          <Button onClick={()=>addIncomeHandler()}>Add Income</Button>
+          <Button onClick={() => addIncomeHandler()}>Add Income</Button>
         </div>
       </div>
     </>

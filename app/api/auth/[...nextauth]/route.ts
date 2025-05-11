@@ -23,8 +23,14 @@ export const authOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       return true;
     },
-    async session({ session, user, token }) {
-      console.log(session);
+    async jwt({ token, account }) {
+      if (account) {
+        token.id_token = account.id_token;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.id_token = token.id_token;
       return session;
     },
   },

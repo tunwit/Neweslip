@@ -10,8 +10,8 @@ export default function AbsentTable() {
   };
   return (
     <>
-    <AddAbsentModal open={open} setOpen={setOpen}/>
-      <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-300px)] overflow-auto">
+      <AddAbsentModal open={open} setOpen={setOpen} />
+      <div className="border border-[#d8d8d8] rounded-md px-1 max-h-[calc(100vh-400px)] overflow-auto">
         <Table stickyHeader hoverRow variant="plain" noWrap>
           <thead>
             <tr>
@@ -58,7 +58,7 @@ export default function AbsentTable() {
         </Table>
       </div>
       <div className="mt-2">
-        <Button onClick={()=>addAbsentHandler()}>Add Absent</Button>
+        <Button onClick={() => addAbsentHandler()}>Add Absent</Button>
       </div>
     </>
   );
