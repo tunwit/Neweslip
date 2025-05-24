@@ -1,6 +1,6 @@
 export default [
   {
-    id: 1,
+    id: "1",
     name: "Thanut Thappota",
     nickname: "Wit",
     email: "tunwit2458@gmail.com",
@@ -9,7 +9,7 @@ export default [
     branch: "pakkret",
   },
   {
-    id: 2,
+    id: "2",
     name: "Worapon Gonnak",
     nickname: "Ja",
     email: "larmar4577@gmail.com",
@@ -18,7 +18,7 @@ export default [
     branch: "pakkret",
   },
   {
-    id: 3,
+    id: "3",
     name: "Ponrawon Nakgon",
     nickname: "AJ",
     email: "marlar4577@gmail.com",
@@ -27,7 +27,7 @@ export default [
     branch: "pakkret",
   },
   {
-    id: 4,
+    id: "4",
     name: "Supakorn Nakgon",
     nickname: "Bew",
     email: "supakorn@gmail.com",
@@ -36,7 +36,7 @@ export default [
     branch: "pakkret",
   },
   {
-    id: 5,
+    id: "5",
     name: "Saharat Leo Nalumphon",
     nickname: "Leo",
     email: "sahxrxt@gmail.com",

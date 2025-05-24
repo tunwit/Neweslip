@@ -2,12 +2,14 @@
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CreateStepper from "@/app/components/Employees/new/CreateStepper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PersonalForm from "@/app/components/Employees/new/PersonalForm";
 import AddressForm from "@/app/components/Employees/new/AddressForm";
 import ContractForm from "@/app/components/Employees/new/ContractForm";
 import { Breadcrumbs, Link } from "@mui/joy";
 import { KeyboardArrowRight } from "@mui/icons-material";
+import FormSection from "@/app/components/Employees/new/FormSection";
+import SnackBar from "@/app/components/UI/SnackBar";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -28,26 +30,12 @@ export default function Home() {
 
         <CreateStepper current={currentPage} />
         <div className="mx-20">
-          <p hidden={currentPage !== 0} className="font-bold text-2xl mt-10">
-            Personal Infomation
-          </p>
-          <p hidden={currentPage !== 1} className="font-bold text-2xl mt-10">
-            Address
-          </p>
-          <p hidden={currentPage !== 2} className="font-bold text-2xl mt-10">
-            Contract
-          </p>
-
-          <div hidden={currentPage !== 0}>
-            <PersonalForm setCurrentPage={setCurrentPage} />
-          </div>
-          <div hidden={currentPage !== 1}>
-            <AddressForm setCurrentPage={setCurrentPage} />
-          </div>
-          <div hidden={currentPage !== 2}>
-            <ContractForm setCurrentPage={setCurrentPage} />
-          </div>
+          <FormSection
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
+        <SnackBar />
       </div>
     </main>
   );

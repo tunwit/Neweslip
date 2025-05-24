@@ -8,20 +8,20 @@ interface EmployeeStatusType {
   textColor: string;
 }
 
-const EmployeeStatuses: { [key: number]: EmployeeStatusType } = {
-  1: {
+const EmployeeStatuses: { [key: string]: EmployeeStatusType } = {
+  ACTIVE: {
     icon: "mdi:check-bold",
     text: "Active",
     bg: "bg-green-200",
     textColor: "text-green-950",
   },
-  2: {
+  INACTIVE: {
     icon: "maki:cross",
     text: "Inactive",
     bg: "bg-gray-200",
     textColor: "text-gray-950",
   },
-  3: {
+  PARTTIME: {
     icon: "tabler:clock",
     text: "Part Time",
     bg: "bg-amber-200",

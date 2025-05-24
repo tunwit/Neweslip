@@ -12,32 +12,33 @@ import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Employee } from "@/types/employee";
 import PayrollsAllEmployeeTable from "./PayrollsAllEmployeeTable";
+import data from "@/assets/employee";
+import {
+  useAllSelectKit,
+  usePayrollSelectKit,
+} from "../../../../../hooks/useSelectKit";
+import { useSelectedEmployees } from "../hooks/useSelectedEmployee";
 
 interface PayrollsAddEmployeeModal {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  employees: Employee[];
-  setEmployee: React.Dispatch<React.SetStateAction<Employee[]>>;
 }
 export default function PayrollsAddEmployeeModal({
   open,
   setOpen,
-  employees,
-  setEmployee,
 }: PayrollsAddEmployeeModal) {
-  const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
-  const selected = checkboxs.filter(Boolean).length;
-  const [selectedEm, setSelectedEm] = useState<Employee[]>([]);
+  const { add } = useSelectedEmployees();
+
+  const { checkboxs, checkedItem, uncheckall, setItem } = useAllSelectKit();
+
   const handlerConfirm = () => {
-    setEmployee([...employees, ...selectedEm]);
+    add(checkedItem);
     setOpen(false);
     //Reset Checkbox when comfirm
-    setCheckboxs(Array(15).fill(false));
-    setSelectedEm([]);
+    uncheckall();
+    setItem([]);
   };
-  useEffect(() => {
-    console.log(selectedEm);
-  }, [selectedEm]);
+
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -46,7 +47,8 @@ export default function PayrollsAddEmployeeModal({
           <div className="flex flex-col justify-center ">
             <div className="flex flex-row items-center gap-2">
               <p className="font-bold text-lg">Employees (30 people)</p>
-              <p>{selected} selected</p>
+              <p>{Object.values(checkboxs).filter((v) => v === true).length}</p>
+              <p>selected</p>
             </div>
 
             <div className="flex flex-row gap-2 my-2">
@@ -79,11 +81,7 @@ export default function PayrollsAddEmployeeModal({
               </div>
             </div>
             <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-              <PayrollsAllEmployeeTable
-                checkboxs={checkboxs}
-                setCheckboxs={setCheckboxs}
-                setSelectedEm={setSelectedEm}
-              />
+              <PayrollsAllEmployeeTable />
             </div>
             <div className="flex flex-row gap-2 ml-auto mt-2">
               <Button

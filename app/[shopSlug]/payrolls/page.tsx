@@ -11,6 +11,9 @@ import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/hooks/useUser";
+import { useEffect } from "react";
+import { useShop } from "@/hooks/useShop";
 
 export default function Home() {
   const rounter = useRouter();

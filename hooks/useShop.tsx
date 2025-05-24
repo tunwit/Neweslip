@@ -3,17 +3,16 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Session } from "inspector/promises";
 import { getSession, useSession } from "next-auth/react";
 
-export const useUser = () => {
-  const { data: session, status } = useSession();
-
+export const useShop = () => {
+  const { data, status } = useSession();
   const query = useSuspenseQuery({
-    queryKey: ["auth", session?.user?.email],
+    queryKey: ["shop", data?.user?.email],
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/user?email=${session?.user?.email}`,
+        endpoint: "/shop",
         method: "GET",
       }),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     staleTime: 1000 * 60 * 5,
   });
 

@@ -4,17 +4,16 @@ import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
 import EmployeeDetailsModal from "./EmployeeDetailsModal";
 import EmployeeStatus from "./EmployeeStatus";
+import { useEmployeeSelectKit } from "@/hooks/useSelectKit";
 
 interface EmployeesElementProps {
-  id: number;
+  id: string;
   name: string;
   email: string;
   nickname: string;
   amount: number;
   branch: string;
   status: number;
-  checkboxs: boolean[];
-  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
 }
 
 function getRandomPastelColor() {
@@ -33,19 +32,37 @@ export default function EmployeesElement({
   amount,
   branch,
   status,
-  checkboxs,
-  setCheckboxs,
 }: EmployeesElementProps) {
+  const { updateAtId, checkboxs, add, remove } = useEmployeeSelectKit();
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
 
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const state: boolean = e.currentTarget.checked;
-    setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
+    const checked: boolean = e.currentTarget.checked;
+    updateAtId(id);
+    if (checked) {
+      add([
+        {
+          id: id,
+          name: name,
+          nickname: nickname,
+          email: email,
+          amount: amount,
+          status: status,
+          branch: branch,
+        },
+      ]);
+    } else {
+      remove([id]);
+    }
   };
 
   const [open, setOpen] = useState<boolean>(false);
 
   const randomColor = useMemo(() => getRandomPastelColor(), []);
+
+  const isChecked = useEmployeeSelectKit(
+    (state) => state.checkboxs[id] ?? false,
+  );
   return (
     <>
       <EmployeeDetailsModal
@@ -62,7 +79,7 @@ export default function EmployeesElement({
         <td>
           <div className="flex gap-4  items-center">
             <Checkbox
-              checked={checkboxs[id]}
+              checked={isChecked}
               onChange={(e) => {
                 updateCheckboxAtIndex(e);
               }}

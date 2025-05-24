@@ -6,9 +6,11 @@ import Providers from "./providers";
 import { signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import Navbar from "./components/Navbar/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Suspense } from "react";
+import { authOptions } from "./api/auth/[...nextauth]/authOptions";
+import SnackBar from "./components/UI/SnackBar";
 
 const sarabun = Sarabun({
   subsets: ["thai", "latin"],
@@ -32,13 +34,15 @@ export default async function RootLayout({
       <body className={`${sarabun.className} antialiased flex`}>
         <Providers session={session}>
           {/* <ShopSidebar /> */}
-          <div className="flex flex-col">
-            <Navbar />
-            <div className="flex flex-row  max-h-[calc(100vh-80px)]  w-screen overflow-hidden">
-              <DashboardSidebar />
-              {children}
+          <Suspense>
+            <div className="flex flex-col">
+              <Navbar />
+              <div className="flex flex-row  max-h-[calc(100vh-80px)]  w-screen overflow-hidden">
+                <DashboardSidebar />
+                {children}
+              </div>
             </div>
-          </div>
+          </Suspense>
         </Providers>
       </body>
     </html>

@@ -8,15 +8,15 @@ import EmployeesTable from "@/app/components/Employees/EmployeesTable";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useUser } from "@/hooks/useUser";
-import { log } from "node:console";
-import { useEffect } from "react";
+import SnackBar from "@/app/components/UI/SnackBar";
+import { Suspense, useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { useEmployees } from "@/app/components/Employees/hooks/useEmployees";
 
 export default function Home() {
   const rounter = useRouter();
-  const user = useUser();
-  console.log(user.data);
-
+  const [search, setSearch] = useState("");
+  const [debounced] = useDebounce(search, 500);
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10">
@@ -26,7 +26,6 @@ export default function Home() {
           </p>
           <p className="text-blue-800">Employees</p>
         </div>
-        <p>{user.data?.message}</p>
         <div className=" mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Employees</p>
           <Button
@@ -54,6 +53,8 @@ export default function Home() {
                 type="text"
                 placeholder="Search"
                 className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
@@ -85,11 +86,14 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center mt-5">
-          <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-            <EmployeesTable />
+          <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
+            <Suspense>
+              <EmployeesTable search={debounced} />
+            </Suspense>
           </div>
         </div>
       </div>
+      <SnackBar />
     </main>
   );
 }

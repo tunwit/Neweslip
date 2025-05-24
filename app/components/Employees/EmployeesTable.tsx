@@ -1,18 +1,66 @@
 "use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
-import data from "@/assets/employee";
+import { useEmployeeSelectKit } from "@/hooks/useSelectKit";
+import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
+import { useEmployees } from "./hooks/useEmployees";
+import { Employee } from "@/types/employee";
+import { fetchwithauth } from "@/utils/fetcher";
+import { usePathname } from "next/navigation";
+import { extractSlug } from "@/utils/extractSlug";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-export default function EmployeesTable() {
+interface EmployeesTableProps {
+  search: string;
+}
+function EmployeesTable({ search = "" }: EmployeesTableProps) {
+  const pathname = usePathname().split("/");
+  const slug = pathname[1];
+  const { name, id } = extractSlug(slug);
+  const queryParams = new URLSearchParams({
+    shopId: id.toString(),
+    ...(search && { search_query: search }),
+  });
+  const { data, isLoading, error } = useSuspenseQuery({
+    queryKey: ["employees", slug, search],
+    queryFn: () => {
+      return fetchwithauth({
+        endpoint: `/employees?${queryParams}`,
+        method: "GET",
+      });
+    },
+    // refetchOnWindowFocus: false,
+    // staleTime: 1000 * 60 * 5,
+  });
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
-  const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
+  const { setCheckboxs, checkboxs, checkall, setItem, uncheckall } =
+    useEmployeeSelectKit();
+  // const { data, isPending } = useEmployees();
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
+    if (e.currentTarget.checked) {
+      checkall();
+      setItem(data);
+    } else {
+      uncheckall();
+      setItem([]);
+    }
   };
 
+  useEffect(() => {
+    setCheckboxs(
+      Object.fromEntries(
+        data.employees.map((emp: Employee) => [emp.id, false]), // start all unchecked
+      ),
+    );
+  }, [data]);
+
+  const checkboxState = isAllCheckboxs(checkboxs);
   return (
     <>
       <Table stickyHeader stickyFooter hoverRow variant="plain" noWrap>
@@ -20,10 +68,8 @@ export default function EmployeesTable() {
           <tr>
             <th className="w-[8%]">
               <Checkbox
-                checked={checkboxs.every((v) => v === true)}
-                indeterminate={
-                  !checkboxs.every((checkbox) => checkbox === checkboxs[0])
-                }
+                checked={checkboxState.allChecked}
+                indeterminate={checkboxState.someChecked}
                 onChange={(e) => handleAllCheckbox(e)}
               />
             </th>
@@ -36,19 +82,22 @@ export default function EmployeesTable() {
         </thead>
 
         <tbody>
-          {data.map((v, i) => {
+          {data.employees?.length === 0 && (
+            <tr className="text-center">
+              <td colSpan={6}>No employees</td>
+            </tr>
+          )}
+          {data.employees?.map((emp: Employee, i: number) => {
             return (
               <EmployeesElement
-                key={v.id}
-                id={v.id}
-                name={v.name}
-                nickname={v.nickname}
-                email={v.email}
-                amount={v.amount}
-                branch={v.branch}
-                status={v.status}
-                checkboxs={checkboxs}
-                setCheckboxs={setCheckboxs}
+                key={emp.id}
+                id={emp.id}
+                name={emp.firstName + " " + emp.lastName}
+                nickname={emp.nickName}
+                email={emp.email}
+                amount={emp.salary}
+                branch={emp.branch.name}
+                status={emp.status}
               />
             );
           })}
@@ -58,7 +107,7 @@ export default function EmployeesTable() {
             <th scope="row">Totals</th>
             <td>
               <div className="flex flex-row gap-1 items-center ">
-                <p>56</p>
+                <p>{data.pagination.total}</p>
                 <Icon icon={"mdi:users"} />
               </div>
             </td>
@@ -72,3 +121,5 @@ export default function EmployeesTable() {
     </>
   );
 }
+
+export default memo(EmployeesTable);

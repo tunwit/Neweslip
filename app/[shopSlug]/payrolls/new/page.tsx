@@ -7,30 +7,25 @@ import { Add } from "@mui/icons-material";
 import PayrollsEmployeesTable from "@/app/components/Payrolls/new/PayrollsEmployeeTable";
 import { useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { Employee } from "@/types/employee";
+import { usePayrollSelectKit } from "@/hooks/useSelectKit";
+import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
+import { useSelectedEmployees } from "@/app/components/Payrolls/new/hooks/useSelectedEmployee";
 
 export default function Home() {
-  const [checkboxs, setCheckboxs] = useState<boolean[]>(Array(15).fill(false));
+  const { checkboxs, checkedItem, uncheckall } = usePayrollSelectKit();
+  const { remove } = useSelectedEmployees();
   const [open, setOpen] = useState(false);
-  const [employees, setEmployee] = useState<Employee[]>([]);
-  const [selectedEm, setSelectedEm] = useState<Employee[]>([]);
+  const [query, setQuery] = useState("");
 
   const handlerDelete = () => {
-    setEmployee((prevEmployees) =>
-      prevEmployees.filter(
-        (emp) => !selectedEm.some((selected) => selected.id === emp.id),
-      ),
-    );
+    uncheckall();
+    remove(checkedItem.map((emp) => emp.id));
   };
+  const checkboxState = isAllCheckboxs(checkboxs);
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
-      <PayrollsAddEmployeeModal
-        open={open}
-        setOpen={setOpen}
-        employees={employees}
-        setEmployee={setEmployee}
-      />
+      <PayrollsAddEmployeeModal open={open} setOpen={setOpen} />
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
@@ -62,6 +57,7 @@ export default function Home() {
                 type="text"
                 placeholder="Search"
                 className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           </div>
@@ -94,19 +90,14 @@ export default function Home() {
         </div>
         <div className="flex justify-center mt-5">
           <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-            <PayrollsEmployeesTable
-              checkboxs={checkboxs}
-              setCheckboxs={setCheckboxs}
-              employees={employees}
-              setSelectedEm={setSelectedEm}
-            />
+            <PayrollsEmployeesTable query={query} />
           </div>
         </div>
 
         <div className="mt-2 flex justify-between">
           <Button
             onClick={() => handlerDelete()}
-            disabled={!checkboxs.some((v) => v === true)}
+            disabled={checkboxState.noneChecked}
             color="danger"
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >

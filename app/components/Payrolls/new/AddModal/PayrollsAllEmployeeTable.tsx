@@ -4,27 +4,35 @@ import { Checkbox, Table } from "@mui/joy";
 import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
 import { Employee } from "@/types/employee";
 import data from "@/assets/employee";
+import { useAllSelectKit } from "../../../../../hooks/useSelectKit";
+import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 
-interface PayrollsAllEmployeesTableProps {
-  checkboxs: boolean[];
-  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
-  setSelectedEm: React.Dispatch<React.SetStateAction<Employee[]>>;
-}
-
-export default function PayrollsAllEmployeeTable({
-  checkboxs,
-  setCheckboxs,
-  setSelectedEm,
-}: PayrollsAllEmployeesTableProps) {
+// interface PayrollsAllEmployeeProps {
+//   setCheckedEmployees: React.Dispatch<React.SetStateAction<Employee[]>>;
+// }
+export default function PayrollsAllEmployeeTable() {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
+  const { checkboxs, checkall, uncheckall, setItem, setCheckboxs } =
+    useAllSelectKit();
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
-    setSelectedEm((prev) => {
-      return [...data];
-    });
+    if (e.currentTarget.checked) {
+      checkall();
+      setItem(data);
+    } else {
+      uncheckall();
+      setItem([]);
+    }
   };
 
+  useEffect(() => {
+    setCheckboxs(
+      Object.fromEntries(
+        data.map((emp) => [emp.id, false]), // start all unchecked
+      ),
+    );
+  }, [data]);
+  const allCheckBoxState = isAllCheckboxs(checkboxs);
   return (
     <>
       <Table stickyHeader hoverRow variant="plain" noWrap>
@@ -32,10 +40,8 @@ export default function PayrollsAllEmployeeTable({
           <tr>
             <th className="w-[7%]">
               <Checkbox
-                checked={checkboxs.every((v) => v === true)}
-                indeterminate={
-                  !checkboxs.every((checkbox) => checkbox === checkboxs[0])
-                }
+                checked={allCheckBoxState.allChecked}
+                indeterminate={allCheckBoxState.someChecked}
                 onChange={(e) => handleAllCheckbox(e)}
               />
             </th>
@@ -50,6 +56,7 @@ export default function PayrollsAllEmployeeTable({
           {data.map((v, i) => {
             return (
               <PayrollsAllEmployeesElement
+                key={i}
                 id={v.id}
                 name={v.name}
                 nickname={v.nickname}
@@ -57,9 +64,6 @@ export default function PayrollsAllEmployeeTable({
                 amount={v.amount}
                 branch={v.branch}
                 status={v.status}
-                checkboxs={checkboxs}
-                setCheckboxs={setCheckboxs}
-                setSelectedEm={setSelectedEm}
               />
             );
           })}

@@ -3,18 +3,16 @@ import { Employee } from "@/types/employee";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
+import { useAllSelectKit } from "../../../../../hooks/useSelectKit";
 
 interface PayrollsAllEmployeesElementProps {
-  id: number;
+  id: string;
   name: string;
   email: string;
   nickname: string;
   amount: number;
   branch: string;
   status: number;
-  checkboxs: boolean[];
-  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
-  setSelectedEm: React.Dispatch<React.SetStateAction<Employee[]>>;
 }
 
 function getRandomPastelColor() {
@@ -33,61 +31,51 @@ export default function PayrollsAllEmployeesElement({
   amount,
   branch,
   status,
-  checkboxs,
-  setCheckboxs,
-  setSelectedEm,
 }: PayrollsAllEmployeesElementProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
-
+  const { add, remove, updateAtId } = useAllSelectKit();
   const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const state: boolean = e.currentTarget.checked;
-    setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
-    setSelectedEm((prev) => {
-      if (state) {
-        // Add item if checked
-        return [
-          ...prev,
-          {
-            id: id,
-            name: name,
-            nickname: nickname,
-            email: email,
-            amount: amount,
-            status: status,
-            branch: branch,
-          },
-        ];
-      } else {
-        // Remove item if unchecked
-        return prev.filter((item) => item.id !== id);
-      }
-    });
+    const checked: boolean = e.currentTarget.checked;
+    updateAtId(id);
+    if (checked) {
+      add([
+        {
+          id: id,
+          name: name,
+          nickname: nickname,
+          email: email,
+          amount: amount,
+          status: status,
+          branch: branch,
+        },
+      ]);
+    } else {
+      remove([id]);
+    }
   };
 
-  const [open, setOpen] = useState<boolean>(false);
-
-  const randomColor = useMemo(() => getRandomPastelColor(), []);
+  const isChecked = useAllSelectKit((state) => state.checkboxs[id] ?? false);
   return (
     <>
       <tr className="cursor-pointer">
         <td>
           <div className="flex gap-4  items-center">
             <Checkbox
-              checked={checkboxs[id]}
+              checked={isChecked}
               onChange={(e) => {
                 updateCheckboxAtIndex(e);
               }}
             />
           </div>
         </td>
-        <td onClick={() => setOpen(true)}>
+        <td>
           <div className="flex flex-col gap-[0.5px]">
             <p>{name}</p>
             <p className="text-xs opacity-65">{email}</p>
           </div>
         </td>
-        <td onClick={() => setOpen(true)}>{nickname}</td>
-        <td onClick={() => setOpen(true)}>{branch}</td>
+        <td>{nickname}</td>
+        <td>{branch}</td>
         <td>
           <EmployeeStatus status={status} />
         </td>

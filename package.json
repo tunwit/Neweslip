@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "--bun next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -12,6 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/inter": "^5.2.5",
+    "@hookform/resolvers": "^5.0.1",
     "@iconify/react": "^5.2.0",
     "@mui/icons-material": "^6.4.7",
     "@mui/joy": "^5.0.0-beta.51",
@@ -19,10 +20,15 @@
     "@mui/x-date-pickers": "^7.27.3",
     "@tanstack/react-query": "^5.75.7",
     "dayjs": "^1.11.13",
+    "jose": "^6.0.11",
     "next": "15.2.1",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.56.4",
+    "slugify": "^1.6.6",
+    "use-debounce": "^10.0.4",
+    "zod": "^3.25.23",
     "zustand": "^5.0.4"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import DashboardButton from "./DashboardButton";
 import { usePathname, useRouter } from "next/navigation";
 import ShopSidebarElement from "./ShopSidebarElement";
@@ -8,9 +8,18 @@ import { signOut, useSession } from "next-auth/react";
 import { Button } from "@mui/joy";
 import SignOutButton from "./SignOutButton";
 import useHamburger from "@/hooks/useHamburger";
+import { useShop } from "@/hooks/useShop";
+import { createSlug } from "@/utils/createSlug";
 
-const shops = [{ title: "Haris premium buffet" }, { title: "ตุ๊กแก" }];
-
+interface Shop {
+  shopId: number;
+  ownerId: number;
+  shop: {
+    id: number;
+    name: string;
+    avatar: string | null;
+  };
+}
 const DashboardRails = [
   {
     title: "Employees",
@@ -49,25 +58,29 @@ const ConfigureRails = [
 
 export default function DashboardSidebar() {
   const pathname = usePathname().split("/");
-  const shop = pathname[1];
+  const shopSlug = pathname[1];
   const page = pathname[2];
-
   const sidebarState = useHamburger((state) => state.open);
   const session = useSession();
+  const { data, isPending } = useShop();
+
   if (sidebarState) {
     return (
       <>
         <div className="flex flex-col bg-[#1f1f1f] text-black max-h-[calc(100vh-80px)] min-w-36 w-[15%] sticky top-0 left-0 shadow-2xl">
           <div className="pl-3 flex flex-col text-sm gap-1">
-            {shops.map((v, i) => {
-              return (
-                <ShopSidebarElement
-                  key={i}
-                  title={v.title}
-                  selected={v.title == "Haris premium buffet"}
-                />
-              );
-            })}
+            {Array.isArray(data) &&
+              data?.map((shop: Shop, i: number) => {
+                const slug = createSlug(shop.shop.name, String(shop.shopId));
+
+                return (
+                  <ShopSidebarElement
+                    key={shop.shopId}
+                    title={shop.shop.name}
+                    selected={shopSlug == slug}
+                  />
+                );
+              })}
           </div>
           <div className="my-5 px-3">
             <hr className="border-t border-[#747474] h-[2px]" />
@@ -85,7 +98,7 @@ export default function DashboardSidebar() {
                   icon={v.icon}
                   id={v.id}
                   selected={page == v.id}
-                  href={`/${shop}${v.href}`}
+                  href={`/${shopSlug}${v.href}`}
                 />
               );
             })}
@@ -103,7 +116,7 @@ export default function DashboardSidebar() {
                   icon={v.icon}
                   id={v.id}
                   selected={page == v.id}
-                  href={`/${shop}${v.href}`}
+                  href={`/${shopSlug}${v.href}`}
                 />
               );
             })}

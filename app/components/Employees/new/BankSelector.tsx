@@ -1,5 +1,6 @@
 import { Autocomplete, Option, Select } from "@mui/joy";
 import React from "react";
+import { ControllerRenderProps } from "react-hook-form";
 
 const bank = [
   "กรุงเทพ",
@@ -18,13 +19,17 @@ const bank = [
   "ไอซีบีซี (ไทย)",
   "ธนาคารแห่งประเทศจีน (ไทย)",
 ];
-export default function BankSelector() {
+
+interface BankSelectorProps {
+  onChange: (newvalue: string) => void;
+}
+export default function BankSelector({ onChange }: BankSelectorProps) {
   return (
     <>
       <Autocomplete
+        onChange={(e, newValue) => onChange(newValue ?? "")}
         sx={{ "--Input-focusedThickness": 0 }}
         options={bank}
-        defaultValue={"ไทยพาณิชย์"}
       ></Autocomplete>
     </>
   );

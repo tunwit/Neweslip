@@ -5,27 +5,41 @@ import { Button, Checkbox, Table } from "@mui/joy";
 import PayrollsEmployeesElement from "./PayrollsEmployeeElement";
 import { Delete } from "@mui/icons-material";
 import { Employee } from "@/types/employee";
+import { usePayrollSelectKit } from "../../../../hooks/useSelectKit";
+import data from "@/assets/employee";
+import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
+import { useSelectedEmployees } from "./hooks/useSelectedEmployee";
 
 interface PayrollsEmployeesTableProps {
-  checkboxs: boolean[];
-  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
-  employees: Employee[];
-  setSelectedEm: React.Dispatch<React.SetStateAction<Employee[]>>;
+  query: string;
 }
-
 export default function PayrollsEmployeesTable({
-  checkboxs,
-  setCheckboxs,
-  employees,
-  setSelectedEm,
+  query,
 }: PayrollsEmployeesTableProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(0);
+  const { checkboxs, checkall, uncheckall, setItem, setCheckboxs } =
+    usePayrollSelectKit();
+  const { selectedEmployees } = useSelectedEmployees();
+
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
-    setSelectedEm((prev) => {
-      return [...employees];
-    });
+    if (e.currentTarget.checked) {
+      checkall();
+      setItem(selectedEmployees);
+    } else {
+      uncheckall();
+      setItem([]);
+    }
   };
+
+  useEffect(() => {
+    setCheckboxs(
+      Object.fromEntries(
+        selectedEmployees.map((emp) => [emp.id, false]), // start all unchecked
+      ),
+    );
+  }, [selectedEmployees]);
+
+  const allCheckBoxState = isAllCheckboxs(checkboxs);
 
   return (
     <>
@@ -34,10 +48,8 @@ export default function PayrollsEmployeesTable({
           <tr>
             <th className="w-[8%]">
               <Checkbox
-                checked={checkboxs.every((v) => v === true)}
-                indeterminate={
-                  !checkboxs.every((checkbox) => checkbox === checkboxs[0])
-                }
+                checked={allCheckBoxState.allChecked}
+                indeterminate={allCheckBoxState.someChecked}
                 onChange={(e) => handleAllCheckbox(e)}
               />
             </th>
@@ -50,29 +62,33 @@ export default function PayrollsEmployeesTable({
         </thead>
 
         <tbody>
-          {employees.length === 0 ? (
+          {selectedEmployees.length === 0 ? (
             <tr>
               <td colSpan={6} className="font-medium opacity-60 text-center">
                 Please Add New Employee
               </td>
             </tr>
           ) : (
-            employees.map((v, i) => {
-              return (
-                <PayrollsEmployeesElement
-                  id={v.id}
-                  name={v.name}
-                  nickname={v.nickname}
-                  email={v.email}
-                  amount={v.amount}
-                  branch={v.branch}
-                  status={v.status}
-                  checkboxs={checkboxs}
-                  setCheckboxs={setCheckboxs}
-                  setSelectedEm={setSelectedEm}
-                />
-              );
-            })
+            selectedEmployees
+              .filter((emp) =>
+                [emp.name, emp.nickname, emp.email, emp.branch].some((field) =>
+                  field.toLowerCase().includes(query.toLowerCase()),
+                ),
+              )
+              .map((v, i) => {
+                return (
+                  <PayrollsEmployeesElement
+                    key={v.id}
+                    id={v.id}
+                    name={v.name}
+                    nickname={v.nickname}
+                    email={v.email}
+                    amount={v.amount}
+                    branch={v.branch}
+                    status={v.status}
+                  />
+                );
+              })
           )}
         </tbody>
         <tfoot>
@@ -80,7 +96,7 @@ export default function PayrollsEmployeesTable({
             <th scope="row">Totals</th>
             <td>
               <div className="flex flex-row gap-1 items-center ">
-                <p>{employees.length}</p>
+                <p>{selectedEmployees.length}</p>
                 <Icon icon={"mdi:users"} />
               </div>
             </td>
