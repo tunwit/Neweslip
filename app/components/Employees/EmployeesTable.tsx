@@ -1,6 +1,12 @@
 "use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { memo, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
 import { useEmployeeSelectKit } from "@/hooks/useSelectKit";
@@ -13,34 +19,27 @@ import { extractSlug } from "@/utils/extractSlug";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 interface EmployeesTableProps {
-  search: string;
+  search_query?: string;
+  page?: number;
+  setTotalPage: Dispatch<SetStateAction<number>>;
 }
-function EmployeesTable({ search = "" }: EmployeesTableProps) {
-  const pathname = usePathname().split("/");
-  const slug = pathname[1];
-  const { name, id } = extractSlug(slug);
-  const queryParams = new URLSearchParams({
-    shopId: id.toString(),
-    ...(search && { search_query: search }),
-  });
-  const { data, isLoading, error } = useSuspenseQuery({
-    queryKey: ["employees", slug, search],
-    queryFn: () => {
-      return fetchwithauth({
-        endpoint: `/employees?${queryParams}`,
-        method: "GET",
-      });
-    },
-    // refetchOnWindowFocus: false,
-    // staleTime: 1000 * 60 * 5,
+function EmployeesTable({
+  search_query = "",
+  page = 1,
+  setTotalPage,
+}: EmployeesTableProps) {
+  const { data, isPending, isFetching, isSuccess } = useEmployees({
+    search_query,
+    page,
   });
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
-  const { setCheckboxs, checkboxs, checkall, setItem, uncheckall } =
-    useEmployeeSelectKit();
-  // const { data, isPending } = useEmployees();
+  const { checkboxs, checkall, setItem, uncheckall } = useEmployeeSelectKit();
+
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    if (isFetching) return;
+
+    setTotalPage(data.pagination.totalPages);
+  }, [isPending]);
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.checked) {
@@ -52,13 +51,13 @@ function EmployeesTable({ search = "" }: EmployeesTableProps) {
     }
   };
 
-  useEffect(() => {
-    setCheckboxs(
-      Object.fromEntries(
-        data.employees.map((emp: Employee) => [emp.id, false]), // start all unchecked
-      ),
-    );
-  }, [data]);
+  // useEffect(() => {
+  //   setCheckboxs(
+  //     Object.fromEntries(
+  //       data?.employees.map((emp: Employee) => [emp.id, false]), // start all unchecked
+  //     ),
+  //   );
+  // }, [data]);
 
   const checkboxState = isAllCheckboxs(checkboxs);
   return (
@@ -82,32 +81,39 @@ function EmployeesTable({ search = "" }: EmployeesTableProps) {
         </thead>
 
         <tbody>
-          {data.employees?.length === 0 && (
+          {isFetching && (
+            <tr className="text-center">
+              <td colSpan={6}>Loading...</td>
+            </tr>
+          )}
+
+          {!isPending && data.employees?.length === 0 && (
             <tr className="text-center">
               <td colSpan={6}>No employees</td>
             </tr>
           )}
-          {data.employees?.map((emp: Employee, i: number) => {
-            return (
-              <EmployeesElement
-                key={emp.id}
-                id={emp.id}
-                name={emp.firstName + " " + emp.lastName}
-                nickname={emp.nickName}
-                email={emp.email}
-                amount={emp.salary}
-                branch={emp.branch.name}
-                status={emp.status}
-              />
-            );
-          })}
+          {!isPending &&
+            data.employees.map((emp: Employee, i: number) => {
+              return (
+                <EmployeesElement
+                  key={emp.id}
+                  id={emp.id}
+                  name={emp.firstName + " " + emp.lastName}
+                  nickname={emp.nickName}
+                  email={emp.email}
+                  amount={emp.salary}
+                  branch={emp.branch.name}
+                  status={emp.status}
+                />
+              );
+            })}
         </tbody>
         <tfoot>
           <tr>
             <th scope="row">Totals</th>
             <td>
               <div className="flex flex-row gap-1 items-center ">
-                <p>{data.pagination.total}</p>
+                <p>{data?.pagination?.total}</p>
                 <Icon icon={"mdi:users"} />
               </div>
             </td>

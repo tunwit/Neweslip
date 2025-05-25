@@ -12,11 +12,21 @@ import SnackBar from "@/app/components/UI/SnackBar";
 import { Suspense, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { useEmployees } from "@/app/components/Employees/hooks/useEmployees";
+import Pagination from "@/app/components/UI/Pagination";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
   const rounter = useRouter();
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPage, setTotalPage] = useState(1);
+  const queryClient = useQueryClient();
+
+  const onPagechange = (p: number) => {
+    setPage(p);
+  };
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10">
@@ -87,11 +97,18 @@ export default function Home() {
         </div>
         <div className="flex justify-center mt-5">
           <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
-            <Suspense>
-              <EmployeesTable search={debounced} />
-            </Suspense>
+            <EmployeesTable
+              search_query={debounced}
+              page={page}
+              setTotalPage={setTotalPage}
+            />
           </div>
         </div>
+        <Pagination
+          page={page}
+          totalPages={totalPage}
+          onPageChange={(p) => onPagechange(p)}
+        ></Pagination>
       </div>
       <SnackBar />
     </main>
