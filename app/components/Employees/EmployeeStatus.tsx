@@ -1,50 +1,56 @@
+import DotIcon from "@/assets/icons/DotIcon";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
 
 interface EmployeeStatusType {
-  icon: string;
   text: string;
-  bg: string;
   textColor: string;
+  bgColor: string;
+  icon: string;
 }
 
 const EmployeeStatuses: { [key: string]: EmployeeStatusType } = {
   ACTIVE: {
-    icon: "mdi:check-bold",
     text: "Active",
-    bg: "bg-green-200",
-    textColor: "text-green-950",
+    textColor: "text-green-700",
+    bgColor: "bg-green-100",
+    icon: "mdi:check-circle",
   },
   INACTIVE: {
-    icon: "maki:cross",
     text: "Inactive",
-    bg: "bg-gray-200",
-    textColor: "text-gray-950",
+    textColor: "text-red-700",
+    bgColor: "bg-red-100",
+    icon: "mdi:close-circle",
   },
   PARTTIME: {
-    icon: "tabler:clock",
     text: "Part Time",
-    bg: "bg-amber-200",
-    textColor: "text-amber-950",
+    textColor: "text-purple-700",
+    bgColor: "bg-purple-100",
+    icon: "mdi:clock-outline",
   },
 };
 
 interface EmployeeStatusProps {
-  status: number;
+  status: keyof typeof EmployeeStatuses;
+  id: string;
 }
 
-export default function EmployeeStatus({ status }: EmployeeStatusProps) {
-  const statusInfo = EmployeeStatuses[status] || {};
+export default function EmployeeStatus({ status, id }: EmployeeStatusProps) {
+  const statusInfo = EmployeeStatuses[status];
+
+  if (!statusInfo) return null;
+
   return (
-    <>
-      <div
-        className={`flex flex-row justify-center items-center gap-1 px-2 py-[1px] rounded-2xl w-fit ${statusInfo.bg}`}
-      >
-        <Icon className={statusInfo.textColor} icon={statusInfo.icon} />
-        <p className={`font-semibold ${statusInfo.textColor}`}>
-          {statusInfo.text}
-        </p>
-      </div>
-    </>
+    <div
+      className={`flex items-center gap-2 px-3 py-1 rounded-full ${statusInfo.bgColor} w-fit`}
+    >
+      <Icon
+        icon={statusInfo.icon}
+        className={`${statusInfo.textColor} text-lg`}
+      />
+      <span className={`text-sm font-semibold ${statusInfo.textColor}`}>
+        {statusInfo.text}
+      </span>
+    </div>
   );
 }

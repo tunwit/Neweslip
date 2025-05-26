@@ -14,15 +14,18 @@ import { useDebounce } from "use-debounce";
 import { useEmployees } from "@/app/components/Employees/hooks/useEmployees";
 import Pagination from "@/app/components/UI/Pagination";
 import { useQueryClient } from "@tanstack/react-query";
+import BranchSelector from "@/app/components/Employees/BranchSelector";
 
 export default function Home() {
   const rounter = useRouter();
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
   const [page, setPage] = useState(1);
+  const [branch, setBranch] = useState(-1);
+  const [status, setStatus] = useState("ALL");
+
   const [limit, setLimit] = useState(10);
   const [totalPage, setTotalPage] = useState(1);
-  const queryClient = useQueryClient();
 
   const onPagechange = (p: number) => {
     setPage(p);
@@ -72,19 +75,21 @@ export default function Home() {
           <div className="w-[20%]">
             <p className="text-black text-xs mb-1">Status</p>
             <Select
-              defaultValue="All"
+              value={status}
+              defaultValue="ALL"
               sx={{ borderRadius: "4px", fontSize: "14px" }}
+              onChange={(_, value) => setStatus(value!)}
             >
-              <Option value="All">All</Option>
-              <Option value="Active">Active</Option>
-              <Option value="Part time">Part time</Option>
-              <Option value="Inactive">Inactive</Option>
+              <Option value="ALL">All</Option>
+              <Option value="ACTIVE">Active</Option>
+              <Option value="PARTTIME">Part time</Option>
+              <Option value="INACTIVE">Inactive</Option>
             </Select>
           </div>
 
           <div className="w-[20%]">
             <p className="text-black text-xs mb-1">Brach</p>
-            <Select
+            {/* <Select
               defaultValue="All"
               sx={{ borderRadius: "4px", fontSize: "14px" }}
             >
@@ -92,14 +97,23 @@ export default function Home() {
               <Option value="Pakkret">Pakkret</Option>
               <Option value="Ramintra">Ramintra</Option>
               <Option value="Kallapapruk">Kallapapruk</Option>
-            </Select>
+            </Select> */}
+            <BranchSelector
+              value={branch}
+              onChange={(n) => {
+                setBranch(n);
+              }}
+            />
           </div>
         </div>
         <div className="flex justify-center mt-5">
           <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
             <EmployeesTable
               search_query={debounced}
+              branch={branch}
+              status={status}
               page={page}
+              setPage={setPage}
               setTotalPage={setTotalPage}
             />
           </div>

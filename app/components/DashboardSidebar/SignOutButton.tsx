@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Logout } from "@mui/icons-material";
 import { signOut } from "next-auth/react";
 import React from "react";
 
@@ -9,7 +10,7 @@ export default function SignOutButton() {
       onClick={() => signOut()}
     >
       <p className="font-black">Sign Out</p>
-      <Icon icon={"material-symbols:logout"} />
+      <Logout />
     </button>
   );
 }

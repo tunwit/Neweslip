@@ -20,16 +20,24 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 interface EmployeesTableProps {
   search_query?: string;
+  branch?: number;
+  status?: string;
   page?: number;
   setTotalPage: Dispatch<SetStateAction<number>>;
+  setPage: Dispatch<SetStateAction<number>>;
 }
 function EmployeesTable({
   search_query = "",
+  branch,
+  status,
   page = 1,
+  setPage,
   setTotalPage,
 }: EmployeesTableProps) {
-  const { data, isPending, isFetching, isSuccess } = useEmployees({
+  const { data, isPending, isFetching, isRefetching } = useEmployees({
     search_query,
+    branch,
+    status,
     page,
   });
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
@@ -37,9 +45,15 @@ function EmployeesTable({
 
   useEffect(() => {
     if (isFetching) return;
-
-    setTotalPage(data.pagination.totalPages);
+    setTotalPage(data?.pagination.totalPages);
   }, [isPending]);
+
+  useEffect(() => {
+    if (isFetching) return;
+
+    setPage(1);
+    setTotalPage(data.pagination.totalPages);
+  }, [branch, status, search_query]);
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.checked) {

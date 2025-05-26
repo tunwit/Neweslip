@@ -1,4 +1,5 @@
 "use client";
+import HambergerIcon from "@/assets/icons/HambergerIcon";
 import useHamburger from "@/hooks/useHamburger";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Avatar } from "@mui/joy";
@@ -12,10 +13,7 @@ export default function Navbar() {
     <nav className="flex justify-between items-center gap-5 bg-[#1f1f1f] h-20 w-full px-4">
       <div className="flex items-center gap-5">
         <button onClick={sidebarState}>
-          <Icon
-            icon={"material-symbols:menu-rounded"}
-            className="text-white text-2xl"
-          />
+          <HambergerIcon className="text-white text-2xl" />
         </button>
 
         <span className="text-white text-xl font-semibold">E-slip</span>

@@ -103,7 +103,7 @@ export default function EmployeesElement({
         <td onClick={() => setOpen(true)}>{moneyFormat} ฿</td>
         <td onClick={() => setOpen(true)}>{branch}</td>
         <td onClick={() => setOpen(true)}>
-          <EmployeeStatus status={status} />
+          <EmployeeStatus status={status} id={id} />
         </td>
       </tr>
     </>

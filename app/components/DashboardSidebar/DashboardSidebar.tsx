@@ -10,6 +10,11 @@ import SignOutButton from "./SignOutButton";
 import useHamburger from "@/hooks/useHamburger";
 import { useShop } from "@/hooks/useShop";
 import { createSlug } from "@/utils/createSlug";
+import UsersIcon from "@/assets/icons/UsersIcon";
+import MoneyIcon from "@/assets/icons/MoneyIcon";
+import HistoryIcon from "@/assets/icons/HistoryIcon";
+import TemplateIcon from "@/assets/icons/TemplateIcon";
+import SettingIcon from "@/assets/icons/SettingIcon";
 
 interface Shop {
   shopId: number;
@@ -23,19 +28,19 @@ interface Shop {
 const DashboardRails = [
   {
     title: "Employees",
-    icon: "mdi:users",
+    icon: UsersIcon,
     id: "employees",
     href: "/employees",
   },
   {
     title: "Payrolls",
-    icon: "tdesign:money-filled",
+    icon: MoneyIcon,
     id: "payrolls",
     href: "/payrolls",
   },
   {
     title: "Records",
-    icon: "ic:round-history",
+    icon: HistoryIcon,
     id: "records",
     href: "/records",
   },
@@ -44,13 +49,13 @@ const DashboardRails = [
 const ConfigureRails = [
   {
     title: "Template",
-    icon: "tdesign:template-filled",
+    icon: TemplateIcon,
     id: "template",
     href: "/template",
   },
   {
     title: "Setting",
-    icon: "tdesign:setting-1-filled",
+    icon: SettingIcon,
     id: "settings",
     href: "/settings",
   },
