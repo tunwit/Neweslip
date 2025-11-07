@@ -12,66 +12,66 @@ import { Checkbox, Table } from "@mui/joy";
 import { useEmployeeSelectKit } from "@/hooks/useSelectKit";
 import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 import { useEmployees } from "./hooks/useEmployees";
-import { Employee } from "@/types/employee";
-import { fetchwithauth } from "@/utils/fetcher";
-import { usePathname } from "next/navigation";
-import { extractSlug } from "@/utils/extractSlug";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { EmployeeWithShop } from "@/types/employee";
+import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 
 interface EmployeesTableProps {
   search_query?: string;
-  branch?: number;
-  status?: string;
+  branchId?: number;
+  status?: EMPLOYEE_STATUS
   page?: number;
   setTotalPage: Dispatch<SetStateAction<number>>;
   setPage: Dispatch<SetStateAction<number>>;
 }
 function EmployeesTable({
   search_query = "",
-  branch,
+  branchId,
   status,
   page = 1,
   setPage,
   setTotalPage,
 }: EmployeesTableProps) {
-  const { data, isPending, isFetching, isRefetching } = useEmployees({
-    search_query,
-    branch,
-    status,
-    page,
-  });
+    const { data, isError ,isSuccess,isLoading} = useEmployees({
+      search_query,
+      branchId,
+      page,
+      status
+    });
+    
   const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
-  const { checkboxs, checkall, setItem, uncheckall } = useEmployeeSelectKit();
+  const { checkboxs, checkall, setItem, uncheckall,setCheckboxs } = useEmployeeSelectKit();
 
   useEffect(() => {
-    if (isFetching) return;
-    setTotalPage(data?.pagination.totalPages);
-  }, [isPending]);
+    if (isLoading) return;
+    setTotalPage(data?.pagination.totalPages || 1);
+  }, [isLoading]);
 
   useEffect(() => {
-    if (isFetching) return;
+    if (isLoading) return;
 
     setPage(1);
-    setTotalPage(data.pagination.totalPages);
-  }, [branch, status, search_query]);
+    setTotalPage(data?.pagination.totalPages || 1);
+  }, [branchId, status, search_query]);
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!data?.data) return;
     if (e.currentTarget.checked) {
       checkall();
-      setItem(data);
+      setItem(data?.data)
     } else {
       uncheckall();
       setItem([]);
     }
   };
 
-  // useEffect(() => {
-  //   setCheckboxs(
-  //     Object.fromEntries(
-  //       data?.employees.map((emp: Employee) => [emp.id, false]), // start all unchecked
-  //     ),
-  //   );
-  // }, [data]);
+  useEffect(() => {
+    if (!data?.data) return;
+    setCheckboxs(
+      Object.fromEntries(
+        data?.data?.map((emp: EmployeeWithShop) => [emp.id, false])
+      ),
+    );
+  }, [data]);
 
   const checkboxState = isAllCheckboxs(checkboxs);
   return (
@@ -95,29 +95,24 @@ function EmployeesTable({
         </thead>
 
         <tbody>
-          {isFetching && (
+          {isLoading && (
             <tr className="text-center">
               <td colSpan={6}>Loading...</td>
             </tr>
           )}
 
-          {!isPending && data.employees?.length === 0 && (
+          {!isLoading && data?.data?.length == 0 && (
             <tr className="text-center">
-              <td colSpan={6}>No employees</td>
+              <td colSpan={6}>No Employee</td>
             </tr>
           )}
-          {!isPending &&
-            data.employees.map((emp: Employee, i: number) => {
+
+          {isSuccess &&
+          data?.data?.map((emp: EmployeeWithShop, i: number) => {
               return (
                 <EmployeesElement
                   key={emp.id}
-                  id={emp.id}
-                  name={emp.firstName + " " + emp.lastName}
-                  nickname={emp.nickName}
-                  email={emp.email}
-                  amount={emp.salary}
-                  branch={emp.branch.name}
-                  status={emp.status}
+                  employee={emp}
                 />
               );
             })}
@@ -127,7 +122,7 @@ function EmployeesTable({
             <th scope="row">Totals</th>
             <td>
               <div className="flex flex-row gap-1 items-center ">
-                <p>{data?.pagination?.total}</p>
+                <p>{data?.pagination?.totalItems}</p>
                 <Icon icon={"mdi:users"} />
               </div>
             </td>

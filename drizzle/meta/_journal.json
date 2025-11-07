@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1762347040591,
+      "tag": "0000_mixed_quasar",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1762347581537,
+      "tag": "0001_wooden_alex_wilder",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1762361975933,
+      "tag": "0002_lush_tigra",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1762511372660,
+      "tag": "0003_sweet_nuke",
+      "breakpoints": true
+    }
+  ]
+}

@@ -15,18 +15,25 @@ import { Dayjs } from "dayjs";
 import { Controller, useFormContext } from "react-hook-form";
 import { personalSchema } from "@/schemas/createEmployeeForm/personalForm";
 import { z } from "zod";
+import DatePickerLocalize from "@/widget/DatePickerLocalize";
+import { InputForm } from "@/widget/InputForm";
+import { ZodControl, ZodForm } from "@/lib/useZodForm";
+import { createEmployeeFormSchema } from "@/types/formField";
+import GenderSelector from "@/widget/GenderSelector";
+import { GENDER } from "@/types/enum/enum";
 interface PersonalFormProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
-  type FormField = z.infer<typeof personalSchema>;
   const {
     register,
     control,
     trigger,
     formState: { errors },
-  } = useFormContext<FormField>();
+  } = useFormContext<z.infer<typeof createEmployeeFormSchema>>() as ZodForm<
+    typeof createEmployeeFormSchema
+  >;
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | undefined>();
   const handlerNext = async () => {
@@ -40,7 +47,6 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
       "phoneNumber",
     ]);
     if (valid) {
-      console.log(valid);
       setCurrentPage(1);
     }
   };
@@ -83,65 +89,15 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
       </FormControl>
       <div className="grid grid-cols-4 gap-x-3 gap-y-5 mt-4 px-5">
         <div className="col-span-2">
-          <FormControl required>
-            <FormLabel>
-              First name
-              {errors.firstName && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
-                  {errors.firstName.message}
-                </p>
-              )}
-            </FormLabel>
-
-            <Input
-              type="text"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="first name"
-              {...register("firstName")}
-            />
-          </FormControl>
+          <InputForm control={control} name="firstName" label="First name" />
         </div>
 
         <div className="col-span-2">
-          <FormControl required>
-            <FormLabel>
-              Last name{" "}
-              {errors.lastName && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
-                  {errors.lastName.message}
-                </p>
-              )}
-            </FormLabel>
-
-            <Input
-              type="text"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="last name"
-              {...register("lastName")}
-            />
-          </FormControl>
+          <InputForm control={control} name="lastName" label="Last name" />
         </div>
 
         <div className="col-span-2">
-          <FormControl required>
-            <FormLabel>
-              Nick name
-              {errors.nickName && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
-                  {errors.nickName.message}
-                </p>
-              )}
-            </FormLabel>
-            <Input
-              type="text"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="nickname"
-              {...register("nickName")}
-            />
-          </FormControl>
+          <InputForm control={control} name="nickName" label="Nick name" />
         </div>
 
         <div className="col-span-1">
@@ -149,7 +105,7 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
             <FormLabel>
               Gender
               {errors.gender && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
+                <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.gender.message}
                 </p>
               )}
@@ -157,17 +113,12 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
             <Controller
               control={control}
               name="gender"
-              defaultValue="male"
+              defaultValue={GENDER.MALE}
               render={({ field }) => (
-                <Select
-                  {...field}
-                  value={field.value}
-                  onChange={(_, value) => field.onChange(value)} // MUI Joy gives value in second param
-                >
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
-                  <Option value="others">Others</Option>
-                </Select>
+                <GenderSelector
+                  gender={field.value}
+                  onChange={(value) => field.onChange(value)}
+                />
               )}
             />
           </FormControl>
@@ -178,7 +129,7 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
             <FormLabel>
               Date of Birth
               {errors.dateOfBirth && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
+                <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.dateOfBirth.message}
                 </p>
               )}
@@ -187,71 +138,28 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
               control={control}
               name="dateOfBirth"
               render={({ field }) => (
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  adapterLocale="th"
-                >
-                  <DatePicker
-                    onChange={(newvalue) => field.onChange(newvalue!.toDate())}
-                    slotProps={{
-                      textField: {
-                        sx: {
-                          "& .MuiInputBase-root": {
-                            height: "36px",
-                            borderRadius: 1.5,
-                          }, // Adjust input height
-                        },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DatePickerLocalize
+                  onChange={(newvalue) => field.onChange(newvalue!.toDate())}
+                />
               )}
             />
           </FormControl>
         </div>
 
         <div className="col-span-2">
-          <FormControl required>
-            <FormLabel>
-              Email
-              {errors.email && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
-                  {errors.email.message}
-                </p>
-              )}
-            </FormLabel>
-            <Input
-              type="email"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="email"
-              {...register("email")}
-            />
-          </FormControl>
+          <InputForm control={control} name="email" label="Email" />
         </div>
 
         <div className="col-span-2">
-          <FormControl required>
-            <FormLabel>
-              Phone
-              {errors.phoneNumber && (
-                <p className="text-xs ml-2 font-normal text-red-900 italic">
-                  {errors.phoneNumber.message}
-                </p>
-              )}
-            </FormLabel>
-            <Input
-              type="tel"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="phone number"
-              {...register("phoneNumber")}
-            />
-          </FormControl>
+          <InputForm
+            control={control}
+            name="phoneNumber"
+            label="Phone Number"
+          />
         </div>
       </div>
 
-      <div className=" text-right mr-5 mt-2">
+      <div className=" text-right mr-5 mt-5">
         <Button onClick={() => handlerNext()} variant="soft">
           <p>Next</p>
           <Icon className="text-lg" icon={"mingcute:right-line"} />

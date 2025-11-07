@@ -11,21 +11,30 @@ import { useShop } from "@/hooks/useShop";
 import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import SnackBar from "./components/UI/SnackBar";
+import { useSession } from "@clerk/nextjs";
 
 export default function Home() {
-  const { data, isPending, isSuccess } = useShop();
+  const { data, isLoading, isSuccess ,isError , error} = useShop();
+  
+  if (isLoading) return <p>Loading...</p>;
 
-  useEffect(() => {
-    if (!isSuccess) return;
-    console.log(data);
-
-    const shopslug = createSlug(data[0].shop.name, data[0].shop.id);
+  if (isError) {
+    const status = (error as any)?.status;
+    if (status === 401) {
+      return <p>Unauthorized. Please log in again.</p>;
+    }
+    return <p>Error: {(error as Error).message}</p>;
+  }
+  if(data.data.length > 0){
+    const shopslug = createSlug(data.data[0].name, data.data[0].id);
     redirect(`/${shopslug}/employees`);
-  }, [isPending]);
+  }
+  
+
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
-      nothing here
+      you have no shop
       <SnackBar />
     </main>
   );

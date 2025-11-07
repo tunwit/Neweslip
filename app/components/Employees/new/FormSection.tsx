@@ -8,12 +8,14 @@ import { personalSchema } from "@/schemas/createEmployeeForm/personalForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addressSchema } from "@/schemas/createEmployeeForm/addressForm";
 import { contractSchema } from "@/schemas/createEmployeeForm/contractForm";
-import { createEmployee } from "@/lib/api/createEmployee";
 import { usePathname, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { fetchwithauth } from "@/utils/fetcher";
 import { extractSlug } from "@/utils/extractSlug";
 import { useSnackbar } from "@/hooks/useSnackBar";
+import { createEmployee } from "@/action/createEmployee";
+import { NewEmployee } from "@/types/employee";
+import { useZodForm } from "@/lib/useZodForm";
 
 interface FormSectionProps {
   currentPage: number;
@@ -35,14 +37,12 @@ export default function FormSection({
   currentPage,
   setCurrentPage,
 }: FormSectionProps) {
-  const methods = useForm<FormField>({
-    resolver: zodResolver(createEmployeeFormSchema),
-  });
+  const methods = useZodForm(createEmployeeFormSchema);
   const pathname = usePathname().split("/");
   const rounter = useRouter();
   const { show, setMessage } = useSnackbar();
 
-  const onCreatError = (error: Error) => {
+  const onCreatError = () => {
     setMessage({ message: "Something went wrong", type: "failed" });
     show();
   };
@@ -53,16 +53,21 @@ export default function FormSection({
     rounter.push(`/${pathname[1]}/employees`);
   };
 
-  const mutation = createEmployee(onCreatError, onCreateSuccess);
 
-  const onSubmit = async (data: Record<string, any>) => {
-    console.log("summiting");
+  const onSubmit = async (data: NewEmployee) => {
     const valid = await methods.trigger();
     if (!valid) return;
     const slug = pathname[1];
     const { id } = extractSlug(slug);
     data.shopId = id;
-    await mutation.mutateAsync(data);
+
+    try{
+      await createEmployee(data)
+      onCreateSuccess()
+    }catch {
+      methods.setError("firstName",{ type: "server", message: "Backend error" })
+      onCreatError()
+    }
   };
   return (
     <div className="">

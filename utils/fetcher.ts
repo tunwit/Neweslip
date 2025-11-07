@@ -33,7 +33,14 @@ export const fetchwithauth = async ({ endpoint, method, body }: fetchProps) => {
     options.body = JSON.stringify(body);
   }
 
-  const res = await fetch(`http://localhost:3001/v1${endpoint}`, options);
+  const res = await fetch(`http://localhost:3000/api${endpoint}`, options);
+  if (!res.ok) {
+    const msg = await res.text();
+    const error = new Error(msg || "Request failed");
+    (error as any).status = res.status;
+    throw error;
+  }
+
   const data = await res.json();
   return data;
 };
@@ -49,7 +56,7 @@ export const fetchNoAuth = async ({ endpoint, method, body }: fetchProps) => {
   if (body && method !== "GET") {
     options.body = JSON.stringify(body);
   }
-  const res = await fetch(`http://localhost:3001/v1${endpoint}`, options);
+  const res = await fetch(`/api${endpoint}`, options);
 
   return res.json();
 };

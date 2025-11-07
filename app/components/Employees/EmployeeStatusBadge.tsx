@@ -1,4 +1,5 @@
 import DotIcon from "@/assets/icons/DotIcon";
+import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
 
@@ -30,12 +31,8 @@ const EmployeeStatuses: { [key: string]: EmployeeStatusType } = {
   },
 };
 
-interface EmployeeStatusProps {
-  status: keyof typeof EmployeeStatuses;
-  id: string;
-}
 
-export default function EmployeeStatus({ status, id }: EmployeeStatusProps) {
+export default function EmployeeStatusBadge({ status }: {status:EMPLOYEE_STATUS}) {
   const statusInfo = EmployeeStatuses[status];
 
   if (!statusInfo) return null;

@@ -1,49 +1,43 @@
-import { Employee } from "@/types/employee";
+import { EmployeeRespounse } from "@/types/employee";
 import { create } from "zustand";
 
-interface SelectKitState<T extends { id: string }> {
-  checkboxs: Record<string, boolean>;
-  setCheckboxs: (newcheckboxs: Record<string, boolean>) => void;
+interface SelectKitState<T extends { id: number }> {
+  checkboxs: Record<number, boolean>;
+  setCheckboxs: (newCheckboxs: Record<number, boolean>) => void;
   uncheckall: () => void;
   checkall: () => void;
-  updateAtId: (id: string) => void;
+  updateAtId: (id: number) => void;
 
   checkedItem: T[];
   setItem: (newItems: T[]) => void;
   add: (newItems: T[]) => void;
-  remove: (itemIds: string[]) => void;
+  remove: (itemIds: number[]) => void;
 }
 
-//Button that close/open sidebar
-const createSelecteKit = <T extends { id: string }>() =>
+const createSelectKit = <T extends { id: number }>() =>
   create<SelectKitState<T>>((set) => ({
     checkboxs: {},
-    setCheckboxs: (newcheckboxs) => {
-      set({ checkboxs: newcheckboxs });
-    },
+    setCheckboxs: (newCheckboxs) => set({ checkboxs: newCheckboxs }),
     uncheckall: () =>
       set((state) => ({
         checkboxs: Object.fromEntries(
-          Object.keys(state.checkboxs).map((key) => [key, false]),
+          Object.keys(state.checkboxs).map((key) => [Number(key), false])
         ),
-        checkedEmployees: [],
+        checkedItem: [],
       })),
     checkall: () =>
       set((state) => ({
         checkboxs: Object.fromEntries(
-          Object.keys(state.checkboxs).map((key) => [key, true]),
+          Object.keys(state.checkboxs).map((key) => [Number(key), true])
         ),
       })),
-    updateAtId: (id) => {
+    updateAtId: (id) =>
       set((state) => ({
         checkboxs: { ...state.checkboxs, [id]: !state.checkboxs[id] },
-      }));
-    },
+      })),
 
     checkedItem: [],
-    setItem: (newItems) => {
-      set({ checkedItem: newItems });
-    },
+    setItem: (newItems) => set({ checkedItem: newItems }),
     add: (newItems) =>
       set((state) => ({
         checkedItem: [...state.checkedItem, ...newItems],
@@ -54,6 +48,7 @@ const createSelecteKit = <T extends { id: string }>() =>
       })),
   }));
 
-export const useAllSelectKit = createSelecteKit<Employee>();
-export const usePayrollSelectKit = createSelecteKit<Employee>();
-export const useEmployeeSelectKit = createSelecteKit<Employee>();
+// Create hooks
+export const useAllSelectKit = createSelectKit<EmployeeRespounse>();
+export const usePayrollSelectKit = createSelectKit<EmployeeRespounse>();
+export const useEmployeeSelectKit = createSelectKit<EmployeeRespounse>();

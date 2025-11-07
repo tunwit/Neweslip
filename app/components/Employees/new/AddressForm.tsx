@@ -1,4 +1,6 @@
 import { addressSchema } from "@/schemas/createEmployeeForm/addressForm";
+import { createEmployeeFormSchema } from "@/types/formField";
+import { InputForm } from "@/widget/InputForm";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
@@ -8,8 +10,6 @@ import {
   Option,
   Select,
 } from "@mui/joy";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -18,13 +18,12 @@ interface AddressFormProps {
 }
 
 export default function AddressForm({ setCurrentPage }: AddressFormProps) {
-  type FormField = z.infer<typeof addressSchema>;
-  const { register, trigger } = useFormContext<FormField>();
+  const { register, trigger ,control } = useFormContext<z.infer<typeof createEmployeeFormSchema>>() as ZodForm<typeof createEmployeeFormSchema>;
   const handlerNext = async () => {
     const valid = await trigger([
-      "addressLine1",
-      "addressLine2",
-      "addressLine3",
+      "address1",
+      "address2",
+      "address3",
     ]);
     if (valid) {
       console.log(valid);
@@ -42,47 +41,32 @@ export default function AddressForm({ setCurrentPage }: AddressFormProps) {
   return (
     <>
       <div className="grid grid-cols-4 gap-x-3 gap-y-5 mt-4 px-5">
-        <div className="col-span-1">
-          <FormControl required>
-            <FormLabel>addressLine 1</FormLabel>
-            <Input
-              type="text"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="addressLine 1"
-              {...register("addressLine1")}
+        <div className="col-span-4">
+          <InputForm
+            control={control}
+            name="address1"
+            label="Address Line 1"
             />
-          </FormControl>
         </div>
 
-        <div className="col-span-1">
-          <FormControl required>
-            <FormLabel>addressLine 2</FormLabel>
-            <Input
-              type="text"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="addressLine 2"
-              {...register("addressLine2")}
+        <div className="col-span-4">
+          <InputForm
+            control={control}
+            name="address2"
+            label="Address Line 2"
             />
-          </FormControl>
         </div>
 
-        <div className="col-span-1">
-          <FormControl required>
-            <FormLabel>addressLine 3</FormLabel>
-            <Input
-              type="text"
-              sx={{ "--Input-focusedThickness": 0 }}
-              size="md"
-              placeholder="addressLine 3"
-              {...register("addressLine3")}
+        <div className="col-span-4">
+          <InputForm
+            control={control}
+            name="address3"
+            label="Address Line 3"
             />
-          </FormControl>
         </div>
       </div>
 
-      <div className="flex justify-end items-center mt-2 gap-3 mr-5">
+      <div className="flex justify-end items-center mt-5 gap-3 mr-5">
         <Button onClick={(e) => handlerPrevious(e)} variant="outlined">
           <Icon className="text-lg" icon={"mingcute:left-line"} />
           <p>Previous</p>

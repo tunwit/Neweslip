@@ -1,4 +1,4 @@
-import EmployeeStatus from "@/app/components/Employees/EmployeeStatus";
+import EmployeeStatus from "@/app/components/Employees/EmployeeStatusBadge";
 import { Employee } from "@/types/employee";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";

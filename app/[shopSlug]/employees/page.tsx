@@ -7,24 +7,24 @@ import Option from "@mui/joy/Option";
 import EmployeesTable from "@/app/components/Employees/EmployeesTable";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import SnackBar from "@/app/components/UI/SnackBar";
 import { Suspense, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { useEmployees } from "@/app/components/Employees/hooks/useEmployees";
 import Pagination from "@/app/components/UI/Pagination";
 import { useQueryClient } from "@tanstack/react-query";
-import BranchSelector from "@/app/components/Employees/BranchSelector";
+import BranchSelector from "@/widget/BranchSelector";
+import StatusSelector from "@/widget/StatusSelector";
+import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 
 export default function Home() {
   const rounter = useRouter();
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
   const [page, setPage] = useState(1);
-  const [branch, setBranch] = useState(-1);
-  const [status, setStatus] = useState("ALL");
+  const [branchId, setBranchId] = useState(-1);
+  const [status, setStatus] = useState<EMPLOYEE_STATUS|null>(null);
 
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(15);
   const [totalPage, setTotalPage] = useState(1);
 
   const onPagechange = (p: number) => {
@@ -74,17 +74,7 @@ export default function Home() {
 
           <div className="w-[20%]">
             <p className="text-black text-xs mb-1">Status</p>
-            <Select
-              value={status}
-              defaultValue="ALL"
-              sx={{ borderRadius: "4px", fontSize: "14px" }}
-              onChange={(_, value) => setStatus(value!)}
-            >
-              <Option value="ALL">All</Option>
-              <Option value="ACTIVE">Active</Option>
-              <Option value="PARTTIME">Part time</Option>
-              <Option value="INACTIVE">Inactive</Option>
-            </Select>
+            <StatusSelector isEnableAll={true} status={status} onChange={(value) => setStatus(value!)}/>
           </div>
 
           <div className="w-[20%]">
@@ -99,10 +89,11 @@ export default function Home() {
               <Option value="Kallapapruk">Kallapapruk</Option>
             </Select> */}
             <BranchSelector
-              value={branch}
+              branchId={branchId}
               onChange={(n) => {
-                setBranch(n);
+                setBranchId(n);
               }}
+              isEnableAll={true}
             />
           </div>
         </div>
@@ -110,7 +101,7 @@ export default function Home() {
           <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
             <EmployeesTable
               search_query={debounced}
-              branch={branch}
+              branchId={branchId}
               status={status}
               page={page}
               setPage={setPage}

@@ -1,12 +1,13 @@
+
 import { fetchwithauth } from "@/utils/fetcher";
+import { useSession } from "@clerk/nextjs";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Session } from "inspector/promises";
-import { getSession, useSession } from "next-auth/react";
 
 export const useShop = () => {
-  const { data, status } = useSession();
-  const query = useSuspenseQuery({
-    queryKey: ["shop", data?.user?.email],
+  const { session } = useSession();
+  const query = useQuery({
+    queryKey: ["shop", session?.user?.emailAddresses],
     queryFn: () =>
       fetchwithauth({
         endpoint: "/shop",

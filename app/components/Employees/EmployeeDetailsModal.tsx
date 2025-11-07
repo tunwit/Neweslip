@@ -2,242 +2,155 @@
 import {
   Button,
   Divider,
+  FormControl,
+  FormLabel,
+  Input,
   Modal,
   ModalClose,
   ModalDialog,
   ModalOverflow,
   Typography,
 } from "@mui/joy";
-import React, { useState } from "react";
-import EmployeeStatus from "./EmployeeStatus";
-import EmployeeDetailsModalInput from "./EmployeeDetailsModalInput";
+import React, { useEffect, useState } from "react";
 import { Edit, Save } from "@mui/icons-material";
+import BranchSelector from "../../../widget/BranchSelector";
+import { Employee, EmployeeWithShop, NewEmployee } from "@/types/employee";
+import StatusSelector from "@/widget/StatusSelector";
+import { changeEmployeeStatus } from "@/action/changeEmployeeStatus";
+import EmployeeStatusBadge from "./EmployeeStatusBadge";
+import { useQueryClient } from "@tanstack/react-query";
+import { FormProvider, useForm } from "react-hook-form";
+import {
+  createEmployeeFormField,
+  createEmployeeFormSchema,
+} from "@/types/formField";
+import EmployeeDetailsForm from "./EmployeeDetailsForm";
+import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { useZodForm } from "@/lib/useZodForm";
+import normalizeNull from "@/utils/normallizeNull";
+import { updateEmployee } from "@/action/updateEmployee";
+import { useSnackbar } from "@/hooks/useSnackBar";
 
 interface EmployeeDetailsModalProps {
-  name: string;
-  email: string;
-  nickname: string;
-  amount: number;
-  branch: string;
-  status: number;
+  employee: EmployeeWithShop;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function EmployeeDetailsModal({
-  name,
-  email,
-  nickname,
-  amount,
-  branch,
-  status,
+  employee,
   open,
   setOpen,
 }: EmployeeDetailsModalProps) {
-  const [editmode, setEditmode] = useState(false);
+  const [status, setStatus] = useState(employee.status);
+  const queryClient = useQueryClient();
 
-  const handlerEdit = () => {
-    setEditmode(!editmode);
+  const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
+    setStatus(newValue);
+    try{
+      await changeEmployeeStatus({ employeeId: employee.id, status: newValue });
+      onUpdateSuccess(`Change Status to ${newValue} successful`)
+    }catch(err){
+      onUpdateError(`Change Status failed\n${err}`)
+    }
+    
+    queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
+   const { show, setMessage } = useSnackbar();
+
+  const onUpdateSuccess = (message:string)=>{
+    setMessage({ message: message, type: "success" });
+    show()
+  }
+  const onUpdateError = (message:string)=>{
+    setMessage({ message: message, type: "failed" });
+    show()
+  }
+
+
+  const methods = useZodForm(createEmployeeFormSchema, {
+    defaultValues: normalizeNull({
+      avatar: employee.avatar,
+      position: employee.position,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      nickName: employee.nickName,
+      email: employee.email,
+      dateOfBirth: employee.dateOfBirth ? new Date(employee.dateOfBirth) : undefined,
+      phoneNumber: employee.phoneNumber,
+      gender: employee.gender,
+      branchId: employee.branch.id,
+      salary: employee.salary,
+      dateEmploy: employee.dateEmploy ? new Date(employee.dateEmploy) : undefined,
+      bankName: employee.bankName,
+      bankAccountNumber: employee.bankAccountNumber,
+      bankAccountOwner: employee.bankAccountOwner,
+      promtpay: employee.promtpay,
+      status: employee.status
+    }),
+    mode:"onChange"
+  });
+
+
+  const {handleSubmit,reset, formState:{isValid,dirtyFields}} = methods
+
+  const onSave = async (data: createEmployeeFormField) => {
+    try{
+        await updateEmployee(employee.id,normalizeNull(data))
+        reset(data);
+        onUpdateSuccess(`update employee successful`)
+        queryClient.invalidateQueries({ queryKey: ["employees"] });
+    }catch (err){
+      onUpdateError(`Update employee failed failed\n${err}`)
+    }
+  };
+
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalOverflow>
-          <ModalDialog sx={{ background: "#fafafa" }}>
-            <ModalClose />
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-row gap-10 items-center p-2">
-                <div className="flex gap-4  items-center">
-                  <div className="bg-teal-400 w-20 h-20 text-center rounded-full flex items-center justify-center">
-                    <p className="text-xl">{name.charAt(0)}</p>
-                  </div>
+        <ModalDialog sx={{ background: "#fafafa", overflow: "scroll",width:"70%" }}>
+          <ModalClose />
+          <div className="flex flex-row justify-between items-center ">
+            <div className="flex flex-row gap-10 items-center p-2">
+              <div className="flex gap-4  items-center">
+                <div className="bg-teal-400 w-20 h-20 text-center rounded-full flex items-center justify-center">
+                  <p className="text-xl">{employee.firstName.charAt(0)}</p>
                 </div>
+              </div>
 
-                <div className="flex flex-col gap-1 ">
-                  <div className="flex flex-row gap-2">
-                    <p className="font-bold text-xl">{name}</p>
-                    <EmployeeStatus status={status} />
-                  </div>
-                  <EmployeeDetailsModalInput
-                    disabled={!editmode}
-                    value="Manager"
+              <div className="flex flex-col gap-0 ">
+                <div className="flex flex-row gap-2">
+                  <p className="font-bold text-xl">
+                    {employee.firstName + " " + employee.lastName}
+                  </p>
+                  <EmployeeStatusBadge status={status} />
+                  <StatusSelector
+                    status={status}
+                    onChange={handlerChangeStatus}
                   />
                 </div>
-              </div>
-              <div className="ml-auto">
-                {editmode ? (
-                  <Button
-                    onClick={() => handlerEdit()}
-                    startDecorator={<Save sx={{ fontSize: "16px" }} />}
-                    sx={{ fontSize: "12px", gap: 0 }}
-                    size="sm"
-                    variant="outlined"
-                  >
-                    Save
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={() => handlerEdit()}
-                    startDecorator={<Edit sx={{ fontSize: "16px" }} />}
-                    sx={{ fontSize: "12px", gap: 0 }}
-                    size="sm"
-                    variant="outlined"
-                  >
-                    Edit
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 ">
-              <div className="bg-white rounded-sm shadow-md py-3 px-4">
-                <p className="font-semibold mb-2">Personal Infomation</p>
-                <div className="grid grid-cols-2 gap-y-4 gap-x-3">
-                  <div className="grid grid-cols-2">
-                    <p>Employee ID</p>
-                    <p>EMP0001</p>
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Email</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={email}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Nick name</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={nickname}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Gender</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="Male"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Phone</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="0952475183"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-sm shadow-md py-3 px-4">
-                <p className="font-semibold mb-2">Address</p>
-                <div className="grid grid-cols-2 gap-y-4 gap-x-3">
-                  <div className="grid grid-cols-2">
-                    <p>House number</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="58/297"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Village</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="สราญสิริ"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Subdistrict (Tambon)</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="บางตะไนย์"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>District (Amphoe)</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="ปากเกร็ด"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Province</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="นนทบุรี"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Zipcode</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value="11120"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-sm shadow-md py-3 px-4">
-                <p className="font-semibold mb-2">Job Information</p>
-                <div className="grid grid-cols-2 gap-y-4 gap-x-3">
-                  <div className="grid grid-cols-2">
-                    <p>Base Salary</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={amount}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Date Employ</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={"15 มกราคม 2566"}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Branch</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={"Pakkret"}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Bank</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={"กสิกรไทย"}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Bank Account</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={"4199 5688 4758"}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2">
-                    <p>Account Owner</p>
-                    <EmployeeDetailsModalInput
-                      disabled={!editmode}
-                      value={"Thanut Thappota"}
-                    />
-                  </div>
+                <div className="grid grid-cols-2">
+                  <p>EMP{String(employee.id).padStart(3, "0")}</p>
                 </div>
               </div>
             </div>
-          </ModalDialog>
-        </ModalOverflow>
+            <div className="ml-auto">
+               <Button
+                disabled={(Object.keys(dirtyFields).length <= 0 )|| !isValid}
+                  onClick={handleSubmit(onSave)}
+                  startDecorator={<Save sx={{ fontSize: "16px" }} />}
+                  sx={{ fontSize: "12px", gap: 0 }}
+                  size="sm"
+                  variant="outlined"
+                >
+                  Save
+                </Button>
+            </div>
+          </div>
+          <FormProvider {...methods} >
+            <EmployeeDetailsForm employee={employee}/>
+          </FormProvider>
+          
+        </ModalDialog>
       </Modal>
     </>
   );

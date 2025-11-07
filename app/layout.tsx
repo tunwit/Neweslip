@@ -3,14 +3,14 @@ import { Sarabun } from "next/font/google";
 import "./globals.css";
 import DashboardSidebar from "./components/DashboardSidebar/DashboardSidebar";
 import Providers from "./providers";
-import { signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 import Navbar from "./components/Navbar/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { authOptions } from "./api/auth/[...nextauth]/authOptions";
 import SnackBar from "./components/UI/SnackBar";
+import {
+  ClerkProvider,
+} from '@clerk/nextjs'
 
 const sarabun = Sarabun({
   subsets: ["thai", "latin"],
@@ -27,17 +27,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
 
   return (
+    <ClerkProvider>
     <html lang="en">
       <body className={`${sarabun.className} antialiased flex`}>
-        <Providers session={session}>
+        <Providers>
           {/* <ShopSidebar /> */}
           <Suspense>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-h-screen ">
               <Navbar />
-              <div className="flex flex-row  max-h-[calc(100vh-80px)]  w-screen overflow-hidden">
+              <div className="flex flex-row h-full  max-h-[calc(100vh-80px)]  w-screen overflow-hidden">
                 <DashboardSidebar />
                 {children}
               </div>
@@ -46,5 +46,6 @@ export default async function RootLayout({
         </Providers>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

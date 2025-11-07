@@ -4,9 +4,7 @@ import DashboardButton from "./DashboardButton";
 import { usePathname, useRouter } from "next/navigation";
 import ShopSidebarElement from "./ShopSidebarElement";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { signOut, useSession } from "next-auth/react";
 import { Button } from "@mui/joy";
-import SignOutButton from "./SignOutButton";
 import useHamburger from "@/hooks/useHamburger";
 import { useShop } from "@/hooks/useShop";
 import { createSlug } from "@/utils/createSlug";
@@ -15,15 +13,12 @@ import MoneyIcon from "@/assets/icons/MoneyIcon";
 import HistoryIcon from "@/assets/icons/HistoryIcon";
 import TemplateIcon from "@/assets/icons/TemplateIcon";
 import SettingIcon from "@/assets/icons/SettingIcon";
+import { useSession } from "@clerk/nextjs";
 
 interface Shop {
-  shopId: number;
-  ownerId: number;
-  shop: {
     id: number;
     name: string;
     avatar: string | null;
-  };
 }
 const DashboardRails = [
   {
@@ -66,8 +61,9 @@ export default function DashboardSidebar() {
   const shopSlug = pathname[1];
   const page = pathname[2];
   const sidebarState = useHamburger((state) => state.open);
-  const session = useSession();
   const { data, isPending } = useShop();
+  
+  const { isLoaded, session, isSignedIn } = useSession();
 
   if (sidebarState) {
     return (
@@ -76,12 +72,12 @@ export default function DashboardSidebar() {
           <div className="pl-3 flex flex-col text-sm gap-1">
             {Array.isArray(data) &&
               data?.map((shop: Shop, i: number) => {
-                const slug = createSlug(shop.shop.name, String(shop.shopId));
+                const slug = createSlug(shop.name, String(shop.id));
 
                 return (
                   <ShopSidebarElement
-                    key={shop.shopId}
-                    title={shop.shop.name}
+                    key={shop.id}
+                    title={shop.name}
                     selected={shopSlug == slug}
                   />
                 );
@@ -126,10 +122,6 @@ export default function DashboardSidebar() {
               );
             })}
           </div>
-          <div className="flex justify-center mt-5">
-            {session && <SignOutButton />}
-          </div>
-
           <span className="absolute bottom-5 text-center w-full text-[#797979] text-xs">
             v 0.0.1 @alpha
           </span>
