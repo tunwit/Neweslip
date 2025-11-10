@@ -13,9 +13,10 @@ export const branchesTable = mysqlTable(
   {
     id: int().autoincrement().notNull().primaryKey(),
     name: varchar({ length: 50 }).notNull(),
+    nameEng: varchar({ length: 50 }).notNull(),
     shopId: int()
       .notNull()
-      .references(() => shopsTable.id)
+      .references(() => shopsTable.id,{onDelete:"cascade"})
       .notNull(),
   },
   (table) => [uniqueIndex("name_shopId").on(table.shopId, table.name)]

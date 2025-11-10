@@ -16,7 +16,7 @@ import data from "@/assets/employee";
 import {
   useAllSelectKit,
   usePayrollSelectKit,
-} from "../../../../../hooks/useSelectKit";
+} from "../../../../../hooks/useCheckBox";
 import { useSelectedEmployees } from "../hooks/useSelectedEmployee";
 
 interface PayrollsAddEmployeeModal {

@@ -1,11 +1,18 @@
 import { Button, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import React from "react";
-import IncomeTable from "./Salary/Income/IncomeTable";
 import OTTable from "./Salary/OT/OTTable";
-import DeductionTable from "./Salary/Deduction/DeductionTable";
-import AbsentTable from "./Salary/Absent/AbsentTable";
+import IncomeTab from "./Salary/Income/IncomeTab";
+import DeductionTab from "./Salary/Deduction/DeductionTab";
+import OTTab from "./Salary/OT/OTTab";
+import PenaltyTab from "./Salary/Penalty/PenaltyTab";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function SalaraTabs() {
+  const queryClient = useQueryClient()
+  queryClient.prefetchQuery({queryKey:["salaryFields"]})
+  queryClient.prefetchQuery({queryKey:["OTFields"]})
+  queryClient.prefetchQuery({queryKey:["penaltyFields"]})
+
   return (
     <>
       <Tabs aria-label="Basic tabs" defaultValue={0} orientation="vertical">
@@ -26,19 +33,19 @@ export default function SalaraTabs() {
           <Tab>Income</Tab>
           <Tab>Deduction</Tab>
           <Tab>OT</Tab>
-          <Tab>Absent</Tab>
+          <Tab>Penalty</Tab>
         </TabList>
         <TabPanel value={0}>
-          <IncomeTable />
+          <IncomeTab />
         </TabPanel>
         <TabPanel value={1}>
-          <DeductionTable />
+          <DeductionTab />
         </TabPanel>
         <TabPanel value={2}>
-          <OTTable />
+          <OTTab />
         </TabPanel>
         <TabPanel value={3}>
-          <AbsentTable />
+          <PenaltyTab />
         </TabPanel>
       </Tabs>
     </>

@@ -1,22 +1,22 @@
-"use server"
-import { EmployeeRespounse } from "@/types/employee";
+"use server";
 import { auth } from "@clerk/nextjs/server";
-import globalDrizzle from "./drizzle";
+import globalDrizzle from "../db/drizzle";
 import { shopOwnerTable, shopsTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
-export async function isOwner(shopId:number) : Promise<boolean> {
-    const {userId} = await auth()
-    if(!userId) return false;
+export async function isOwner(shopId: number): Promise<boolean> {
+  const { userId } = await auth();
+  if (!userId) return false;
 
-    const owner = await globalDrizzle
+  const owner = await globalDrizzle
     .select()
     .from(shopOwnerTable)
-    .where(and(
-        eq(shopOwnerTable.ownerId,userId),
-        eq(shopOwnerTable.shopId,shopId)
-    ))
-    .limit(1)
-    return owner.length > 0;
-
+    .where(
+      and(
+        eq(shopOwnerTable.ownerId, userId),
+        eq(shopOwnerTable.shopId, shopId),
+      ),
+    )
+    .limit(1);
+  return owner.length > 0;
 }

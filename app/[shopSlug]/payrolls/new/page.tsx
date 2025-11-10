@@ -7,7 +7,7 @@ import { Add } from "@mui/icons-material";
 import PayrollsEmployeesTable from "@/app/components/Payrolls/new/PayrollsEmployeeTable";
 import { useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePayrollSelectKit } from "@/hooks/useSelectKit";
+import { usePayrollSelectKit } from "@/hooks/useCheckBox";
 import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 import { useSelectedEmployees } from "@/app/components/Payrolls/new/hooks/useSelectedEmployee";
 

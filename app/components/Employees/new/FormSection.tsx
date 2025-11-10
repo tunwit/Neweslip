@@ -9,11 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addressSchema } from "@/schemas/createEmployeeForm/addressForm";
 import { contractSchema } from "@/schemas/createEmployeeForm/contractForm";
 import { usePathname, useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchwithauth } from "@/utils/fetcher";
 import { extractSlug } from "@/utils/extractSlug";
 import { useSnackbar } from "@/hooks/useSnackBar";
-import { createEmployee } from "@/action/createEmployee";
+import { createEmployee } from "@/app/action/createEmployee";
 import { NewEmployee } from "@/types/employee";
 import { useZodForm } from "@/lib/useZodForm";
 
@@ -41,6 +41,7 @@ export default function FormSection({
   const pathname = usePathname().split("/");
   const rounter = useRouter();
   const { show, setMessage } = useSnackbar();
+  const queryClient = useQueryClient();
 
   const onCreatError = () => {
     setMessage({ message: "Something went wrong", type: "failed" });
@@ -53,7 +54,6 @@ export default function FormSection({
     rounter.push(`/${pathname[1]}/employees`);
   };
 
-
   const onSubmit = async (data: NewEmployee) => {
     const valid = await methods.trigger();
     if (!valid) return;
@@ -61,12 +61,16 @@ export default function FormSection({
     const { id } = extractSlug(slug);
     data.shopId = id;
 
-    try{
-      await createEmployee(data)
-      onCreateSuccess()
-    }catch {
-      methods.setError("firstName",{ type: "server", message: "Backend error" })
-      onCreatError()
+    try {
+      await createEmployee(data);
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      onCreateSuccess();
+    } catch {
+      methods.setError("firstName", {
+        type: "server",
+        message: "Backend error",
+      });
+      onCreatError();
     }
   };
   return (

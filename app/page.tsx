@@ -10,11 +10,15 @@ import { useEffect } from "react";
 import { useShop } from "@/hooks/useShop";
 import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
-import SnackBar from "./components/UI/SnackBar";
+import SnackBar from "../widget/SnackBar";
 import { useSession } from "@clerk/nextjs";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
-  const { data, isLoading, isSuccess ,isError , error} = useShop();
+  const queryClient = useQueryClient()
+  queryClient.prefetchQuery({queryKey:["shop"]})
+  const { data, isLoading, isSuccess, isError, error } = useShop();
+  console.log(data?.data);
   
   if (isLoading) return <p>Loading...</p>;
 
@@ -25,17 +29,15 @@ export default function Home() {
     }
     return <p>Error: {(error as Error).message}</p>;
   }
-  if(data.data.length > 0){
-    const shopslug = createSlug(data.data[0].name, data.data[0].id);
+
+  if (data?.data?.length > 0) {
+    const shopslug = createSlug(data?.data[0].name, data?.data[0].id);
     redirect(`/${shopslug}/employees`);
   }
-  
-
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       you have no shop
-      <SnackBar />
     </main>
   );
 }

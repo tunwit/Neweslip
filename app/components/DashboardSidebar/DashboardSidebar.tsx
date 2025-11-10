@@ -62,16 +62,13 @@ export default function DashboardSidebar() {
   const page = pathname[2];
   const sidebarState = useHamburger((state) => state.open);
   const { data, isPending } = useShop();
-  
-  const { isLoaded, session, isSignedIn } = useSession();
 
-  if (sidebarState) {
     return (
       <>
-        <div className="flex flex-col bg-[#1f1f1f] text-black max-h-[calc(100vh-80px)] min-w-36 w-[15%] sticky top-0 left-0 shadow-2xl">
+        <div style={{ width: sidebarState ? "100%" : "0%"}}  className="transition-all duration-300 flex flex-col bg-[#1f1f1f] text-black max-h-[calc(100vh-80px)]  max-w-60 w-56 sticky top-0 left-0 shadow-2xl overflow-clip">
           <div className="pl-3 flex flex-col text-sm gap-1">
-            {Array.isArray(data) &&
-              data?.map((shop: Shop, i: number) => {
+            {Array.isArray(data?.data) &&
+              data?.data.map((shop: Shop, i: number) => {
                 const slug = createSlug(shop.name, String(shop.id));
 
                 return (
@@ -129,4 +126,4 @@ export default function DashboardSidebar() {
       </>
     );
   }
-}
+

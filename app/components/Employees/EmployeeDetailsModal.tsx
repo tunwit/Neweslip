@@ -16,7 +16,7 @@ import { Edit, Save } from "@mui/icons-material";
 import BranchSelector from "../../../widget/BranchSelector";
 import { Employee, EmployeeWithShop, NewEmployee } from "@/types/employee";
 import StatusSelector from "@/widget/StatusSelector";
-import { changeEmployeeStatus } from "@/action/changeEmployeeStatus";
+import { changeEmployeeStatus } from "@/app/action/changeEmployeeStatus";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -28,8 +28,9 @@ import EmployeeDetailsForm from "./EmployeeDetailsForm";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { useZodForm } from "@/lib/useZodForm";
 import normalizeNull from "@/utils/normallizeNull";
-import { updateEmployee } from "@/action/updateEmployee";
+import { updateEmployee } from "@/app/action/updateEmployee";
 import { useSnackbar } from "@/hooks/useSnackBar";
+import { showError, showSuccess } from "@/utils/showSnackbar";
 
 interface EmployeeDetailsModalProps {
   employee: EmployeeWithShop;
@@ -46,25 +47,16 @@ export default function EmployeeDetailsModal({
 
   const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
     setStatus(newValue);
-    try{
+    try {
       await changeEmployeeStatus({ employeeId: employee.id, status: newValue });
-      onUpdateSuccess(`Change Status to ${newValue} successful`)
-    }catch(err){
-      onUpdateError(`Change Status failed\n${err}`)
+      showSuccess(`Change Status to ${newValue} successful`);
+    } catch (err) {
+      showError(`Change Status failed\n${err}`);
     }
-    
+
     queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
-   const { show, setMessage } = useSnackbar();
-
-  const onUpdateSuccess = (message:string)=>{
-    setMessage({ message: message, type: "success" });
-    show()
-  }
-  const onUpdateError = (message:string)=>{
-    setMessage({ message: message, type: "failed" });
-    show()
-  }
+  const { show, setMessage } = useSnackbar();
 
 
   const methods = useZodForm(createEmployeeFormSchema, {
@@ -75,39 +67,48 @@ export default function EmployeeDetailsModal({
       lastName: employee.lastName,
       nickName: employee.nickName,
       email: employee.email,
-      dateOfBirth: employee.dateOfBirth ? new Date(employee.dateOfBirth) : undefined,
+      dateOfBirth: employee.dateOfBirth
+        ? new Date(employee.dateOfBirth)
+        : undefined,
       phoneNumber: employee.phoneNumber,
       gender: employee.gender,
       branchId: employee.branch.id,
       salary: employee.salary,
-      dateEmploy: employee.dateEmploy ? new Date(employee.dateEmploy) : undefined,
+      dateEmploy: employee.dateEmploy
+        ? new Date(employee.dateEmploy)
+        : undefined,
       bankName: employee.bankName,
       bankAccountNumber: employee.bankAccountNumber,
       bankAccountOwner: employee.bankAccountOwner,
       promtpay: employee.promtpay,
-      status: employee.status
+      status: employee.status,
     }),
-    mode:"onChange"
+    mode: "onChange",
   });
 
-
-  const {handleSubmit,reset, formState:{isValid,dirtyFields}} = methods
+  const {
+    handleSubmit,
+    reset,
+    formState: { isValid, dirtyFields },
+  } = methods;
 
   const onSave = async (data: createEmployeeFormField) => {
-    try{
-        await updateEmployee(employee.id,normalizeNull(data))
-        reset(data);
-        onUpdateSuccess(`update employee successful`)
-        queryClient.invalidateQueries({ queryKey: ["employees"] });
-    }catch (err){
-      onUpdateError(`Update employee failed failed\n${err}`)
+    try {
+      await updateEmployee(employee.id, normalizeNull(data));
+      reset(data);
+      showSuccess(`update employee successful`);
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    } catch (err) {
+      showError(`Update employee failed failed\n${err}`);
     }
   };
 
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog sx={{ background: "#fafafa", overflow: "scroll",width:"70%" }}>
+        <ModalDialog
+          sx={{ background: "#fafafa", overflow: "scroll", width: "70%" }}
+        >
           <ModalClose />
           <div className="flex flex-row justify-between items-center ">
             <div className="flex flex-row gap-10 items-center p-2">
@@ -134,22 +135,21 @@ export default function EmployeeDetailsModal({
               </div>
             </div>
             <div className="ml-auto">
-               <Button
-                disabled={(Object.keys(dirtyFields).length <= 0 )|| !isValid}
-                  onClick={handleSubmit(onSave)}
-                  startDecorator={<Save sx={{ fontSize: "16px" }} />}
-                  sx={{ fontSize: "12px", gap: 0 }}
-                  size="sm"
-                  variant="outlined"
-                >
-                  Save
-                </Button>
+              <Button
+                disabled={Object.keys(dirtyFields).length <= 0 || !isValid}
+                onClick={handleSubmit(onSave)}
+                startDecorator={<Save sx={{ fontSize: "16px" }} />}
+                sx={{ fontSize: "12px", gap: 0 }}
+                size="sm"
+                variant="outlined"
+              >
+                Save
+              </Button>
             </div>
           </div>
-          <FormProvider {...methods} >
-            <EmployeeDetailsForm employee={employee}/>
+          <FormProvider {...methods}>
+            <EmployeeDetailsForm employee={employee} />
           </FormProvider>
-          
         </ModalDialog>
       </Modal>
     </>

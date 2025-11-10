@@ -21,6 +21,7 @@ import { ZodControl, ZodForm } from "@/lib/useZodForm";
 import { createEmployeeFormSchema } from "@/types/formField";
 import GenderSelector from "@/widget/GenderSelector";
 import { GENDER } from "@/types/enum/enum";
+import { useRouter } from "next/navigation";
 interface PersonalFormProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -36,6 +37,8 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
   >;
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | undefined>();
+  const router = useRouter();
+
   const handlerNext = async () => {
     const valid = await trigger([
       "firstName",
@@ -50,6 +53,11 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
       setCurrentPage(1);
     }
   };
+
+   const handlerBack = async () => {
+      router.back()
+  };
+  
   const handleClick = () => {
     fileRef.current?.click();
   };
@@ -159,10 +167,13 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
         </div>
       </div>
 
-      <div className=" text-right mr-5 mt-5">
+      <div className="flex gap-3 flex-row-reverse mt-5">
         <Button onClick={() => handlerNext()} variant="soft">
           <p>Next</p>
           <Icon className="text-lg" icon={"mingcute:right-line"} />
+        </Button>
+        <Button onClick={() => handlerBack()} variant="outlined">
+          <p>Back</p>
         </Button>
       </div>
     </>

@@ -8,6 +8,7 @@ interface InputFormProps<TSchema extends z.ZodTypeAny> {
   name: keyof z.infer<TSchema>;
   label: string;
   disabled?: boolean;
+  required?:boolean;
   type?: string;
 }
 
@@ -16,6 +17,7 @@ export function InputForm<TSchema extends z.ZodTypeAny>({
   name,
   label,
   disabled = false,
+  required,
   type = "text",
 }: InputFormProps<TSchema>) {
   const shape = control.schema._def.shape();
@@ -27,7 +29,7 @@ export function InputForm<TSchema extends z.ZodTypeAny>({
       name={name as any}
       control={control}
       render={({ field, fieldState }) => (
-        <FormControl error={!!fieldState.error} required={isRequired}>
+        <FormControl error={!!fieldState.error} required={required ? required : isRequired}>
           <FormLabel>
             {label}
             {fieldState.error && (

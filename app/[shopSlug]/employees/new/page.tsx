@@ -9,7 +9,7 @@ import ContractForm from "@/app/components/Employees/new/ContractForm";
 import { Breadcrumbs, Link } from "@mui/joy";
 import { KeyboardArrowRight } from "@mui/icons-material";
 import FormSection from "@/app/components/Employees/new/FormSection";
-import SnackBar from "@/app/components/UI/SnackBar";
+import SnackBar from "@/widget/SnackBar";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -35,7 +35,6 @@ export default function Home() {
             setCurrentPage={setCurrentPage}
           />
         </div>
-        <SnackBar />
       </div>
     </main>
   );

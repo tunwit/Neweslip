@@ -1,8 +1,14 @@
+import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useOwners } from "@/hooks/useOwners";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React from "react";
 
 export default function OwnersTable() {
+  const { id } = useCurrentShop()
+  const { data, isLoading } = useOwners(id!)
+  
+  
   return (
     <>
       <div>
@@ -16,17 +22,26 @@ export default function OwnersTable() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>
-                  <div className="bg-red-200   aspect-square w-7 h-7 text-center rounded-full flex items-center justify-center">
-                    <p className="text-xs">T</p>
-                  </div>
-                </td>
-                <td>Thanut Thapppota</td>
-                <td>
-                    <IconButton/>
-                </td>
-              </tr>
+                {isLoading &&  (
+                  <tr className="text-center">
+                    <td colSpan={3}>
+                      <p>Loading...</p>
+                    </td>
+                  </tr>
+                )}
+                {!isLoading && data?.data?.map((o)=> (
+                  <tr>
+                    <td>
+                      <div className="bg-red-200   aspect-square w-7 h-7 text-center rounded-full flex items-center justify-center">
+                        <p className="text-xs">{o.firstName?.charAt(0)}</p>
+                      </div>
+                    </td>
+                    <td>{o.fullName}</td>
+                    <td>
+                        <IconButton/>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </Table>
         </div>

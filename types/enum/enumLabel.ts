@@ -1,0 +1,45 @@
+import { EMPLOYEE_STATUS, GENDER, OT_METHOD, OT_TYPE, PAY_PERIOD_STATUS, PENALTY_METHOD, PENALTY_TYPE, SALARY_FIELD_DEFINATION_TYPE } from "./enum";
+
+export const GENDER_LABELS: Record<GENDER, string> = {
+  [GENDER.MALE]: "Male",
+  [GENDER.FEMALE]: "Female",
+  [GENDER.OTHER]: "Other",
+};
+
+export const EMPLOYEE_STATUS_LABELS: Record<EMPLOYEE_STATUS, string> = {
+  [EMPLOYEE_STATUS.ACTIVE]: "Active",
+  [EMPLOYEE_STATUS.INACTIVE]: "Inactive",
+  [EMPLOYEE_STATUS.PARTTIME]: "Part-Time",
+};
+
+export const PAY_PERIOD_STATUS_LABELS: Record<PAY_PERIOD_STATUS ,string> = {
+  [PAY_PERIOD_STATUS.DRAFT]: "Draft",
+  [PAY_PERIOD_STATUS.FINALIZED]: "Finalized",
+  [PAY_PERIOD_STATUS.PAID]: "Paid",
+};
+
+export const OT_TYPE_LABELS: Record<OT_TYPE, string> = {
+  [OT_TYPE.CONSTANT]: "Constant",
+  [OT_TYPE.BASEDONSALARY]: "Based on Salary",
+};
+
+export const OT_METHOD_LABELS: Record<OT_METHOD, string> = {
+  [OT_METHOD.DAILY]: "Daily",
+  [OT_METHOD.HOURLY]: "Hourly",
+};
+
+export const PENALTY_TYPE_LABELS: Record<PENALTY_TYPE, string> = {
+  [PENALTY_TYPE.CONSTANT]: "Constant",
+  [PENALTY_TYPE.BASEDONSALARY]: "Based on Salary",
+};
+
+export const PENALTY_METHOD_LABELS: Record<PENALTY_METHOD, string> = {
+  [PENALTY_METHOD.PERMINUTE]: "Per Minute",
+  [PENALTY_METHOD.DAILY]: "Daily",
+  [PENALTY_METHOD.HOURLY]: "Hourly",
+};
+
+export const SALARY_FIELD_DEFINATION_TYPE_LABELS: Record<SALARY_FIELD_DEFINATION_TYPE, string> = {
+  [SALARY_FIELD_DEFINATION_TYPE.INCOME]: "Income",
+  [SALARY_FIELD_DEFINATION_TYPE.DEDUCTION]: "Deduction",
+};

@@ -1,7 +1,7 @@
 "use client";
 import { Autocomplete, Option, Select } from "@mui/joy";
 import React, { useEffect } from "react";
-import { useBranch } from "../app/components/Employees/hooks/useBranch";
+import { useBranch } from "../hooks/useBranch";
 import { Branch } from "@/types/branch";
 
 interface BranchSelectorProps {

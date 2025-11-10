@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import PayrollEditEmployeeModal from "./EditModal/PayrollEditEmployeeModal";
-import { usePayrollSelectKit } from "../../../../hooks/useSelectKit";
+import { usePayrollSelectKit } from "../../../../hooks/useCheckBox";
 import { getRandomPastelColor } from "@/utils/generatePastelColor";
 
 interface PayrollsEmployeesElementProps {

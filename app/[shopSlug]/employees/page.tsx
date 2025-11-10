@@ -7,29 +7,26 @@ import Option from "@mui/joy/Option";
 import EmployeesTable from "@/app/components/Employees/EmployeesTable";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import SnackBar from "@/app/components/UI/SnackBar";
+import SnackBar from "@/widget/SnackBar";
 import { Suspense, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import Pagination from "@/app/components/UI/Pagination";
 import { useQueryClient } from "@tanstack/react-query";
 import BranchSelector from "@/widget/BranchSelector";
 import StatusSelector from "@/widget/StatusSelector";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { Pagination } from "@mui/material";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useEmployeeStats } from "@/hooks/useEmployeeStats";
+import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
+import { useSalaryFields } from "@/hooks/useSalaryFields";
 
 export default function Home() {
   const rounter = useRouter();
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
-  const [page, setPage] = useState(1);
   const [branchId, setBranchId] = useState(-1);
-  const [status, setStatus] = useState<EMPLOYEE_STATUS|null>(null);
-
-  const [limit, setLimit] = useState(15);
-  const [totalPage, setTotalPage] = useState(1);
-
-  const onPagechange = (p: number) => {
-    setPage(p);
-  };
+  const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
+  
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10">
@@ -74,20 +71,15 @@ export default function Home() {
 
           <div className="w-[20%]">
             <p className="text-black text-xs mb-1">Status</p>
-            <StatusSelector isEnableAll={true} status={status} onChange={(value) => setStatus(value!)}/>
+            <StatusSelector
+              isEnableAll={true}
+              status={status}
+              onChange={(value) => setStatus(value!)}
+            />
           </div>
 
           <div className="w-[20%]">
             <p className="text-black text-xs mb-1">Brach</p>
-            {/* <Select
-              defaultValue="All"
-              sx={{ borderRadius: "4px", fontSize: "14px" }}
-            >
-              <Option value="All">All</Option>
-              <Option value="Pakkret">Pakkret</Option>
-              <Option value="Ramintra">Ramintra</Option>
-              <Option value="Kallapapruk">Kallapapruk</Option>
-            </Select> */}
             <BranchSelector
               branchId={branchId}
               onChange={(n) => {
@@ -98,24 +90,13 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center mt-5">
-          <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
-            <EmployeesTable
+            <EmployeeTableWrapper
               search_query={debounced}
               branchId={branchId}
               status={status}
-              page={page}
-              setPage={setPage}
-              setTotalPage={setTotalPage}
             />
-          </div>
         </div>
-        <Pagination
-          page={page}
-          totalPages={totalPage}
-          onPageChange={(p) => onPagechange(p)}
-        ></Pagination>
       </div>
-      <SnackBar />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, {
+  ChangeEvent,
   Dispatch,
   memo,
   SetStateAction,
@@ -9,71 +10,33 @@ import React, {
 } from "react";
 import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
-import { useEmployeeSelectKit } from "@/hooks/useSelectKit";
-import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
-import { useEmployees } from "./hooks/useEmployees";
+import { useEmployees } from "../../../hooks/useEmployees";
 import { EmployeeWithShop } from "@/types/employee";
-import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { useEmployeeStats } from "@/hooks/useEmployeeStats";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { moneyFormat } from "@/utils/moneyFormat";
+import { PaginatedResponse } from "@/types/response";
+import { useCheckBox } from "@/hooks/useCheckBox";
 
 interface EmployeesTableProps {
-  search_query?: string;
-  branchId?: number;
-  status?: EMPLOYEE_STATUS
-  page?: number;
-  setTotalPage: Dispatch<SetStateAction<number>>;
-  setPage: Dispatch<SetStateAction<number>>;
+  data: PaginatedResponse<EmployeeWithShop[]> | undefined;
+  isLoading: boolean;
+  isSuccess: boolean;
 }
-function EmployeesTable({
-  search_query = "",
-  branchId,
-  status,
-  page = 1,
-  setPage,
-  setTotalPage,
-}: EmployeesTableProps) {
-    const { data, isError ,isSuccess,isLoading} = useEmployees({
-      search_query,
-      branchId,
-      page,
-      status
-    });
-    
-  const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
-  const { checkboxs, checkall, setItem, uncheckall,setCheckboxs } = useEmployeeSelectKit();
-
-  useEffect(() => {
-    if (isLoading) return;
-    setTotalPage(data?.pagination.totalPages || 1);
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    setPage(1);
-    setTotalPage(data?.pagination.totalPages || 1);
-  }, [branchId, status, search_query]);
+function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
+  const { id } = useCurrentShop();
+  const { data: employeeStat } = useEmployeeStats({ shopId: id! });
+  const { checked, checkall, uncheckall, isAllChecked, isSomeChecked} = useCheckBox<number>("allEmployeeTable");
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!data?.data) return;
     if (e.currentTarget.checked) {
-      checkall();
-      setItem(data?.data)
+      checkall(data.data.map((v) => v.id));
     } else {
       uncheckall();
-      setItem([]);
     }
   };
 
-  useEffect(() => {
-    if (!data?.data) return;
-    setCheckboxs(
-      Object.fromEntries(
-        data?.data?.map((emp: EmployeeWithShop) => [emp.id, false])
-      ),
-    );
-  }, [data]);
-
-  const checkboxState = isAllCheckboxs(checkboxs);
   return (
     <>
       <Table stickyHeader stickyFooter hoverRow variant="plain" noWrap>
@@ -81,8 +44,8 @@ function EmployeesTable({
           <tr>
             <th className="w-[8%]">
               <Checkbox
-                checked={checkboxState.allChecked}
-                indeterminate={checkboxState.someChecked}
+                checked={isAllChecked(data?.data?.length ?? 0)}
+                indeterminate={isSomeChecked(data?.data?.length ?? 0)}
                 onChange={(e) => handleAllCheckbox(e)}
               />
             </th>
@@ -108,13 +71,8 @@ function EmployeesTable({
           )}
 
           {isSuccess &&
-          data?.data?.map((emp: EmployeeWithShop, i: number) => {
-              return (
-                <EmployeesElement
-                  key={emp.id}
-                  employee={emp}
-                />
-              );
+            data?.data?.map((emp: EmployeeWithShop, i: number) => {
+              return <EmployeesElement key={emp.id} employee={emp} />;
             })}
         </tbody>
         <tfoot>
@@ -122,12 +80,14 @@ function EmployeesTable({
             <th scope="row">Totals</th>
             <td>
               <div className="flex flex-row gap-1 items-center ">
-                <p>{data?.pagination?.totalItems}</p>
+                <p>{employeeStat?.data?.totalEmployees || 0}</p>
                 <Icon icon={"mdi:users"} />
               </div>
             </td>
             <td></td>
-            <td>{moneyFormat} ฿</td>
+            <td>
+              {moneyFormat(employeeStat?.data?.salary.activeSalary || 0)} ฿
+            </td>
             <td></td>
             <td></td>
           </tr>

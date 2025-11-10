@@ -4,6 +4,7 @@ import {
   int,
   mysqlEnum,
   mysqlTable,
+  mysqlView,
   serial,
   text,
   timestamp,
@@ -11,7 +12,7 @@ import {
 } from "drizzle-orm/mysql-core";
 import { shopsTable } from "./shopsTable";
 import { branchesTable } from "./branchesTable";
-import { relations } from "drizzle-orm";
+import { isNull, relations } from "drizzle-orm";
 import { EMPLOYEE_STATUS, GENDER } from "@/types/enum/enum";
 
 export const employeesTable = mysqlTable("employees", {
@@ -38,10 +39,10 @@ export const employeesTable = mysqlTable("employees", {
     .references(() => shopsTable.id)
     .notNull(),
   branchId: int()
-    .references(() => branchesTable.id)
+    .references(() => branchesTable.id,{onDelete:"cascade"})
     .notNull(),
   status: mysqlEnum(EMPLOYEE_STATUS).default(EMPLOYEE_STATUS.ACTIVE).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull()
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const employeeRelations = relations(employeesTable, ({ one }) => ({

@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "0ff2feff-849b-4208-9b5d-570d315be1d1",
-  "prevId": "cb4a5f44-9c16-4df7-b54f-ddaaaf48b284",
+  "id": "acfd0912-2714-4992-855f-802337ea190a",
+  "prevId": "3b24b13e-ea0f-422c-a70d-d751794f2cea",
   "tables": {
-    "deduction_details": {
-      "name": "deduction_details",
+    "branches": {
+      "name": "branches",
       "columns": {
         "id": {
           "name": "id",
@@ -14,18 +14,18 @@
           "notNull": true,
           "autoincrement": true
         },
-        "field_name_th": {
-          "name": "field_name_th",
-          "type": "text",
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "field_name_eng": {
-          "name": "field_name_eng",
-          "type": "text",
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "shopId": {
@@ -36,11 +36,20 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "name_shopId": {
+          "name": "name_shopId",
+          "columns": [
+            "shopId",
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
-        "deduction_details_shopId_shops_id_fk": {
-          "name": "deduction_details_shopId_shops_id_fk",
-          "tableFrom": "deduction_details",
+        "branches_shopId_shops_id_fk": {
+          "name": "branches_shopId_shops_id_fk",
+          "tableFrom": "branches",
           "tableTo": "shops",
           "columnsFrom": [
             "shopId"
@@ -48,13 +57,13 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "deduction_details_id": {
-          "name": "deduction_details_id",
+        "branches_id": {
+          "name": "branches_id",
           "columns": [
             "id"
           ]
@@ -110,7 +119,7 @@
         },
         "dateOfBirth": {
           "name": "dateOfBirth",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -119,7 +128,7 @@
           "name": "gender",
           "type": "enum('male','female','other')",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "'female'"
         },
@@ -132,7 +141,7 @@
         },
         "dateEmploy": {
           "name": "dateEmploy",
-          "type": "text",
+          "type": "date",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -218,9 +227,17 @@
           "name": "status",
           "type": "enum('ACTIVE','INACTIVE','PARTTIME')",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "'ACTIVE'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -248,7 +265,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -263,45 +280,29 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "branches": {
-      "name": "branches",
+    "shop_owner": {
+      "name": "shop_owner",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "shopId": {
           "name": "shopId",
           "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
-      "indexes": {
-        "name_shopId": {
-          "name": "name_shopId",
-          "columns": [
-            "shopId",
-            "name"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
-        "branches_shopId_shops_id_fk": {
-          "name": "branches_shopId_shops_id_fk",
-          "tableFrom": "branches",
+        "shop_owner_shopId_shops_id_fk": {
+          "name": "shop_owner_shopId_shops_id_fk",
+          "tableFrom": "shop_owner",
           "tableTo": "shops",
           "columnsFrom": [
             "shopId"
@@ -309,15 +310,16 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "branches_id": {
-          "name": "branches_id",
+        "shop_owner_shopId_ownerId_pk": {
+          "name": "shop_owner_shopId_ownerId_pk",
           "columns": [
-            "id"
+            "shopId",
+            "ownerId"
           ]
         }
       },
@@ -369,9 +371,97 @@
       },
       "checkConstraint": {}
     },
-    "shop_owner": {
-      "name": "shop_owner",
+    "payroll_field_value": {
+      "name": "payroll_field_value",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "payrollRecordId": {
+          "name": "payrollRecordId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "salaryFieldId": {
+          "name": "salaryFieldId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0.00'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payroll_field_value_payrollRecordId_payroll_records_id_fk": {
+          "name": "payroll_field_value_payrollRecordId_payroll_records_id_fk",
+          "tableFrom": "payroll_field_value",
+          "tableTo": "payroll_records",
+          "columnsFrom": [
+            "payrollRecordId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payroll_field_value_salaryFieldId_salary_fields_id_fk": {
+          "name": "payroll_field_value_salaryFieldId_salary_fields_id_fk",
+          "tableFrom": "payroll_field_value",
+          "tableTo": "salary_fields",
+          "columnsFrom": [
+            "salaryFieldId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "payroll_field_value_id": {
+          "name": "payroll_field_value_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "payroll_periods": {
+      "name": "payroll_periods",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
         "shopId": {
           "name": "shopId",
           "type": "int",
@@ -379,107 +469,615 @@
           "notNull": true,
           "autoincrement": false
         },
-        "ownerId": {
-          "name": "ownerId",
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('DRAFT','FINALIZED','PAID')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'DRAFT'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payroll_periods_shopId_shops_id_fk": {
+          "name": "payroll_periods_shopId_shops_id_fk",
+          "tableFrom": "payroll_periods",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shopId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "payroll_periods_id": {
+          "name": "payroll_periods_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "payroll_records": {
+      "name": "payroll_records",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "payrollPeriodId": {
+          "name": "payrollPeriodId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "employeeId": {
+          "name": "employeeId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        }
+      },
+      "indexes": {
+        "payroll_period_employee_unique": {
+          "name": "payroll_period_employee_unique",
+          "columns": [
+            "payrollPeriodId",
+            "employeeId"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "payroll_records_payrollPeriodId_payroll_periods_id_fk": {
+          "name": "payroll_records_payrollPeriodId_payroll_periods_id_fk",
+          "tableFrom": "payroll_records",
+          "tableTo": "payroll_periods",
+          "columnsFrom": [
+            "payrollPeriodId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payroll_records_employeeId_employees_id_fk": {
+          "name": "payroll_records_employeeId_employees_id_fk",
+          "tableFrom": "payroll_records",
+          "tableTo": "employees",
+          "columnsFrom": [
+            "employeeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "payroll_records_id": {
+          "name": "payroll_records_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "ot_fields": {
+      "name": "ot_fields",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "shopId": {
+          "name": "shopId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum('CONSTANT','BASEDONSALARY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'BASEDONSALARY'"
+        },
+        "method": {
+          "name": "method",
+          "type": "enum('DAILY','HOURLY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'HOURLY'"
+        },
+        "rate": {
+          "name": "rate",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rateOfPay": {
+          "name": "rateOfPay",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {
+        "salary_field_name_id_unique": {
+          "name": "salary_field_name_id_unique",
+          "columns": [
+            "name",
+            "id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "ot_fields_shopId_shops_id_fk": {
+          "name": "ot_fields_shopId_shops_id_fk",
+          "tableFrom": "ot_fields",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shopId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ot_fields_id": {
+          "name": "ot_fields_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "ot_field_value": {
+      "name": "ot_field_value",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "payrollRecordId": {
+          "name": "payrollRecordId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "otFieldId": {
+          "name": "otFieldId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0.00'"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0.00'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ot_field_value_payrollRecordId_payroll_records_id_fk": {
+          "name": "ot_field_value_payrollRecordId_payroll_records_id_fk",
+          "tableFrom": "ot_field_value",
+          "tableTo": "payroll_records",
+          "columnsFrom": [
+            "payrollRecordId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "ot_field_value_otFieldId_ot_fields_id_fk": {
+          "name": "ot_field_value_otFieldId_ot_fields_id_fk",
+          "tableFrom": "ot_field_value",
+          "tableTo": "ot_fields",
+          "columnsFrom": [
+            "otFieldId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "ot_field_value_id": {
+          "name": "ot_field_value_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "penalty_fields": {
+      "name": "penalty_fields",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "shopId": {
+          "name": "shopId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum('CONSTANT','BASEDONSALARY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'BASEDONSALARY'"
+        },
+        "method": {
+          "name": "method",
+          "type": "enum('PERMINUTE','DAILY','HOURLY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'HOURLY'"
+        },
+        "rateOfPay": {
+          "name": "rateOfPay",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {
+        "salary_field_name_id_unique": {
+          "name": "salary_field_name_id_unique",
+          "columns": [
+            "name",
+            "id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "penalty_fields_shopId_shops_id_fk": {
+          "name": "penalty_fields_shopId_shops_id_fk",
+          "tableFrom": "penalty_fields",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shopId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "penalty_fields_id": {
+          "name": "penalty_fields_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "penalty_field_value": {
+      "name": "penalty_field_value",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "payrollRecordId": {
+          "name": "payrollRecordId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "penaltyFieldId": {
+          "name": "penaltyFieldId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0.00'"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0.00'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "penalty_field_value_payrollRecordId_payroll_records_id_fk": {
+          "name": "penalty_field_value_payrollRecordId_payroll_records_id_fk",
+          "tableFrom": "penalty_field_value",
+          "tableTo": "payroll_records",
+          "columnsFrom": [
+            "payrollRecordId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "penalty_field_value_penaltyFieldId_penalty_fields_id_fk": {
+          "name": "penalty_field_value_penaltyFieldId_penalty_fields_id_fk",
+          "tableFrom": "penalty_field_value",
+          "tableTo": "penalty_fields",
+          "columnsFrom": [
+            "penaltyFieldId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "penalty_field_value_id": {
+          "name": "penalty_field_value_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "salary_fields": {
+      "name": "salary_fields",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "shopId": {
+          "name": "shopId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum('INCOME','DEDUCTION')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'INCOME'"
+        },
+        "formular": {
+          "name": "formular",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {
-        "shop_owner_shopId_shops_id_fk": {
-          "name": "shop_owner_shopId_shops_id_fk",
-          "tableFrom": "shop_owner",
-          "tableTo": "shops",
-          "columnsFrom": [
-            "shopId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "shop_owner_shopId_ownerId_pk": {
-          "name": "shop_owner_shopId_ownerId_pk",
+      "indexes": {
+        "salary_field_name_id_unique": {
+          "name": "salary_field_name_id_unique",
           "columns": [
-            "shopId",
-            "ownerId"
-          ]
+            "name",
+            "id"
+          ],
+          "isUnique": true
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "ot_details": {
-      "name": "ot_details",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "field_name_th": {
-          "name": "field_name_th",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "field_name_eng": {
-          "name": "field_name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "ot_rate": {
-          "name": "ot_rate",
-          "type": "float",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "method": {
-          "name": "method",
-          "type": "enum('daily','hourly')",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "type": {
-          "name": "type",
-          "type": "enum('base on salary','constant')",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "rop": {
-          "name": "rop",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "shopId": {
-          "name": "shopId",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
       "foreignKeys": {
-        "ot_details_shopId_shops_id_fk": {
-          "name": "ot_details_shopId_shops_id_fk",
-          "tableFrom": "ot_details",
+        "salary_fields_shopId_shops_id_fk": {
+          "name": "salary_fields_shopId_shops_id_fk",
+          "tableFrom": "salary_fields",
           "tableTo": "shops",
           "columnsFrom": [
             "shopId"
@@ -487,152 +1085,13 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "ot_details_id": {
-          "name": "ot_details_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "income_details": {
-      "name": "income_details",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "field_name_th": {
-          "name": "field_name_th",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "field_name_eng": {
-          "name": "field_name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "shopId": {
-          "name": "shopId",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "income_details_shopId_shops_id_fk": {
-          "name": "income_details_shopId_shops_id_fk",
-          "tableFrom": "income_details",
-          "tableTo": "shops",
-          "columnsFrom": [
-            "shopId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "income_details_id": {
-          "name": "income_details_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "absent_details": {
-      "name": "absent_details",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "field_name_th": {
-          "name": "field_name_th",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "field_name_eng": {
-          "name": "field_name_eng",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "method": {
-          "name": "method",
-          "type": "enum('per minute','daily','hourly')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "type": {
-          "name": "type",
-          "type": "enum('base on salary','constant')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "rod": {
-          "name": "rod",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "shopId": {
-          "name": "shopId",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "absent_details_shopId_shops_id_fk": {
-          "name": "absent_details_shopId_shops_id_fk",
-          "tableFrom": "absent_details",
-          "tableTo": "shops",
-          "columnsFrom": [
-            "shopId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "absent_details_id": {
-          "name": "absent_details_id",
+        "salary_fields_id": {
+          "name": "salary_fields_id",
           "columns": [
             "id"
           ]

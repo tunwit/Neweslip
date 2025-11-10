@@ -4,7 +4,7 @@ import { Checkbox, Table } from "@mui/joy";
 import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
 import { Employee } from "@/types/employee";
 import data from "@/assets/employee";
-import { useAllSelectKit } from "../../../../../hooks/useSelectKit";
+import { useAllSelectKit } from "../../../../../hooks/useCheckBox";
 import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 
 // interface PayrollsAllEmployeeProps {

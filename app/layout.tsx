@@ -7,10 +7,9 @@ import { redirect } from "next/navigation";
 import Navbar from "./components/Navbar/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
-import SnackBar from "./components/UI/SnackBar";
-import {
-  ClerkProvider,
-} from '@clerk/nextjs'
+import SnackBar from "../widget/SnackBar";
+import { ClerkProvider } from "@clerk/nextjs";
+import ClientWrapper from "@/widget/ClientWrapper";
 
 const sarabun = Sarabun({
   subsets: ["thai", "latin"],
@@ -27,25 +26,25 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body className={`${sarabun.className} antialiased flex`}>
-        <Providers>
-          {/* <ShopSidebar /> */}
-          <Suspense>
-            <div className="flex flex-col min-h-screen ">
-              <Navbar />
-              <div className="flex flex-row h-full  max-h-[calc(100vh-80px)]  w-screen overflow-hidden">
-                <DashboardSidebar />
-                {children}
+      <html lang="en">
+        <body className={`${sarabun.className} antialiased flex`}>
+          <Providers>
+            <Suspense>
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+
+                <div className="flex flex-row h-full max-h-[calc(100vh-80px)] w-screen overflow-hidden">
+                  <DashboardSidebar />
+
+                  <ClientWrapper>{children}</ClientWrapper>
+                </div>
               </div>
-            </div>
-          </Suspense>
-        </Providers>
-      </body>
-    </html>
+            </Suspense>
+          </Providers>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

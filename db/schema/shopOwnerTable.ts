@@ -7,8 +7,7 @@ export const shopOwnerTable = mysqlTable(
   {
     shopId: int()
       .notNull()
-      .references(() => shopsTable.id)
-      .notNull(),
+      .references(() => shopsTable.id, { onDelete : "cascade"}),
     ownerId: varchar({ length: 255 }) // id from clerk
       .notNull()
   },

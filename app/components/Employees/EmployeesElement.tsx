@@ -2,10 +2,11 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
-import EmployeeDetailsModal from "./EmployeeDetailsModal";
-import { useEmployeeSelectKit } from "@/hooks/useSelectKit";
+import EmployeeDetailsModal from "./EmployeeDetailsModal";  
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { EmployeeWithShop } from "@/types/employee";
+import { moneyFormat } from "@/utils/moneyFormat";
+import { useCheckBox } from "@/hooks/useCheckBox";
 
 function getRandomPastelColor() {
   const r = Math.floor(Math.random() * 128) + 127; // Random red value (127-255)
@@ -16,42 +17,25 @@ function getRandomPastelColor() {
 }
 
 export default function EmployeesElement({
-  employee
-}: {employee:EmployeeWithShop}) {
-  const { updateAtId, checkboxs, add, remove } = useEmployeeSelectKit();
-  const moneyFormat = new Intl.NumberFormat("th-TH").format(employee.salary || 0);
-
-  const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked: boolean = e.currentTarget.checked;
-    updateAtId(employee.id);
-    if (checked) {
-      add([employee]);
-    } else {
-      remove([employee.id]);
-    }
-  };
+  employee,
+}: {
+  employee: EmployeeWithShop;
+}) {
+  const { toggle, isChecked } = useCheckBox<number>("allEmployeeTable");
 
   const [open, setOpen] = useState<boolean>(false);
 
   const randomColor = useMemo(() => getRandomPastelColor(), []);
-
-  const isChecked = useEmployeeSelectKit(
-    (state) => state.checkboxs[employee.id] ?? false,
-  );
   return (
     <>
-      <EmployeeDetailsModal
-        employee={employee}
-        open={open}
-        setOpen={setOpen}
-      />
+      <EmployeeDetailsModal employee={employee} open={open} setOpen={setOpen} />
       <tr className="cursor-pointer">
         <td>
           <div className="flex gap-4  items-center">
             <Checkbox
-              checked={isChecked}
+              checked={isChecked(employee.id)}
               onChange={(e) => {
-                updateCheckboxAtIndex(e);
+                toggle(employee.id);
               }}
             />
             <div
@@ -70,7 +54,7 @@ export default function EmployeesElement({
           </div>
         </td>
         <td onClick={() => setOpen(true)}>{employee.nickName}</td>
-        <td onClick={() => setOpen(true)}>{moneyFormat} ฿</td>
+        <td onClick={() => setOpen(true)}>{moneyFormat(employee.salary)} ฿</td>
         <td onClick={() => setOpen(true)}>{employee.branch.name}</td>
         <td onClick={() => setOpen(true)}>
           <EmployeeStatusBadge status={employee.status} />
