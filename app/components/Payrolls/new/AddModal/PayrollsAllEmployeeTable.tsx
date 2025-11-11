@@ -4,46 +4,42 @@ import { Checkbox, Table } from "@mui/joy";
 import PayrollsAllEmployeesElement from "./PayrollsAllEmployeeElement";
 import { Employee } from "@/types/employee";
 import data from "@/assets/employee";
-import { useAllSelectKit } from "../../../../../hooks/useCheckBox";
-import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 
 // interface PayrollsAllEmployeeProps {
 //   setCheckedEmployees: React.Dispatch<React.SetStateAction<Employee[]>>;
 // }
 export default function PayrollsAllEmployeeTable() {
-  const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);
-  const { checkboxs, checkall, uncheckall, setItem, setCheckboxs } =
-    useAllSelectKit();
+  const moneyFormat = new Intl.NumberFormat("th-TH").format(500000);;
 
-  const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.checked) {
-      checkall();
-      setItem(data);
-    } else {
-      uncheckall();
-      setItem([]);
-    }
-  };
+  // const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.currentTarget.checked) {
+  //     checkall();
+  //     setItem(data);
+  //   } else {
+  //     uncheckall();
+  //     setItem([]);
+  //   }
+  // };
 
-  useEffect(() => {
-    setCheckboxs(
-      Object.fromEntries(
-        data.map((emp) => [emp.id, false]), // start all unchecked
-      ),
-    );
-  }, [data]);
-  const allCheckBoxState = isAllCheckboxs(checkboxs);
+  // useEffect(() => {
+  //   setCheckboxs(
+  //     Object.fromEntries(
+  //       data.map((emp) => [emp.id, false]), // start all unchecked
+  //     ),
+  //   );
+  // }, [data]);
+  // const allCheckBoxState = isAllCheckboxs(checkboxs);
   return (
     <>
       <Table stickyHeader hoverRow variant="plain" noWrap>
         <thead>
           <tr>
             <th className="w-[7%]">
-              <Checkbox
+              {/* <Checkbox
                 checked={allCheckBoxState.allChecked}
                 indeterminate={allCheckBoxState.someChecked}
                 onChange={(e) => handleAllCheckbox(e)}
-              />
+              /> */}
             </th>
             <th className="font-medium w-[30%]">Name</th>
             <th className="font-medium">Nickname</th>

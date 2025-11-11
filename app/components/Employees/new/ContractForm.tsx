@@ -2,6 +2,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
+  CircularProgress,
   FormControl,
   FormLabel,
   Input,
@@ -190,7 +191,11 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           loadingPosition="start"
           disabled={isSubmitting || isSubmitSuccessful}
         >
-          <p>Save</p>
+          {isSubmitting ? (
+              "Creating Employee..."
+          ) : (
+            "Create Employee"
+          )}
           <Icon className="text-lg" icon={"mingcute:right-line"} />
         </Button>
       </div>

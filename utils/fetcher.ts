@@ -32,7 +32,7 @@ export const fetchwithauth = async ({ endpoint, method, body }: fetchProps) => {
   if (body && method !== "GET") {
     options.body = JSON.stringify(body);
   }
-
+  
   const res = await fetch(`http://localhost:3000/api${endpoint}`, options);
   if (!res.ok) {
     const msg = await res.text();

@@ -36,8 +36,7 @@ export default async function RootLayout({
                 <Navbar />
 
                 <div className="flex flex-row h-full max-h-[calc(100vh-80px)] w-screen overflow-hidden">
-                  <DashboardSidebar />
-
+                
                   <ClientWrapper>{children}</ClientWrapper>
                 </div>
               </div>

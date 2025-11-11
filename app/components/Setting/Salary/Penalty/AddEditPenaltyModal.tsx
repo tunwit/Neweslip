@@ -53,7 +53,7 @@ export default function AddEditPenaltyModal({ open, setOpen, field }: AddEditPen
       },
     })
 
-  const { control , handleSubmit, setValue} = methods
+  const { control , handleSubmit, setValue, formState:{isSubmitSuccessful, isSubmitting}} = methods
   
   const closeHandler = () => {
     methods.reset();
@@ -172,7 +172,7 @@ export default function AddEditPenaltyModal({ open, setOpen, field }: AddEditPen
               )}
             </div>
             <div className="mt-3">
-              <Button type="summit" sx={{ width: "100%" }}>
+              <Button disabled={isSubmitting || isSubmitSuccessful} loadingPosition="start" loading={isSubmitting}  type="summit" sx={{ width: "100%" }}>
                 {field ? "Update" : "Add"}
               </Button>
             </div>

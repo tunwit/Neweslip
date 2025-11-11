@@ -7,21 +7,19 @@ import { Add } from "@mui/icons-material";
 import PayrollsEmployeesTable from "@/app/components/Payrolls/new/PayrollsEmployeeTable";
 import { useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePayrollSelectKit } from "@/hooks/useCheckBox";
-import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 import { useSelectedEmployees } from "@/app/components/Payrolls/new/hooks/useSelectedEmployee";
 
 export default function Home() {
-  const { checkboxs, checkedItem, uncheckall } = usePayrollSelectKit();
+  // const { checkboxs, checkedItem, uncheckall } = usePayrollSelectKit();
   const { remove } = useSelectedEmployees();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const handlerDelete = () => {
-    uncheckall();
-    remove(checkedItem.map((emp) => emp.id));
-  };
-  const checkboxState = isAllCheckboxs(checkboxs);
+  // const handlerDelete = () => {
+  //   uncheckall();
+  //   remove(checkedItem.map((emp) => emp.id));
+  // };
+  const checkboxState = false
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
@@ -96,8 +94,8 @@ export default function Home() {
 
         <div className="mt-2 flex justify-between">
           <Button
-            onClick={() => handlerDelete()}
-            disabled={checkboxState.noneChecked}
+            onClick={()=>{}}
+            disabled
             color="danger"
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >

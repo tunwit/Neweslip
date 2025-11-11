@@ -42,7 +42,7 @@ export default function AddEditDeductionModal({ open, setOpen, field }: AddDeduc
       },
     })
 
-  const { control , handleSubmit} = methods
+  const { control , handleSubmit, formState:{isSubmitSuccessful,isSubmitting}} = methods
   const closeHandler = () => {
     methods.reset();
     setOpen(false);
@@ -100,7 +100,7 @@ export default function AddEditDeductionModal({ open, setOpen, field }: AddDeduc
               <InputForm control={control} name="nameEng" label="Name English"/>
             </div>
             <div className="mt-3">
-              <Button type="summit" sx={{ width: "100%" }}>
+              <Button disabled={isSubmitting || isSubmitSuccessful} loadingPosition="start" loading={isSubmitting} type="summit" sx={{ width: "100%" }} loadingPosition="start" loading={isSubmitting}>
                 {field ? "Update" : "Add"}
               </Button>
             </div>

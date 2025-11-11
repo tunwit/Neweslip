@@ -50,7 +50,7 @@ export default function AddEditOTModal({ open, setOpen, field }: AddOTModalProps
       },
     })
 
-  const { control , handleSubmit, setValue} = methods
+  const { control , handleSubmit, setValue, formState:{isSubmitSuccessful,isSubmitting}} = methods
   const closeHandler = () => {
     methods.reset();
     setOpen(false);
@@ -200,7 +200,7 @@ export default function AddEditOTModal({ open, setOpen, field }: AddOTModalProps
               )}
             </div>
             <div className="mt-3">
-              <Button type="summit" sx={{ width: "100%" }}>
+              <Button disabled={isSubmitting || isSubmitSuccessful} loadingPosition="start" loading={isSubmitting}  type="summit" sx={{ width: "100%" }}>
                 {field ? "Update" : "Add"}
               </Button>
             </div>

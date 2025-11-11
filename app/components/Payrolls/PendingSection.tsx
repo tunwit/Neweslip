@@ -4,114 +4,50 @@ import React, { useState } from "react";
 import PendingElement from "./PendingElement";
 import dayjs from "dayjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
-
-const test = [
-  {
-    title: "Payroll - 01",
-    people: 50,
-    amount: 15425,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-  {
-    title: "Payroll - 02",
-    people: 49,
-    amount: 6451,
-    status: 2,
-  },
-];
+import { usePayrollPeriods } from "@/hooks/usePayrollPeriods";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCheckBox } from "@/hooks/useCheckBox";
 
 export default function PendingSection() {
-  const [checkboxs, setCheckboxs] = useState<boolean[]>(
-    Array(test.length).fill(false),
-  );
+  const {id} = useCurrentShop();
+  const {isAllChecked, isSomeChecked,checkall,uncheckall} = useCheckBox("payrollPeriods")
+  if(!id) return;
 
-  const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckboxs(checkboxs.map(() => e.currentTarget.checked));
-  };
+  const {data,isLoading} = usePayrollPeriods(id);
+
+    const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!data?.data) return;
+      if (e.currentTarget.checked) {
+        checkall(data.data.map((v) => v.id));
+      } else {
+        uncheckall();
+      }
+    };
 
   return (
     <div className="flex flex-col h-full">
-      {test.length !== 0 ? (
+      {!isLoading ? (
         <>
           <div className="pl-5 mt-2">
             <Checkbox
               label="All"
-              checked={checkboxs.every((v) => v === true)}
-              indeterminate={
-                !checkboxs.every((checkbox) => checkbox === checkboxs[0])
-              }
-              onChange={(e) => handleAllCheckbox(e)}
+              checked={isAllChecked(data?.data?.length || 0)}
+              indeterminate={isSomeChecked(data?.data?.length || 0)}
+              onChange={handleAllCheckbox}
             />
           </div>
 
           <div className="flex-1 overflow-y-scroll my-2">
             <div className="flex flex-col gap-2 max-h-[calc(100vh-352px)] min-h-40">
-              {test.map((pen, i) => (
+              {data?.data?.map((pen, i) => (
                 <PendingElement
                   key={i}
-                  id={i}
-                  title={`${pen.title} ${i}`}
-                  people={pen.people}
-                  amount={pen.amount}
-                  modifyAt={dayjs()}
+                  id={pen.id}
+                  title={`${pen.name} ${i}`}
+                  people={1}
+                  amount={1}
+                  modifyAt={dayjs(pen.updatedAt)}
                   status={pen.status}
-                  checkboxs={checkboxs}
-                  setCheckboxs={setCheckboxs}
                 />
               ))}
             </div>
@@ -121,10 +57,10 @@ export default function PendingSection() {
         <p className="opacity-60 my-2">No Pending is active</p>
       )}
 
-      {test.length !== 0 && (
+      {data?.data?.length !== 0 && (
         // <Button disabled={!checkboxs.some((v) => v === true)} color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
       <div>
-        <Button disabled={!checkboxs.some((v) => v === true)} color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
+        <Button disabled color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
       </div>
       )}
     </div>

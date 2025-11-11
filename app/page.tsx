@@ -33,6 +33,8 @@ export default function Home() {
   if (data?.data?.length > 0) {
     const shopslug = createSlug(data?.data[0].name, data?.data[0].id);
     redirect(`/${shopslug}/employees`);
+  }else{
+    redirect(`/no-shop`);
   }
 
   return (

@@ -10,13 +10,17 @@ import { deleteBranch } from "@/app/action/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
+import TableWithCheckBox from "@/widget/TableWIthCheckbox";
+import { useRouter } from "next/navigation";
 
 export default function BranchesTab() {
   const [open,setOpen] = useState(false)
   const [selectedBranch,setSelectedBranch] = useState<Branch|null>(null)
   const {id:shopId} = useCurrentShop();
-  const {checked, checkall, uncheckall} = useCheckBox<number>("allBranchTable")
+  const checkboxMethods = useCheckBox<number>("allBranchTable")
+  const {checked, checkall, uncheckall} = checkboxMethods
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const addHandler = () =>{
     setSelectedBranch(null);
@@ -33,6 +37,8 @@ export default function BranchesTab() {
       await deleteBranch(checked, shopId);
       showSuccess("Delete branch success");
       queryClient.invalidateQueries({ queryKey: ["branch"] });
+      
+      router.refresh()
     } catch {
       showError("Delete branch failed");
     }
@@ -53,7 +59,16 @@ export default function BranchesTab() {
               <p className="underline font-medium">delete</p>
             </Button>
           </div>
-          <BranchesTable data={data} isLoading={isLoading} isSuccess={isSuccess} setSelectedBranch={setSelectedBranch} setOpen={setOpen}/>
+          <TableWithCheckBox data={data?.data}
+            isLoading={isLoading}
+            isSuccess={isSuccess}
+            checkboxMethods={checkboxMethods}
+            setSelectedItem={setSelectedBranch}
+            setOpen={setOpen}
+            columns={[
+              { key: "name", label: "Branch Name" },
+              { key: "nameEng", label: "Branch Name (English)" },
+            ]}/>
         </div>
 
         <div className="mt-2">

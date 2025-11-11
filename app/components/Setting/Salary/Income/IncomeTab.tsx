@@ -9,7 +9,6 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
 import AddIncomeModal from "./AddEditIncomeModal";
-import IncomeTable from "./IncomeTable";
 import { useSalaryFields } from "@/hooks/useSalaryFields";
 import { SalaryField } from "@/types/salaryFields";
 import AddEditIncomeModal from "./AddEditIncomeModal";

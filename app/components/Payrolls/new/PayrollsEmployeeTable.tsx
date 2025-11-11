@@ -5,9 +5,7 @@ import { Button, Checkbox, Table } from "@mui/joy";
 import PayrollsEmployeesElement from "./PayrollsEmployeeElement";
 import { Delete } from "@mui/icons-material";
 import { Employee } from "@/types/employee";
-import { usePayrollSelectKit } from "../../../../hooks/useCheckBox";
 import data from "@/assets/employee";
-import { isAllCheckboxs } from "@/utils/isAllCheckboxs";
 import { useSelectedEmployees } from "./hooks/useSelectedEmployee";
 
 interface PayrollsEmployeesTableProps {
@@ -17,29 +15,16 @@ export default function PayrollsEmployeesTable({
   query,
 }: PayrollsEmployeesTableProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(0);
-  const { checkboxs, checkall, uncheckall, setItem, setCheckboxs } =
-    usePayrollSelectKit();
+
   const { selectedEmployees } = useSelectedEmployees();
 
-  const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.checked) {
-      checkall();
-      setItem(selectedEmployees);
-    } else {
-      uncheckall();
-      setItem([]);
-    }
-  };
-
-  useEffect(() => {
-    setCheckboxs(
-      Object.fromEntries(
-        selectedEmployees.map((emp) => [emp.id, false]), // start all unchecked
-      ),
-    );
-  }, [selectedEmployees]);
-
-  const allCheckBoxState = isAllCheckboxs(checkboxs);
+  // useEffect(() => {
+  //   setCheckboxs(
+  //     Object.fromEntries(
+  //       selectedEmployees.map((emp) => [emp.id, false]), // start all unchecked
+  //     ),
+  //   );
+  // }, [selectedEmployees]);
 
   return (
     <>
@@ -47,11 +32,11 @@ export default function PayrollsEmployeesTable({
         <thead>
           <tr>
             <th className="w-[8%]">
-              <Checkbox
+              {/* <Checkbox
                 checked={allCheckBoxState.allChecked}
                 indeterminate={allCheckBoxState.someChecked}
                 onChange={(e) => handleAllCheckbox(e)}
-              />
+              /> */}
             </th>
             <th className="font-medium w-[25%]">Name</th>
             <th className="font-medium">Nickname</th>
@@ -61,7 +46,7 @@ export default function PayrollsEmployeesTable({
           </tr>
         </thead>
 
-        <tbody>
+        {/* <tbody>
           {selectedEmployees.length === 0 ? (
             <tr>
               <td colSpan={6} className="font-medium opacity-60 text-center">
@@ -90,7 +75,7 @@ export default function PayrollsEmployeesTable({
                 );
               })
           )}
-        </tbody>
+        </tbody> */}
         <tfoot>
           <tr>
             <th scope="row">Totals</th>

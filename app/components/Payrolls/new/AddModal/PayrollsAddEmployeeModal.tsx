@@ -13,10 +13,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Employee } from "@/types/employee";
 import PayrollsAllEmployeeTable from "./PayrollsAllEmployeeTable";
 import data from "@/assets/employee";
-import {
-  useAllSelectKit,
-  usePayrollSelectKit,
-} from "../../../../../hooks/useCheckBox";
 import { useSelectedEmployees } from "../hooks/useSelectedEmployee";
 
 interface PayrollsAddEmployeeModal {
@@ -29,16 +25,6 @@ export default function PayrollsAddEmployeeModal({
 }: PayrollsAddEmployeeModal) {
   const { add } = useSelectedEmployees();
 
-  const { checkboxs, checkedItem, uncheckall, setItem } = useAllSelectKit();
-
-  const handlerConfirm = () => {
-    add(checkedItem);
-    setOpen(false);
-    //Reset Checkbox when comfirm
-    uncheckall();
-    setItem([]);
-  };
-
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -47,7 +33,7 @@ export default function PayrollsAddEmployeeModal({
           <div className="flex flex-col justify-center ">
             <div className="flex flex-row items-center gap-2">
               <p className="font-bold text-lg">Employees (30 people)</p>
-              <p>{Object.values(checkboxs).filter((v) => v === true).length}</p>
+              {/* <p>{Object.values(checkboxs).filter((v) => v === true).length}</p> */}
               <p>selected</p>
             </div>
 
@@ -91,9 +77,9 @@ export default function PayrollsAddEmployeeModal({
               >
                 Close
               </Button>
-              <Button size="sm" onClick={() => handlerConfirm()}>
+              {/* <Button size="sm" onClick={() => handlerConfirm()}>
                 Confirm
-              </Button>
+              </Button> */}
             </div>
           </div>
         </ModalDialog>

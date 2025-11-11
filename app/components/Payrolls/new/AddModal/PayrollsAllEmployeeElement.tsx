@@ -3,7 +3,6 @@ import { Employee } from "@/types/employee";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
-import { useAllSelectKit } from "../../../../../hooks/useCheckBox";
 
 interface PayrollsAllEmployeesElementProps {
   id: string;
@@ -33,39 +32,18 @@ export default function PayrollsAllEmployeesElement({
   status,
 }: PayrollsAllEmployeesElementProps) {
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
-  const { add, remove, updateAtId } = useAllSelectKit();
-  const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked: boolean = e.currentTarget.checked;
-    updateAtId(id);
-    if (checked) {
-      add([
-        {
-          id: id,
-          name: name,
-          nickname: nickname,
-          email: email,
-          amount: amount,
-          status: status,
-          branch: branch,
-        },
-      ]);
-    } else {
-      remove([id]);
-    }
-  };
 
-  const isChecked = useAllSelectKit((state) => state.checkboxs[id] ?? false);
   return (
     <>
       <tr className="cursor-pointer">
         <td>
           <div className="flex gap-4  items-center">
-            <Checkbox
+            {/* <Checkbox
               checked={isChecked}
               onChange={(e) => {
                 updateCheckboxAtIndex(e);
               }}
-            />
+            /> */}
           </div>
         </td>
         <td>

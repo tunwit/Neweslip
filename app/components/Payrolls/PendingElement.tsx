@@ -5,6 +5,8 @@ import Checkbox from "@mui/joy/Checkbox";
 import { log } from "node:console";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
+import { useCheckBox } from "@/hooks/useCheckBox";
 
 interface PendingElementProps {
   id: number;
@@ -12,9 +14,7 @@ interface PendingElementProps {
   people: number;
   amount: number;
   modifyAt: Dayjs;
-  status: number;
-  checkboxs: boolean[];
-  setCheckboxs: React.Dispatch<React.SetStateAction<boolean[]>>;
+  status: PAY_PERIOD_STATUS;
 }
 
 interface PayrollStatusType {
@@ -24,18 +24,26 @@ interface PayrollStatusType {
   textColor: string;
 }
 
-const PayrollStatus: { [key: number]: PayrollStatusType } = {
-  1: {
-    icon: "mdi:check-bold",
-    text: "Success",
-    bg: "bg-green-200",
-    textColor: "text-green-950",
-  },
-  2: {
+const PayrollStatus: { 
+  [key in PAY_PERIOD_STATUS]: { icon: string; text: string; bg: string; textColor: string } 
+} = {
+  [PAY_PERIOD_STATUS.DRAFT]: {
     icon: "tabler:clock",
-    text: "Pending",
+    text: "Draft",
+    bg: "bg-gray-200",
+    textColor: "text-gray-950",
+  },
+  [PAY_PERIOD_STATUS.FINALIZED]: {
+    icon: "mdi:check-bold",
+    text: "Finalized",
     bg: "bg-amber-200",
     textColor: "text-amber-950",
+  },
+  [PAY_PERIOD_STATUS.PAID]: {
+    icon: "mdi:currency-usd",
+    text: "Paid",
+    bg: "bg-green-200",
+    textColor: "text-green-950",
   },
 };
 
@@ -46,18 +54,11 @@ export default function PendingElement({
   modifyAt,
   amount,
   status,
-  checkboxs,
-  setCheckboxs,
 }: PendingElementProps) {
+    const {checked, toggle,isChecked} = useCheckBox("payrollPeriods")
   const statusInfo = PayrollStatus[status] || {};
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
   const pathname = usePathname();
-
-  const updateCheckboxAtIndex = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const state: boolean = e.currentTarget.checked;
-
-    setCheckboxs((prev) => prev.map((item, i) => (i === id ? state : item)));
-  };
 
   const editHandler = () => {
     console.log("hi");
@@ -66,10 +67,8 @@ export default function PendingElement({
     <>
       <div className="flex flex-row gap-5 items-center w-full bg-[#f4f6f8] min-h-16 rounded-sm border border-[#d4d4d4] pl-5 pr-10 opacity-80 shadow-sm">
         <Checkbox
-          checked={checkboxs[id]}
-          onChange={(e) => {
-            updateCheckboxAtIndex(e);
-          }}
+          checked={isChecked(id)}
+          onChange={()=>toggle(id)}
         />
         <div className="flex flex-row w-full font-light justify-between items-center ">
           <div className="flex flex-col min-w-[200px] ">
@@ -97,7 +96,7 @@ export default function PendingElement({
 
           <Link
             className="text-blue-700 underline"
-            href={`${pathname}/new?id=${id}`}
+            href={`${pathname}/edit?id=${id}`}
           >
             Edit
           </Link>

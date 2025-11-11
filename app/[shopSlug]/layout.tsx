@@ -4,6 +4,7 @@ import SnackBar from "../../widget/SnackBar";
 import { validateSlug } from "@/lib/validateSlug";
 import getBranches from "@/lib/getBranches";
 import { Branch } from "@/types/branch";
+import DashboardSidebar from "../components/DashboardSidebar/DashboardSidebar";
 
 export default async function ShoppLayout({
   params,
@@ -20,14 +21,10 @@ export default async function ShoppLayout({
   if (!data) {
     redirect("/");
   }
-  let branches: Branch[]
-  
-    branches = await getBranches(data?.id)
+  let branches: Branch[]  
 
-
-  if(branches.length === 0){
-    redirect(`/${shopSlug}/settings`);
-  }
-
-  return <div className="flex w-screen">{children}</div>;
+  return <div className="flex w-screen">
+     <DashboardSidebar />
+    {children}
+    </div>;
 }

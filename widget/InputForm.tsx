@@ -7,6 +7,7 @@ interface InputFormProps<TSchema extends z.ZodTypeAny> {
   control: ZodControl<TSchema>;
   name: keyof z.infer<TSchema>;
   label: string;
+  placeHolder?:string
   disabled?: boolean;
   required?:boolean;
   type?: string;
@@ -16,6 +17,7 @@ export function InputForm<TSchema extends z.ZodTypeAny>({
   control,
   name,
   label,
+  placeHolder=label,
   disabled = false,
   required,
   type = "text",
@@ -41,7 +43,7 @@ export function InputForm<TSchema extends z.ZodTypeAny>({
             onChange={(e) => field.onChange(type === "number" ? e.target.valueAsNumber : e.target.value)}
             disabled={disabled}
             type={type}
-            placeholder={label}
+            placeholder={placeHolder}
           />
         </FormControl>
       )}

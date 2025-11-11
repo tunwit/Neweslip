@@ -11,7 +11,6 @@ import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/hooks/useUser";
 import { useEffect } from "react";
 import { useShop } from "@/hooks/useShop";
 
@@ -30,7 +29,7 @@ export default function Home() {
         <div className="mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Payrolls</p>
           <Button
-            onClick={() => rounter.push("payrolls/new")}
+            onClick={() => rounter.push("payrolls/edit")}
             startDecorator={<Add sx={{ fontSize: "20px" }} />}
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >
