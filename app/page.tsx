@@ -18,7 +18,6 @@ export default function Home() {
   const queryClient = useQueryClient()
   queryClient.prefetchQuery({queryKey:["shop"]})
   const { data, isLoading, isSuccess, isError, error } = useShop();
-  console.log(data?.data);
   
   if (isLoading) return <p>Loading...</p>;
 

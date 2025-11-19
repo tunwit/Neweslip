@@ -50,7 +50,6 @@ export default function AddEditBranchModal({ open, setOpen ,branch}: AddAbsentMo
       name: branch?.name || "",
       nameEng: branch?.nameEng || "",
     });
-    console.log(branch);
     
   }, [branch, methods.reset]);
 

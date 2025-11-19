@@ -14,7 +14,7 @@ export const penaltyFieldsTable = mysqlTable(
     nameEng: varchar({ length:50 }).notNull(),
     type: mysqlEnum(PENALTY_TYPE).default(PENALTY_TYPE.BASEDONSALARY).notNull(),
     method: mysqlEnum(PENALTY_METHOD).default(PENALTY_METHOD.HOURLY).notNull(),
-    rateOfPay: decimal({ precision: 10, scale: 2 }), // rate for constant
+    rateOfPay: decimal({ precision: 10, scale: 2 }).default("0"), // rate for constant
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
     (t) => ({

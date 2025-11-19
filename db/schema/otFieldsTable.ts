@@ -15,7 +15,7 @@ export const otFieldsTable = mysqlTable(
     type: mysqlEnum(OT_TYPE).default(OT_TYPE.BASEDONSALARY).notNull(),
     method: mysqlEnum(OT_METHOD).default(OT_METHOD.HOURLY).notNull(),
     rate: decimal({ precision: 10, scale: 2 }).notNull(),
-    rateOfPay: decimal({ precision: 10, scale: 2 }), // rate for constant
+    rateOfPay: decimal({ precision: 10, scale: 2 }).default("0"), // rate for constant
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
     (t) => ({

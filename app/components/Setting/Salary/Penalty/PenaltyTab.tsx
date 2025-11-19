@@ -33,7 +33,6 @@ export default function PenaltyTab() {
 
   const addHandler = () =>{
     setSelectedField(null);
-    console.log(selectedField);
     
     setOpen(true)
   }

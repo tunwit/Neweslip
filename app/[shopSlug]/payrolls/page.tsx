@@ -11,11 +11,37 @@ import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useShop } from "@/hooks/useShop";
+import { createPayrollPeriod } from "@/app/action/createPayrollPeriod";
+import { NewPayrollPeriod } from "@/types/payrollPeriod";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { number } from "zod";
 
 export default function Home() {
   const rounter = useRouter();
+  const { id } = useCurrentShop()
+  const [creatingPeriod,setCreatingPeriod] = useState(false)
+  const newHandler = async () =>{
+    setCreatingPeriod(true)
+    try{
+      if(!id) return
+      const payload:Omit<NewPayrollPeriod,"shopId"> = {
+          name: `New payroll ${new Date().toLocaleDateString()}`,
+          start_date: new Date(),
+          end_date: new Date(),
+      }
+
+      const periodId = await createPayrollPeriod(payload,id)
+      
+      if(periodId[0].id){
+        rounter.push(`payrolls/edit?id=${periodId[0].id}`)
+      }
+    }finally{
+      setCreatingPeriod(false)
+    }
+    
+  }
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10 flex flex-col min-h-screen ">
@@ -29,11 +55,14 @@ export default function Home() {
         <div className="mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">Payrolls</p>
           <Button
-            onClick={() => rounter.push("payrolls/edit")}
+            disabled={creatingPeriod}
+            onClick={newHandler}
             startDecorator={<Add sx={{ fontSize: "20px" }} />}
             sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
           >
-            New Payroll
+          {creatingPeriod ? 
+          "Creating Payroll..." : "New Payroll"}
+            
           </Button>
         </div>
 

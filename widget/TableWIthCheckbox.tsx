@@ -47,7 +47,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
       <Table stickyHeader hoverRow variant="plain">
         <thead>
           <tr>
-            <th className="w-[5%]">
+            <th className="w-[6%]">
               <Checkbox
                 checked={isAllChecked(data?.length ?? 0)}
                 indeterminate={isSomeChecked(data?.length ?? 0)}
@@ -55,7 +55,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
               />
             </th>
             {columns.map((col) => (
-              <th key={col.key.toString()} className={`font-medium ${col.width ?? ""}`}>
+              <th key={col.key.toString()} className={`font-medium ${col.width ?? ""}`}  style={{ width: col.width }}>
                 {col.label}
               </th>
             ))}

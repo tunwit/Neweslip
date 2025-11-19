@@ -49,7 +49,7 @@ export default function AddEditPenaltyModal({ open, setOpen, field }: AddEditPen
         nameEng: field?.nameEng || "",
         type: field?.type || PENALTY_TYPE.BASEDONSALARY,
         method: field?.method || PENALTY_METHOD.PERMINUTE,
-        rateOfPay: field?.rateOfPay || ""
+        rateOfPay: field?.rateOfPay || "0"
       },
     })
 
@@ -97,7 +97,7 @@ export default function AddEditPenaltyModal({ open, setOpen, field }: AddEditPen
         nameEng: field?.nameEng || "",
         type: field?.type,
         method: field?.method,
-        rateOfPay: field?.rateOfPay || ""
+        rateOfPay: field?.rateOfPay || "0"
     });
 
     }, [field, methods.reset]);

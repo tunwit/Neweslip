@@ -1,9 +1,9 @@
-import { otFieldsTable, payrollPeriodsTable, penaltyFieldsTable, shopOwnerTable, shopsTable } from "@/db/schema";
+import { otFieldsTable, payrollPeriodsTable, payrollRecordsTable, penaltyFieldsTable, shopOwnerTable, shopsTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { count } from "console";
-import { eq } from "drizzle-orm";
+import { countDistinct, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { isOwner } from "@/lib/isOwner";
 import { Owner } from "@/types/owner";
@@ -29,16 +29,17 @@ export async function GET(request:NextRequest) {
     const data = await globalDrizzle
       .select({
         id: payrollPeriodsTable.id,
-        shopId: payrollPeriodsTable.shopId,
         name: payrollPeriodsTable.name,
-        start_date: payrollPeriodsTable.start_date,
-        end_date: payrollPeriodsTable.end_date,
         status: payrollPeriodsTable.status,
-        createdAt: payrollPeriodsTable.createdAt,
-        updatedAt: payrollPeriodsTable.updatedAt
+        employeeCount: countDistinct(payrollRecordsTable.employeeId),
       })
       .from(payrollPeriodsTable)
-      .where(eq(payrollPeriodsTable.shopId, Number(shopId)));
+      .leftJoin(
+        payrollRecordsTable,
+        eq(payrollRecordsTable.payrollPeriodId, payrollPeriodsTable.id)
+      )
+      .where(eq(payrollPeriodsTable.shopId, Number(shopId)))
+      .groupBy(payrollPeriodsTable.id); // only group by ID
 
     return successResponse(data);
   } catch (err) {

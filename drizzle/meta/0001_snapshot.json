@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "acfd0912-2714-4992-855f-802337ea190a",
-  "prevId": "3b24b13e-ea0f-422c-a70d-d751794f2cea",
+  "id": "43368e90-40b1-4fa2-ab82-fc1b3a1f07d8",
+  "prevId": "17a0c9c8-83a7-416b-a197-3682b7cb4e75",
   "tables": {
     "branches": {
       "name": "branches",
@@ -349,6 +349,22 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "work_hours_per_day": {
+          "name": "work_hours_per_day",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'8.0'"
+        },
+        "workdays_per_month": {
+          "name": "workdays_per_month",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'22.0'"
         }
       },
       "indexes": {},
@@ -388,15 +404,37 @@
           "notNull": false,
           "autoincrement": false
         },
-        "salaryFieldId": {
-          "name": "salaryFieldId",
-          "type": "int",
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum('INCOME','DEDUCTION')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'INCOME'"
+        },
+        "formular": {
+          "name": "formular",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "value": {
-          "name": "value",
+        "amount": {
+          "name": "amount",
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": true,
@@ -420,19 +458,6 @@
           "tableTo": "payroll_records",
           "columnsFrom": [
             "payrollRecordId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "payroll_field_value_salaryFieldId_salary_fields_id_fk": {
-          "name": "payroll_field_value_salaryFieldId_salary_fields_id_fk",
-          "tableFrom": "payroll_field_value",
-          "tableTo": "salary_fields",
-          "columnsFrom": [
-            "salaryFieldId"
           ],
           "columnsTo": [
             "id"
@@ -693,7 +718,8 @@
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'0'"
         },
         "created_at": {
           "name": "created_at",
@@ -757,9 +783,46 @@
           "notNull": false,
           "autoincrement": false
         },
-        "otFieldId": {
-          "name": "otFieldId",
-          "type": "int",
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum('CONSTANT','BASEDONSALARY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'BASEDONSALARY'"
+        },
+        "method": {
+          "name": "method",
+          "type": "enum('DAILY','HOURLY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'HOURLY'"
+        },
+        "rate": {
+          "name": "rate",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rateOfPay": {
+          "name": "rateOfPay",
+          "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -797,19 +860,6 @@
           "tableTo": "payroll_records",
           "columnsFrom": [
             "payrollRecordId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "ot_field_value_otFieldId_ot_fields_id_fk": {
-          "name": "ot_field_value_otFieldId_ot_fields_id_fk",
-          "tableFrom": "ot_field_value",
-          "tableTo": "ot_fields",
-          "columnsFrom": [
-            "otFieldId"
           ],
           "columnsTo": [
             "id"
@@ -881,7 +931,8 @@
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'0'"
         },
         "created_at": {
           "name": "created_at",
@@ -945,9 +996,39 @@
           "notNull": false,
           "autoincrement": false
         },
-        "penaltyFieldId": {
-          "name": "penaltyFieldId",
-          "type": "int",
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nameEng": {
+          "name": "nameEng",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "enum('CONSTANT','BASEDONSALARY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'BASEDONSALARY'"
+        },
+        "method": {
+          "name": "method",
+          "type": "enum('PERMINUTE','DAILY','HOURLY')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'HOURLY'"
+        },
+        "rateOfPay": {
+          "name": "rateOfPay",
+          "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -985,19 +1066,6 @@
           "tableTo": "payroll_records",
           "columnsFrom": [
             "payrollRecordId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "penalty_field_value_penaltyFieldId_penalty_fields_id_fk": {
-          "name": "penalty_field_value_penaltyFieldId_penalty_fields_id_fk",
-          "tableFrom": "penalty_field_value",
-          "tableTo": "penalty_fields",
-          "columnsFrom": [
-            "penaltyFieldId"
           ],
           "columnsTo": [
             "id"
@@ -1062,6 +1130,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "enum('ACTIVE','INACTIVE')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'ACTIVE'"
         }
       },
       "indexes": {

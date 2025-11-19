@@ -51,8 +51,11 @@ CREATE TABLE `shops` (
 CREATE TABLE `payroll_field_value` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`payrollRecordId` int,
-	`salaryFieldId` int,
-	`value` decimal(10,2) NOT NULL DEFAULT '0.00',
+	`name` varchar(50) NOT NULL,
+	`nameEng` varchar(50) NOT NULL,
+	`type` enum('INCOME','DEDUCTION') NOT NULL DEFAULT 'INCOME',
+	`formular` varchar(255),
+	`amount` decimal(10,2) NOT NULL DEFAULT '0.00',
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	CONSTRAINT `payroll_field_value_id` PRIMARY KEY(`id`)
 );
@@ -96,7 +99,12 @@ CREATE TABLE `ot_fields` (
 CREATE TABLE `ot_field_value` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`payrollRecordId` int,
-	`otFieldId` int,
+	`name` varchar(50) NOT NULL,
+	`nameEng` varchar(50) NOT NULL,
+	`type` enum('CONSTANT','BASEDONSALARY') NOT NULL DEFAULT 'BASEDONSALARY',
+	`method` enum('DAILY','HOURLY') NOT NULL DEFAULT 'HOURLY',
+	`rate` decimal(10,2) NOT NULL,
+	`rateOfPay` decimal(10,2),
 	`value` decimal(10,2) NOT NULL DEFAULT '0.00',
 	`amount` decimal(10,2) NOT NULL DEFAULT '0.00',
 	`created_at` timestamp NOT NULL DEFAULT (now()),
@@ -110,6 +118,7 @@ CREATE TABLE `penalty_fields` (
 	`nameEng` varchar(50) NOT NULL,
 	`type` enum('CONSTANT','BASEDONSALARY') NOT NULL DEFAULT 'BASEDONSALARY',
 	`method` enum('PERMINUTE','DAILY','HOURLY') NOT NULL DEFAULT 'HOURLY',
+	`rateOfPay` decimal(10,2),
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	CONSTRAINT `penalty_fields_id` PRIMARY KEY(`id`),
 	CONSTRAINT `salary_field_name_id_unique` UNIQUE(`name`,`id`)
@@ -118,7 +127,11 @@ CREATE TABLE `penalty_fields` (
 CREATE TABLE `penalty_field_value` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`payrollRecordId` int,
-	`penaltyFieldId` int,
+	`name` varchar(50) NOT NULL,
+	`nameEng` varchar(50) NOT NULL,
+	`type` enum('CONSTANT','BASEDONSALARY') NOT NULL DEFAULT 'BASEDONSALARY',
+	`method` enum('PERMINUTE','DAILY','HOURLY') NOT NULL DEFAULT 'HOURLY',
+	`rateOfPay` decimal(10,2),
 	`value` decimal(10,2) NOT NULL DEFAULT '0.00',
 	`amount` decimal(10,2) NOT NULL DEFAULT '0.00',
 	`created_at` timestamp NOT NULL DEFAULT (now()),
@@ -132,6 +145,7 @@ CREATE TABLE `salary_fields` (
 	`nameEng` varchar(50) NOT NULL,
 	`type` enum('INCOME','DEDUCTION') NOT NULL DEFAULT 'INCOME',
 	`formular` varchar(255),
+	`isActive` enum('ACTIVE','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
 	CONSTRAINT `salary_fields_id` PRIMARY KEY(`id`),
 	CONSTRAINT `salary_field_name_id_unique` UNIQUE(`name`,`id`)
 );
@@ -141,14 +155,11 @@ ALTER TABLE `employees` ADD CONSTRAINT `employees_shopId_shops_id_fk` FOREIGN KE
 ALTER TABLE `employees` ADD CONSTRAINT `employees_branchId_branches_id_fk` FOREIGN KEY (`branchId`) REFERENCES `branches`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `shop_owner` ADD CONSTRAINT `shop_owner_shopId_shops_id_fk` FOREIGN KEY (`shopId`) REFERENCES `shops`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `payroll_field_value` ADD CONSTRAINT `payroll_field_value_payrollRecordId_payroll_records_id_fk` FOREIGN KEY (`payrollRecordId`) REFERENCES `payroll_records`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `payroll_field_value` ADD CONSTRAINT `payroll_field_value_salaryFieldId_salary_fields_id_fk` FOREIGN KEY (`salaryFieldId`) REFERENCES `salary_fields`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `payroll_periods` ADD CONSTRAINT `payroll_periods_shopId_shops_id_fk` FOREIGN KEY (`shopId`) REFERENCES `shops`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `payroll_records` ADD CONSTRAINT `payroll_records_payrollPeriodId_payroll_periods_id_fk` FOREIGN KEY (`payrollPeriodId`) REFERENCES `payroll_periods`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `payroll_records` ADD CONSTRAINT `payroll_records_employeeId_employees_id_fk` FOREIGN KEY (`employeeId`) REFERENCES `employees`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `ot_fields` ADD CONSTRAINT `ot_fields_shopId_shops_id_fk` FOREIGN KEY (`shopId`) REFERENCES `shops`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `ot_field_value` ADD CONSTRAINT `ot_field_value_payrollRecordId_payroll_records_id_fk` FOREIGN KEY (`payrollRecordId`) REFERENCES `payroll_records`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `ot_field_value` ADD CONSTRAINT `ot_field_value_otFieldId_ot_fields_id_fk` FOREIGN KEY (`otFieldId`) REFERENCES `ot_fields`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `penalty_fields` ADD CONSTRAINT `penalty_fields_shopId_shops_id_fk` FOREIGN KEY (`shopId`) REFERENCES `shops`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `penalty_field_value` ADD CONSTRAINT `penalty_field_value_payrollRecordId_payroll_records_id_fk` FOREIGN KEY (`payrollRecordId`) REFERENCES `payroll_records`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `penalty_field_value` ADD CONSTRAINT `penalty_field_value_penaltyFieldId_penalty_fields_id_fk` FOREIGN KEY (`penaltyFieldId`) REFERENCES `penalty_fields`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `salary_fields` ADD CONSTRAINT `salary_fields_shopId_shops_id_fk` FOREIGN KEY (`shopId`) REFERENCES `shops`(`id`) ON DELETE cascade ON UPDATE no action;

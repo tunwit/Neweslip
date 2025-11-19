@@ -1,1 +1,0 @@
-ALTER TABLE `penalty_fields` ADD `rateOfPay` decimal(10,2);

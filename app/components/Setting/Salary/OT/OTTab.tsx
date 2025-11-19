@@ -33,7 +33,8 @@ export default function OTTab() {
   }
   if(!shopId) return <p>loading</p>
   const {data,isLoading,isSuccess} = useOTFields(shopId)
-
+  console.log(data);
+  
   
   const handleDelete = async () => {
     try {

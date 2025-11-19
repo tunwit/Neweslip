@@ -1,15 +1,16 @@
+import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import { RecordDetails } from "@/types/RecordDetails";
+import { SalaryField } from "@/types/salaryFields";
 import { Checkbox, Table } from "@mui/joy";
 import React from "react";
 
 interface PayrollIncomeTableProps {
-  amount: number;
+  data: RecordDetails["salaryValues"];
 }
-
-const INCOME = ["Position fee", "เบี้ยขยัน	", "สวัสดิการ", "ยอดเป้า", "โบนัส"];
-
 export default function PayrollIncomeTable({
-  amount,
+  data,
 }: PayrollIncomeTableProps) {
+  
   return (
     <>
       <div className="overflow-auto max-h-[calc(100vh-350px)] ">
@@ -40,14 +41,14 @@ export default function PayrollIncomeTable({
                   <input
                     type="number"
                     placeholder="0.00"
-                    defaultValue={amount}
+                    
                     className="w-full px-3 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-700  focus:border-transparent transition-all"
                   />
                   <p className="text-md">฿</p>
                 </div>
               </td>
             </tr>
-            {INCOME.map((v, i) => {
+            {data?.map((v, i) => {
               return (
                 <tr>
                   <td>
@@ -60,12 +61,13 @@ export default function PayrollIncomeTable({
                       />
                     </div>
                   </td>
-                  <td>{v}</td>
+                  <td>{v.name}</td>
                   <td>
                     <div className="flex gap-2 items-center">
                       <input
                         type="number"
                         placeholder="0.00"
+                        value={v.amount}
                         className="w-full px-3 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-700  focus:border-transparent transition-all"
                       />
                       <p className="text-md">฿</p>

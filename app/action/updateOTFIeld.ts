@@ -26,7 +26,6 @@ export async function updateOTField(
     throw new Error("Forbidden");
   }
 
-
   try {
     await globalDrizzle
       .update(otFieldsTable)

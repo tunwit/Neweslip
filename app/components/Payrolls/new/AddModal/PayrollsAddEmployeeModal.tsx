@@ -8,22 +8,52 @@ import {
   Select,
   Typography,
 } from "@mui/joy";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Employee } from "@/types/employee";
-import PayrollsAllEmployeeTable from "./PayrollsAllEmployeeTable";
+import { Employee, EmployeeWithShop } from "@/types/employee";
 import data from "@/assets/employee";
 import { useSelectedEmployees } from "../hooks/useSelectedEmployee";
+import BranchSelector from "@/widget/BranchSelector";
+import { useCheckBox } from "@/hooks/useCheckBox";
+import TableWithCheckBox from "@/widget/TableWIthCheckbox";
+import { useEmployees } from "@/hooks/useEmployees";
+import { getRandomPastelColor } from "@/utils/generatePastelColor";
+import { createPayrollRecords } from "@/app/action/createPayrollRecord";
+import { showError, showSuccess } from "@/utils/showSnackbar";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PayrollsAddEmployeeModal {
+  periodId:number
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function PayrollsAddEmployeeModal({
+  periodId,
   open,
   setOpen,
 }: PayrollsAddEmployeeModal) {
-  const { add } = useSelectedEmployees();
+  const methods = useCheckBox<number>("payrollAddEmployeeTable")
+  const queryClient = useQueryClient();
+  const {checked,uncheckall} = methods
+  const { data,isLoading,isSuccess } = useEmployees({})
+  
+  const [selected,setSelected] = useState<EmployeeWithShop|null>(null)
+
+  const handlerConfirm = async () => {
+    try{
+      await createPayrollRecords(checked,periodId)
+      queryClient.invalidateQueries({queryKey:["payrollRecord"]})
+      showSuccess(`Add employee success`)
+      setOpen(false)
+    }
+    catch(err:any){
+      let msg = err.message
+      if(msg == "ER_DUP_ENTRY") msg = "You cannot add duplicate employee"
+      showError(`Add employee failed \n ${msg}`) 
+    }finally{
+      uncheckall()
+    }
+  }
 
   return (
     <>
@@ -32,7 +62,7 @@ export default function PayrollsAddEmployeeModal({
         <ModalDialog>
           <div className="flex flex-col justify-center ">
             <div className="flex flex-row items-center gap-2">
-              <p className="font-bold text-lg">Employees (30 people)</p>
+              <p className="font-bold text-lg">Employees ({data?.data?.length} people)</p>
               {/* <p>{Object.values(checkboxs).filter((v) => v === true).length}</p> */}
               <p>selected</p>
             </div>
@@ -55,19 +85,24 @@ export default function PayrollsAddEmployeeModal({
 
               <div className="w-[20%]">
                 <p className="text-black text-xs mb-1">Brach</p>
-                <Select
-                  defaultValue="All"
-                  sx={{ borderRadius: "4px", fontSize: "14px" }}
-                >
-                  <Option value="All">All</Option>
-                  <Option value="Pakkret">Pakkret</Option>
-                  <Option value="Ramintra">Ramintra</Option>
-                  <Option value="Kallapapruk">Kallapapruk</Option>
-                </Select>
+                <BranchSelector branchId={-1} onChange={()=>{}} isEnableAll={true}/>
               </div>
             </div>
             <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-              <PayrollsAllEmployeeTable />
+              <TableWithCheckBox data={data?.data}
+                isLoading={isLoading}
+                isSuccess={isSuccess}
+                checkboxMethods={methods}
+                setSelectedItem={setSelected}
+                setOpen={setOpen}
+                columns={[
+                 
+                  { key: "name", label: "Name",render: (row) => `${row.firstName} ${row.lastName}`},
+                  { key: "nickName", label: "Nick Name",render: (row) => `${row.nickName}`, },
+                  { key: "branch", label: "Branch",render: (row) => `${row.branch.name}`, },
+    
+                ]}/>
+
             </div>
             <div className="flex flex-row gap-2 ml-auto mt-2">
               <Button
@@ -77,9 +112,9 @@ export default function PayrollsAddEmployeeModal({
               >
                 Close
               </Button>
-              {/* <Button size="sm" onClick={() => handlerConfirm()}>
+              <Button size="sm" onClick={() => handlerConfirm()}>
                 Confirm
-              </Button> */}
+              </Button>
             </div>
           </div>
         </ModalDialog>

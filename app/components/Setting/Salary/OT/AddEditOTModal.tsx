@@ -46,7 +46,7 @@ export default function AddEditOTModal({ open, setOpen, field }: AddOTModalProps
         type: field?.type,
         method: field?.method,
         rate: field?.rate || "1",
-        rateOfPay: field?.rateOfPay || ""
+        rateOfPay: field?.rateOfPay || "0"
       },
     })
 
@@ -94,7 +94,7 @@ export default function AddEditOTModal({ open, setOpen, field }: AddOTModalProps
       type: field?.type,
       method: field?.method,
       rate: field?.rate || "1",
-      rateOfPay: field?.rateOfPay || ""
+      rateOfPay: field?.rateOfPay || "0"
     });
 
     }, [field, methods.reset]);

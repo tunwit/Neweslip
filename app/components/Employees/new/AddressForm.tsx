@@ -26,7 +26,6 @@ export default function AddressForm({ setCurrentPage }: AddressFormProps) {
       "address3",
     ]);
     if (valid) {
-      console.log(valid);
       setCurrentPage(2);
     }
   };

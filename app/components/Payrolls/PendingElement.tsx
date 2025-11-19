@@ -61,7 +61,7 @@ export default function PendingElement({
   const pathname = usePathname();
 
   const editHandler = () => {
-    console.log("hi");
+
   };
   return (
     <>
