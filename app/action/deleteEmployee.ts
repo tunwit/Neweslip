@@ -10,7 +10,7 @@ export async function deleteEmployee(toDelete: Employee["id"][], shopId: number)
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }
-
+  
   try {
     await globalDrizzle
       .delete(employeesTable)

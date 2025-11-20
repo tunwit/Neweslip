@@ -48,7 +48,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   try {
     const token = await getToken();
-    if(token == null) redirectToSignIn();
+    if(token == null) {return redirectToSignIn({ returnBackUrl: req.url });};
     const shops = await fetchData(token, req.nextUrl.origin, `/api/shop?shopId=${userId}`);
      // Redirect to setup if no branches exist
     if (!shops || shops.length === 0) {

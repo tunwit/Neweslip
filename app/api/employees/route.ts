@@ -80,6 +80,8 @@ export async function GET(request: NextRequest) {
           id: shopsTable.id,
           name: shopsTable.name,
           avatar: shopsTable.avatar,
+          work_hours_per_day: shopsTable.work_hours_per_day,
+          workdays_per_month: shopsTable.workdays_per_month,
         },
         branch: {
           id: branchesTable.id,

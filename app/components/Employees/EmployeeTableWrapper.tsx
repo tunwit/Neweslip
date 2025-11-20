@@ -49,8 +49,8 @@ export function EmployeeTableWrapper({
       await deleteEmployee(checked, id);
       showSuccess("Delete employee success");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-    } catch {
-      showError("Delete employee failed");
+    } catch(err) {
+      showError(`Delete employee failed \n ${err}`);
     }
   };
 

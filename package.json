@@ -17,7 +17,7 @@
     "@hookform/resolvers": "^5.0.1",
     "@iconify/react": "^5.2.0",
     "@mui/icons-material": "^6.4.7",
-    "@mui/joy": "^5.0.0-dev.240424162023-9968b4889d",
+    "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^7.3.5",
     "@mui/system": "^7.3.5",
     "@mui/x-date-pickers": "^7.27.3",

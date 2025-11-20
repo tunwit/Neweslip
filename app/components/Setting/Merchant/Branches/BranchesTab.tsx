@@ -1,7 +1,6 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
-import BranchesTable from "./BranchesTable";
 import AddBranchModal from "./AddEditBranchModal";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useBranch } from "@/hooks/useBranch";
