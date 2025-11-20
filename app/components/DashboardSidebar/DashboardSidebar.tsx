@@ -27,27 +27,27 @@ const DashboardRails = [
     id: "employees",
     href: "/employees",
   },
-  {
-    title: "Payrolls",
-    icon: MoneyIcon,
-    id: "payrolls",
-    href: "/payrolls",
-  },
-  {
-    title: "Records",
-    icon: HistoryIcon,
-    id: "records",
-    href: "/records",
-  },
+  // {
+  //   title: "Payrolls",
+  //   icon: MoneyIcon,
+  //   id: "payrolls",
+  //   href: "/payrolls",
+  // },
+  // {
+  //   title: "Records",
+  //   icon: HistoryIcon,
+  //   id: "records",
+  //   href: "/records",
+  // },
 ];
 
 const ConfigureRails = [
-  {
-    title: "Template",
-    icon: TemplateIcon,
-    id: "template",
-    href: "/template",
-  },
+  // {
+  //   title: "Template",
+  //   icon: TemplateIcon,
+  //   id: "template",
+  //   href: "/template",
+  // },
   {
     title: "Setting",
     icon: SettingIcon,
