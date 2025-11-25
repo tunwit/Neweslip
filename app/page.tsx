@@ -11,7 +11,6 @@ import { useShop } from "@/hooks/useShop";
 import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import SnackBar from "../widget/SnackBar";
-import { useSession } from "@clerk/nextjs";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {

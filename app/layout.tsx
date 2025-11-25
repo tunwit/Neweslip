@@ -8,8 +8,8 @@ import Navbar from "./components/Navbar/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
 import SnackBar from "../widget/SnackBar";
-import { ClerkProvider } from "@clerk/nextjs";
 import ClientWrapper from "@/widget/ClientWrapper";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const sarabun = Sarabun({
   subsets: ["thai", "latin"],

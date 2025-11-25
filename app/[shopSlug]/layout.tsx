@@ -5,6 +5,23 @@ import { validateSlug } from "@/lib/validateSlug";
 import getBranches from "@/lib/getBranches";
 import { Branch } from "@/types/branch";
 import DashboardSidebar from "../components/DashboardSidebar/DashboardSidebar";
+import { auth } from "@clerk/nextjs/server";
+
+async function fetchData(token: string, origin: string, path:string) {
+  const res = await fetch(`${origin}${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`API returned ${res.status}`);
+  }
+
+  const json = await res.json();
+  return json.data;
+}
 
 export default async function ShoppLayout({
   params,
@@ -17,11 +34,30 @@ export default async function ShoppLayout({
   const { shopSlug } = resolvedParams;
 
   const data = await validateSlug(shopSlug);
-  
-  if (!data) {
+  const { userId, redirectToSignIn, getToken } = await auth();
+  const token = await getToken()
+
+  if (!data || !token) {
     redirect("/");
   }
-  let branches: Branch[]  
+  
+  try {
+    const shops = await fetchData(token, window.location.origin, `/api/shop?shopId=${userId}`);
+     // Redirect to setup if no branches exist
+    if (!shops.data?.data || shops.data?.data.length === 0) {
+      redirect(`/no-shop`);
+    }
+    
+    const branches = await fetchData(token, window.location.origin, `/api/shop/branch?shopId=${data.id}`);
+
+    // Redirect to setup if no branches exist
+    if (!branches || branches.length === 0) {
+      redirect(`/setup-branch?shopId=${data.id}`);
+    }
+  } catch (err) {
+     redirect(`/error`)
+  }
+
 
   return <div className="flex w-screen">
      <DashboardSidebar />
