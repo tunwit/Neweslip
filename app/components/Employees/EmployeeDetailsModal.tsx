@@ -31,6 +31,7 @@ import normalizeNull from "@/utils/normallizeNull";
 import { updateEmployee } from "@/app/action/updateEmployee";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { showError, showSuccess } from "@/utils/showSnackbar";
+import { useUser } from "@clerk/nextjs";
 
 interface EmployeeDetailsModalProps {
   employee: EmployeeWithShop;
@@ -44,11 +45,12 @@ export default function EmployeeDetailsModal({
 }: EmployeeDetailsModalProps) {
   const [status, setStatus] = useState(employee.status);
   const queryClient = useQueryClient();
+  const user = useUser();
 
   const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
     setStatus(newValue);
     try {
-      await changeEmployeeStatus({ employeeId: employee.id, status: newValue });
+      await changeEmployeeStatus({ employeeId: employee.id, status: newValue ,userId: user.user?.id || null});
       showSuccess(`Change Status to ${newValue} successful`);
     } catch (err) {
       showError(`Change Status failed\n${err}`);
@@ -94,7 +96,7 @@ export default function EmployeeDetailsModal({
 
   const onSave = async (data: createEmployeeFormField) => {
     try {
-      await updateEmployee(employee.id, normalizeNull(data));
+      await updateEmployee(employee.id, normalizeNull(data),user.user?.id || null);
       reset(data);
       showSuccess(`update employee successful`);
       queryClient.invalidateQueries({ queryKey: ["employees"] });

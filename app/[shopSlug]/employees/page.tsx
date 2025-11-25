@@ -18,8 +18,6 @@ import { Pagination } from "@mui/material";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { useEmployeeStats } from "@/hooks/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
-import { useSalaryFields } from "@/hooks/useSalaryFields";
-
 export default function Home() {
   const rounter = useRouter();
   const [search, setSearch] = useState("");

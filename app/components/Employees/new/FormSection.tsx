@@ -16,6 +16,8 @@ import { createEmployee } from "@/app/action/createEmployee";
 import { NewEmployee } from "@/types/employee";
 import { useZodForm } from "@/lib/useZodForm";
 import { useQueryClient } from "@tanstack/react-query";
+import { auth } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
 
 interface FormSectionProps {
   currentPage: number;
@@ -42,6 +44,7 @@ export default function FormSection({
   const rounter = useRouter();
   const { show, setMessage } = useSnackbar();
   const queryClient = useQueryClient();
+  const user = useUser()
 
   const onCreatError = () => {
     setMessage({ message: "Something went wrong", type: "failed" });
@@ -67,9 +70,8 @@ export default function FormSection({
         ...data,
         shopId: id,
     };
-
     try {
-      await createEmployee(employeePayload);
+      await createEmployee(employeePayload,user.user?.id || null);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       onCreateSuccess();
     } catch {

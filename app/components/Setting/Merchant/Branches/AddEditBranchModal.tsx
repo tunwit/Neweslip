@@ -7,6 +7,8 @@ import { branchSchema } from "@/schemas/setting/branchForm";
 import { Branch, NewBranch } from "@/types/branch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
+import { useUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import {
   Button,
   FormControl,
@@ -38,7 +40,7 @@ export default function AddEditBranchModal({ open, setOpen ,branch}: AddAbsentMo
   })
   const {control, handleSubmit} = methods
   const {id} = useCurrentShop()
-
+  const user = useUser()
   const queryClient = useQueryClient();
 
   const closeHandler = () => {
@@ -58,11 +60,11 @@ export default function AddEditBranchModal({ open, setOpen ,branch}: AddAbsentMo
     try{
       if (branch) {
         // edit mode
-        await updateBranch(branch.id, data);
+        await updateBranch(branch.id, data,user.user?.id || null);
         showSuccess("Branch updated successfully");
       } else {
         // add mode
-        await createBranch(data, id);
+        await createBranch(data, id,user.user?.id || null);
         showSuccess("Branch added successfully");
       }
       queryClient.invalidateQueries({ queryKey: ["branch"] });

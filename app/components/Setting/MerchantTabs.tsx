@@ -3,10 +3,8 @@ import React from "react";
 import Profilesetting from "./Merchant/Profile/Profilesetting";
 import OwnersTable from "./Merchant/Owners/OwnersTable";
 import BranchesTab from "./Merchant/Branches/BranchesTab";
-import { useOTFields } from "@/hooks/useOTFields";
 
 export default function MerchantTabs() {
-  const { data } = useOTFields(1)
   
   return (
     <>

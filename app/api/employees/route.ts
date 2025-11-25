@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       return errorResponse("Illegel Argument", 400);
     }
 
-    if(!await isOwner(Number(shopIdQ))) return errorResponse("Forbidden", 403);
+    if(!await isOwner(Number(shopIdQ),userId)) return errorResponse("Forbidden", 403);
 
     const empStatus = request.nextUrl.searchParams.get("status");
     let validateEmpStatus: EMPLOYEE_STATUS | undefined;

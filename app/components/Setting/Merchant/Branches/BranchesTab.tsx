@@ -11,6 +11,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { useRouter } from "next/navigation";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
 
 export default function BranchesTab() {
   const [open,setOpen] = useState(false)
@@ -20,7 +22,7 @@ export default function BranchesTab() {
   const {checked, checkall, uncheckall} = checkboxMethods
   const queryClient = useQueryClient()
   const router = useRouter()
-
+  const user = useUser()
   const addHandler = () =>{
     setSelectedBranch(null);
     setOpen(true)
@@ -33,7 +35,7 @@ export default function BranchesTab() {
     try {
       if (!shopId) return;
       uncheckall()
-      await deleteBranch(checked, shopId);
+      await deleteBranch(checked, shopId,user.user?.id || null);
       showSuccess("Delete branch success");
       queryClient.invalidateQueries({ queryKey: ["branch"] });
       

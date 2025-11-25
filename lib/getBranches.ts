@@ -6,7 +6,7 @@ import { Branch } from "@/types/branch";
 
 export default async function getBranches(userId:string,shopId:number) {
      try {
-      //  if(!await isOwner(Number(shopId))) throw Error("Forbidden");
+          
        
        const data: Branch[] = await globleDrizzle
          .select({

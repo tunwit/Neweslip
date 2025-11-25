@@ -8,11 +8,13 @@ import { and, eq, isNull } from "drizzle-orm";
 interface changeEmployeeStatusProps {
   employeeId: number;
   status: EMPLOYEE_STATUS;
+  userId:string|null
 }
 
 export async function changeEmployeeStatus({
   employeeId,
   status,
+  userId
 }: changeEmployeeStatusProps) {
   const employee = await globalDrizzle
     .select()
@@ -24,7 +26,7 @@ export async function changeEmployeeStatus({
     throw new Error("Employee not found");
   }
 
-  const ownerCheck = await isOwner(employee[0].shopId);
+  const ownerCheck = await isOwner(employee[0].shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

@@ -6,6 +6,9 @@ import getBranches from "@/lib/getBranches";
 import { Branch } from "@/types/branch";
 import DashboardSidebar from "../components/DashboardSidebar/DashboardSidebar";
 import { auth } from "@clerk/nextjs/server";
+import globalDrizzle from "@/db/drizzle";
+import { branchesTable, shopOwnerTable, shopsTable } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 
 async function fetchData(token: string, origin: string, path:string) {
   const res = await fetch(`${origin}${path}`, {
@@ -37,25 +40,52 @@ export default async function ShoppLayout({
   const { userId, redirectToSignIn, getToken } = await auth();
   const token = await getToken()
 
-  if (!data || !token) {
+  if (!data || !token || !userId) {
     redirect("/");
   }
   
   try {
-    const shops = await fetchData(token, window.location.origin, `/api/shop?shopId=${userId}`);
+    const shops = await globalDrizzle
+      .select({
+        id: shopsTable.id,
+        name: shopsTable.name,
+        avatar: shopsTable.avatar,
+      })
+      .from(shopOwnerTable)
+      .innerJoin(shopsTable, eq(shopOwnerTable.shopId, shopsTable.id))
+      .where(eq(shopOwnerTable.ownerId, userId));
+
      // Redirect to setup if no branches exist
-    if (!shops.data?.data || shops.data?.data.length === 0) {
+    if (!shops || shops.length === 0) {
       redirect(`/no-shop`);
     }
     
-    const branches = await fetchData(token, window.location.origin, `/api/shop/branch?shopId=${data.id}`);
+    const branches:Branch[] = await globalDrizzle
+      .select({
+        id: branchesTable.id,
+        name: branchesTable.name,
+        nameEng: branchesTable.nameEng,
+        shopId: branchesTable.shopId,
+      })
+      .from(branchesTable)
+      .innerJoin(
+        shopOwnerTable,
+        eq(branchesTable.shopId, shopOwnerTable.shopId),
+      )
+      .where(
+        and(
+          eq(branchesTable.shopId, Number(data.id)),
+          eq(shopOwnerTable.ownerId, userId),
+        ),
+      );
 
     // Redirect to setup if no branches exist
     if (!branches || branches.length === 0) {
       redirect(`/setup-branch?shopId=${data.id}`);
     }
   } catch (err) {
-     redirect(`/error`)
+     console.log(err);
+     
   }
 
 

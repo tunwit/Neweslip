@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       return errorResponse("Illegel Arguments", 400);
     }
 
-    if(!await isOwner(Number(shopId))) return errorResponse("Forbidden", 403);
+    if(!await isOwner(Number(shopId),userId)) return errorResponse("Forbidden", 403);
 
     const data: Branch[] = await globalDrizzle
       .select({
