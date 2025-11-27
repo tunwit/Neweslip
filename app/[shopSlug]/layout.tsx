@@ -89,7 +89,6 @@ export default async function ShoppLayout({
     }
   } catch (err) {
      console.log(err);
-     redirect("/")
   }
 
 
