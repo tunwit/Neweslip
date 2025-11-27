@@ -55,18 +55,21 @@ export default function OwnersTable() {
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}
             setOpen={setOpen}
+            editColumn={false}
             columns={[
               { key: "firstName", label: "",width:"5%",render:(r:Owner)=>{
                 return <div className="bg-red-200   aspect-square w-7 h-7 text-center rounded-full flex items-center justify-center">
                   <p className="text-xs">{r.firstName?.charAt(0)}</p>
                 </div>
               } },
-              { key: "fullName", label: "Name" },
+              { key: "fullName", label: "Name" ,render:(r)=>{
+                return <p>{r.fullName} {user?.primaryEmailAddress?.emailAddress === r.email && "( you )"}</p>
+              }},
               { key: "email", label: "Email" },
             ]}/>
         <div className="mt-4 flex gap-4">
           <Button onClick={()=>setOpen(true)}>Invite Owner</Button>
-          <Button onClick={()=>setOpen(true)} variant="outlined" color="danger">Leave Shop</Button>
+          {/* <Button onClick={()=>setOpen(true)} variant="outlined" color="danger">Leave Shop</Button> */}
         </div>
       </div>
     </div>

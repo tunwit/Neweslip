@@ -11,6 +11,13 @@ export async function acceptInvitation(
  token:string
 ) {
   try {
+    const [invitation] = await globalDrizzle
+      .select({expiredAt:invitationsTable.expiresAt})
+      .from(invitationsTable)
+      .where(eq(invitationsTable.token, token))
+
+    if(new Date(invitation.expiredAt) < new Date()) throw new Error("Expired")
+      
     await globalDrizzle
       .update(invitationsTable)
       .set({

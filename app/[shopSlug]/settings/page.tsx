@@ -10,16 +10,17 @@ import { Checkbox, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import MerchantTabs from "@/app/components/Setting/MerchantTabs";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
 
 export default function Page() {
   const rounter = useRouter();
+  const {name} = useCurrentShop()
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
-            {" "}
-            Haris {">"} Configure {">"}&nbsp;
+            {name} {">"} Configure {">"}&nbsp;
           </p>
           <p className="text-blue-800">Settings</p>
         </div>

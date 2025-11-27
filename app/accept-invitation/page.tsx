@@ -32,6 +32,8 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
     setIsSubmitting(true)
     if(!shopId) return
     if(!token) return 
+    if(!invitationData?.data?.expiresAt) return
+    if(new Date(invitationData?.data?.expiresAt) < new Date()) return
     if(isSignedIn){
       await createShopOwner(shopId,session.user.id)
     }
@@ -92,34 +94,23 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
       </div>
     );
   }
-
+  
+  let content;
   if(!invitationData?.data){
-    return <div className="min-h-screen w-screen flex items-center justify-center">
-        <p>Invitation not found</p>
+    content = <div className="flex flex-col gap-3 items-center justify-center text-2xl font-bold text-gray-900 mb-2">
+        <p className="text-2xl font-bold text-gray-900">Invitation not found</p>
+        <p className="text-gray-500">Please contact supervisor</p>
       </div>
   }
 
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
-      <div id="clerk-captcha" />
-      <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-          </div>
-          
-          {!alreadyOwner ? <><div className="text-center mb-5">
+  else if(new Date(invitationData?.data?.expiresAt) < new Date()){
+    content = <div className="flex flex-col gap-3 items-center justify-center mb-2">
+        <p className="text-2xl font-bold text-gray-900">Invitation Expired</p>
+        <p className="text-gray-500">Please contact supervisor</p>
+      </div>
+  }else {
+    content = <>
+     {!alreadyOwner ? <><div className="text-center mb-5">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             You have been invited to shop
           </h1>
@@ -149,8 +140,30 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
             You already own this shop
           </h1>
         </div>}
-        
-        
+    </>
+  }
+  
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
+      <div id="clerk-captcha" />
+      <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg
+              className="w-8 h-8 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+          </div>
+          {content}
         <div className="pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}

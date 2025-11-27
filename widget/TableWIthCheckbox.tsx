@@ -18,6 +18,7 @@ interface GenericTableProps<T, ID extends string | number = number> {
   isSuccess: boolean;
   checkboxMethods: UseCheckBoxResult<ID>;
   columns: Column<T>[];
+  editColumn?:boolean
   setSelectedItem: Dispatch<SetStateAction<T | null>>;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -28,6 +29,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
   isSuccess,
   checkboxMethods,
   columns,
+  editColumn = true,
   setSelectedItem,
   setOpen,
 }: GenericTableProps<T>) {
@@ -59,7 +61,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
                 {col.label}
               </th>
             ))}
-            <th className="font-medium w-[5%]"></th>
+            {editColumn && <th className="font-medium w-[5%]"></th>}
           </tr>
         </thead>
         <tbody>
@@ -91,7 +93,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
                   </td>
                 ))}
 
-                <td
+                {editColumn && <td
                   className="cursor-pointer"
                   onClick={() => {
                     setSelectedItem(row);
@@ -99,7 +101,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
                   }}
                 >
                   <Icon icon="ic:baseline-edit" className="text-xl" />
-                </td>
+                </td>}
               </tr>
             ))}
         </tbody>

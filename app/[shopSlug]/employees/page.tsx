@@ -24,13 +24,15 @@ export default function Home() {
   const [debounced] = useDebounce(search, 500);
   const [branchId, setBranchId] = useState(-1);
   const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
+  const {name} = useCurrentShop()
+
   
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
-            Haris {">"} Dashboard {">"}&nbsp;
+            {name} {">"} Dashboard {">"}&nbsp;
           </p>
           <p className="text-blue-800">Employees</p>
         </div>

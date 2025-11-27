@@ -70,10 +70,10 @@ export default function DashboardSidebar() {
             {Array.isArray(data?.data) &&
               data?.data.map((shop: Shop, i: number) => {
                 const slug = createSlug(shop.name, String(shop.id));
-
                 return (
                   <ShopSidebarElement
                     key={shop.id}
+                    id={shop.id}
                     title={shop.name}
                     selected={shopSlug == slug}
                   />
