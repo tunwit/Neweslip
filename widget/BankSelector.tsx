@@ -49,7 +49,7 @@ export default function BankSelector({ bank,onChange,disable=false }: BankSelect
       startDecorator={
         selectedBank ?
         <Image
-              quality={1}
+              quality={0}
               unoptimized={true}
               loading="lazy"
               width="20"
