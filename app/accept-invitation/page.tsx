@@ -72,11 +72,17 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
       acceptHandler(); // call here safely
     }
   }
+    const ownerCheck = async () =>{
+      if(! invitationData?.data?.metaData?.shopId || !session?.user.id) return
+      const alreadyOwn = await isOwner(invitationData?.data?.metaData?.shopId,session?.user.id)
+      setAlreadyOwner(alreadyOwn)
+      
+    }
+    ownerCheck()
 }, [isSignedIn, session, invitationData, method]);
 
-
   const loading = loadingInvitation || !sessionLoaded || loadingShop;
-
+ 
   if(!token) return <p>Invalid token</p>
 
   if (loading) {

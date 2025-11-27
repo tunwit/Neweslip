@@ -8,6 +8,8 @@ import QRCode from 'qrcode'
 import { getShortLink } from "@/app/action/getShortLink";
 import { NewInvitation } from "@/types/invitation";
 import { showError } from "@/utils/showSnackbar";
+import { isOwner } from "@/lib/isOwner";
+import { getUserByEmail } from "@/app/action/getUserByEmail";
 
 interface InvitationModalProps{
     open: boolean
@@ -31,25 +33,27 @@ export default function InvitationModal({open,setOpen}:InvitationModalProps) {
     const generateHandler = async() =>{
         if(!shopId || !user.user) return
         setIsSubmitting(true)
+        setError("")
+    
         try{
+            const userByEmail = await getUserByEmail(email)
+            const alreadyOwn = await isOwner(shopId,userByEmail[0]?.id)
+
+            if(alreadyOwn){
+                setError("This user is already own this shop")  
+                return
+            }
             const invitation = await createInvitation(email,"/accept-invitation",shopId,user.user?.id)
             
             if(!invitation.success){
-                setInvitationUrl("")
                 showError("create invitaion failed")
                 return
             }
-            setInvitationUrl(`${window.origin}/accept-invitation?token=${invitation.token}`)
-            // let shorten
-            // try{
-            //     shorten = await getShortLink(invitaion.data?.url)
-            //     setIsShortenComplete(true)
-            // }catch{
-            //     setIsShortenComplete(false)
-            // }
+            const url = `${window.origin}/accept-invitation?token=${invitation.token}`
+            setInvitationUrl(url)
             
             
-            QRCode.toCanvas(canvas.current, invitaionUrl,{
+            QRCode.toCanvas(canvas.current, url,{
                  width: 200,
                 margin: 2, 
             }, function (error:unknown) {

@@ -14,7 +14,8 @@ export async function acceptInvitation(
     await globalDrizzle
       .update(invitationsTable)
       .set({
-        status:INVITATION_STATUS.ACCEPTED
+        status:INVITATION_STATUS.ACCEPTED,
+        acceptedAt: new Date()
       })
       .where(eq(invitationsTable.token, token))
   } catch (err) {
