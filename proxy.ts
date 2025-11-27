@@ -8,7 +8,9 @@ const isProtectedRoute = createRouteMatcher([
 const isPublicRoute = createRouteMatcher([
   "/no-shop",
   "/accept-invitation",
-  "/api/shop/:shopId"
+  "/api/shop/:shopId",
+  "/api/invitations/:token"
+
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

@@ -15,6 +15,20 @@
       "when": 1763234603260,
       "tag": "0001_lean_stardust",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1764232257630,
+      "tag": "0002_yellow_sleeper",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1764234588449,
+      "tag": "0003_nebulous_enchantress",
+      "breakpoints": true
     }
   ]
 }

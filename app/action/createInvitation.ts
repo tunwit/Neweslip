@@ -1,38 +1,33 @@
 "use server";
-
+import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { clerkClient, Invitation } from "@clerk/nextjs/server";
+import { invitationsTable } from "@/db/schema/invitationsTable";
+import { generateToken } from "@/lib/generateToken";
 
-
-export async function createInvitation(emailAddress:string,shopId:number,userId:string|null) {
+export async function createInvitation(email:string,redirectUrl:string,shopId:number,userId:string) {
   const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }
+  try {
+    const token = generateToken()
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
 
-  try{
-    const client = await clerkClient()
+    await globalDrizzle.insert(invitationsTable).values({
+      token,
+      redirectUrl,
+      email,
+      metaData:{
+        shopId:shopId
+      },
+      createdBy:userId,
+      expiresAt: expiresAt,
+    });
+    return {success:true,token};
+  } catch (err) {
+    console.log(err);
     
-    const invitaion = await client.invitations.createInvitation({
-        emailAddress:emailAddress.trim(),
-        notify:true,
-        redirectUrl:`${process.env.NEXT_PUBLIC_URL}/accept-invitation?shopId=${shopId}`,
-        ignoreExisting:true,
-        publicMetadata:{
-            shopId:shopId
-        }
-    })
-    
-    return {
-        error: false,
-        data: JSON.parse(JSON.stringify(invitaion)) as Invitation
-    };
-
-  }catch (err){
-    return {
-        error: true,
-        message: JSON.parse(JSON.stringify(err.errors[0])),
-    }
+    return {success:false};
   }
-  
 }

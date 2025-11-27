@@ -6,6 +6,8 @@ import { Button, FormControl, FormLabel, Input, Modal, ModalClose, ModalDialog }
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import QRCode from 'qrcode'
 import { getShortLink } from "@/app/action/getShortLink";
+import { NewInvitation } from "@/types/invitation";
+import { showError } from "@/utils/showSnackbar";
 
 interface InvitationModalProps{
     open: boolean
@@ -30,27 +32,24 @@ export default function InvitationModal({open,setOpen}:InvitationModalProps) {
         if(!shopId || !user.user) return
         setIsSubmitting(true)
         try{
-            const invitaion = await createInvitation(email,shopId,user.user?.id)
-            console.log(invitaion);
+            const invitation = await createInvitation(email,"/accept-invitation",shopId,user.user?.id)
             
-            if(invitaion.error || !invitaion.data || !invitaion.data.url ) {
-                if(invitaion.error.message.code === "form_identifier_exists"){
-                    setError("This user already invited")
-                }
+            if(!invitation.success){
+                setInvitationUrl("")
+                showError("create invitaion failed")
                 return
             }
-
-            setInvitationUrl(invitaion.data?.url)
-            let shorten
-            try{
-                shorten = await getShortLink(invitaion.data?.url)
-                setIsShortenComplete(true)
-            }catch{
-                setIsShortenComplete(false)
-            }
+            setInvitationUrl(`${window.origin}/accept-invitation?token=${invitation.token}`)
+            // let shorten
+            // try{
+            //     shorten = await getShortLink(invitaion.data?.url)
+            //     setIsShortenComplete(true)
+            // }catch{
+            //     setIsShortenComplete(false)
+            // }
             
             
-            QRCode.toCanvas(canvas.current, shorten.url,{
+            QRCode.toCanvas(canvas.current, invitaionUrl,{
                  width: 200,
                 margin: 2, 
             }, function (error:unknown) {
@@ -94,8 +93,8 @@ export default function InvitationModal({open,setOpen}:InvitationModalProps) {
             <section hidden={!invitaionUrl || isSubmitting}>
                 <FormControl >
                     <div className="flex items-center justify-center my-5">
-                         <div hidden={isShortenComplete} className="w-[200px] h-[200px] flex justify-center items-center rounded-md border border-gray-400 text-sm">Cannot generate QR code</div>
-                         <canvas hidden={!isShortenComplete} ref={canvas} className="rounded-md border border-gray-400"/>
+                         {/* <div hidden={isShortenComplete} className="w-[200px] h-[200px] flex justify-center items-center rounded-md border border-gray-400 text-sm">Cannot generate QR code</div> */}
+                         <canvas  ref={canvas} className="rounded-md border border-gray-400"/>
                     </div>
                     
                     <FormLabel>Invitaion Link</FormLabel>

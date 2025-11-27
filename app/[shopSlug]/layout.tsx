@@ -40,7 +40,7 @@ export default async function ShoppLayout({
   const { userId, redirectToSignIn, getToken } = await auth();
   const token = await getToken()
 
-  if (!data || !token || !userId) {
+  if (!token || !userId) {
     redirect("/");
   }
   
@@ -58,6 +58,10 @@ export default async function ShoppLayout({
      // Redirect to setup if no branches exist
     if (!shops || shops.length === 0) {
       redirect(`/no-shop`);
+    }
+
+    if(!data){
+      redirect("/")
     }
     
     const branches:Branch[] = await globalDrizzle
@@ -85,7 +89,6 @@ export default async function ShoppLayout({
     }
   } catch (err) {
      console.log(err);
-     
   }
 
 

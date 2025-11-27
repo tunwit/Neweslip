@@ -8,114 +8,91 @@ import { useEffect, useState } from "react";
 import { FormSubmitHandler } from "react-hook-form";
 import { isOwner } from "@/lib/isOwner";
 import { clerkClient } from "@clerk/nextjs/server";
+import { useInvitation } from "@/hooks/useInvitation";
+import { getUserByEmail } from "../action/getUserByEmail";
+import { acceptInvitation } from "../action/acceptInvitation";
+import { showError } from "@/utils/showSnackbar";
 
 export default function InvitaionPage() {
   const params = useSearchParams()
-  const clerkStatus = params.get("__clerk_status")
-  const clerkTicket = params.get("__clerk_ticket")
-  const shopId = params.get("shopId")
-
-  if (clerkStatus === "complete" || !clerkTicket || !shopId) {
-    redirect("/");
-  }
-
-  const {signUp, setActive} = useSignUp()
-  const { signIn } = useSignIn();
-  const {user} = useUser()
-  const {isSignedIn} = useAuth()
-  const {session} = useSession()
-
-  const [firstName,setFirstName] = useState("")
-  const [lastName,setLastName] = useState("")
+  const token = params.get("token")
+  const method = params.get("method")
   const [isSubmitting,setIsSubmitting] = useState(false)
   const [alreadyOwner, setAlreadyOwner] = useState(false);
-
-
-  const {data} = useShopDetails(Number(shopId))
-
-  if (clerkStatus === "complete" || !clerkTicket || !shopId) {
-      redirect("/");
-  }
-  useEffect(() => {
-    setAlreadyOwner(false)
-    const checkOwnership = async () => {
-      
-      if (clerkStatus === "sign_in" && user) {
-        
-        const result = await isOwner(Number(shopId), user.id);
-        console.log(result);
-        
-        if (result) {
-          setAlreadyOwner(true)
-        }
-      }
-    };
-
-    checkOwnership();
-  }, [clerkStatus, user, shopId]);
-
-
-const acceptHandler = async (e) =>{
-  e.preventDefault();
-
-  setIsSubmitting(true)
+  const [wrongEmail, setWrongEmail] = useState(false);
+  const { signUp } = useSignUp();
+  const { signIn } = useSignIn();
+const { data: invitationData, isLoading: loadingInvitation } = useInvitation(token);
+  const { session, isSignedIn, isLoaded: sessionLoaded } = useSession();
+  const { data: shopData, isLoading: loadingShop } = useShopDetails(invitationData?.data?.metaData?.shopId);
+  const shopId = invitationData?.data?.metaData?.shopId
   
-  if(!signUp || !clerkTicket) return
-  let successfulSignUp = false;
-  
-  
-  try {
-      if(clerkStatus === "sign_up"){
-        const attemp = await signUp.create({
-          strategy: "ticket",
-          ticket:clerkTicket,
-          firstName: firstName,
-          lastName: lastName
-        });
-        if(attemp.status==="complete" && attemp.createdUserId){
-          await setActive({ session: attemp.createdSessionId })
-          await createShopOwner(Number(shopId),attemp.createdUserId)
-        }else{
-          redirect("/")
-        }
-      }else{
-        if(signIn){
-          const attemp = await signIn.create({
-          strategy: "ticket",
-          ticket: clerkTicket,
-          });
-          if(attemp.status === "complete" && attemp.createdSessionId ){
-            await setActive({ session: attemp.createdSessionId });  
-          }
-        }
-      }
-      successfulSignUp = true
-      
-    } catch (error) {
-      console.error("Clerk sign-up authentication failed:", error);
-    }finally{
-      setIsSubmitting(false)
+  const acceptHandler = async (e?: React.MouseEvent<HTMLButtonElement>) =>{
+    e?.preventDefault();
+    setIsSubmitting(true)
+    if(!shopId) return
+    if(!token) return 
+    if(isSignedIn){
+      await createShopOwner(shopId,session.user.id)
     }
-
+    else{
+      const exist = await getUserByEmail(invitationData.data?.email||"")
+      if(exist.length > 0){
+        await signIn?.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: `${window.location.origin}/accept-invitation?token=${token}&method=auto`,
+      });
+      }else{
+        await signUp?.authenticateWithRedirect({
+        strategy:"oauth_google",
+        redirectUrl:"/sso-callback",
+        redirectUrlComplete:`${window.location.origin}/accept-invitation?token=${token}&method=auto`
+      })
+      }
+    }
+    let success = false
+    try{
+      await acceptInvitation(token)
+      success= true
+    }catch(err){
+      showError(`Cannot accept invitaion ${err}`)
+    }
+    if(success)redirect("/")
     
-    if(successfulSignUp) redirect("/")
+    
   };
 
-  // Add a useEffect to handle the sign-in completion
   useEffect(() => {
-    const handleSignInComplete = async () => {
-      if (clerkStatus === "sign_in" && user && session && !alreadyOwner) {
-        try {
-          await createShopOwner(Number(shopId), user.id);
-          redirect("/");
-        } catch (error) {
-          console.error("Failed to create shop owner:", error);
-        }
-      }
-    };
+  if (isSignedIn && invitationData?.data) {
+    const emailMatch = session.user.primaryEmailAddress?.emailAddress === invitationData.data.email;
+    if (!emailMatch) {
+      setWrongEmail(true);
+    } else if (method === "auto") {
+      acceptHandler(); // call here safely
+    }
+  }
+}, [isSignedIn, session, invitationData, method]);
 
-    handleSignInComplete();
-  }, [user, session, clerkStatus, shopId, alreadyOwner]);
+
+  const loading = loadingInvitation || !sessionLoaded || loadingShop;
+
+  if(!token) return <p>Invalid token</p>
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-screen flex items-center justify-center">
+        <p>Loading invitation...</p>
+      </div>
+    );
+  }
+
+  if(!invitationData?.data){
+    return <div className="min-h-screen w-screen flex items-center justify-center">
+        <p>Invitation not found</p>
+      </div>
+  }
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
       <div id="clerk-captcha" />
@@ -135,38 +112,29 @@ const acceptHandler = async (e) =>{
               />
             </svg>
           </div>
+          
           {!alreadyOwner ? <><div className="text-center mb-5">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             You have been invited to shop
           </h1>
           
           <h2 className="text-4xl font-bold text-gray-900 mb-3">
-            {data?.data?.name}
+            {shopData?.data?.name}
           </h2>
-          
-          <p className="text-gray-600">
-            Fill in to accept this invitation
-          </p>
         </div>
         
         <div className="flex justify-center mb-6">
-          <form className="flex flex-col gap-4">
-            <div hidden={clerkStatus==="sign_in"}>
-              <FormControl>
-                <FormLabel>First name</FormLabel>
-                <Input onChange={(e)=>setFirstName(e.target.value)} required/>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Last name</FormLabel>
-                <Input onChange={(e)=>setLastName(e.target.value)} required/>
-              </FormControl>
-            </div>
-            
-            <FormControl>
+          <form className="flex flex-col gap-4"> 
+            {wrongEmail ? 
+              <span>
+                <p>This invitation is ment for</p> 
+                <p className="font-bold">{invitationData?.data?.email}</p>
+              </span> : <FormControl>
               <Button disabled={isSubmitting} loading={isSubmitting} type="submit" onClick={(e) => acceptHandler(e)}>
                 {isSubmitting? "Registering" : "Accept Invitation"}
               </Button>
-            </FormControl>
+            </FormControl>}           
+            
           </form>
           
         </div></> : 

@@ -37,7 +37,7 @@ export default function OwnersTable() {
       }
     };
   return (
-    <>
+    <div className="-mt-4">
     <InvitationModal open={open} setOpen={setOpen}/>
     <h1 className="font-medium text-3xl">Owners</h1>
       <div className="-mt-6">
@@ -65,9 +65,10 @@ export default function OwnersTable() {
               { key: "email", label: "Email" },
             ]}/>
         <div className="mt-2">
-          <Button onClick={()=>setOpen(true)}>Add Owner</Button>
+          <Button onClick={()=>setOpen(true)}>Invite Owner</Button>
+          <Button onClick={()=>setOpen(true)}>Leave Shop</Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
