@@ -52,7 +52,6 @@ export default function InvitationModal({open,setOpen}:InvitationModalProps) {
             const url = `${window.origin}/accept-invitation?token=${invitation.token}`
             setInvitationUrl(url)
             
-            
             QRCode.toCanvas(canvas.current, url,{
                  width: 200,
                 margin: 2, 

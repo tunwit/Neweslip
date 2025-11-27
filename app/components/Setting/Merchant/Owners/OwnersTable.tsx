@@ -64,9 +64,9 @@ export default function OwnersTable() {
               { key: "fullName", label: "Name" },
               { key: "email", label: "Email" },
             ]}/>
-        <div className="mt-2">
+        <div className="mt-4 flex gap-4">
           <Button onClick={()=>setOpen(true)}>Invite Owner</Button>
-          <Button onClick={()=>setOpen(true)}>Leave Shop</Button>
+          <Button onClick={()=>setOpen(true)} variant="outlined" color="danger">Leave Shop</Button>
         </div>
       </div>
     </div>
