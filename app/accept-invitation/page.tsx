@@ -144,7 +144,6 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
-      <div id="clerk-captcha" />
       <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
@@ -162,6 +161,7 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
             </svg>
           </div>
           {content}
+          <div id="clerk-captcha" />
         <div className="pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}
