@@ -17,7 +17,6 @@ export default function SetupBranchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const shopId = searchParams.get("shopId");
-  const returnBackUrl = searchParams.get("returnBack");
   const user = useUser()
   const method = useZodForm(branchSchema)
   const { control, handleSubmit, formState:{isSubmitting, isSubmitSuccessful} } = method
@@ -29,8 +28,7 @@ export default function SetupBranchPage() {
       await createBranch(data,Number(shopId),user.user?.id || null);
       // Redirect back to shop page after successful creation
       showSuccess("Create branch successful")
-      router.push(returnBackUrl || "/");
-      router.refresh(); // Refresh to trigger middleware check again
+      router.push("/");
     } catch (err) {
       showError(err instanceof Error ? err.message : "Something went wrong");
     }

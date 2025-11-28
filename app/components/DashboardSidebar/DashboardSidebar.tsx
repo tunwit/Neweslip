@@ -120,7 +120,7 @@ export default function DashboardSidebar() {
             })}
           </div>
           <span className="absolute bottom-5 text-center w-full text-[#797979] text-xs">
-            v 0.0.1 @alpha
+            v 1.0.0 @no payroll edition
           </span>
         </div>
       </>

@@ -4,10 +4,10 @@ import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth } from "@clerk/nextjs/server";
 import { count } from "console";
 import { and, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { NextApiRequest } from "next";
 
-export async function GET(req:NextApiRequest,{ params }: { params: { shopId: string } }) {
+export async function GET(req:NextRequest,{ params }: { params: Promise<{ shopId: string }> }) {
   try {
     const shopId = (await params).shopId
 
@@ -16,11 +16,7 @@ export async function GET(req:NextApiRequest,{ params }: { params: { shopId: str
     }
 
     const data = await globalDrizzle
-      .select({
-        id: shopsTable.id,
-        name: shopsTable.name,
-        avatar: shopsTable.avatar,
-      })
+      .select()
       .from(shopsTable)
       .where(
         eq(shopsTable.id, Number(shopId))

@@ -5,8 +5,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, FormControl, FormLabel, Input, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import QRCode from 'qrcode'
-import { getShortLink } from "@/app/action/getShortLink";
-import { NewInvitation } from "@/types/invitation";
 import { showError } from "@/utils/showSnackbar";
 import { isOwner } from "@/lib/isOwner";
 import { getUserByEmail } from "@/app/action/getUserByEmail";
@@ -21,18 +19,16 @@ export default function InvitationModal({open,setOpen}:InvitationModalProps) {
     const {id:shopId} = useCurrentShop()
     const [invitaionUrl,setInvitationUrl] = useState<string | undefined>("")
     const [isCopied,setIscopied] = useState(false)
+    const [isGenerated,setIsGenerated] = useState(false)
     const [error,setError] = useState("")
 
     const canvas = useRef(null);
-    const [isShortenComplete,setIsShortenComplete] = useState(false)
-
     const user = useUser()
-
-
 
     const generateHandler = async() =>{
         if(!shopId || !user.user) return
         setIsSubmitting(true)
+        setIsGenerated(true)
         setError("")
     
         try{
@@ -93,7 +89,7 @@ export default function InvitationModal({open,setOpen}:InvitationModalProps) {
                     {error && <p className="text-red-700">{error}</p>}
                 </FormControl>
             </section>
-            <section hidden={!invitaionUrl || isSubmitting}>
+            <section hidden={!invitaionUrl || isSubmitting || !isGenerated}>
                 <FormControl >
                     <div className="flex items-center justify-center my-5">
                          {/* <div hidden={isShortenComplete} className="w-[200px] h-[200px] flex justify-center items-center rounded-md border border-gray-400 text-sm">Cannot generate QR code</div> */}

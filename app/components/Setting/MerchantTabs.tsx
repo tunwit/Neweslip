@@ -3,6 +3,7 @@ import React from "react";
 import Profilesetting from "./Merchant/Profile/Profilesetting";
 import OwnersTable from "./Merchant/Owners/OwnersTable";
 import BranchesTab from "./Merchant/Branches/BranchesTab";
+import EmailsTab from "./Merchant/Emails/EmailsTab";
 
 export default function MerchantTabs() {
   
@@ -37,7 +38,9 @@ export default function MerchantTabs() {
         <TabPanel value={2}>
           <OwnersTable/>
         </TabPanel>
-        <TabPanel value={3}></TabPanel>
+        <TabPanel value={3}>
+          <EmailsTab/>
+        </TabPanel>
       </Tabs>
     </>
   );

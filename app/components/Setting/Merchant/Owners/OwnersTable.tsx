@@ -12,12 +12,14 @@ import { deleteShopOwner } from "@/app/action/deleteShopOwner";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import ConfirmModal from "@/widget/ConfirmModal";
 
 export default function OwnersTable() {
   const { id:shopId } = useCurrentShop()
   const { user} = useUser()
   const { data, isLoading,isSuccess } = useOwners(shopId!)
   const [open,setOpen] = useState(false)
+  const [openConfirm,setOpenConfirm] = useState(false)
   const checkboxMethods = useCheckBox<string>("ownerTable")
   const {checked ,uncheckall} =checkboxMethods
   const router = useRouter()
@@ -38,6 +40,14 @@ export default function OwnersTable() {
     };
   return (
     <div className="-mt-4">
+    <ConfirmModal
+        title="Delete" 
+        description={`This action will cause these user not able to access this shop\nAre you sure to continue?`} 
+        open={openConfirm} 
+        setOpen={()=>setOpenConfirm(!openConfirm)} 
+        onConfirm={handleDelete}
+        onCancel={()=>setOpenConfirm(false)}/>
+
     <InvitationModal open={open} setOpen={setOpen}/>
     <h1 className="font-medium text-3xl">Owners</h1>
       <div className="-mt-6">
@@ -45,7 +55,7 @@ export default function OwnersTable() {
           <Button
             disabled={checked ? checked.length === 0 : true}
             variant="plain"
-            onClick={handleDelete}
+            onClick={()=>setOpenConfirm(true)}
           >
             <p className="underline font-medium">delete</p>
           </Button>

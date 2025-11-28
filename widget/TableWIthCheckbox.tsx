@@ -12,18 +12,22 @@ interface Column<T> {
   width?: string;
 }
 
-interface GenericTableProps<T, ID extends string | number = number> {
+interface GenericTableProps
+<
+  T extends { id: string | number },
+  ID extends string | number = T["id"]
+> {
   data: T[] | undefined;
   isLoading: boolean;
   isSuccess: boolean;
   checkboxMethods: UseCheckBoxResult<ID>;
   columns: Column<T>[];
   editColumn?:boolean
-  setSelectedItem: Dispatch<SetStateAction<T | null>>;
+  setSelectedItem?: Dispatch<SetStateAction<T | null>>;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function TableWithCheckBox<T extends { id: number | number }>({
+export default function TableWithCheckBox<T extends { id: number | string }>({
   data,
   isLoading,
   isSuccess,
@@ -93,7 +97,7 @@ export default function TableWithCheckBox<T extends { id: number | number }>({
                   </td>
                 ))}
 
-                {editColumn && <td
+                {editColumn && setSelectedItem && <td
                   className="cursor-pointer"
                   onClick={() => {
                     setSelectedItem(row);

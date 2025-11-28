@@ -1,5 +1,5 @@
 "use client"
-import { RedirectToSignIn, SignedOut, SignUp, useAuth, useSession, useSignIn, useSignUp, useUser } from "@clerk/nextjs";
+import { RedirectToSignIn, SignedOut, SignOutButton, SignUp, useAuth, useSession, useSignIn, useSignUp, useUser } from "@clerk/nextjs";
 import { redirect, usePathname, useSearchParams } from "next/navigation";
 import { createShopOwner } from "../action/createShopOwner";
 import { Button, FormControl, FormLabel, Input } from "@mui/joy";
@@ -27,7 +27,7 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
   const { data: shopData, isLoading: loadingShop } = useShopDetails(invitationData?.data?.metaData?.shopId);
   const shopId = invitationData?.data?.metaData?.shopId
   
-  const acceptHandler = async (e?: React.MouseEvent<HTMLButtonElement>) =>{
+  const acceptHandler = async (e?: React.MouseEvent<HTMLAnchorElement,MouseEvent>) =>{
     e?.preventDefault();
     setIsSubmitting(true)
     if(!shopId) return
@@ -36,6 +36,15 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
     if(new Date(invitationData?.data?.expiresAt) < new Date()) return
     if(isSignedIn){
       await createShopOwner(shopId,session.user.id)
+      
+      let success = false
+      try{
+        await acceptInvitation(token)
+        success= true
+      }catch(err){
+        showError(`Cannot accept invitaion ${err}`)
+      }
+      if(success)redirect("/")
     }
     else{
       const exist = await getUserByEmail(invitationData.data?.email||"")
@@ -52,17 +61,7 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
         redirectUrlComplete:`${window.location.origin}/accept-invitation?token=${token}&method=auto`
       })
       }
-    }
-    let success = false
-    try{
-      await acceptInvitation(token)
-      success= true
-    }catch(err){
-      showError(`Cannot accept invitaion ${err}`)
-    }
-    if(success)redirect("/")
-    
-    
+    }  
   };
 
   useEffect(() => {
@@ -108,9 +107,20 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
         <p className="text-2xl font-bold text-gray-900">Invitation Expired</p>
         <p className="text-gray-500">Please contact supervisor</p>
       </div>
-  }else {
-    content = <>
-     {!alreadyOwner ? <><div className="text-center mb-5">
+  }
+  else if(wrongEmail){
+    content = <div className="flex flex-col gap-3 items-center justify-center mb-2">
+        <p className="text-2xl font-bold text-gray-900">This invitation is ment for</p>
+        <p className="text-gray-500">{invitationData?.data?.email}</p>
+      </div>
+  }
+  else if(alreadyOwner){
+     content = <div className="flex flex-col gap-3 items-center justify-center mb-2">
+        <p className="text-2xl font-bold text-gray-900">You already own this shop</p>
+      </div>
+  }
+  else {
+    content = <><div className="text-center mb-5">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             You have been invited to shop
           </h1>
@@ -122,25 +132,13 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
         
         <div className="flex justify-center mb-6">
           <form className="flex flex-col gap-4"> 
-            {wrongEmail ? 
-              <span>
-                <p>This invitation is ment for</p> 
-                <p className="font-bold">{invitationData?.data?.email}</p>
-              </span> : <FormControl>
+           <FormControl>
               <Button disabled={isSubmitting} loading={isSubmitting} type="submit" onClick={(e) => acceptHandler(e)}>
                 {isSubmitting? "Registering" : "Accept Invitation"}
               </Button>
-            </FormControl>}           
-            
+            </FormControl>       
           </form>
-          
-        </div></> : 
-        <div className="text-center mb-5">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            You already own this shop
-          </h1>
-        </div>}
-    </>
+        </div></>
   }
   
 

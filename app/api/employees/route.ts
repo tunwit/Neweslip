@@ -82,6 +82,12 @@ export async function GET(request: NextRequest) {
           avatar: shopsTable.avatar,
           work_hours_per_day: shopsTable.work_hours_per_day,
           workdays_per_month: shopsTable.workdays_per_month,
+          SMTPHost: shopsTable.SMTPHost,
+          SMTPPort: shopsTable.SMTPPort,
+          SMTPSecure: shopsTable.SMTPSecure,
+          emailAddress: shopsTable.emailAddress,
+          emailName: shopsTable.emailName,
+          emailPassword: shopsTable.emailPassword,
         },
         branch: {
           id: branchesTable.id,

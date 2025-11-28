@@ -4,13 +4,13 @@ import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth } from "@clerk/nextjs/server";
 import { count } from "console";
 import { and, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { NextApiRequest } from "next";
 import { INVITATION_STATUS } from "@/types/enum/enum";
 
-export async function GET(req:NextApiRequest,{ params }: { params: { token: string } }) {
+export async function GET(req:NextRequest,{ params }: { params: Promise<{ token: string }> }) {
   try {
-    const token = (await params).token
+    const { token } = await params
 
     if (!token) {
       return errorResponse("Bad request", 403);

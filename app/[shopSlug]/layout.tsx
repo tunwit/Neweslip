@@ -44,7 +44,6 @@ export default async function ShoppLayout({
     redirect("/");
   }
   
-  try {
     const shops = await globalDrizzle
       .select({
         id: shopsTable.id,
@@ -87,9 +86,6 @@ export default async function ShoppLayout({
     if (!branches || branches.length === 0) {
       redirect(`/setup-branch?shopId=${data.id}`);
     }
-  } catch (err) {
-     console.log(err);
-  }
 
 
   return <div className="flex w-screen">
