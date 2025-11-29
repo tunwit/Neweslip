@@ -14,7 +14,7 @@ import { useEmployees } from "../../../hooks/useEmployees";
 import { EmployeeWithShop } from "@/types/employee";
 import { useEmployeeStats } from "@/hooks/useEmployeeStats";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { moneyFormat } from "@/utils/moneyFormat";
+import { moneyFormat } from "@/utils/formmatter";
 import { PaginatedResponse } from "@/types/response";
 import { useCheckBox } from "@/hooks/useCheckBox";
 
@@ -26,7 +26,8 @@ interface EmployeesTableProps {
 function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
   const { id } = useCurrentShop();
   const { data: employeeStat } = useEmployeeStats({ shopId: id! });
-  const { checked, checkall, uncheckall, isAllChecked, isSomeChecked} = useCheckBox<number>("allEmployeeTable");
+  const { checked, checkall, uncheckall, isAllChecked, isSomeChecked } =
+    useCheckBox<number>("allEmployeeTable");
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!data?.data) return;

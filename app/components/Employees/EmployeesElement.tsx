@@ -2,10 +2,10 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
-import EmployeeDetailsModal from "./EmployeeDetailsModal";  
+import EmployeeDetailsModal from "./EmployeeDetailsModal";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { EmployeeWithShop } from "@/types/employee";
-import { moneyFormat } from "@/utils/moneyFormat";
+import { moneyFormat } from "@/utils/formmatter";
 import { useCheckBox } from "@/hooks/useCheckBox";
 
 function getRandomPastelColor() {

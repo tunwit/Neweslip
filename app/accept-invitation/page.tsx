@@ -66,7 +66,7 @@ const { data: invitationData, isLoading: loadingInvitation } = useInvitation(tok
 
   useEffect(() => {
   if (isSignedIn && invitationData?.data) {
-    const emailMatch = session.user.primaryEmailAddress?.emailAddress === invitationData.data.email;
+    const emailMatch = session.user.primaryEmailAddress?.emailAddress.toLowerCase() === invitationData.data.email.toLowerCase();
     if (!emailMatch) {
       setWrongEmail(true);
     } else if (method === "auto") {

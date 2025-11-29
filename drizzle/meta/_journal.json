@@ -43,6 +43,13 @@
       "when": 1764311650971,
       "tag": "0005_swift_lady_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1764419092708,
+      "tag": "0006_acoustic_sumo",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,14 @@
 "use client";
 import { FormControl, FormLabel } from "@mui/joy";
 import React, { Suspense } from "react";
-import BranchSelector from "../../../widget/BranchSelector";
+import BranchSelector from "../../../../widget/BranchSelector";
 import { EmployeeWithShop } from "@/types/employee";
-import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createEmployeeFormField,
@@ -24,7 +29,6 @@ export default function EmployeeDetailsForm({
 }: {
   employee: EmployeeWithShop;
 }) {
- 
   const {
     control,
     handleSubmit,
@@ -55,16 +59,8 @@ export default function EmployeeDetailsForm({
                 name="firstName"
                 label="First Name"
               />
-              <InputForm
-                control={control}
-                name="lastName"
-                label="Last Name"
-              />
-              <InputForm
-                control={control}
-                name="nickName"
-                label="Nick Name"
-              />
+              <InputForm control={control} name="lastName" label="Last Name" />
+              <InputForm control={control} name="nickName" label="Nick Name" />
               <FormControl required>
                 <FormLabel>
                   Gender
