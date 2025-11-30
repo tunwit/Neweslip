@@ -6,8 +6,8 @@ import { Employee } from "@/types/employee";
 import { auth } from "@clerk/nextjs/server";
 import { NewBranch } from "@/types/branch";
 
-export async function createBranch(data: Omit<NewBranch,"shopId">,shopId:number) {
-  const ownerCheck = await isOwner(shopId);
+export async function createBranch(data: Omit<NewBranch,"shopId">,shopId:number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

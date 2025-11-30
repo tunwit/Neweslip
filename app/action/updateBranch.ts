@@ -10,6 +10,7 @@ import { Branch } from "@/types/branch";
 export async function updateBranch(
   id: Branch["id"],
   data: Omit<Branch, "shopId" | "id">,
+  userId:string|null
 ) {
   const branch = await globalDrizzle
     .select()
@@ -21,7 +22,7 @@ export async function updateBranch(
     throw new Error("Branch not found");
   }
 
-  const ownerCheck = await isOwner(branch[0].shopId);
+  const ownerCheck = await isOwner(branch[0].shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

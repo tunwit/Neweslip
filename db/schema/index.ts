@@ -10,3 +10,7 @@ export * from "./otFieldValueTable";
 export * from "./penaltyFieldsTable";
 export * from "./penaltyFieldValueTable";
 export * from "./salaryFieldsTable";;
+export * from "./invitationsTable";;
+export * from "./employeeFilesTable";;
+
+

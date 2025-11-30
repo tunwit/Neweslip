@@ -147,7 +147,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
               name="branchId"
               render={({ field }) => (
                 <BranchSelector
-                  branchId={field.value}
+                  branchId={field.value || -1}
                   onChange={field.onChange}
                 />
               )}
@@ -170,7 +170,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
               defaultValue={EMPLOYEE_STATUS.ACTIVE}
               render={({ field }) => (
                 <StatusSelector
-                  status={field.value}
+                  status={field.value ? field.value : null}
                   onChange={(newvalue) => field.onChange(newvalue!)}
                 />
               )}

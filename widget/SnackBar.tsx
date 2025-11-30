@@ -1,6 +1,7 @@
 "use Client";
 import CheckIcon from "@/assets/icons/CheckIcon";
 import { useSnackbar } from "@/hooks/useSnackBar";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Snackbar } from "@mui/joy";
 import React from "react";
 
@@ -12,16 +13,16 @@ interface SnackBarProps {
 const SnackBarType = {
   success: {
     color: "success",
-    icon: CheckIcon,
+    icon: "lets-icons:check-fill",
   },
 
   warning: {
     color: "warning",
-    icon: CheckIcon,
+    icon: "mdi:cross-circle",
   },
   failed: {
     color: "danger",
-    icon: CheckIcon,
+    icon: "mingcute:warning-fill",
   },
 } as const;
 
@@ -33,7 +34,7 @@ export default function SnackBar() {
       color={SnackBarType[message.type].color}
       open={openState}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      startDecorator={<CheckIcon />}
+      startDecorator={<Icon icon={SnackBarType[message.type].icon}/>}
       endDecorator={
         <Button onClick={() => hide()} size="sm" variant="soft" color="success">
           Dismiss

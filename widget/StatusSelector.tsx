@@ -3,8 +3,8 @@ import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { Option, Select } from "@mui/joy";
 
 interface StatusSelectorProps {
-  status: EmployeeStatus | null;
-  onChange: (newvalue: EmployeeStatus) => void;
+  status: EMPLOYEE_STATUS | null;
+  onChange: (newvalue: EMPLOYEE_STATUS) => void;
   disable?: boolean
   isEnableAll?: boolean
 }

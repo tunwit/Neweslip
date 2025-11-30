@@ -9,13 +9,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addressSchema } from "@/schemas/createEmployeeForm/addressForm";
 import { contractSchema } from "@/schemas/createEmployeeForm/contractForm";
 import { usePathname, useRouter } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchwithauth } from "@/utils/fetcher";
 import { extractSlug } from "@/utils/extractSlug";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { createEmployee } from "@/app/action/createEmployee";
 import { NewEmployee } from "@/types/employee";
 import { useZodForm } from "@/lib/useZodForm";
+import { useQueryClient } from "@tanstack/react-query";
+import { auth } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
 
 interface FormSectionProps {
   currentPage: number;
@@ -31,7 +33,7 @@ const formPages = [
 const createEmployeeFormSchema = personalSchema
   .merge(addressSchema)
   .merge(contractSchema);
-type FormField = z.infer<typeof createEmployeeFormSchema>;
+type FormField = z.infer<typeof createEmployeeFormSchema>; // This is the type RHF provides
 
 export default function FormSection({
   currentPage,
@@ -42,6 +44,7 @@ export default function FormSection({
   const rounter = useRouter();
   const { show, setMessage } = useSnackbar();
   const queryClient = useQueryClient();
+  const user = useUser()
 
   const onCreatError = () => {
     setMessage({ message: "Something went wrong", type: "failed" });
@@ -54,15 +57,21 @@ export default function FormSection({
     rounter.push(`/${pathname[1]}/employees`);
   };
 
-  const onSubmit = async (data: NewEmployee) => {
+  // FIX: Change the input type of onSubmit from NewEmployee to FormField
+  const onSubmit = async (data: FormField) => {
     const valid = await methods.trigger();
     if (!valid) return;
+    
     const slug = pathname[1];
     const { id } = extractSlug(slug);
-    data.shopId = id;
 
+    // Construct the final data object, merging the form data with the required shopId
+    const employeePayload: NewEmployee = {
+        ...data,
+        shopId: id,
+    };
     try {
-      await createEmployee(data);
+      await createEmployee(employeePayload,user.user?.id || null);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       onCreateSuccess();
     } catch {
@@ -73,6 +82,7 @@ export default function FormSection({
       onCreatError();
     }
   };
+  
   return (
     <div className="">
       <FormProvider {...methods}>

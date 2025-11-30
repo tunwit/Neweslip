@@ -10,6 +10,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { showError, showSuccess } from "@/utils/showSnackbar";
+import { auth } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
 
 interface EmployeeTableWrapperProps {
   search_query?: string;
@@ -37,7 +39,7 @@ export function EmployeeTableWrapper({
   const { id } = useCurrentShop();
   const queryClient = useQueryClient();
   const { setMessage, show } = useSnackbar();
-
+  const user = useUser()
   const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
     setPage(page);
   };
@@ -46,11 +48,11 @@ export function EmployeeTableWrapper({
     try {
       if (!id) return;
       uncheckall()
-      await deleteEmployee(checked, id);
+      await deleteEmployee(checked, id,user.user?.id || null);
       showSuccess("Delete employee success");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-    } catch {
-      showError("Delete employee failed");
+    } catch(err) {
+      showError(`Delete employee failed \n ${err}`);
     }
   };
 

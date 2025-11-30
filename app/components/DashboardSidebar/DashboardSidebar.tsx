@@ -12,6 +12,7 @@ import UsersIcon from "@/assets/icons/UsersIcon";
 import MoneyIcon from "@/assets/icons/MoneyIcon";
 import HistoryIcon from "@/assets/icons/HistoryIcon";
 import TemplateIcon from "@/assets/icons/TemplateIcon";
+import DocumentIcon from "@/assets/icons/DocumentIcon";
 import SettingIcon from "@/assets/icons/SettingIcon";
 import { useSession } from "@clerk/nextjs";
 
@@ -28,26 +29,32 @@ const DashboardRails = [
     href: "/employees",
   },
   {
-    title: "Payrolls",
-    icon: MoneyIcon,
-    id: "payrolls",
-    href: "/payrolls",
+    title: "Documents",
+    icon: DocumentIcon,
+    id: "documents",
+    href: "/documents",
   },
-  {
-    title: "Records",
-    icon: HistoryIcon,
-    id: "records",
-    href: "/records",
-  },
+  // {
+  //   title: "Payrolls",
+  //   icon: MoneyIcon,
+  //   id: "payrolls",
+  //   href: "/payrolls",
+  // },
+  // {
+  //   title: "Records",
+  //   icon: HistoryIcon,
+  //   id: "records",
+  //   href: "/records",
+  // },
 ];
 
 const ConfigureRails = [
-  {
-    title: "Template",
-    icon: TemplateIcon,
-    id: "template",
-    href: "/template",
-  },
+  // {
+  //   title: "Template",
+  //   icon: TemplateIcon,
+  //   id: "template",
+  //   href: "/template",
+  // },
   {
     title: "Setting",
     icon: SettingIcon,
@@ -70,10 +77,10 @@ export default function DashboardSidebar() {
             {Array.isArray(data?.data) &&
               data?.data.map((shop: Shop, i: number) => {
                 const slug = createSlug(shop.name, String(shop.id));
-
                 return (
                   <ShopSidebarElement
                     key={shop.id}
+                    id={shop.id}
                     title={shop.name}
                     selected={shopSlug == slug}
                   />
@@ -120,7 +127,7 @@ export default function DashboardSidebar() {
             })}
           </div>
           <span className="absolute bottom-5 text-center w-full text-[#797979] text-xs">
-            v 0.0.1 @alpha
+            v 1.0.0 @no payroll edition
           </span>
         </div>
       </>

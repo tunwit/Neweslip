@@ -1,7 +1,19 @@
+"use client"
+import { useShop } from "@/hooks/useShop";
 import { SignOutButton } from "@clerk/nextjs";
-import { Button } from "@mui/joy";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
 export default function SetupShopPage() {
+  const {data,isSuccess} = useShop()
+  useEffect(()=>{
+    if(!isSuccess) return
+    if(!data || !data?.data) return
+    if(data?.data?.length > 0){
+      redirect("/")
+    }
+  },[data,isSuccess])
+  
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8 ">

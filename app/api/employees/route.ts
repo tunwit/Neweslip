@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       return errorResponse("Illegel Argument", 400);
     }
 
-    if(!await isOwner(Number(shopIdQ))) return errorResponse("Forbidden", 403);
+    if(!await isOwner(Number(shopIdQ),userId)) return errorResponse("Forbidden", 403);
 
     const empStatus = request.nextUrl.searchParams.get("status");
     let validateEmpStatus: EMPLOYEE_STATUS | undefined;
@@ -80,6 +80,14 @@ export async function GET(request: NextRequest) {
           id: shopsTable.id,
           name: shopsTable.name,
           avatar: shopsTable.avatar,
+          work_hours_per_day: shopsTable.work_hours_per_day,
+          workdays_per_month: shopsTable.workdays_per_month,
+          SMTPHost: shopsTable.SMTPHost,
+          SMTPPort: shopsTable.SMTPPort,
+          SMTPSecure: shopsTable.SMTPSecure,
+          emailAddress: shopsTable.emailAddress,
+          emailName: shopsTable.emailName,
+          emailPassword: shopsTable.emailPassword,
         },
         branch: {
           id: branchesTable.id,
@@ -108,7 +116,8 @@ export async function GET(request: NextRequest) {
         ),
       )
       .offset(Number(offset))
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .orderBy(employeesTable.createdAt)
 
     return successPaginationResponse(employees, {
       page: Number(page),

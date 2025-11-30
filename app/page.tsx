@@ -11,7 +11,6 @@ import { useShop } from "@/hooks/useShop";
 import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import SnackBar from "../widget/SnackBar";
-import { useSession } from "@clerk/nextjs";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
@@ -29,10 +28,10 @@ export default function Home() {
     return <p>Error: {(error as Error).message}</p>;
   }
 
-  if (data?.data?.length > 0) {
-    const shopslug = createSlug(data?.data[0].name, data?.data[0].id);
+   if (data && data.data && data.data.length > 0) {
+    const shopslug = createSlug(data.data[0].name,String(data.data[0].id));
     redirect(`/${shopslug}/employees`);
-  }else{
+  } else {
     redirect(`/no-shop`);
   }
 

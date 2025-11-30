@@ -10,25 +10,25 @@ import { createBranch } from "../action/createBranch";
 import { NewBranch } from "@/types/branch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { Button, CircularProgress } from "@mui/joy";
+import { auth } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
 
 export default function SetupBranchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const shopId = searchParams.get("shopId");
-  const returnBackUrl = searchParams.get("returnBack");
-
+  const user = useUser()
   const method = useZodForm(branchSchema)
   const { control, handleSubmit, formState:{isSubmitting, isSubmitSuccessful} } = method
 
   const onSubmit = async (data:Omit<NewBranch,"shopId">) => {
     if(!shopId) return
+    
     try {
-      await createBranch(data,Number(shopId));
-
+      await createBranch(data,Number(shopId),user.user?.id || null);
       // Redirect back to shop page after successful creation
       showSuccess("Create branch successful")
-      router.push(returnBackUrl || "/");
-      router.refresh(); // Refresh to trigger middleware check again
+      router.push("/");
     } catch (err) {
       showError(err instanceof Error ? err.message : "Something went wrong");
     }

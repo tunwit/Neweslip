@@ -1,18 +1,3 @@
-// export const fetchwithauth = (
-//   url: string,
-//   token: string,
-//   method: string = "GET",
-// ) => {
-//   fetch(`http://localhost:3001/v1${url}`, {
-//     method: method,
-//     headers: {
-//       Authorization: `Bearer ${token}`, // Add the JWT to Authorization header
-//     },
-//   }).then((r) => {
-//     return "hello";
-//   });
-// };
-
 interface fetchProps {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -33,7 +18,7 @@ export const fetchwithauth = async ({ endpoint, method, body }: fetchProps) => {
     options.body = JSON.stringify(body);
   }
   
-  const res = await fetch(`http://localhost:3000/api${endpoint}`, options);
+  const res = await fetch(`${window.origin}/api${endpoint}`, options);
   if (!res.ok) {
     const msg = await res.text();
     const error = new Error(msg || "Request failed");

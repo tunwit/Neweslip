@@ -9,6 +9,7 @@ import { and, eq, isNull } from "drizzle-orm";
 export async function updateEmployee(
   id: Employee["id"],
   data: Omit<NewEmployee,"shopId" | "id">,
+  userId:string|null
 ) {
   const employee = await globalDrizzle
     .select()
@@ -20,7 +21,7 @@ export async function updateEmployee(
     throw new Error("Employee not found");
   }
 
-  const ownerCheck = await isOwner(employee[0].shopId);
+  const ownerCheck = await isOwner(employee[0].shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

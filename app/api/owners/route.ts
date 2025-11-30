@@ -22,7 +22,7 @@ export async function GET(request:NextRequest) {
         return errorResponse("Illegel Arguments", 400);
     }
 
-    if(!await isOwner(Number(shopId))) return errorResponse("Forbidden", 403);
+    if(!await isOwner(Number(shopId),userId)) return errorResponse("Forbidden", 403);
 
     const data = await globalDrizzle
       .select({
@@ -36,7 +36,7 @@ export async function GET(request:NextRequest) {
         userId:ownerIds,
         limit:ownerIds.length
     });
-
+    
     const payload:Owner[] = users.data.map((value)=>({
         id: value.id,
         firstName: value.firstName,
