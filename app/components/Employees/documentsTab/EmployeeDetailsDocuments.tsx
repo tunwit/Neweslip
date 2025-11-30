@@ -36,7 +36,8 @@ export default function EmployeeDetailsDocuments({
     newName: string,
   ) => {
     if (!shopId || !user?.id) return;
-    const prefix = doc.key.split("/", 1)[0];
+    const prefix = doc.key.substring(0, doc.key.lastIndexOf("/"));
+    
     try {
       await renameEmployeeDocument(
         doc.id,

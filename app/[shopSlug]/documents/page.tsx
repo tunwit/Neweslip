@@ -27,6 +27,7 @@ import { renameEmployeeDocument } from "@/app/action/renameEmployeeDocument";
 import { uploadShopDocument } from "@/app/action/uploadShopDocument";
 import deleteShopDocument from "@/app/action/deleteShopDocument";
 import { showError, showSuccess } from "@/utils/showSnackbar";
+import { renameShopDocument } from "@/app/action/renameShopDocument";
 
 export default function page() {
   const [search, setSearch] = useState("");
@@ -36,13 +37,13 @@ export default function page() {
   const { data, isLoading } = useShopDocuments({ shopId: shopId || -1, search_query:debounced});
   const { name } = useCurrentShop();
   const queryClient = useQueryClient();
-    console.log(debounced);
-    
+
   const onRename = async (doc: ShopDocumentWithUploader, newName: string) => {
     if (!shopId || !user?.id) return;
-    const prefix = doc.key.split("/", 1)[0];
+    const prefix = doc.key.substring(0, doc.key.lastIndexOf("/"));
+    
     try {
-      await renameEmployeeDocument(
+      await renameShopDocument(
         doc.id,
         newName,
         doc.key,
