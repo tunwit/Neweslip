@@ -26,7 +26,7 @@ export async function renameEmployeeDocument(
   try {
     await s3Client.send(new CopyObjectCommand({
       Bucket: "eslip",
-      CopySource: `eslip/${oldKey}`,
+      CopySource: encodeURIComponent(`eslip/${oldKey}`),
       Key: newKey,
     }));
 
