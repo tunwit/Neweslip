@@ -23,7 +23,7 @@ export default function DocumentTableElement<T extends { id: number; key: string
 }: DocumentTableElementProps<T>) {
 
   const onCopy = async () => {
-    const url = await getPresignedUrl(doc.key, 3600);
+    const url = await getPresignedUrl(doc.key, 3600,false);
     navigator.clipboard.writeText(url);
   };
 
@@ -32,7 +32,7 @@ export default function DocumentTableElement<T extends { id: number; key: string
       <td>
         <div className="flex items-center gap-2 fill-red-200">
           <img src={getFileIcon(doc.fileName)} alt="Icon" width={20} height={20} />
-          <Link href="#" onClick={async () => window.open(await getPresignedUrl(doc.key, 3600), "_blank")} className="text-blue-600 underline">
+          <Link href="#" onClick={async () => window.open(await getPresignedUrl(doc.key, 3600,false), "_blank")} className="text-blue-600 underline">
             {doc.fileName}
           </Link>
         </div>
