@@ -35,8 +35,6 @@ export default function DocumentTable<
       {openRename && selectedDoc && (
         <RenameModal
           doc={selectedDoc}
-          docKey={selectedDoc.key}
-          oldName={selectedDoc.fileName}
           open={openRename}
           setOpen={setOpenRename}
           onRename={(doc, newName) => onRename?.(doc, newName)!}

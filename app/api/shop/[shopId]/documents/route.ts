@@ -36,7 +36,7 @@ export async function GET(
 
     const client = await clerkClient();
     const uploaderIds = [
-      ...new Set(data.map((f) => f.uploadedBy).filter(Boolean)),
+      ...new Set(data.map((f) => f.uploadedBy || "").filter(Boolean)),
     ];
     let uploaders: Record<string, any> = {};
     if (uploaderIds.length > 0) {

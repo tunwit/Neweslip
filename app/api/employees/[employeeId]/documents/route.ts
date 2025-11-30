@@ -23,7 +23,7 @@ export async function GET(req:NextRequest,{ params }: { params: Promise<{ employ
       ).orderBy(employeeFilesTable.uploadedAt)
     
     const client = await clerkClient()
-    const uploaderIds = [...new Set(data.map(f => f.uploadedBy).filter(Boolean))];
+    const uploaderIds = [...new Set(data.map(f => f.uploadedBy || "").filter(Boolean))];
     let uploaders: Record<string, any> = {};
     if (uploaderIds.length > 0) {
       const users = await client.users.getUserList({ userId: uploaderIds  });

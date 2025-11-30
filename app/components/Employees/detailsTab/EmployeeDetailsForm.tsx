@@ -69,7 +69,7 @@ export default function EmployeeDetailsForm({
                   render={({ field }) => (
                     <Suspense>
                       <GenderSelector
-                        gender={field.value}
+                        gender={field.value ? field.value : null}
                         onChange={field.onChange}
                       />
                     </Suspense>
@@ -173,7 +173,7 @@ export default function EmployeeDetailsForm({
                   render={({ field }) => (
                     <Suspense>
                       <BranchSelector
-                        branchId={field.value}
+                        branchId={field.value || -1}
                         onChange={field.onChange}
                       />
                     </Suspense>
