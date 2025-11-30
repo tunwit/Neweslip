@@ -7,11 +7,12 @@ import { isOwner } from "@/lib/isOwner";
 import { s3Client } from "@/s3/s3";
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import uploadDocumentValidator from "@/lib/uploadDocmentValidator";
+import { shopFilesTable } from "@/db/schema/shopFilesTable";
 
-function generateS3Key(employeeId: number, originalFileName: string) {
+function generateS3Key(shopId: number, originalFileName: string) {
   const timestamp = Date.now();
   const sanitizedFileName = originalFileName.replace(/\s+/g, "_");
-  return `emp/emp-${employeeId}/${timestamp}_${sanitizedFileName}`;
+  return `shp/shp-${shopId}/${timestamp}_${sanitizedFileName}`;
 }
 
 interface FileUploadResult {
@@ -20,10 +21,9 @@ interface FileUploadResult {
   error?: string;
 }
 
-export async function uploadEmployeeDocuments(
+export async function uploadShopDocument(
   files: File[],
   tag: string = "others",
-  employeeId: number,
   shopId: number,
   userId: string | null,
 ) {
@@ -37,7 +37,7 @@ export async function uploadEmployeeDocuments(
   }
 
   for (const file of files) {
-    const s3Key = generateS3Key(employeeId, file?.name);
+    const s3Key = generateS3Key(shopId, file?.name);
     const resultObj: FileUploadResult = { fileName: file?.name, success: false };
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -55,8 +55,8 @@ export async function uploadEmployeeDocuments(
 
       // 2. Insert into Database
       await globalDrizzle.transaction(async (tx) => {
-        await tx.insert(employeeFilesTable).values({
-          employeeId,
+        await tx.insert(shopFilesTable).values({
+          shopId,
           key: s3Key,
           fileName: file.name,
           tag,

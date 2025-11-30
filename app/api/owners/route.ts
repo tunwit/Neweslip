@@ -36,7 +36,7 @@ export async function GET(request:NextRequest) {
         userId:ownerIds,
         limit:ownerIds.length
     });
-
+    
     const payload:Owner[] = users.data.map((value)=>({
         id: value.id,
         firstName: value.firstName,

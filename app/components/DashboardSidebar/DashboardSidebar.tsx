@@ -12,6 +12,7 @@ import UsersIcon from "@/assets/icons/UsersIcon";
 import MoneyIcon from "@/assets/icons/MoneyIcon";
 import HistoryIcon from "@/assets/icons/HistoryIcon";
 import TemplateIcon from "@/assets/icons/TemplateIcon";
+import DocumentIcon from "@/assets/icons/DocumentIcon";
 import SettingIcon from "@/assets/icons/SettingIcon";
 import { useSession } from "@clerk/nextjs";
 
@@ -26,6 +27,12 @@ const DashboardRails = [
     icon: UsersIcon,
     id: "employees",
     href: "/employees",
+  },
+  {
+    title: "Documents",
+    icon: DocumentIcon,
+    id: "documents",
+    href: "/documents",
   },
   // {
   //   title: "Payrolls",

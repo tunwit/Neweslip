@@ -17,6 +17,7 @@ export default function Page() {
   const {name} = useCurrentShop()
   return (
     <main className="w-full bg-white font-medium overflow-scroll">
+      <title>Setting - E Slip</title>
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>

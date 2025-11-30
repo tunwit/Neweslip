@@ -20,7 +20,7 @@ export async function GET(req:NextRequest,{ params }: { params: Promise<{ employ
       .from(employeeFilesTable)
       .where(
         eq(employeeFilesTable.employeeId, Number(employeeId))
-      )
+      ).orderBy(employeeFilesTable.uploadedAt)
     
     const client = await clerkClient()
     const uploaderIds = [...new Set(data.map(f => f.uploadedBy).filter(Boolean))];

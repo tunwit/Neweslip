@@ -37,17 +37,10 @@ export default function EmployeeDetailsForm({
     typeof createEmployeeFormSchema
   >;
 
-  const onSubmit = (data: createEmployeeFormField) => {
-    console.log(data);
-  };
 
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          handleSubmit(onSubmit)(e);
-        }}
-      >
+      <form>
         <div className="flex flex-col gap-3 ">
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
             <p className="font-semibold mb-2">Personal Infomation</p>

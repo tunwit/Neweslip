@@ -69,7 +69,6 @@ export default function EmployeeDetailsModal({
 
     queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
-  const { show, setMessage } = useSnackbar();
 
   const methods = useZodForm(createEmployeeFormSchema, {
     defaultValues: normalizeNull({
@@ -195,6 +194,7 @@ export default function EmployeeDetailsModal({
               <EmployeeDetailsDocuments
                 title="Personal Documents"
                 tag="personal"
+                employeeId={employee.id}
               />
             </TabPanel>
           </Tabs>

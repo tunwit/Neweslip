@@ -12,8 +12,9 @@ import {
   RenameObjectCommand,
 } from "@aws-sdk/client-s3";
 import { eq } from "drizzle-orm";
+import { shopFilesTable } from "@/db/schema/shopFilesTable";
 
-export async function renameEmployeeDocument(
+export async function renameShopDocument(
   docId: number,
   newFileName: string,
   oldKey: string,
@@ -32,12 +33,12 @@ export async function renameEmployeeDocument(
 
     await globalDrizzle.transaction(async (tx) => {
       await tx
-        .update(employeeFilesTable)
+        .update(shopFilesTable)
         .set({
           key: newKey,
           fileName: newFileName,
         })
-        .where(eq(employeeFilesTable.id, docId));
+        .where(eq(shopFilesTable.id, docId));
     });
 
     await s3Client.send(new DeleteObjectCommand({
