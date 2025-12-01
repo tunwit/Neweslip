@@ -8,7 +8,7 @@ import {
   Select,
   Typography,
 } from "@mui/joy";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Employee, EmployeeWithShop } from "@/types/employee";
 import data from "@/assets/employee";
@@ -24,9 +24,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
+import { Pagination } from "@mui/material";
 
 interface PayrollsAddEmployeeModal {
-  periodId:number
+  periodId: number;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -35,33 +36,45 @@ export default function PayrollsAddEmployeeModal({
   open,
   setOpen,
 }: PayrollsAddEmployeeModal) {
-  const methods = useCheckBox<number>("payrollAddEmployeeTable")
+  const methods = useCheckBox<number>("payrollAddEmployeeTable");
   const queryClient = useQueryClient();
-  const {checked,uncheckall} = methods
-  const [search,setSearch] = useState("")
+  const { checked, uncheckall } = methods;
+  const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
+  const [page, setPage] = useState(1);
 
-  const [branchId,setBranchId] = useState<number>(-1)
-  const { data,isLoading,isSuccess } = useEmployees({branchId:branchId,search_query:debounced})
-  const [selected,setSelected] = useState<EmployeeWithShop|null>(null)
-  const { user } = useUser()
+  const [branchId, setBranchId] = useState<number>(-1);
+  const { data, isLoading, isSuccess } = useEmployees({
+    branchId: branchId,
+    search_query: debounced,
+    page: page,
+  });
+  const [selected, setSelected] = useState<EmployeeWithShop | null>(null);
+  const { user } = useUser();
+  
+  const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
+    setPage(page);
+  };
 
   const handlerConfirm = async () => {
-    if(!user?.id) return
-    try{
-      await createPayrollRecords(checked,periodId,user?.id)
-      queryClient.invalidateQueries({queryKey:["payrollRecord"]})
-      showSuccess(`Add employee success`)
-      setOpen(false)
+    if (!user?.id) return;
+    try {
+      await createPayrollRecords(checked, periodId, user?.id);
+      queryClient.invalidateQueries({ queryKey: ["payrollRecord"] });
+      showSuccess(`Add employee success`);
+      setOpen(false);
+    } catch (err: any) {
+      let msg = err.message;
+      if (msg == "ER_DUP_ENTRY") msg = "You cannot add duplicate employee";
+      showError(`Add employee failed \n ${msg}`);
+    } finally {
+      uncheckall();
     }
-    catch(err:any){
-      let msg = err.message
-      if(msg == "ER_DUP_ENTRY") msg = "You cannot add duplicate employee"
-      showError(`Add employee failed \n ${msg}`) 
-    }finally{
-      uncheckall()
-    }
-  }
+  };
+
+  const avatarColors = useMemo(() => {
+    return data?.data?.map(() => getRandomPastelColor()) || [];
+  }, [data]);
 
   return (
     <>
@@ -70,8 +83,10 @@ export default function PayrollsAddEmployeeModal({
         <ModalDialog>
           <div className="flex flex-col justify-center ">
             <div className="flex flex-row items-center gap-2">
-              <p className="font-bold text-lg">Employees ({data?.data?.length} people)</p>
-              {/* <p>{Object.values(checkboxs).filter((v) => v === true).length}</p> */}
+              <p className="font-bold text-lg">
+                Employees ({data?.pagination.totalItems} people)
+              </p>
+              {checked.length}
               <p>selected</p>
             </div>
 
@@ -88,32 +103,79 @@ export default function PayrollsAddEmployeeModal({
                     placeholder="Search"
                     className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
                     value={search}
-                    onChange={(e)=>{setSearch(e.target.value)}}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                    }}
                   />
                 </div>
               </div>
 
               <div className="w-[20%]">
                 <p className="text-black text-xs mb-1">Branch</p>
-                <BranchSelector branchId={branchId} onChange={(b)=>{setBranchId(b)}} isEnableAll={true}/>
+                <BranchSelector
+                  branchId={branchId}
+                  onChange={(b) => {
+                    setBranchId(b);
+                  }}
+                  isEnableAll={true}
+                />
               </div>
             </div>
             <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-              <TableWithCheckBox data={data?.data}
+              <TableWithCheckBox
+                editColumn={false}
+                data={data?.data}
                 isLoading={isLoading}
                 isSuccess={isSuccess}
                 checkboxMethods={methods}
                 setSelectedItem={setSelected}
                 setOpen={setOpen}
                 columns={[
-                 
-                  { key: "name", label: "Name",render: (row) => `${row.firstName} ${row.lastName}`},
-                  { key: "nickName", label: "Nick Name",render: (row) => `${row.nickName}`, },
-                  { key: "branch", label: "Branch",render: (row) => `${row.branch.name}`, },
-    
-                ]}/>
-
+                  {
+                    key: "name",
+                    label: "Name",
+                    width: "45%",
+                    render: (row, i) => {
+                      return (
+                        <span className="flex flex-row items-center gap-2">
+                          <div
+                            className="w-9 aspect-square min-w-8 text-center rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: avatarColors[i] }}
+                            onClick={() => setOpen(true)}
+                          >
+                            {row.firstName.charAt(0)}
+                          </div>
+                          <p>
+                            {row.firstName}
+                            {row.lastName}
+                          </p>
+                        </span>
+                      );
+                    },
+                  },
+                  {
+                    key: "nickName",
+                    label: "Nick Name",
+                    render: (row) => `${row.nickName}`,
+                  },
+                  {
+                    key: "branch",
+                    label: "Branch",
+                    render: (row) => `${row.branch.name}`,
+                  },
+                ]}
+              />
             </div>
+            <div className="w-full flex justify-center mt-2">
+              <Pagination
+                count={data?.pagination.totalPages || 1}
+                page={data?.pagination.page || page}
+                onChange={onPageChange}
+                shape="rounded"
+                size="medium"
+              />
+            </div>
+
             <div className="flex flex-row gap-2 ml-auto mt-2">
               <Button
                 size="sm"
@@ -122,7 +184,11 @@ export default function PayrollsAddEmployeeModal({
               >
                 Close
               </Button>
-              <Button disabled={checked.length < 1} size="sm" onClick={() => handlerConfirm()}>
+              <Button
+                disabled={checked.length < 1}
+                size="sm"
+                onClick={() => handlerConfirm()}
+              >
                 Confirm
               </Button>
             </div>

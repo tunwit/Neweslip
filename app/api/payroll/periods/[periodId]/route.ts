@@ -18,28 +18,28 @@ import { OtField } from "@/types/otField";
 import { PenaltyField } from "@/types/penaltyField";
 import calculateTotalSalary from "@/lib/calculateTotalSalary";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ periodId: string }> },
+) {
   try {
+    const periodId = (await params).periodId;
     const { userId } = await auth();
-
-    const shopId = request.nextUrl.searchParams.get("shopId");
 
     if (!userId) {
       return errorResponse("Unauthorized", 401);
     }
 
-    if (!shopId) {
+    if (!periodId) {
       return errorResponse("Illegel Arguments", 400);
     }
 
-    if (!(await isOwner(Number(shopId), userId)))
-      return errorResponse("Forbidden", 403);
-
-    const data = await globalDrizzle
+    const [period] = await globalDrizzle
       .select({
         id: payrollPeriodsTable.id,
         name: payrollPeriodsTable.name,
         status: payrollPeriodsTable.status,
+        shopId: payrollPeriodsTable.shopId,
         employeeCount: countDistinct(payrollRecordsTable.employeeId),
         work_hours_per_day: payrollPeriodsTable.work_hours_per_day,
         workdays_per_month: payrollPeriodsTable.workdays_per_month,
@@ -49,35 +49,12 @@ export async function GET(request: NextRequest) {
         payrollRecordsTable,
         eq(payrollRecordsTable.payrollPeriodId, payrollPeriodsTable.id),
       )
-      .where(eq(payrollPeriodsTable.shopId, Number(shopId)))
-      .groupBy(payrollPeriodsTable.id); // only group by ID
-
-    const periodsWithNet = await Promise.all(
-      data.map(async (period) => {
-        // Get all records for this period
-        const records = await globalDrizzle
-          .select({ id: payrollRecordsTable.id })
-          .from(payrollRecordsTable)
-          .where(eq(payrollRecordsTable.payrollPeriodId, period.id));
-
-        // Sum net salary for all records
-        let totalNet = 0;
-        let count = 0;
-        for (const r of records) {
-          const { totals } = await calculateTotalSalary(r.id);
-          totalNet += totals.net;
-          count++;
-        }
-
-        return {
-          ...period,
-          totalNet,
-          count,
-        };
-      }),
-    );
-
-    return successResponse(periodsWithNet);
+      .where(eq(payrollPeriodsTable.id, Number(periodId)))
+      .groupBy(payrollPeriodsTable.id);
+      
+    if (!(await isOwner(Number(period.shopId), userId)))
+      return errorResponse("Forbidden", 403);
+    return successResponse(period);
   } catch (err) {
     console.error(err);
     return errorResponse("Internal server error", 500);

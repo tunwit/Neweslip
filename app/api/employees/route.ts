@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
       return errorResponse("Illegel Argument", 400);
     }
 
-    if(!await isOwner(Number(shopIdQ),userId)) return errorResponse("Forbidden", 403);
+    if (!(await isOwner(Number(shopIdQ), userId)))
+      return errorResponse("Forbidden", 403);
 
     const empStatus = request.nextUrl.searchParams.get("status");
     let validateEmpStatus: EMPLOYEE_STATUS | undefined;
@@ -65,11 +66,14 @@ export async function GET(request: NextRequest) {
         )
       : undefined;
 
-    const totalItems = await globalDrizzle
+    const [{ count: total }] = await globalDrizzle
       .select({ count: count() })
-      .from(employeesTable);
-
-    const total = totalItems[0].count as number;
+      .from(employeesTable)
+      .innerJoin(
+        shopOwnerTable,
+        eq(employeesTable.shopId, shopOwnerTable.shopId),
+      )
+      .where(searchFilter);
 
     const { shopId, branchId, ...rest } = getTableColumns(employeesTable);
 
@@ -117,7 +121,7 @@ export async function GET(request: NextRequest) {
       )
       .offset(Number(offset))
       .limit(Number(limit))
-      .orderBy(employeesTable.createdAt)
+      .orderBy(employeesTable.createdAt);
 
     return successPaginationResponse(employees, {
       page: Number(page),

@@ -23,6 +23,7 @@ import { useRecordDetails } from "@/hooks/useRecordDetails";
 import { usePayrollPeriodStats } from "@/hooks/usePayrollPeriodStat";
 import { useUser } from "@clerk/nextjs";
 import { moneyFormat } from "@/utils/formmatter";
+import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
 
 export default function Home() {
   // const { checkboxs, checkedItem, uncheckall } = usePayrollSelectKit();
@@ -38,6 +39,8 @@ export default function Home() {
     null,
   );
   const periodId = useSearchParams().get("id");
+
+  const { data: periodData } = usePayrollPeriod(Number(periodId));
 
   const { data, isLoading, isSuccess } = usePayrollRecords(Number(periodId));
   const queryClient = useQueryClient();
@@ -67,11 +70,13 @@ export default function Home() {
       />
       {openEdit && (
         <PayrollEditEmployeeModal
+          periodData={periodData?.data}
           selectedRecord={selectedRecord}
           open={openEdit}
           setOpen={setOpenEdit}
         />
       )}
+      <title>{periodData?.data?.name}</title>
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
@@ -82,7 +87,7 @@ export default function Home() {
         </div>
         <div className="mt-5 flex flex-row justify-between">
           <p className="text-black text-4xl font-bold">
-            Payroll - {periodId?.padStart(3, "0")}
+            {periodData?.data?.name}
           </p>
           <Button
             onClick={() => setOpenAdd(true)}

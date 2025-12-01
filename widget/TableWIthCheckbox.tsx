@@ -81,18 +81,20 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
         <tbody>
           {isLoading && (
             <tr className="text-center">
-              <td colSpan={columns.length + 2}>Loading...</td>
+              <td colSpan={columns.length + (editColumn ? 2 : 1)}>
+                Loading...
+              </td>
             </tr>
           )}
 
           {isSuccess && !data?.length && (
             <tr className="text-center">
-              <td colSpan={columns.length + 2}>No Data</td>
+              <td colSpan={columns.length + (editColumn ? 2 : 1)}>No Data</td>
             </tr>
           )}
 
           {isSuccess &&
-            data?.map((row,i) => (
+            data?.map((row, i) => (
               <tr key={row.id}>
                 <td>
                   <Checkbox

@@ -29,8 +29,10 @@ import Decimal from "decimal.js";
 import PayrollSummaryTab from "./PayrollSummaryTab";
 import { height } from "@mui/system";
 import { useQueryClient } from "@tanstack/react-query";
+import { PayrollPeriod } from "@/types/payrollPeriod";
 
 interface PayrollEditEmployeeModalProps {
+  periodData: Omit<PayrollPeriod, "totalNet" | "count">;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedRecord: PayrollRecord | null;
@@ -68,6 +70,7 @@ const stateIcon = {
 };
 
 export default function PayrollEditEmployeeModal({
+  periodData,
   open,
   setOpen,
   selectedRecord,
@@ -77,6 +80,10 @@ export default function PayrollEditEmployeeModal({
     await saveDataHandler();
     queryClient.invalidateQueries({
       queryKey: ["payrollRecord", selectedRecord?.periodId],
+      exact: false,
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["payrollPeriods"],
       exact: false,
     });
     setOpen(false);
@@ -94,8 +101,8 @@ export default function PayrollEditEmployeeModal({
     Record<number, { value: number; amount: number }>
   >({});
   const [baseSalary, setBaseSalary] = useState<Decimal>(new Decimal(0));
-
   const [isDirty, setIsDirty] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [state, setState] = useState<0 | 1 | 2>(2);
   //0 : changed
   //1 : saving
@@ -117,8 +124,6 @@ export default function PayrollEditEmployeeModal({
   }, [data]);
 
   useEffect(() => {
-    console.log(baseSalary);
-    
     if (!isDirty) return;
     setState(0);
     const handler = setTimeout(async () => {
@@ -134,6 +139,7 @@ export default function PayrollEditEmployeeModal({
 
   const saveDataHandler = async () => {
     if (!selectedRecord || !user?.id) return;
+    setIsSubmitting(true);
     const result = {
       salary: baseSalary.toNumber(),
       salaryValues: [
@@ -161,11 +167,13 @@ export default function PayrollEditEmployeeModal({
       await updatePayrollRecord(result, selectedRecord.id, id!, user?.id);
     } catch (err) {
       showError(`Cannot save data \n ${err}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
     <>
-      <Modal open={open}>
+      <Modal open={open} onClose={() => setOpen(false)}>
         <ModalDialog sx={{ background: "#fafafa", maxHeight: "70%" }}>
           <div className="flex flex-row justify-between items-center">
             <p>Salary Details</p>
@@ -250,9 +258,12 @@ export default function PayrollEditEmployeeModal({
                   autoCalculate={true}
                   calculateAmount={(item, v) =>
                     calculateOT(
+                      baseSalary,
                       v,
                       item.type,
                       item.method,
+                      new Decimal(periodData.work_hours_per_day || 0),
+                      new Decimal(periodData.workdays_per_month || 0),
                       item.rate,
                       item.rateOfPay,
                     )
@@ -284,7 +295,8 @@ export default function PayrollEditEmployeeModal({
           </div>
 
           <Button
-            disabled={isLoading}
+            loading={isSubmitting}
+            disabled={isLoading || isSubmitting}
             onClick={() => {
               doneHandler();
             }}

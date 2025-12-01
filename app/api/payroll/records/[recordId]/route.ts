@@ -52,8 +52,6 @@ export async function GET(
       penaltyValues: data.penaltyValues,
       totals: data.totals,
     };
-    console.log(result);
-
     return successResponse(result);
   } catch (err) {
     console.error(err);

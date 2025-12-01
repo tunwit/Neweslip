@@ -37,7 +37,6 @@ export default function EmployeeDetailsForm({
     typeof createEmployeeFormSchema
   >;
 
-
   return (
     <>
       <form>
@@ -45,7 +44,6 @@ export default function EmployeeDetailsForm({
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
             <p className="font-semibold mb-2">Personal Infomation</p>
             <div className="grid grid-cols-2 gap-y-4 gap-x-3">
-              <InputForm control={control} name="position" label="Position" />
               <InputForm control={control} name="email" label="Email" />
               <InputForm
                 control={control}
@@ -136,6 +134,8 @@ export default function EmployeeDetailsForm({
                 label="Base Salary"
                 type="number"
               />
+              <InputForm control={control} name="position" label="Position" />
+
               <FormControl required>
                 <FormLabel>
                   Date of Employ
