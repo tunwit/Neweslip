@@ -7,6 +7,7 @@ import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { NewSalaryField, SalaryField } from "@/types/salaryFields";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
+import { useUser } from "@clerk/nextjs";
 import {
   Button,
   FormControl,
@@ -30,6 +31,7 @@ const defaultType = SALARY_FIELD_DEFINATION_TYPE.INCOME
 
 export default function AddEditIncomeModal({ open, setOpen, field }: AddIncomeModalProps) {
   const {id:shopId} = useCurrentShop()
+  const {user} = useUser()
   const queryClient = useQueryClient()
 
   const methods = useZodForm(salaryFieldSchema, {
@@ -48,7 +50,7 @@ export default function AddEditIncomeModal({ open, setOpen, field }: AddIncomeMo
   };
 
     const submitHandler = async(data:Omit<NewSalaryField,"shopId">) => {
-      if(!shopId) return
+      if(!shopId || !user?.id) return
       try{
         if (field) {
           // edit mode
@@ -58,11 +60,11 @@ export default function AddEditIncomeModal({ open, setOpen, field }: AddIncomeMo
             formular: data.formular ?? null,
           };
 
-          await updateSalaryFIeld(field.id, payload);
+          await updateSalaryFIeld(field.id, payload,user?.id);
           showSuccess("Income updated successfully");
         } else {
           // add mode
-          await createSalaryField(data, shopId);
+          await createSalaryField(data, shopId,user?.id);
           showSuccess("Income added successfully");
         }
         queryClient.invalidateQueries({ queryKey: ["salaryFields"] });

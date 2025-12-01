@@ -7,7 +7,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { PayrollRecord } from "@/types/payrollRecord";
 
-export async function deletePayrollRecords(toDelete: PayrollRecord["id"][], periodId: number) {
+export async function deletePayrollRecords(toDelete: PayrollRecord["id"][], periodId: number,userId:string | null) {
   const periods = await globalDrizzle
       .select()
       .from(payrollPeriodsTable)
@@ -15,7 +15,7 @@ export async function deletePayrollRecords(toDelete: PayrollRecord["id"][], peri
       .limit(1);
   
   if (!periods.length) throw new Error("Period not found");
-  if (!(await isOwner(periods[0].shopId))) throw new Error("Forbidden");
+  if (!(await isOwner(periods[0].shopId,userId))) throw new Error("Forbidden");
 
 
   try {

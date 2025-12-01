@@ -21,6 +21,9 @@ import { getRandomPastelColor } from "@/utils/generatePastelColor";
 import { createPayrollRecords } from "@/app/action/createPayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
+import { Branch } from "@/types/branch";
+import { useDebounce } from "use-debounce";
+import { useUser } from "@clerk/nextjs";
 
 interface PayrollsAddEmployeeModal {
   periodId:number
@@ -35,13 +38,18 @@ export default function PayrollsAddEmployeeModal({
   const methods = useCheckBox<number>("payrollAddEmployeeTable")
   const queryClient = useQueryClient();
   const {checked,uncheckall} = methods
-  const { data,isLoading,isSuccess } = useEmployees({})
-  
+  const [search,setSearch] = useState("")
+  const [debounced] = useDebounce(search, 500);
+
+  const [branchId,setBranchId] = useState<number>(-1)
+  const { data,isLoading,isSuccess } = useEmployees({branchId:branchId,search_query:debounced})
   const [selected,setSelected] = useState<EmployeeWithShop|null>(null)
+  const { user } = useUser()
 
   const handlerConfirm = async () => {
+    if(!user?.id) return
     try{
-      await createPayrollRecords(checked,periodId)
+      await createPayrollRecords(checked,periodId,user?.id)
       queryClient.invalidateQueries({queryKey:["payrollRecord"]})
       showSuccess(`Add employee success`)
       setOpen(false)
@@ -79,13 +87,15 @@ export default function PayrollsAddEmployeeModal({
                     type="text"
                     placeholder="Search"
                     className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
+                    value={search}
+                    onChange={(e)=>{setSearch(e.target.value)}}
                   />
                 </div>
               </div>
 
               <div className="w-[20%]">
-                <p className="text-black text-xs mb-1">Brach</p>
-                <BranchSelector branchId={-1} onChange={()=>{}} isEnableAll={true}/>
+                <p className="text-black text-xs mb-1">Branch</p>
+                <BranchSelector branchId={branchId} onChange={(b)=>{setBranchId(b)}} isEnableAll={true}/>
               </div>
             </div>
             <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
@@ -112,7 +122,7 @@ export default function PayrollsAddEmployeeModal({
               >
                 Close
               </Button>
-              <Button size="sm" onClick={() => handlerConfirm()}>
+              <Button disabled={checked.length < 1} size="sm" onClick={() => handlerConfirm()}>
                 Confirm
               </Button>
             </div>

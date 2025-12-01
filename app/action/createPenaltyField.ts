@@ -4,8 +4,8 @@ import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
 import { NewPenaltyField } from "@/types/penaltyField";
 
-export async function createPenaltyField(data: Omit<NewPenaltyField,"shopId">,shopId:number) {
-  const ownerCheck = await isOwner(shopId);
+export async function createPenaltyField(data: Omit<NewPenaltyField,"shopId">,shopId:number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

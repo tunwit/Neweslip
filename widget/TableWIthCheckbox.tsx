@@ -8,21 +8,20 @@ import { useCheckBox, UseCheckBoxResult } from "@/hooks/useCheckBox";
 interface Column<T> {
   key: keyof T | string;
   label: string;
-  render?: (row: T) => React.ReactNode; // custom render for a column
+  render?: (row: T, index: number) => React.ReactNode; // custom render for a column
   width?: string;
 }
 
-interface GenericTableProps
-<
+interface GenericTableProps<
   T extends { id: string | number },
-  ID extends string | number = T["id"]
+  ID extends string | number = T["id"],
 > {
   data: T[] | undefined;
   isLoading: boolean;
   isSuccess: boolean;
   checkboxMethods: UseCheckBoxResult<ID>;
   columns: Column<T>[];
-  editColumn?:boolean
+  editColumn?: boolean;
   setSelectedItem?: Dispatch<SetStateAction<T | null>>;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -37,7 +36,14 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
   setSelectedItem,
   setOpen,
 }: GenericTableProps<T>) {
-  const { toggle, isChecked, checkall, uncheckall, isAllChecked, isSomeChecked } = checkboxMethods
+  const {
+    toggle,
+    isChecked,
+    checkall,
+    uncheckall,
+    isAllChecked,
+    isSomeChecked,
+  } = checkboxMethods;
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!data) return;
@@ -61,7 +67,11 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
               />
             </th>
             {columns.map((col) => (
-              <th key={col.key.toString()} className={`font-medium ${col.width ?? ""}`}  style={{ width: col.width }}>
+              <th
+                key={col.key.toString()}
+                className={`font-medium ${col.width ?? ""}`}
+                style={{ width: col.width }}
+              >
                 {col.label}
               </th>
             ))}
@@ -82,7 +92,7 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
           )}
 
           {isSuccess &&
-            data?.map((row) => (
+            data?.map((row,i) => (
               <tr key={row.id}>
                 <td>
                   <Checkbox
@@ -93,19 +103,23 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
 
                 {columns.map((col) => (
                   <td key={col.key.toString()}>
-                    {col.render ? col.render(row) : (row[col.key as keyof T] as any)}
+                    {col.render
+                      ? col.render(row, i)
+                      : (row[col.key as keyof T] as any)}
                   </td>
                 ))}
 
-                {editColumn && setSelectedItem && <td
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setSelectedItem(row);
-                    setOpen(true);
-                  }}
-                >
-                  <Icon icon="ic:baseline-edit" className="text-xl" />
-                </td>}
+                {editColumn && setSelectedItem && (
+                  <td
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setSelectedItem(row);
+                      setOpen(true);
+                    }}
+                  >
+                    <Icon icon="ic:baseline-edit" className="text-xl" />
+                  </td>
+                )}
               </tr>
             ))}
         </tbody>

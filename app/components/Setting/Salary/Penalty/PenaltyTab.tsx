@@ -18,34 +18,38 @@ import { OtField } from "@/types/otField";
 
 import { PenaltyField } from "@/types/penaltyField";
 import { usePenaltyFields } from "@/hooks/usePenaltyFields";
-import { PENALTY_METHOD_LABELS, PENALTY_TYPE_LABELS } from "@/types/enum/enumLabel";
+import {
+  PENALTY_METHOD_LABELS,
+  PENALTY_TYPE_LABELS,
+} from "@/types/enum/enumLabel";
 import AddEditPenaltyModal from "./AddEditPenaltyModal";
 import { deletePenaltyField } from "@/app/action/deletePenaltyField";
+import { useUser } from "@clerk/nextjs";
 
 export default function PenaltyTab() {
-  const [open,setOpen] = useState(false)
-  const [selectedField,setSelectedField] = useState<PenaltyField|null>(null)
-  const {id:shopId} = useCurrentShop();
-  const checkboxMethods = useCheckBox<number>("allPenaltyTable")
-  const {checked, checkall, uncheckall} = checkboxMethods
+  const [open, setOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState<PenaltyField | null>(null);
+  const { id: shopId } = useCurrentShop();
+  const checkboxMethods = useCheckBox<number>("allPenaltyTable");
+  const { checked, checkall, uncheckall } = checkboxMethods;
+  const { user } = useUser();
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const addHandler = () =>{
+  const addHandler = () => {
     setSelectedField(null);
-    
-    setOpen(true)
-  }
 
-  if(!shopId) return <p>loading</p>
-  const {data,isLoading,isSuccess} = usePenaltyFields(shopId)
+    setOpen(true);
+  };
 
-  
+  if (!shopId) return <p>loading</p>;
+  const { data, isLoading, isSuccess } = usePenaltyFields(shopId);
+
   const handleDelete = async () => {
     try {
-      if (!shopId) return;
-      uncheckall()
-      await deletePenaltyField(checked,shopId)
+      if (!shopId || !user?.id) return;
+      uncheckall();
+      await deletePenaltyField(checked, shopId, user?.id);
       showSuccess("Delete field success");
       queryClient.invalidateQueries({ queryKey: ["penaltyFields"] });
     } catch {
@@ -56,24 +60,32 @@ export default function PenaltyTab() {
   return (
     <>
       <div className="-mt-4">
-        <AddEditPenaltyModal open={open} setOpen={setOpen} field={selectedField}/>
+        <AddEditPenaltyModal
+          open={open}
+          setOpen={setOpen}
+          field={selectedField}
+        />
         <div className="flex flex-row items-center gap-3">
           <h1 className="font-medium text-3xl">Penalties</h1>
           <p className="opacity-80">( absent / leave / late)</p>
         </div>
-       
+        <p className="opacity-70 font-normal text-xs mt-1">
+          Configure employee penalty components here. The values entered will be
+          automatically subtract in the payroll calculation.
+        </p>
 
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
-              <Button
-                disabled={checked ? checked.length === 0 : true}
-                variant="plain"
-                onClick={handleDelete}
-              >
-                <p className="underline font-medium">delete</p>
-              </Button>
+            <Button
+              disabled={checked ? checked.length === 0 : true}
+              variant="plain"
+              onClick={handleDelete}
+            >
+              <p className="underline font-medium">delete</p>
+            </Button>
           </div>
-          <TableWithCheckBox data={data?.data}
+          <TableWithCheckBox
+            data={data?.data}
             isLoading={isLoading}
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}
@@ -82,9 +94,19 @@ export default function PenaltyTab() {
             columns={[
               { key: "name", label: "Thai Label" },
               { key: "nameEng", label: "English Label" },
-              { key: "type", label: "Type", render:(row:PenaltyField)=>PENALTY_TYPE_LABELS[row.type]},
-              { key: "method", label: "Method", render:(row:PenaltyField)=>PENALTY_METHOD_LABELS[row.method] },
-            ]}/>
+              {
+                key: "type",
+                label: "Type",
+                render: (row: PenaltyField) => PENALTY_TYPE_LABELS[row.type],
+              },
+              {
+                key: "method",
+                label: "Method",
+                render: (row: PenaltyField) =>
+                  PENALTY_METHOD_LABELS[row.method],
+              },
+            ]}
+          />
         </div>
         <div className="mt-2">
           <Button onClick={addHandler}>Add New Penalty</Button>

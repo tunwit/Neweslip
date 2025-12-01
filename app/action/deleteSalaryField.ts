@@ -6,8 +6,8 @@ import { inArray } from "drizzle-orm";
 import { Branch } from "@/types/branch";
 import { SalaryField } from "@/types/salaryFields";
 
-export async function deleteSalaryField(toDelete: SalaryField["id"][], shopId: number) {
-  const ownerCheck = await isOwner(shopId);
+export async function deleteSalaryField(toDelete: SalaryField["id"][], shopId: number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

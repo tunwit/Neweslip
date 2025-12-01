@@ -1,5 +1,6 @@
-import { moneyFormat } from "@/utils/moneyFormat";
+import { moneyFormat } from "@/utils/formmatter";
 import { Checkbox, Table } from "@mui/joy";
+import Decimal from "decimal.js";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface PayrollTableProps<T extends { id: number }> {
@@ -7,15 +8,18 @@ interface PayrollTableProps<T extends { id: number }> {
   renderName: (item: T) => string;
   renderAmount: (item: T) => number;
   showIncomeRow?: boolean;
-  salary?:number
-  showValueColumn?: boolean;  // show hours/units column
-  autoCalculate?: boolean;    // disable amount input & auto calc
+  salary?: string;
+  showValueColumn?: boolean; // show hours/units column
+  autoCalculate?: boolean; // disable amount input & auto calc
   calculateAmount?: (item: T, value: number) => number;
-  amountValues: Record<number, { amount: number ,value?:number}>;
-  setInputValues: Dispatch<SetStateAction<Record<number, { amount: number,value?:number }>>>;
+  amountValues: Record<number, { amount: number; value?: number }>;
+  setInputValues: Dispatch<
+    SetStateAction<Record<number, { amount: number; value?: number }>>
+  >;
   setIsDirty: Dispatch<SetStateAction<boolean>>;
+  baseSalary?: Decimal;
+  setBaseSalary?: Dispatch<SetStateAction<Decimal>>;
 }
-
 
 export default function PayrollTable<T>({
   data,
@@ -28,76 +32,65 @@ export default function PayrollTable<T>({
   calculateAmount,
   amountValues,
   setInputValues,
-  setIsDirty
+  setIsDirty,
+  baseSalary,
+  setBaseSalary,
 }: PayrollTableProps<T>) {
-
-  const [total, setTotal] = useState(0);
-  const updateValue = (id: number, val: number) => {    
-    setInputValues(prev => ({
+  const [total, setTotal] = useState<Decimal>();
+  const updateValue = (id: number, val: number) => {
+    setInputValues((prev) => ({
       ...prev,
       [id]: {
         value: prev[id]?.value ?? undefined,
         amount: val,
       },
     }));
-    setIsDirty(true)
+    setIsDirty(true);
   };
 
   useEffect(() => {
-    let sum = Object.values(amountValues).reduce(
-        (a, b) => a + (b?.amount || 0),
-        0
-      );
+    const sum = Object.values(amountValues).reduce((acc, v) => {
+      return acc.plus(v?.amount ?? 0);
+    }, new Decimal(0));
 
-    if(showIncomeRow) {
-      sum+=salary ?? 0
-    }
-    setTotal(sum)
-  }, [amountValues]);
+    const totalSum = showIncomeRow ? sum.plus(baseSalary ?? 0) : sum;
+    setTotal(totalSum);
+  }, [amountValues, showIncomeRow, baseSalary]);
 
-  useEffect(() => {
-    const sum = Object.values(amountValues).reduce(
-        (a, b) => a + (b?.amount || 0),
-        0
-      );
-    setTotal(sum);
-    }, []); // run once on mount
+  const applyAutoAmount = (item: any, v: number) => {
+    if (!autoCalculate || !calculateAmount) return;
 
-  
-  const applyAutoAmount = (item: any ,v:number) => {
-    if(!autoCalculate || !calculateAmount) return
-   
     const newAmount = calculateAmount(item, v);
-    setInputValues(prev => ({
+    setInputValues((prev) => ({
       ...prev,
       [item.id]: {
         value: v,
         amount: newAmount,
       },
     }));
-    setIsDirty(true)
+    setIsDirty(true);
+  };
 
-  }
-useEffect(() => {
-  if (!data || Object.keys(amountValues).length > 0) return; // prevents infinite loop
+  useEffect(() => {
+    if (!data || Object.keys(amountValues).length > 0) return; // prevents infinite loop
 
-  setInputValues(prev => {
-    const updated: Record<number, { amount: number; value?: number }> = { ...prev };
+    setInputValues((prev) => {
+      const updated: Record<number, { amount: number; value?: number }> = {
+        ...prev,
+      };
 
-    data.forEach((item: any) => {
-      if (!updated[item.id]) {
-        updated[item.id] = {
-          amount: renderAmount(item),
-          value: item.value ?? undefined,
-        };
-      }
+      data.forEach((item: any) => {
+        if (!updated[item.id]) {
+          updated[item.id] = {
+            amount: renderAmount(item),
+            value: item.value ?? undefined,
+          };
+        }
+      });
+
+      return updated;
     });
-
-    return updated;
-  });
-}, [data]);
-
-
+  }, [data]);
 
   return (
     <div className="overflow-auto max-h-[calc(100vh-350px)]">
@@ -112,20 +105,32 @@ useEffect(() => {
         </thead>
 
         <tbody>
-          {showIncomeRow && 
-          <tr key={-1}>
-            <td>
-              <Checkbox checked={true} />
-            </td>
+          {showIncomeRow && (
+            <tr key={-1}>
+              <td>
+                <Checkbox checked={true} />
+              </td>
 
-            <td>Base Salary</td>
+              <td>Base Salary</td>
 
-            {/* Amount */}
-            <td>
-              <p>{salary}</p>
-            </td>
-          </tr>}
-          
+              {/* Amount */}
+              <td>
+                <input
+                  type="number"
+                  className="border rounded px-2 py-1 w-full"
+                  value={baseSalary?.toNumber()}
+                  onChange={(e) => {
+                    setBaseSalary
+                      ? setBaseSalary(new Decimal(e.target.value || 0))
+                      : {};
+                    setIsDirty(true);
+                  }}
+                  placeholder="0"
+                />
+              </td>
+            </tr>
+          )}
+
           {data.map((item: any) => {
             const record = amountValues[item.id];
             const value = record?.value ?? item.value;
@@ -146,7 +151,9 @@ useEffect(() => {
                       type="number"
                       className="border rounded px-2 py-1 w-full"
                       value={value}
-                      onChange={e => applyAutoAmount(item, Number(e.target.value))}
+                      onChange={(e) =>
+                        applyAutoAmount(item, Number(e.target.value))
+                      }
                       placeholder="0"
                     />
                   </td>
@@ -157,12 +164,15 @@ useEffect(() => {
                   <input
                     type="number"
                     className={`px-2 py-1 w-full rounded ${
-                      autoCalculate ? "bg-gray-200 cursor-not-allowed" : "border"
+                      autoCalculate
+                        ? "bg-gray-200 cursor-not-allowed"
+                        : "border"
                     }`}
                     value={amount}
                     readOnly={autoCalculate}
-                    onChange={e => {
-                      if (!autoCalculate) updateValue(item.id, Number(e.target.value));
+                    onChange={(e) => {
+                      if (!autoCalculate)
+                        updateValue(item.id, Number(e.target.value));
                     }}
                   />
                 </td>
@@ -173,7 +183,7 @@ useEffect(() => {
         <tfoot>
           <tr>
             <th colSpan={showValueColumn ? 3 : 2}>Total</th>
-            <th>{moneyFormat(total)}</th>
+            <th>{moneyFormat(total || 0)}</th>
           </tr>
         </tfoot>
       </Table>

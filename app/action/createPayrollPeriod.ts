@@ -9,8 +9,8 @@ import { NewSalaryField } from "@/types/salaryFields";
 import { NewOtField } from "@/types/otField";
 import { NewPayrollPeriod } from "@/types/payrollPeriod";
 
-export async function createPayrollPeriod(data: Omit<NewPayrollPeriod,"shopId">,shopId:number) {
-  const ownerCheck = await isOwner(shopId);
+export async function createPayrollPeriod(data: Omit<NewPayrollPeriod,"shopId">,shopId:number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

@@ -10,6 +10,7 @@ import { NewOtField, OtField } from "@/types/otField";
 export async function updateOTField(
   id: OtField["id"],
   data: Omit<NewOtField, "shopId" | "id">,
+  userId:string|null
 ) {
   const field = await globalDrizzle
     .select()
@@ -21,7 +22,7 @@ export async function updateOTField(
     throw new Error("Branch not found");
   }
 
-  const ownerCheck = await isOwner(field[0].shopId);
+  const ownerCheck = await isOwner(field[0].shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

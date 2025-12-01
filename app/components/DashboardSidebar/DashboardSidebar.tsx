@@ -34,12 +34,12 @@ const DashboardRails = [
     id: "documents",
     href: "/documents",
   },
-  // {
-  //   title: "Payrolls",
-  //   icon: MoneyIcon,
-  //   id: "payrolls",
-  //   href: "/payrolls",
-  // },
+  {
+    title: "Payrolls",
+    icon: MoneyIcon,
+    id: "payrolls",
+    href: "/payrolls",
+  },
   // {
   //   title: "Records",
   //   icon: HistoryIcon,

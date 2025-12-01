@@ -17,22 +17,24 @@ import { createPayrollPeriod } from "@/app/action/createPayrollPeriod";
 import { NewPayrollPeriod } from "@/types/payrollPeriod";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { number } from "zod";
+import { useUser } from "@clerk/nextjs";
 
 export default function Home() {
   const rounter = useRouter();
   const { id } = useCurrentShop()
+  const {user} = useUser()
   const [creatingPeriod,setCreatingPeriod] = useState(false)
   const newHandler = async () =>{
     setCreatingPeriod(true)
     try{
-      if(!id) return
+      if(!id || !user?.id) return
       const payload:Omit<NewPayrollPeriod,"shopId"> = {
           name: `New payroll ${new Date().toLocaleDateString()}`,
           start_date: new Date(),
           end_date: new Date(),
       }
 
-      const periodId = await createPayrollPeriod(payload,id)
+      const periodId = await createPayrollPeriod(payload,id,user?.id)
       
       if(periodId[0].id){
         rounter.push(`payrolls/edit?id=${periodId[0].id}`)

@@ -6,8 +6,8 @@ import { Employee } from "@/types/employee";
 import { inArray } from "drizzle-orm";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 
-export async function deletePayrollPeriod(toDelete: PayrollPeriod["id"][], shopId: number) {
-  const ownerCheck = await isOwner(shopId);
+export async function deletePayrollPeriod(toDelete: PayrollPeriod["id"][], shopId: number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

@@ -1,19 +1,20 @@
-import { payrollRecordsTable } from "@/db/schema"
-import { InferInsertModel } from "drizzle-orm"
+import { payrollRecordsTable } from "@/db/schema";
+import { InferInsertModel } from "drizzle-orm";
 
 export interface PayrollRecord {
-    id: number
-    updatedAt: Date
-    createdAt: Date
-    employee: {
-        id: number
-        firstName: string
-        lastName: string
-        nickName: string
-        branch: string
-        branchEng: string
-        salary: number
-    }
+  id: number;
+  periodId: number;
+  updatedAt: Date;
+  createdAt: Date;
+  employee: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    nickName: string;
+    branch: string;
+    branchEng: string;
+  };
+  net: number;
 }
 
-export type NewPayrollRecord = InferInsertModel<typeof payrollRecordsTable>
+export type NewPayrollRecord = InferInsertModel<typeof payrollRecordsTable>;

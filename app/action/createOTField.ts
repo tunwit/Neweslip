@@ -8,8 +8,8 @@ import { NewBranch } from "@/types/branch";
 import { NewSalaryField } from "@/types/salaryFields";
 import { NewOtField } from "@/types/otField";
 
-export async function createOTField(data: Omit<NewOtField,"shopId">,shopId:number) {
-  const ownerCheck = await isOwner(shopId);
+export async function createOTField(data: Omit<NewOtField,"shopId">,shopId:number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

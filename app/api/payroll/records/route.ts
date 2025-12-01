@@ -1,4 +1,13 @@
-import { branchesTable, employeesTable, otFieldsTable, payrollPeriodsTable, payrollRecordsTable, penaltyFieldsTable, shopOwnerTable, shopsTable } from "@/db/schema";
+import {
+  branchesTable,
+  employeesTable,
+  otFieldsTable,
+  payrollPeriodsTable,
+  payrollRecordsTable,
+  penaltyFieldsTable,
+  shopOwnerTable,
+  shopsTable,
+} from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth, clerkClient } from "@clerk/nextjs/server";
@@ -6,19 +15,20 @@ import { count } from "console";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { isOwner } from "@/lib/isOwner";
+import calculateTotalSalary from "@/lib/calculateTotalSalary";
 
-export async function GET(request:NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
 
-     const periodId = request.nextUrl.searchParams.get("periodId");
-    
+    const periodId = request.nextUrl.searchParams.get("periodId");
+
     if (!userId) {
-        return errorResponse("Unauthorized", 401);
+      return errorResponse("Unauthorized", 401);
     }
 
     if (!periodId) {
-        return errorResponse("Illegel Arguments", 400);
+      return errorResponse("Illegel Arguments", 400);
     }
 
     const [period] = await globalDrizzle
@@ -33,16 +43,17 @@ export async function GET(request:NextRequest) {
       .from(shopOwnerTable)
       .where(
         and(
-            eq(shopOwnerTable.ownerId, userId),
-            eq(shopOwnerTable.shopId, period.shopId)
-        ) 
-      )
+          eq(shopOwnerTable.ownerId, userId),
+          eq(shopOwnerTable.shopId, period.shopId),
+        ),
+      );
 
     if (!owner) return errorResponse("Forbidden", 403);
 
-      const data = await globalDrizzle
+    const data = await globalDrizzle
       .select({
         id: payrollRecordsTable.id,
+        periodId: payrollRecordsTable.payrollPeriodId,
         updatedAt: payrollRecordsTable.updatedAt,
         createdAt: payrollRecordsTable.createdAt,
         employee: {
@@ -52,22 +63,28 @@ export async function GET(request:NextRequest) {
           nickName: employeesTable.nickName,
           branch: branchesTable.name,
           branchEng: branchesTable.nameEng,
-          salary: employeesTable.salary
         },
       })
       .from(payrollRecordsTable)
       .innerJoin(
         employeesTable,
-        eq(employeesTable.id, payrollRecordsTable.employeeId)
+        eq(employeesTable.id, payrollRecordsTable.employeeId),
       )
-      .innerJoin(
-        branchesTable,
-        eq(branchesTable.id, employeesTable.branchId)
-      )
+      .innerJoin(branchesTable, eq(branchesTable.id, employeesTable.branchId))
       .where(eq(payrollRecordsTable.payrollPeriodId, Number(periodId)));
+    let total = 0;
 
-
-    return successResponse(data);
+    const dataWithNet = await Promise.all(
+      data.map(async (r) => {
+        const { totals } = await calculateTotalSalary(r.id);
+        total += totals.net;
+        return {
+          ...r,
+          net: totals.net, // add net salary
+        };
+      }),
+    );
+    return successResponse(dataWithNet);
   } catch (err) {
     console.error(err);
     return errorResponse("Internal server error", 500);

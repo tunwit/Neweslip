@@ -28,6 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { Controller, FormProvider } from "react-hook-form";
 import {Decimal} from 'decimal.js';
+import { useUser } from "@clerk/nextjs";
 
 interface AddOTModalProps {
   open: boolean;
@@ -38,6 +39,7 @@ interface AddOTModalProps {
 export default function AddEditOTModal({ open, setOpen, field }: AddOTModalProps) {
   const {id:shopId} = useCurrentShop()
   const queryClient = useQueryClient()
+  const {user} = useUser()
 
   const methods = useZodForm(OTFieldSchema, {
       defaultValues: {
@@ -57,15 +59,15 @@ export default function AddEditOTModal({ open, setOpen, field }: AddOTModalProps
   };
 
     const submitHandler = async(data:Omit<NewOtField,"shopId">) => {
-      if(!shopId) return
+      if(!shopId || !user?.id) return
       try{
         if (field) {
           // edit mode
-          await updateOTField(field.id, data);
+          await updateOTField(field.id, data,user.id);
           showSuccess("OT updated successfully");
         } else {
           // add mode
-          await createOTField(data, shopId);
+          await createOTField(data, shopId,user?.id);
           showSuccess("OT added successfully");
         }
         queryClient.invalidateQueries({ queryKey: ["OTFields"] });

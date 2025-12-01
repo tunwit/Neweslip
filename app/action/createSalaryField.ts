@@ -7,8 +7,8 @@ import { auth } from "@clerk/nextjs/server";
 import { NewBranch } from "@/types/branch";
 import { NewSalaryField } from "@/types/salaryFields";
 
-export async function createSalaryField(data: Omit<NewSalaryField,"shopId">,shopId:number) {
-  const ownerCheck = await isOwner(shopId);
+export async function createSalaryField(data: Omit<NewSalaryField,"shopId">,shopId:number,userId:string|null) {
+  const ownerCheck = await isOwner(shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

@@ -11,6 +11,7 @@ import { NewPenaltyField, PenaltyField } from "@/types/penaltyField";
 export async function updatePenaltyField(
   id: PenaltyField["id"],
   data: Omit<NewPenaltyField, "shopId" | "id">,
+  userId:string |null
 ) {
   const field = await globalDrizzle
     .select()
@@ -22,7 +23,7 @@ export async function updatePenaltyField(
     throw new Error("Branch not found");
   }
 
-  const ownerCheck = await isOwner(field[0].shopId);
+  const ownerCheck = await isOwner(field[0].shopId,userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

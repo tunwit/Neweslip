@@ -17,32 +17,32 @@ import { useOTFields } from "@/hooks/useOTFields";
 import { OtField } from "@/types/otField";
 import AddEditOTModal from "./AddEditOTModal";
 import { OT_METHOD_LABELS, OT_TYPE_LABELS } from "@/types/enum/enumLabel";
+import { useUser } from "@clerk/nextjs";
+import { deleteOTField } from "@/app/action/deleteOTField";
 
 export default function OTTab() {
-  const [open,setOpen] = useState(false)
-  const [selectedField,setSelectedField] = useState<OtField|null>(null)
-  const {id:shopId} = useCurrentShop();
-  const checkboxMethods = useCheckBox<number>("allOTTable")
-  const {checked, checkall, uncheckall} = checkboxMethods
+  const [open, setOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState<OtField | null>(null);
+  const { id: shopId } = useCurrentShop();
+  const checkboxMethods = useCheckBox<number>("allOTTable");
+  const { checked, checkall, uncheckall } = checkboxMethods;
+  const { user } = useUser();
+  const queryClient = useQueryClient();
 
-  const queryClient = useQueryClient()
-
-  const addHandler = () =>{
+  const addHandler = () => {
     setSelectedField(null);
-    setOpen(true)
-  }
-  if(!shopId) return <p>loading</p>
-  const {data,isLoading,isSuccess} = useOTFields(shopId)
-  console.log(data);
-  
-  
+    setOpen(true);
+  };
+  if (!shopId || !user?.id) return <p>loading</p>;
+  const { data, isLoading, isSuccess } = useOTFields(shopId);
+
   const handleDelete = async () => {
     try {
       if (!shopId) return;
-      uncheckall()
-      await deleteSalaryField(checked,shopId)
+      uncheckall();
+      await deleteOTField(checked, shopId, user?.id);
       showSuccess("Delete field success");
-      queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
+      queryClient.invalidateQueries({ queryKey: ["OTFields"], exact: false });
     } catch {
       showError("Delete field failed");
     }
@@ -51,19 +51,24 @@ export default function OTTab() {
   return (
     <>
       <div className="-mt-4">
-        <AddEditOTModal open={open} setOpen={setOpen} field={selectedField}/>
+        <AddEditOTModal open={open} setOpen={setOpen} field={selectedField} />
         <h1 className="font-medium text-3xl">Overtimes</h1>
+        <p className="opacity-70 font-normal text-xs mt-1">
+          Configure employee OT components here. The values entered will be
+          automatically summed up in the payroll calculation.
+        </p>
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
-              <Button
-                disabled={checked ? checked.length === 0 : true}
-                variant="plain"
-                onClick={handleDelete}
-              >
-                <p className="underline font-medium">delete</p>
-              </Button>
+            <Button
+              disabled={checked ? checked.length === 0 : true}
+              variant="plain"
+              onClick={handleDelete}
+            >
+              <p className="underline font-medium">delete</p>
+            </Button>
           </div>
-          <TableWithCheckBox data={data?.data}
+          <TableWithCheckBox
+            data={data?.data}
             isLoading={isLoading}
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}
@@ -72,11 +77,19 @@ export default function OTTab() {
             columns={[
               { key: "name", label: "Thai Label" },
               { key: "nameEng", label: "English Label" },
-              { key: "type", label: "Type",render:(row:OtField)=>OT_TYPE_LABELS[row.type]},
-              { key: "method", label: "Method",render:(row:OtField)=>OT_METHOD_LABELS[row.method] },
+              {
+                key: "type",
+                label: "Type",
+                render: (row: OtField) => OT_TYPE_LABELS[row.type],
+              },
+              {
+                key: "method",
+                label: "Method",
+                render: (row: OtField) => OT_METHOD_LABELS[row.method],
+              },
               { key: "rate", label: "OT Rate" },
-
-            ]}/>
+            ]}
+          />
         </div>
         <div className="mt-2">
           <Button onClick={addHandler}>Add New Overtime</Button>

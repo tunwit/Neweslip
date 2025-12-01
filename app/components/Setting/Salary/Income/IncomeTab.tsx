@@ -14,29 +14,30 @@ import { SalaryField } from "@/types/salaryFields";
 import AddEditIncomeModal from "./AddEditIncomeModal";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { deleteSalaryField } from "@/app/action/deleteSalaryField";
+import { useUser } from "@clerk/nextjs";
 
 export default function IncomeTab() {
-  const [open,setOpen] = useState(false)
-  const [selectedField,setSelectedField] = useState<SalaryField|null>(null)
-  const {id:shopId} = useCurrentShop();
-  const checkboxMethods = useCheckBox<number>("allIncomeTable")
-  const {checked, checkall, uncheckall} = checkboxMethods
+  const [open, setOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState<SalaryField | null>(null);
+  const { id: shopId } = useCurrentShop();
+  const checkboxMethods = useCheckBox<number>("allIncomeTable");
+  const { checked, checkall, uncheckall } = checkboxMethods;
+  const { user } = useUser();
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const addHandler = () =>{
+  const addHandler = () => {
     setSelectedField(null);
-    setOpen(true)
-  }
-  if(!shopId) return <p>loading</p>
-  const {data,isLoading,isSuccess} = useSalaryFields(shopId)
-
+    setOpen(true);
+  };
+  if (!shopId) return <p>loading</p>;
+  const { data, isLoading, isSuccess } = useSalaryFields(shopId);
 
   const handleDelete = async () => {
     try {
-      if (!shopId) return;
-      uncheckall()
-      await deleteSalaryField(checked,shopId)
+      if (!shopId || !user?.id) return;
+      uncheckall();
+      await deleteSalaryField(checked, shopId, user?.id);
       showSuccess("Delete field success");
       queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
     } catch {
@@ -47,19 +48,29 @@ export default function IncomeTab() {
   return (
     <>
       <div className="-mt-4">
-        <AddEditIncomeModal open={open} setOpen={setOpen} field={selectedField}/>
+        <AddEditIncomeModal
+          open={open}
+          setOpen={setOpen}
+          field={selectedField}
+        />
         <h1 className="font-medium text-3xl">Incomes</h1>
+        <p className="opacity-70 font-normal text-xs mt-1">
+          Configure employee income components here. The values entered will be
+          automatically summed up in the payroll calculation.
+        </p>
+
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
-              <Button
-                disabled={checked ? checked.length === 0 : true}
-                variant="plain"
-                onClick={handleDelete}
-              >
-                <p className="underline font-medium">delete</p>
-              </Button>
+            <Button
+              disabled={checked ? checked.length === 0 : true}
+              variant="plain"
+              onClick={handleDelete}
+            >
+              <p className="underline font-medium">delete</p>
+            </Button>
           </div>
-          <TableWithCheckBox data={data?.data?.INCOME}
+          <TableWithCheckBox
+            data={data?.data?.INCOME}
             isLoading={isLoading}
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}
@@ -69,8 +80,8 @@ export default function IncomeTab() {
               { key: "name", label: "Thai Label" },
               { key: "nameEng", label: "English Label" },
               { key: "formular", label: "Formular" },
-
-            ]}/>
+            ]}
+          />
         </div>
         <div className="mt-2">
           <Button onClick={addHandler}>Add New Incomes</Button>

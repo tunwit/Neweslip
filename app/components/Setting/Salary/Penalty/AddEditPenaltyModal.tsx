@@ -32,6 +32,7 @@ import { NewPenaltyField, PenaltyField } from "@/types/penaltyField";
 import { PenaltyFieldSchema } from "@/schemas/setting/PenaltyFieldForm";
 import { createPenaltyField } from "@/app/action/createPenaltyField";
 import { updatePenaltyField } from "@/app/action/updatePenaltyFIeld";
+import { useUser } from "@clerk/nextjs";
 
 interface AddEditPenaltyModalProps {
   open: boolean;
@@ -42,6 +43,7 @@ interface AddEditPenaltyModalProps {
 export default function AddEditPenaltyModal({ open, setOpen, field }: AddEditPenaltyModalProps) {
   const {id:shopId} = useCurrentShop()
   const queryClient = useQueryClient()
+  const {user} = useUser()
 
   const methods = useZodForm(PenaltyFieldSchema, {
       defaultValues: {
@@ -61,15 +63,15 @@ export default function AddEditPenaltyModal({ open, setOpen, field }: AddEditPen
   };
 
     const submitHandler = async(data:Omit<NewPenaltyField,"shopId">) => {
-      if(!shopId) return
+      if(!shopId || !user?.id) return
       try{
         if (field) {
           // edit mode
-          await updatePenaltyField(field.id, data);
+          await updatePenaltyField(field.id, data,user?.id);
           showSuccess("OT updated successfully");
         } else {
           // add mode
-          await createPenaltyField(data, shopId);
+          await createPenaltyField(data, shopId,user?.id);
           showSuccess("OT added successfully");
         }
         queryClient.invalidateQueries({ queryKey: ["penaltyFields"] });

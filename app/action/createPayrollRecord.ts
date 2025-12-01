@@ -1,8 +1,8 @@
 "use server";
-import { otFieldsTable, otFieldValueTable, payrollFieldValueTable, payrollPeriodsTable, payrollRecordsTable, penaltyFieldsTable, penaltyFieldValueTable, salaryFieldsTable } from "@/db/schema";
+import { employeesTable, otFieldsTable, otFieldValueTable, payrollFieldValueTable, payrollPeriodsTable, payrollRecordsTable, penaltyFieldsTable, penaltyFieldValueTable, salaryFieldsTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { eq, InferInsertModel } from "drizzle-orm";
+import { eq, inArray, InferInsertModel } from "drizzle-orm";
 import { NewPayrollRecord } from "@/types/payrollRecord";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { NewSalaryField } from "@/types/salaryFields";
@@ -51,7 +51,8 @@ function mapFields<T extends { name: string; nameEng: string }, V>(
 
 export async function createPayrollRecords(
   items: number[],
-  payrollPeriodId: number
+  payrollPeriodId: number,
+  userId:string|null
 ) {
   const periods = await globalDrizzle
     .select()
@@ -60,15 +61,24 @@ export async function createPayrollRecords(
     .limit(1);
 
   if (!periods.length) throw new Error("Period not found");
-  if (!(await isOwner(periods[0].shopId))) throw new Error("Forbidden");
+  if (!(await isOwner(periods[0].shopId,userId))) throw new Error("Forbidden");
 
-  const payloads = items.map((employeeId) => ({
-    employeeId,
-    payrollPeriodId,
-  }));
+
+
 
   try {
     const result = await globalDrizzle.transaction(async (tx) => {
+      const employees = await tx
+      .select()
+      .from(employeesTable)
+      .where(inArray(employeesTable.id, items));
+
+      const payloads = employees.map((emp) => ({
+        employeeId:emp.id,
+        salary:emp.salary,
+        payrollPeriodId,
+      }));
+
       const inserted = await tx
         .insert(payrollRecordsTable)
         .values(payloads)

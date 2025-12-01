@@ -1,6 +1,7 @@
 import {
   date,
   datetime,
+  decimal,
   int,
   mysqlEnum,
   mysqlTable,
@@ -30,7 +31,7 @@ export const employeesTable = mysqlTable("employees", {
   address2: varchar({ length: 255 }),
   address3: varchar({ length: 255 }),
   avatar: varchar({ length: 255 }),
-  salary: int().notNull(),
+  salary:  decimal("salary", { precision: 10, scale: 2 }).notNull(),
   bankName: text().notNull(),
   bankAccountOwner: text().notNull(),
   bankAccountNumber: text().notNull(),

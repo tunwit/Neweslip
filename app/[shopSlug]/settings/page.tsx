@@ -11,6 +11,7 @@ import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import MerchantTabs from "@/app/components/Setting/MerchantTabs";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
+import SalaraTabs from "@/app/components/Setting/SalaraTabs";
 
 export default function Page() {
   const rounter = useRouter();
@@ -45,18 +46,18 @@ export default function Page() {
             }}
           >
             <Tab>Merchant</Tab>
-            {/* <Tab>Salary</Tab>
-            <Tab>Slip</Tab> */}
+            <Tab>Salary</Tab>
+            <Tab>Slip</Tab>
           </TabList>
           <TabPanel value={0}>
             <MerchantTabs />
           </TabPanel>
-          {/* <TabPanel value={1}>
+          <TabPanel value={1}>
             <SalaraTabs />
           </TabPanel>
           <TabPanel value={2}>
             <b>Third</b> tab panel
-          </TabPanel> */}
+          </TabPanel>
         </Tabs>
       </div>
     </main>

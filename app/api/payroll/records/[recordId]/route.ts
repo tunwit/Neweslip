@@ -1,4 +1,16 @@
-import { branchesTable, employeesTable, otFieldsTable, otFieldValueTable, payrollFieldValueTable, payrollPeriodsTable, payrollRecordsTable, penaltyFieldsTable, penaltyFieldValueTable, shopOwnerTable, shopsTable } from "@/db/schema";
+import {
+  branchesTable,
+  employeesTable,
+  otFieldsTable,
+  otFieldValueTable,
+  payrollFieldValueTable,
+  payrollPeriodsTable,
+  payrollRecordsTable,
+  penaltyFieldsTable,
+  penaltyFieldValueTable,
+  shopOwnerTable,
+  shopsTable,
+} from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth, clerkClient } from "@clerk/nextjs/server";
@@ -6,47 +18,42 @@ import { count } from "console";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { isOwner } from "@/lib/isOwner";
+import { RecordDetails } from "@/types/RecordDetails";
+import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import Decimal from "decimal.js";
+import calculateTotalSalary from "@/lib/calculateTotalSalary";
 
-export async function GET(request:NextRequest, { params }: { params: { recordId: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { recordId: string } },
+) {
   try {
     const { userId } = await auth();
-    const { recordId } = await params
-    const recordIdNum = Number(recordId)
-    
+    const { recordId } = await params;
+    const recordIdNum = Number(recordId);
+
     if (!userId) {
-        return errorResponse("Unauthorized", 401);
+      return errorResponse("Unauthorized", 401);
     }
 
     if (isNaN(recordIdNum)) {
-      return errorResponse("Invalid payrollRecordId" , 400);
+      return errorResponse("Invalid payrollRecordId", 400);
     }
-    
-    const record = await globalDrizzle
-    .select()
-    .from(payrollRecordsTable)
-    .where(eq(payrollRecordsTable.id, recordIdNum))
-    .limit(1);
 
-  if (!record.length) {
-    return errorResponse("Payroll record not found",404 );
-  }
+    const data = await calculateTotalSalary(recordIdNum);
 
+    const result: RecordDetails = {
+      payrollRecordId: recordIdNum,
+      employeeId: data.record.employeeId,
+      salary: data.record.salary,
+      periodId: data.record.payrollPeriodId,
+      salaryValues: data.salaryValues,
+      otValues: data.otValues,
+      penaltyValues: data.penaltyValues,
+      totals: data.totals,
+    };
+    console.log(result);
 
-    const [salaryValues, otValues, penaltyValues] = await Promise.all([
-      globalDrizzle.select().from(payrollFieldValueTable).where(eq(payrollFieldValueTable.payrollRecordId, recordIdNum)),
-      globalDrizzle.select().from(otFieldValueTable).where(eq(otFieldValueTable.payrollRecordId, recordIdNum)),
-      globalDrizzle.select().from(penaltyFieldValueTable).where(eq(penaltyFieldValueTable.payrollRecordId, recordIdNum)),
-    ]);
-
-    const result ={
-    payrollRecordId : recordIdNum,
-    employeeId: record[0].employeeId,
-    periodId: record[0].payrollPeriodId,
-    salaryValues,
-    otValues,
-    penaltyValues,
-  }
-    
     return successResponse(result);
   } catch (err) {
     console.error(err);

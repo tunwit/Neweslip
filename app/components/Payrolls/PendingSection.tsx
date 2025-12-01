@@ -11,36 +11,40 @@ import { deletePayrollPeriod } from "@/app/action/deletePayrollPeriod";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePayrollPeriodStats } from "@/hooks/usePayrollPeriodStat";
+import { useUser } from "@clerk/nextjs";
 
 export default function PendingSection() {
-  const {id:shopId} = useCurrentShop();
-  const {checked,isAllChecked, isSomeChecked,checkall,uncheckall} = useCheckBox<number>("payrollPeriods")
+  const { id: shopId } = useCurrentShop();
+  const { checked, isAllChecked, isSomeChecked, checkall, uncheckall } =
+    useCheckBox<number>("payrollPeriods");
   const queryClient = useQueryClient();
-  if(!shopId) return;
+  const { user } = useUser();
 
-  const {data,isLoading} = usePayrollPeriods(shopId);
+  if (!shopId) return;
 
-    const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!data?.data) return;
-      if (e.currentTarget.checked) {
-        checkall(data.data.map((v) => v.id));
-      } else {
-        uncheckall();
-      }
-    };
+  const { data, isLoading } = usePayrollPeriods(shopId);
 
-    const handleDelete = async () => {
-      try {
-        if (!shopId) return;
-        await deletePayrollPeriod(checked,shopId)
-        showSuccess("Delete period success");
-        queryClient.invalidateQueries({ queryKey: ["payrollPeriods"] });
-      } catch (err){
-        showError(`Delete period failed\n${err}`);
-      }finally{
-        uncheckall()
-      }
-    };
+  const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!data?.data) return;
+    if (e.currentTarget.checked) {
+      checkall(data.data.map((v) => v.id));
+    } else {
+      uncheckall();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (!shopId || !user?.id) return;
+      await deletePayrollPeriod(checked, shopId, user?.id);
+      showSuccess("Delete period success");
+      queryClient.invalidateQueries({ queryKey: ["payrollPeriods"] });
+    } catch (err) {
+      showError(`Delete period failed\n${err}`);
+    } finally {
+      uncheckall();
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -58,15 +62,17 @@ export default function PendingSection() {
           <div className="flex-1 overflow-y-scroll my-2">
             <div className="flex flex-col gap-2 max-h-[calc(100vh-352px)]">
               {data?.data?.map((pen, i) => {
-                return <PendingElement
-                  key={i}
-                  id={pen.id}
-                  title={`${pen.name}`}
-                  people={pen.employeeCount}
-                  amount={1}
-                  modifyAt={dayjs(pen.updatedAt)}
-                  status={pen.status}
-                />
+                return (
+                  <PendingElement
+                    key={i}
+                    id={pen.id}
+                    title={`${pen.name}`}
+                    people={pen.count}
+                    amount={pen.totalNet}
+                    modifyAt={dayjs(pen.updatedAt)}
+                    status={pen.status}
+                  />
+                );
               })}
             </div>
           </div>
@@ -77,9 +83,16 @@ export default function PendingSection() {
 
       {data?.data?.length !== 0 && (
         // <Button disabled={!checkboxs.some((v) => v === true)} color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
-      <div>
-        <Button onClick={handleDelete}  disabled={checked ? checked.length === 0 : true} color="danger" sx={{fontSize:"13px","--Button-gap": "5px",padding:1.2}}>Delete</Button>
-      </div>
+        <div>
+          <Button
+            onClick={handleDelete}
+            disabled={checked ? checked.length === 0 : true}
+            color="danger"
+            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
+          >
+            Delete
+          </Button>
+        </div>
       )}
     </div>
   );
