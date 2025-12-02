@@ -32,7 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 
 interface PayrollEditEmployeeModalProps {
-  periodData: Omit<PayrollPeriod, "totalNet" | "count">;
+  periodData?: PayrollPeriod;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedRecord: PayrollRecord | null;
@@ -79,13 +79,21 @@ export default function PayrollEditEmployeeModal({
   const doneHandler = async () => {
     await saveDataHandler();
     queryClient.invalidateQueries({
+      queryKey: ["payrollPeriod", "verify", periodData?.id],
+    });
+    queryClient.invalidateQueries({
       queryKey: ["payrollRecord", selectedRecord?.periodId],
       exact: false,
     });
     queryClient.invalidateQueries({
-      queryKey: ["payrollPeriods"],
+      queryKey: ["payrollPeriod", periodData?.id],
       exact: false,
     });
+    queryClient.invalidateQueries({
+      queryKey: ["payrollPeriod", "summary", periodData?.id],
+      exact: false,
+    });
+
     setOpen(false);
   };
   const [incomeAmount, setIncomeAmount] = useState<
@@ -249,7 +257,7 @@ export default function PayrollEditEmployeeModal({
                   setIsDirty={setIsDirty}
                 />
               </TabPanel>
-              <TabPanel value={2}>
+              <TabPanel value={2} keepMounted={true}>
                 <PayrollTable
                   data={data?.data?.otValues ?? []}
                   renderName={(item) => item.name}
@@ -262,8 +270,8 @@ export default function PayrollEditEmployeeModal({
                       v,
                       item.type,
                       item.method,
-                      new Decimal(periodData.work_hours_per_day || 0),
-                      new Decimal(periodData.workdays_per_month || 0),
+                      new Decimal(periodData?.work_hours_per_day || 0),
+                      new Decimal(periodData?.workdays_per_month || 0),
                       item.rate,
                       item.rateOfPay,
                     )
@@ -273,7 +281,7 @@ export default function PayrollEditEmployeeModal({
                   setIsDirty={setIsDirty}
                 />
               </TabPanel>
-              <TabPanel value={3}>
+              <TabPanel value={3} keepMounted={true}>
                 <PayrollTable
                   data={data?.data?.penaltyValues ?? []}
                   renderName={(item) => item.name}
@@ -281,7 +289,15 @@ export default function PayrollEditEmployeeModal({
                   showValueColumn={true}
                   autoCalculate={true}
                   calculateAmount={(item, v) =>
-                    calculatePenalty(v, item.type, item.method, item.rateOfPay)
+                    calculatePenalty(
+                      baseSalary,
+                      v,
+                      item.type,
+                      item.method,
+                      new Decimal(periodData?.work_hours_per_day || 0),
+                      new Decimal(periodData?.workdays_per_month || 0),
+                      item.rateOfPay,
+                    )
                   }
                   amountValues={penaltyAmount}
                   setInputValues={setPenaltyAmount}

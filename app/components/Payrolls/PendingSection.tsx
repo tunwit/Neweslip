@@ -10,7 +10,7 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { deletePayrollPeriod } from "@/app/action/deletePayrollPeriod";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePayrollPeriodStats } from "@/hooks/usePayrollPeriodStat";
+import { usePayrollPeriodStats } from "@/hooks/usePayrollPeriodSummary";
 import { useUser } from "@clerk/nextjs";
 
 export default function PendingSection() {
@@ -67,7 +67,7 @@ export default function PendingSection() {
                     key={i}
                     id={pen.id}
                     title={`${pen.name}`}
-                    people={pen.count}
+                    people={pen.employeeCount}
                     amount={pen.totalNet}
                     modifyAt={dayjs(pen.updatedAt)}
                     status={pen.status}

@@ -1,0 +1,210 @@
+import { UseCheckBoxResult } from "@/hooks/useCheckBox";
+import { PayrollPeriod } from "@/types/payrollPeriod";
+import { PayrollRecord } from "@/types/payrollRecord";
+import { moneyFormat } from "@/utils/formmatter";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { Checkbox } from "@mui/joy";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+
+interface PeriodEmployeeTableProps {
+  searchQuery: string;
+  checkBoxMethod: UseCheckBoxResult<number>;
+  periodData?: PayrollPeriod;
+  records: PayrollRecord[];
+  setSelected?: Dispatch<SetStateAction<PayrollRecord | null>>;
+  setOpenEdit: Dispatch<SetStateAction<boolean>>;
+}
+export default function PeriodEmployeeTable({
+  searchQuery,
+  checkBoxMethod,
+  periodData,
+  records,
+  setSelected,
+  setOpenEdit,
+}: PeriodEmployeeTableProps) {
+  const [filterd, setFilterd] = useState(records);
+
+  useEffect(() => {
+    const q = searchQuery.toLowerCase();
+
+    setFilterd(
+      records.filter((r) => {
+        return (
+          r.employee.firstName.toLowerCase().includes(q) ||
+          r.employee.lastName.toLowerCase().includes(q) ||
+          (r.employee.firstName + r.employee.lastName)
+            .toLowerCase()
+            .includes(q) ||
+          r.employee.nickName.toLowerCase().includes(q) ||
+          r.employee.branch.toLowerCase().includes(q)
+        );
+      }),
+    );
+  }, [records, searchQuery]);
+
+  const { toggle, isChecked, checkall, uncheckall, isSomeChecked } =
+    checkBoxMethod;
+
+  const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!records) return;
+    if (e.currentTarget.checked) {
+      checkall(records.map((r) => r.id));
+    } else {
+      uncheckall();
+    }
+  };
+
+  return (
+    <>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1200px]">
+            <thead className="bg-gray-50 border border-gray-200">
+              <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
+                <th className="font-light text-sm pl-6 w-[6%]">
+                  <Checkbox
+                    indeterminate={isSomeChecked(records.length)}
+                    onChange={handleAllCheckbox}
+                  />
+                </th>
+                <th className="font-light text-sm w-[20%]">Employee</th>
+                <th className="font-light text-sm w-[5%]">Branch</th>
+                <th className="font-light text-sm text-right whitespace-nowrap">
+                  Base Salary
+                </th>
+                <th className="font-light text-sm text-right whitespace-nowrap">
+                  Earning
+                </th>
+                <th className="font-light text-sm text-right whitespace-nowrap">
+                  Deduction
+                </th>
+                <th className="font-light text-sm text-right whitespace-nowrap">
+                  Total
+                </th>
+                <th className="font-light text-sm w-[6%]"></th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filterd.map((r) => {
+                return (
+                  <tr
+                    key={r.id}
+                    className="h-20 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <td className="pl-6">
+                      <Checkbox
+                        checked={isChecked(r.id)}
+                        onChange={() => toggle(r.id)}
+                      />
+                    </td>
+                    <td
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      <div className="flex flex-row items-center gap-3">
+                        <div className="bg-orange-300 w-9 h-9 aspect-square min-w-9 text-center rounded-full flex items-center justify-center text-white">
+                          {r.employee.firstName.charAt(0)}
+                        </div>
+                        <div className="min-w-max">
+                          <p className="font-semibold whitespace-nowrap">
+                            {r.employee.firstName}&nbsp;
+                            {r.employee.lastName}
+                          </p>
+                          <p className="font-light text-gray-700 whitespace-nowrap">
+                            {r.employee.nickName}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
+                        {r.employee.branch}
+                      </span>
+                    </td>
+                    <td
+                      className="text-right font-medium text-gray-900 whitespace-nowrap"
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      {moneyFormat(r.baseSalry || 0)}
+                    </td>
+                    <td
+                      className="text-right text-green-600 font-medium whitespace-nowrap"
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      {moneyFormat(r.totals.totalEarning || 0)}
+                    </td>
+                    <td
+                      className="text-right text-red-600 font-medium whitespace-nowrap"
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      {moneyFormat(r.totals.totalDeduction || 0)}
+                    </td>
+                    <td
+                      className={`text-right whitespace-nowrap ${r.totals.net < 0 && "text-red-800"}`}
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      ฿ {moneyFormat(r.totals.net || 0)}
+                    </td>
+                    <td
+                      className="text-right pr-6"
+                      onClick={() => {
+                        setSelected?.(r);
+                        setOpenEdit(true);
+                      }}
+                    >
+                      <div className="flex flex-row-reverse">
+                        <Icon
+                          icon="ic:baseline-edit"
+                          className="text-xl text-right"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="h-20 bg-gray-50 border border-gray-200">
+              <tr>
+                <th
+                  colSpan={6}
+                  className="text-left pl-6 text-sm font-normal text-gray-700 whitespace-nowrap"
+                >
+                  Showing {filterd.length} employee(s)
+                </th>
+                <th colSpan={2}>
+                  <div className="text-right pr-6">
+                    <p className="text-xs text-gray-500 uppercase whitespace-nowrap">
+                      TOTAL PAYROLL
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">
+                      ฿ {moneyFormat(periodData?.totalNet || 0)}
+                    </p>
+                  </div>
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}

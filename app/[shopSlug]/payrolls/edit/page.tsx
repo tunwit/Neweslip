@@ -4,12 +4,17 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { Add } from "@mui/icons-material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
 import { useSelectedEmployees } from "@/app/components/Payrolls/new/hooks/useSelectedEmployee";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { usePayrollRecords } from "@/hooks/usePayrollRecords";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { getRandomPastelColor } from "@/utils/generatePastelColor";
 import BranchSelector from "@/widget/BranchSelector";
@@ -20,21 +25,22 @@ import { deletePayrollRecords } from "@/app/action/deletePayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRecordDetails } from "@/hooks/useRecordDetails";
-import { usePayrollPeriodStats } from "@/hooks/usePayrollPeriodStat";
 import { useUser } from "@clerk/nextjs";
 import { moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
+import UsersIcon from "@/assets/icons/UsersIcon";
+import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
+import { useDebounce } from "use-debounce";
 
 export default function Home() {
-  // const { checkboxs, checkedItem, uncheckall } = usePayrollSelectKit();
   const methods = useCheckBox<number>("payrollRecordTable");
-  const { checked, isSomeChecked } = methods;
+  const { checked } = methods;
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
   const [query, setQuery] = useState("");
+  const [debouced] = useDebounce(query, 500);
   const [branchId, setBranchId] = useState(-1);
-  const router = useRouter();
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
   );
@@ -42,13 +48,12 @@ export default function Home() {
 
   const { data: periodData } = usePayrollPeriod(Number(periodId));
 
-  const { data, isLoading, isSuccess } = usePayrollRecords(Number(periodId));
+  const { data } = usePayrollRecords(Number(periodId));
+
   const queryClient = useQueryClient();
   const { user } = useUser();
-
-  const avatarColors = useMemo(() => {
-    return data?.data?.map(() => getRandomPastelColor()) || [];
-  }, [data]);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const deleteHandler = async () => {
     if (!user?.id) return;
@@ -61,8 +66,13 @@ export default function Home() {
     }
   };
 
+  const summaryHandler = () => {
+    const newPath = pathname.replace("/edit", "/summary");
+    router.push(`${newPath}?id=${periodId}`);
+  };
+
   return (
-    <main className="min-h-screen w-full bg-white font-medium">
+    <main className="w-full bg-gray-100 font-medium ">
       <PayrollsAddEmployeeModal
         open={openAdd}
         setOpen={setOpenAdd}
@@ -77,134 +87,160 @@ export default function Home() {
         />
       )}
       <title>{periodData?.data?.name}</title>
-      <div className="mx-10 flex flex-col min-h-screen ">
-        <div className="flex flex-row text-[#424242] text-xs mt-10">
-          <p>
-            {" "}
-            Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
-          </p>
-          <p className="text-blue-800">New Payrolls</p>
-        </div>
-        <div className="mt-5 flex flex-row justify-between">
-          <p className="text-black text-4xl font-bold">
-            {periodData?.data?.name}
-          </p>
-          <Button
-            onClick={() => setOpenAdd(true)}
-            startDecorator={<Add sx={{ fontSize: "20px" }} />}
-            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
-          >
-            Add Employee
-          </Button>
-        </div>
-
-        <div className="mt-8 flex flex-row gap-2">
-          <div className="w-[60%]">
-            <p className="text-black text-xs mb-1">Search Payrolls</p>
-            <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
-              <Icon
-                className="text-[#424242]"
-                icon={"material-symbols:search-rounded"}
-              />
-              <input
-                type="text"
-                placeholder="Search"
-                className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
-                onChange={(e) => setQuery(e.target.value)}
-              />
+      <div className="flex flex-col h-full">
+        <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
+          <div className="flex flex-row text-[#424242] text-xs mt-10">
+            <p>
+              {" "}
+              Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
+            </p>
+            <p className="text-blue-800">New Payrolls</p>
+          </div>
+          <div className="mt-5 flex flex-row justify-between">
+            <p className="text-black text-4xl font-bold">
+              {periodData?.data?.name}
+            </p>
+            <div className="flex gap-3">
+              <Button
+                startDecorator={
+                  <Icon icon="fluent:list-bar-24-regular" fontSize={20} />
+                }
+                color="neutral"
+                variant="outlined"
+                onClick={summaryHandler}
+              >
+                Summary
+              </Button>
+              <Button startDecorator={<Icon icon="gg:check-o" fontSize={20} />}>
+                Finalize
+              </Button>
             </div>
           </div>
 
-          <div className="w-[20%]">
-            <p className="text-black text-xs mb-1">Status</p>
-            <Select
-              defaultValue="All"
-              sx={{ borderRadius: "4px", fontSize: "14px" }}
-            >
-              <Option value="All">All</Option>
-              <Option value="Active">Active</Option>
-              <Option value="Part time">Part time</Option>
-              <Option value="Inactive">Inactive</Option>
-            </Select>
-          </div>
+          <section className="grid grid-cols-4 gap-4 mt-5">
+            <div className="bg-blue-50 from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-blue-700 font-medium">Status</p>
+                  <p className="text-xl font-bold text-blue-900 mt-1">
+                    {periodData?.data?.status}
+                  </p>
+                </div>
+                <div className="bg-blue-200 p-2 rounded-lg">
+                  <Icon
+                    icon={"mdi:clock-outline"}
+                    className="text-blue-700"
+                    fontSize={20}
+                  />
+                </div>
+              </div>
+            </div>
 
-          <div className="w-[20%]">
-            <p className="text-black text-xs mb-1">Brach</p>
-            <BranchSelector
-              branchId={branchId}
-              onChange={setBranchId}
-              isEnableAll={true}
+            <div className="bg-purple-50 from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-purple-700 font-medium">
+                    Employee
+                  </p>
+                  <p className="text-xl font-bold text-purple-900 mt-1">
+                    {periodData?.data?.employeeCount}
+                  </p>
+                </div>
+                <div className="bg-purple-200 p-2 rounded-lg">
+                  <UsersIcon className="text-purple-700 text-xl" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-green-700 font-medium">
+                    Total Amount
+                  </p>
+                  <p className="text-xl font-bold text-green-900 mt-1">
+                    {moneyFormat(periodData?.data?.totalNet || 0)}
+                  </p>
+                </div>
+                <div className="bg-green-200 p-2 rounded-lg">
+                  <Icon
+                    icon="tabler:currency-baht"
+                    className="text-green-700 text-xl"
+                    fontSize={20}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-orange-700 font-medium">Period</p>
+                  <p className="text-xl font-bold text-orange-900 mt-1">
+                    {new Date(periodData?.data?.start_date!).toDateString()}
+                  </p>
+                </div>
+                <div className="bg-orange-200 p-2 rounded-lg">
+                  <Icon
+                    icon="solar:calendar-outline"
+                    className="text-orange-700 text-xl"
+                    fontSize={20}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section className="px-10 overflow-y-auto flex-1">
+          <div className="mt-8 flex flex-row justify-between bg-white p-4 rounded-md shadow">
+            <div className="flex flex-row gap-3">
+              <div className="w-96 ">
+                <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
+                  <Icon
+                    className="text-[#424242]"
+                    icon={"material-symbols:search-rounded"}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search name, branch"
+                    className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="h-5">
+              <Button
+                onClick={() => setOpenAdd(true)}
+                startDecorator={<Add sx={{ fontSize: "20px" }} />}
+                sx={{ fontSize: "13px", "--Button-gap": "5px" }}
+              >
+                Add Employee
+              </Button>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center pb-10">
+            <div className="flex flex-row-reverse">
+              <Button
+                disabled={checked ? checked.length === 0 : true}
+                variant="plain"
+                onClick={deleteHandler}
+              >
+                <p className="underline font-medium">delete</p>
+              </Button>
+            </div>
+
+            <PeriodEmployeeTable
+              searchQuery={debouced}
+              checkBoxMethod={methods}
+              periodData={periodData?.data}
+              records={data?.data || []}
+              setSelected={setSelectedRecord}
+              setOpenEdit={setOpenEdit}
             />
           </div>
-        </div>
-        <div className="flex flex-col justify-center ">
-          <div className="flex flex-row-reverse">
-            <Button
-              disabled={checked ? checked.length === 0 : true}
-              variant="plain"
-              onClick={deleteHandler}
-            >
-              <p className="underline font-medium">delete</p>
-            </Button>
-          </div>
-          <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
-            <TableWithCheckBox
-              data={data?.data}
-              isLoading={isLoading}
-              isSuccess={isSuccess}
-              checkboxMethods={methods}
-              setSelectedItem={(v) => setSelectedRecord(v)}
-              setOpen={setOpenEdit}
-              columns={[
-                {
-                  key: "avatar",
-                  label: "",
-                  width: "6%",
-                  render: (row, i) => (
-                    <div
-                      className="w-9 aspect-square min-w-8 text-center rounded-full flex items-center justify-center"
-                      style={{
-                        backgroundColor: avatarColors[i],
-                      }}
-                    >
-                      {row.employee.firstName.charAt(0)}
-                    </div>
-                  ),
-                },
-                {
-                  key: "name",
-                  label: "Name",
-                  render: (row) =>
-                    `${row.employee.firstName} ${row.employee.lastName}`,
-                },
-                {
-                  key: "nickName",
-                  label: "Nick Name",
-                  render: (row) => `${row.employee.nickName}`,
-                },
-                {
-                  key: "branch",
-                  label: "Branch",
-                  render: (row) => `${row.employee.branch}`,
-                },
-                {
-                  key: "total",
-                  label: "Total",
-                  render: (row) => `${moneyFormat(row.net)}`,
-                },
-              ]}
-            />
-          </div>
-        </div>
-
-        <div className="mt-2 flex justify-between">
-          <Button
-            color="primary"
-            sx={{ fontSize: "13px", "--Button-gap": "5px", padding: 1.2 }}
-          >
-            Finalize
-          </Button>
-        </div>
+        </section>
       </div>
     </main>
   );

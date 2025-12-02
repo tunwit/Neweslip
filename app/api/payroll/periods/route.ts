@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
         id: payrollPeriodsTable.id,
         name: payrollPeriodsTable.name,
         status: payrollPeriodsTable.status,
+        start_date: payrollPeriodsTable.start_date,
         employeeCount: countDistinct(payrollRecordsTable.employeeId),
         work_hours_per_day: payrollPeriodsTable.work_hours_per_day,
         workdays_per_month: payrollPeriodsTable.workdays_per_month,
@@ -62,17 +63,14 @@ export async function GET(request: NextRequest) {
 
         // Sum net salary for all records
         let totalNet = 0;
-        let count = 0;
         for (const r of records) {
           const { totals } = await calculateTotalSalary(r.id);
           totalNet += totals.net;
-          count++;
         }
 
         return {
           ...period,
           totalNet,
-          count,
         };
       }),
     );

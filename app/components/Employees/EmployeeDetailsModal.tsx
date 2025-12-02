@@ -70,6 +70,7 @@ export default function EmployeeDetailsModal({
     queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
 
+  
   const methods = useZodForm(createEmployeeFormSchema, {
     defaultValues: normalizeNull({
       avatar: employee.avatar,
@@ -84,10 +85,8 @@ export default function EmployeeDetailsModal({
       phoneNumber: employee.phoneNumber,
       gender: employee.gender,
       branchId: employee.branch.id,
-      salary: employee.salary,
-      dateEmploy: employee.dateEmploy
-        ? new Date(employee.dateEmploy)
-        : undefined,
+      salary: Number(employee.salary) || 0,
+      dateEmploy: employee.dateEmploy,
       bankName: employee.bankName,
       bankAccountNumber: employee.bankAccountNumber,
       bankAccountOwner: employee.bankAccountOwner,
@@ -95,12 +94,13 @@ export default function EmployeeDetailsModal({
       status: employee.status,
     }),
     mode: "onChange",
+    criteriaMode: "all"
   });
 
   const {
     handleSubmit,
     reset,
-    formState: { isValid, dirtyFields },
+    formState: { isValid, dirtyFields, errors,isValidating},
   } = methods;
 
   const onSave = async (data: createEmployeeFormField) => {
@@ -111,6 +111,7 @@ export default function EmployeeDetailsModal({
         user.user?.id || null,
       );
       reset(data);
+      setOpen(false);
       showSuccess(`update employee successful`);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     } catch (err) {
@@ -118,9 +119,10 @@ export default function EmployeeDetailsModal({
     }
   };
 
+
   return (
     <>
-      <Modal open={open} onClose={() => setOpen(false)} sx={{zIndex:100}}>
+      <Modal open={open} onClose={() => setOpen(false)} sx={{ zIndex: 100 }}>
         <ModalDialog
           sx={{ background: "#fafafa", overflow: "scroll", width: "70%" }}
         >

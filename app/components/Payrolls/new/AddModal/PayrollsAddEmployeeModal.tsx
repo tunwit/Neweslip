@@ -51,7 +51,7 @@ export default function PayrollsAddEmployeeModal({
   });
   const [selected, setSelected] = useState<EmployeeWithShop | null>(null);
   const { user } = useUser();
-  
+
   const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
     setPage(page);
   };
@@ -80,8 +80,8 @@ export default function PayrollsAddEmployeeModal({
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
         {/* <ModalOverflow> */}
-        <ModalDialog>
-          <div className="flex flex-col justify-center ">
+        <ModalDialog sx={{width:"50%"}}>
+          <div className="flex flex-col justify-center w-full">
             <div className="flex flex-row items-center gap-2">
               <p className="font-bold text-lg">
                 Employees ({data?.pagination.totalItems} people)
@@ -121,7 +121,8 @@ export default function PayrollsAddEmployeeModal({
                 />
               </div>
             </div>
-            <div className="w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-300px)] overflow-x-auto overflow-y-auto shadow-sm">
+
+            <div className="w-full overflow-auto h-[50vh]">
               <TableWithCheckBox
                 editColumn={false}
                 data={data?.data}
@@ -139,14 +140,14 @@ export default function PayrollsAddEmployeeModal({
                       return (
                         <span className="flex flex-row items-center gap-2">
                           <div
-                            className="w-9 aspect-square min-w-8 text-center rounded-full flex items-center justify-center"
+                            className="w-9 aspect-square min-w-8 text-center rounded-full flex items-center justify-center text-white"
                             style={{ backgroundColor: avatarColors[i] }}
                             onClick={() => setOpen(true)}
                           >
                             {row.firstName.charAt(0)}
                           </div>
                           <p>
-                            {row.firstName}
+                            {row.firstName} &nbsp;
                             {row.lastName}
                           </p>
                         </span>
@@ -166,6 +167,7 @@ export default function PayrollsAddEmployeeModal({
                 ]}
               />
             </div>
+
             <div className="w-full flex justify-center mt-2">
               <Pagination
                 count={data?.pagination.totalPages || 1}

@@ -40,6 +40,7 @@ export async function GET(
         name: payrollPeriodsTable.name,
         status: payrollPeriodsTable.status,
         shopId: payrollPeriodsTable.shopId,
+        start_date: payrollPeriodsTable.start_date,
         employeeCount: countDistinct(payrollRecordsTable.employeeId),
         work_hours_per_day: payrollPeriodsTable.work_hours_per_day,
         workdays_per_month: payrollPeriodsTable.workdays_per_month,
@@ -51,10 +52,23 @@ export async function GET(
       )
       .where(eq(payrollPeriodsTable.id, Number(periodId)))
       .groupBy(payrollPeriodsTable.id);
-      
+
     if (!(await isOwner(Number(period.shopId), userId)))
       return errorResponse("Forbidden", 403);
-    return successResponse(period);
+
+    const records = await globalDrizzle
+      .select({ id: payrollRecordsTable.id })
+      .from(payrollRecordsTable)
+      .where(eq(payrollRecordsTable.payrollPeriodId, period.id));
+
+    // Sum net salary for all records
+    let totalNet = 0;
+    for (const r of records) {
+      const { totals } = await calculateTotalSalary(r.id);
+      totalNet += totals.net;
+    }
+
+    return successResponse({ ...period, totalNet });
   } catch (err) {
     console.error(err);
     return errorResponse("Internal server error", 500);

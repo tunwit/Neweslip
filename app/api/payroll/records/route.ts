@@ -49,13 +49,13 @@ export async function GET(request: NextRequest) {
       );
 
     if (!owner) return errorResponse("Forbidden", 403);
-
     const data = await globalDrizzle
       .select({
         id: payrollRecordsTable.id,
         periodId: payrollRecordsTable.payrollPeriodId,
         updatedAt: payrollRecordsTable.updatedAt,
         createdAt: payrollRecordsTable.createdAt,
+        baseSalry: payrollRecordsTable.salary,
         employee: {
           id: employeesTable.id,
           firstName: employeesTable.firstName,
@@ -77,10 +77,9 @@ export async function GET(request: NextRequest) {
     const dataWithNet = await Promise.all(
       data.map(async (r) => {
         const { totals } = await calculateTotalSalary(r.id);
-        total += totals.net;
         return {
           ...r,
-          net: totals.net, // add net salary
+          totals: totals, // add net salary
         };
       }),
     );

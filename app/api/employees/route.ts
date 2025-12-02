@@ -8,13 +8,10 @@ import globalDrizzle from "@/db/drizzle";
 import {
   errorResponse,
   successPaginationResponse,
-  successResponse,
 } from "@/utils/respounses/respounses";
 import { auth } from "@clerk/nextjs/server";
-import { and, eq, getTableColumns, isNull, like, or } from "drizzle-orm";
-import { NextApiRequest } from "next";
-import { NextRequest, NextResponse } from "next/server";
-import { count } from "drizzle-orm";
+import { and, eq, getTableColumns, like, or, sql } from "drizzle-orm";
+import { NextRequest } from "next/server";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { EmployeeWithShop } from "@/types/employee";
 import { isOwner } from "@/lib/isOwner";
@@ -31,11 +28,12 @@ export async function GET(request: NextRequest) {
     const branchIdQ = request.nextUrl.searchParams.get("branchId");
 
     if (!shopIdQ) {
-      return errorResponse("Illegel Argument", 400);
+      return errorResponse("Illegal Argument", 400);
     }
 
-    if (!(await isOwner(Number(shopIdQ), userId)))
+    if (!(await isOwner(Number(shopIdQ), userId))) {
       return errorResponse("Forbidden", 403);
+    }
 
     const empStatus = request.nextUrl.searchParams.get("status");
     let validateEmpStatus: EMPLOYEE_STATUS | undefined;
@@ -45,16 +43,15 @@ export async function GET(request: NextRequest) {
         validateEmpStatus =
           EMPLOYEE_STATUS[empStatus as keyof typeof EMPLOYEE_STATUS];
       } else {
-        // invalid status, ignore or throw error
         validateEmpStatus = undefined;
       }
     }
+
     const search = request.nextUrl.searchParams.get("search_query");
+    const page = Number(request.nextUrl.searchParams.get("page") || 1);
+    const limit = Number(request.nextUrl.searchParams.get("limit") || 15);
+    const offset = (page - 1) * limit;
 
-    const page = request.nextUrl.searchParams.get("page") || 1;
-    const limit = request.nextUrl.searchParams.get("limit") || 15;
-
-    const offset = (Number(page) - 1) * Number(limit);
     const trimmedSearch = search?.trim();
     const searchFilter = trimmedSearch
       ? or(
@@ -62,22 +59,25 @@ export async function GET(request: NextRequest) {
           like(employeesTable.lastName, `%${trimmedSearch}%`),
           like(employeesTable.nickName, `%${trimmedSearch}%`),
           like(employeesTable.email, `%${trimmedSearch}%`),
-          like(employeesTable.position, `%${trimmedSearch}%`),
+          like(employeesTable.position, `%${trimmedSearch}%`)
         )
       : undefined;
 
-    const [{ count: total }] = await globalDrizzle
-      .select({ count: count() })
-      .from(employeesTable)
-      .innerJoin(
-        shopOwnerTable,
-        eq(employeesTable.shopId, shopOwnerTable.shopId),
-      )
-      .where(searchFilter);
+    // Build the WHERE conditions
+    const whereConditions = and(
+      eq(shopOwnerTable.ownerId, userId),
+      eq(employeesTable.shopId, Number(shopIdQ)),
+      ...(searchFilter ? [searchFilter] : []),
+      ...(branchIdQ ? [eq(employeesTable.branchId, Number(branchIdQ))] : []),
+      ...(validateEmpStatus !== undefined
+        ? [eq(employeesTable.status, validateEmpStatus)]
+        : [])
+    );
 
     const { shopId, branchId, ...rest } = getTableColumns(employeesTable);
 
-    const employees: EmployeeWithShop[] = await globalDrizzle
+    // Single query with window function to get count
+    const results = await globalDrizzle
       .select({
         ...rest,
         shop: {
@@ -98,38 +98,39 @@ export async function GET(request: NextRequest) {
           name: branchesTable.name,
           nameEng: branchesTable.nameEng,
         },
+        // Window function to get total count in same query
+        totalCount: sql<number>`COUNT(*) OVER()`.as("total_count"),
       })
       .from(employeesTable)
       .innerJoin(
         shopOwnerTable,
-        eq(employeesTable.shopId, shopOwnerTable.shopId),
+        eq(employeesTable.shopId, shopOwnerTable.shopId)
       )
       .innerJoin(shopsTable, eq(shopOwnerTable.shopId, shopsTable.id))
       .innerJoin(branchesTable, eq(employeesTable.branchId, branchesTable.id))
-      .where(
-        and(
-          eq(shopOwnerTable.ownerId, userId),
-          eq(employeesTable.shopId, Number(shopIdQ)),
-          ...(searchFilter ? [searchFilter] : []),
-          ...(branchIdQ
-            ? [eq(employeesTable.branchId, Number(branchIdQ))]
-            : []),
-          ...(validateEmpStatus !== undefined
-            ? [eq(employeesTable.status, validateEmpStatus)]
-            : []),
-        ),
-      )
-      .offset(Number(offset))
-      .limit(Number(limit))
+      .where(whereConditions)
+      .offset(offset)
+      .limit(limit)
       .orderBy(employeesTable.createdAt);
 
+    // Extract total count from first row (all rows have same count due to window function)
+    const total = results.length > 0 ? Number(results[0].totalCount) : 0;
+
+    // Remove totalCount from results before returning
+    const employees: EmployeeWithShop[] = results.map(
+      ({ totalCount, ...employee }) => employee as EmployeeWithShop
+    );
+
+    console.log("Employees fetched:", employees.length);
+    console.log("Total count:", total);
+
     return successPaginationResponse(employees, {
-      page: Number(page),
-      pageSize: Number(limit),
+      page,
+      pageSize: limit,
       totalItems: total,
-      totalPages: Math.ceil(total / Number(limit)),
-      hasNextPage: Number(page) * Number(limit) < total,
-      hasPrevPage: Number(page) > 1,
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
     });
   } catch (err) {
     console.error(err);

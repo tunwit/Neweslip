@@ -64,7 +64,6 @@ export default function FormSection({
     
     const slug = pathname[1];
     const { id } = extractSlug(slug);
-
     // Construct the final data object, merging the form data with the required shopId
     const employeePayload: NewEmployee = {
         ...data,

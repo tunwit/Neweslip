@@ -55,77 +55,82 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
   };
 
   return (
-    <div className="border border-[#d8d8d8] w-auto rounded-md px-1 max-h-[calc(100vh-350px)] overflow-auto">
-      <Table stickyHeader hoverRow variant="plain">
-        <thead>
-          <tr>
-            <th className="w-[6%]">
-              <Checkbox
-                checked={isAllChecked(data?.length ?? 0)}
-                indeterminate={isSomeChecked(data?.length ?? 0)}
-                onChange={handleAllCheckbox}
-              />
-            </th>
-            {columns.map((col) => (
-              <th
-                key={col.key.toString()}
-                className={`font-medium ${col.width ?? ""}`}
-                style={{ width: col.width }}
-              >
-                {col.label}
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-auto">
+        <table className="w-full">
+          <thead className=" bg-gray-50 border border-gray-200">
+            <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
+              <th className="font-light text-sm pl-6 w-[6%] whitespace-nowrap min-w-15">
+                <Checkbox
+                  checked={isAllChecked(data?.length ?? 0)}
+                  indeterminate={isSomeChecked(data?.length ?? 0)}
+                  onChange={handleAllCheckbox}
+                />
               </th>
-            ))}
-            {editColumn && <th className="font-medium w-[5%]"></th>}
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading && (
-            <tr className="text-center">
-              <td colSpan={columns.length + (editColumn ? 2 : 1)}>
-                Loading...
-              </td>
+              {columns.map((col) => (
+                <th
+                  key={col.key.toString()}
+                  className={`font-light text-sm whitespace-nowrap ${col.width ?? ""}`}
+                  style={{ width: col.width }}
+                >
+                  {col.label}
+                </th>
+              ))}
+              {editColumn && <th className="font-medium w-[5%]"></th>}
             </tr>
-          )}
-
-          {isSuccess && !data?.length && (
-            <tr className="text-center">
-              <td colSpan={columns.length + (editColumn ? 2 : 1)}>No Data</td>
-            </tr>
-          )}
-
-          {isSuccess &&
-            data?.map((row, i) => (
-              <tr key={row.id}>
-                <td>
-                  <Checkbox
-                    checked={isChecked(row.id)}
-                    onChange={() => toggle(row.id)}
-                  />
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {isLoading && (
+              <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer">
+                <td colSpan={columns.length + (editColumn ? 2 : 1)}>
+                  Loading...
                 </td>
-
-                {columns.map((col) => (
-                  <td key={col.key.toString()}>
-                    {col.render
-                      ? col.render(row, i)
-                      : (row[col.key as keyof T] as any)}
-                  </td>
-                ))}
-
-                {editColumn && setSelectedItem && (
-                  <td
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setSelectedItem(row);
-                      setOpen(true);
-                    }}
-                  >
-                    <Icon icon="ic:baseline-edit" className="text-xl" />
-                  </td>
-                )}
               </tr>
-            ))}
-        </tbody>
-      </Table>
+            )}
+
+            {isSuccess && !data?.length && (
+              <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer">
+                <td colSpan={columns.length + (editColumn ? 2 : 1)}>No Data</td>
+              </tr>
+            )}
+
+            {isSuccess &&
+              data?.map((row, i) => (
+                <tr
+                  key={row.id}
+                  className="h-15 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  <td className="pl-6">
+                    <Checkbox
+                      checked={isChecked(row.id)}
+                      onChange={() => toggle(row.id)}
+                    />
+                  </td>
+
+                  {columns.map((col) => (
+                    <td key={col.key.toString()}>
+                      {col.render
+                        ? col.render(row, i)
+                        : (row[col.key as keyof T] as any)}
+                    </td>
+                  ))}
+
+                  {editColumn && setSelectedItem && (
+                    <td
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setSelectedItem(row);
+                        setOpen(true);
+                      }}
+                    >
+                      <Icon icon="ic:baseline-edit" className="text-xl" />
+                    </td>
+                  )}
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

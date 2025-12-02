@@ -57,6 +57,30 @@ export default function PayrollTable<T>({
     setTotal(totalSum);
   }, [amountValues, showIncomeRow, baseSalary]);
 
+  useEffect(() => {
+    if (!autoCalculate || !calculateAmount || !data) return;
+
+    setInputValues((prev) => {
+      let updated = { ...prev };
+      let changed = false;
+
+      data.forEach((item: any) => {
+        const value = prev[item.id]?.value ?? item.value ?? 0;
+        const newAmount = calculateAmount(item, value);
+
+        if (!prev[item.id] || prev[item.id].amount !== newAmount) {
+          updated[item.id] = { value, amount: newAmount };
+          changed = true;
+        }
+      });
+
+      // Only return updated object if something changed
+      return changed ? updated : prev;
+    });
+
+    if (data.length > 0) setIsDirty(true);
+  }, [baseSalary, autoCalculate, calculateAmount, data]);
+
   const applyAutoAmount = (item: any, v: number) => {
     if (!autoCalculate || !calculateAmount) return;
 
@@ -90,7 +114,7 @@ export default function PayrollTable<T>({
 
       return updated;
     });
-  }, [data]);
+  }, [data, baseSalary]);
 
   return (
     <div className="overflow-auto max-h-[calc(100vh-350px)]">
@@ -151,9 +175,9 @@ export default function PayrollTable<T>({
                       type="number"
                       className="border rounded px-2 py-1 w-full"
                       value={value}
-                      onChange={(e) =>
-                        applyAutoAmount(item, Number(e.target.value))
-                      }
+                      onChange={(e) => {
+                        applyAutoAmount(item, Number(e.target.value));
+                      }}
                       placeholder="0"
                     />
                   </td>

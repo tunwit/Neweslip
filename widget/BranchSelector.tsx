@@ -7,22 +7,28 @@ import { Branch } from "@/types/branch";
 interface BranchSelectorProps {
   branchId: number;
   onChange: (newvalue: number) => void;
-  disable?: boolean
-  isEnableAll?: boolean
+  disable?: boolean;
+  isEnableAll?: boolean;
 }
 
 export default function BranchSelector({
   branchId,
   onChange,
   disable = false,
-  isEnableAll = false
+  isEnableAll = false,
 }: BranchSelectorProps) {
-  const { data,isLoading } = useBranch();
+  const { data, isLoading } = useBranch();
 
   return (
     <>
-      <Select disabled={disable} defaultValue={-1} value={branchId} onChange={(e, newvalue) => onChange(newvalue!)}>
-        {isEnableAll && <Option value={-1}>All</Option>}
+      <Select
+        disabled={disable}
+        defaultValue={-1}
+        value={branchId}
+        onChange={(e, newvalue) => onChange(newvalue!)}
+        sx={{ fontSize: "14px" }}
+      >
+        {isEnableAll && <Option value={-1}>All Branches</Option>}
         {data?.data?.map((v: Branch) => {
           return (
             <Option key={v.id} value={v.id}>

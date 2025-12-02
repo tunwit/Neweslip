@@ -7,9 +7,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 export const usePayrollPeriod = (periodId?: number) => {
   const { session } = useSession();
 
-  const query = useQuery<
-    ApiResponse<Omit<PayrollPeriod, "totalNet" | "count">>
-  >({
+  const query = useQuery<ApiResponse<PayrollPeriod>>({
     queryKey: ["payrollPeriod", periodId, session?.user?.emailAddresses],
     queryFn: () =>
       fetchwithauth({

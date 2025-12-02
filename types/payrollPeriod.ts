@@ -3,6 +3,6 @@ import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 export type PayrollPeriod = InferSelectModel<typeof payrollPeriodsTable> & {
   totalNet: number;
-  count: number;
+  employeeCount: number
 };
 export type NewPayrollPeriod = InferInsertModel<typeof payrollPeriodsTable>;
