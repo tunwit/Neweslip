@@ -16,7 +16,8 @@ export interface PayrollPeriodSummary {
   name: string;
   status: string;
   shopId: number;
-  start_date: string;
+  start_period: string;
+  end_period: string;
   work_hours_per_day: number;
   workdays_per_month: number;
   employeeCount: number;

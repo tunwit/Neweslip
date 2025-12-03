@@ -1,4 +1,8 @@
-import { OT_METHOD, PENALTY_METHOD, SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import {
+  OT_METHOD,
+  PENALTY_METHOD,
+  SALARY_FIELD_DEFINATION_TYPE,
+} from "@/types/enum/enum";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -15,16 +19,15 @@ const unitMap = {
   [PENALTY_METHOD.PERMINUTE]: "minute(s)",
 };
 
-
 export default function SummaryCard({ record }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="space-y-4">
-      <div className="shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
         {/* Employee Header */}
         <div
-          className="bg-gray-100 px-6 py-4 border-b border-gray-200 grid grid-cols-[1fr_auto] gap-4 items-center cursor-pointer"
+          className="bg-gray-50 px-6 py-4 border-b border-gray-200 grid grid-cols-[1fr_auto] gap-4 items-center cursor-pointer"
           onClick={() => setExpanded(!expanded)}
         >
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
@@ -94,7 +97,8 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
                   {/* Earnings */}
                   <div>
-                    <h4 className="text-sm font-semibold text-green-700 uppercase mb-3">
+                    <h4 className="flex flex-row  items-center gap-1 text-sm font-semibold text-green-700 uppercase mb-3">
+                      <Icon icon="iconamoon:trend-up" />
                       Earnings
                     </h4>
                     <table className="w-full">
@@ -129,7 +133,8 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
                   {/* Deductions */}
                   <div>
-                    <h4 className="text-sm font-semibold text-red-700 uppercase mb-3">
+                    <h4 className="flex flex-row  items-center gap-1 text-sm font-semibold text-red-700 uppercase mb-3">
+                      <Icon icon="iconamoon:trend-down" />
                       Deductions
                     </h4>
                     <table className="w-full">
@@ -164,7 +169,8 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
                   {/* Overtimes */}
                   <div>
-                    <h4 className="text-sm font-semibold text-blue-700 uppercase mb-3">
+                    <h4 className="flex flex-row  items-center gap-1 text-sm font-semibold text-blue-700 uppercase mb-3">
+                      <Icon icon={"iconamoon:clock"} />
                       Overtimes
                     </h4>
                     <table className="w-full">
@@ -206,7 +212,8 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
                   {/* Penalties */}
                   <div>
-                    <h4 className="text-sm font-semibold text-amber-700 uppercase mb-3">
+                    <h4 className="flex flex-row  items-center gap-1 text-sm font-semibold text-amber-700 uppercase mb-3">
+                      <Icon icon="streamline:justice-hammer" />
                       Penalties
                     </h4>
                     <table className="w-full">
@@ -219,9 +226,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                             <td className="text-sm text-gray-600 text-center py-1 w-[20%]">
                               <span className="flex flex-row gap-2">
                                 <p>{Number(penalty.value).toFixed(0)}</p>
-                                <p>
-                                  {unitMap[penalty.method]}
-                                </p>
+                                <p>{unitMap[penalty.method]}</p>
                               </span>
                             </td>
                             <td className="font-medium text-amber-600 text-right py-1">
@@ -230,7 +235,10 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                           </tr>
                         ))}
                         <tr className="border-t border-gray-200">
-                          <td colSpan={2} className="text-sm font-semibold text-gray-700 pt-3 py-1">
+                          <td
+                            colSpan={2}
+                            className="text-sm font-semibold text-gray-700 pt-3 py-1"
+                          >
                             Total Penalties
                           </td>
                           <td className="font-bold text-amber-600 text-right pt-3 py-1">
@@ -243,7 +251,8 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
                   {/* Display Only */}
                   <div>
-                    <h4 className="text-sm font-semibold text-green-700 uppercase mb-3">
+                    <h4 className="flex flex-row  items-center gap-1 text-sm font-semibold text-green-700 uppercase mb-3">
+                      <Icon icon="iconamoon:eye"/>
                       Display Only
                     </h4>
                     <table className="w-full">
@@ -264,12 +273,11 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                               </td>
                             </tr>
                           ))}
-                        
                       </tbody>
                     </table>
                   </div>
                 </div>
-                        
+
                 {/* Net Calculation */}
                 <div className="mt-6 pt-6 border-t-2 border-gray-300">
                   <div className="grid grid-cols-[1fr_auto] gap-8 items-end">

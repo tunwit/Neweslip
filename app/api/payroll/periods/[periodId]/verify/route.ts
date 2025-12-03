@@ -29,8 +29,6 @@ import { calculatePenalty } from "@/lib/penaltyCalculater";
 import { moneyFormat } from "@/utils/formmatter";
 import verifyPayroll from "@/lib/verifyPayroll";
 
-
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ periodId: string }> },

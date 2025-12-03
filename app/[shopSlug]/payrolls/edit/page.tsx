@@ -24,7 +24,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRecordDetails } from "@/hooks/useRecordDetails";
 import { useUser } from "@clerk/nextjs";
-import { moneyFormat } from "@/utils/formmatter";
+import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
@@ -32,33 +32,48 @@ import { useDebounce } from "use-debounce";
 import { Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
+import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { type DateRange } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
+import { updatePayrollRecord } from "@/app/action/updatePayrollRecord";
+import { updatePayrollPeriod } from "@/app/action/updatePayrollPeriod";
+import { ClickAwayListener } from "@mui/material";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
   const { checked } = methods;
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openCalendar, setOpenCalendar] = useState(false);
 
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [branchId, setBranchId] = useState(-1);
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
   );
+  const { user } = useUser();
+
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const periodId = useSearchParams().get("id");
 
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
 
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: periodData?.data?.start_period,
+    to: periodData?.data?.end_period,
+  });
+  const [periodTitle, setPeriodTitle] = useState(periodData?.data?.name);
+  const [titleDebounced] = useDebounce(periodTitle, 1000);
+  const [debouncedDateRange] = useDebounce(dateRange, 500);
   const { data, isLoading: loadingRecord } = usePayrollRecords(
     Number(periodId),
   );
-
-  const queryClient = useQueryClient();
-  const { user } = useUser();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const deleteHandler = async () => {
     if (!user?.id) return;
@@ -76,11 +91,43 @@ export default function Home() {
     router.push(`${newPath}?id=${periodId}`);
   };
 
-  if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
+  const saveDataHandler = async () => {
+    if (
+      !titleDebounced ||
+      !periodId ||
+      !user?.id ||
+      !periodData?.data ||
+      !dateRange?.from ||
+      !dateRange?.to
+    )
+      return;
+    const result = {
+      ...periodData?.data,
+      name: titleDebounced,
+      start_period: new Date(dateRange?.from),
+      end_period: new Date(dateRange?.to),
+    };
+
+    try {
+      await updatePayrollPeriod(Number(periodId), result, user?.id);
+      showSuccess("Update payroll success");
+    } catch (err) {
+      showError(`Cannot save data \n ${err}`);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    saveDataHandler();
+  }, [titleDebounced, debouncedDateRange]);
+
+  useEffect(() => {
+    if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/edit", "/view");
       router.push(`${newPath}?id=${periodId}`);
     }
-
+  }, [periodData]);
+  
   const isLoading = loadingPeriod || loadingRecord;
 
   let loadingMessage = "";
@@ -116,6 +163,7 @@ export default function Home() {
         </ModalDialog>
       </Modal>
       <title>{periodData?.data?.name}</title>
+
       <div className="flex flex-col h-full">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
           <div className="flex flex-row text-[#424242] text-xs mt-10">
@@ -123,13 +171,15 @@ export default function Home() {
               {" "}
               Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
             </p>
-            <p className="text-blue-800">New Payrolls</p>
+            <p className="text-blue-800">Edit Payrolls</p>
           </div>
-          <div className="mt-5 flex flex-row justify-between">
-            <p className="text-black text-4xl font-bold">
-              {periodData?.data?.name}
-            </p>
-            <div className="flex gap-3">
+          <div className="mt-3 flex flex-row justify-between">
+            <input
+              defaultValue={periodTitle}
+              onChange={(e) => setPeriodTitle(e.target.value)}
+              className="text-black text-3xl font-bold p-2"
+            ></input>
+            <div className="flex gap-3 z-10">
               <Button
                 startDecorator={
                   <Icon icon="fluent:list-bar-24-regular" fontSize={20} />
@@ -140,7 +190,6 @@ export default function Home() {
               >
                 Summary
               </Button>
-              
             </div>
           </div>
 
@@ -150,7 +199,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-blue-700 font-medium">Status</p>
                   <p className="text-xl font-bold text-blue-900 mt-1">
-                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!] }
+                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]}
                   </p>
                 </div>
                 <div className="bg-blue-200 p-2 rounded-lg">
@@ -199,12 +248,17 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+            <div
+              className="relative bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200 cursor-pointer"
+              onClick={() => setOpenCalendar(true)}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-orange-700 font-medium">Period</p>
                   <p className="text-xl font-bold text-orange-900 mt-1">
-                    {new Date(periodData?.data?.start_date!).toDateString()}
+                    {dateFormat(new Date(periodData?.data?.start_period || 0))}{" "}
+                    {" - "}
+                    {dateFormat(new Date(periodData?.data?.end_period || 0))}
                   </p>
                 </div>
                 <div className="bg-orange-200 p-2 rounded-lg">
@@ -215,6 +269,22 @@ export default function Home() {
                   />
                 </div>
               </div>
+              {openCalendar && (
+                <ClickAwayListener onClickAway={() => setOpenCalendar(false)}>
+                  <div className="absolute top-full right-0 mt-2 z-50">
+                    <Calendar
+                      mode="range"
+                      defaultMonth={dateRange?.from}
+                      selected={dateRange}
+                      onSelect={(range) => {
+                        setDateRange(range);
+                      }}
+                      numberOfMonths={2}
+                      className="rounded-lg border shadow-md bg-white"
+                    />
+                  </div>
+                </ClickAwayListener>
+              )}
             </div>
           </section>
         </section>
@@ -237,25 +307,24 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="h-5">
-              <Button
+            <div>
+              <button
                 onClick={() => setOpenAdd(true)}
-                startDecorator={<Add sx={{ fontSize: "20px" }} />}
-                sx={{ fontSize: "13px", "--Button-gap": "5px" }}
+                className="flex items-center gap-2 bg-blue-600 text-white p-2 rounded-md"
               >
-                Add Employee
-              </Button>
+                <Add sx={{ fontSize: "20px" }} /> <p>Add Employee</p>
+              </button>
             </div>
           </div>
           <div className="flex flex-col justify-center pb-10">
             <div className="flex flex-row-reverse">
-              <Button
+              <button
                 disabled={checked ? checked.length === 0 : true}
-                variant="plain"
                 onClick={deleteHandler}
+                className="flex items-center gap-2 text-blue-600 disabled:text-gray-300 p-2 rounded-md"
               >
                 <p className="underline font-medium">delete</p>
-              </Button>
+              </button>
             </div>
 
             <PeriodEmployeeTable

@@ -19,8 +19,8 @@ export const payrollPeriodsTable = mysqlTable("payroll_periods", {
     .references(() => shopsTable.id, { onDelete: "cascade" })
     .notNull(),
   name: varchar({ length: 50 }).notNull(),
-  start_date: date().notNull(),
-  end_date: date().notNull(),
+  start_period: date().notNull(),
+  end_period: date().notNull(),
   status: mysqlEnum(PAY_PERIOD_STATUS)
     .default(PAY_PERIOD_STATUS.DRAFT)
     .notNull(),

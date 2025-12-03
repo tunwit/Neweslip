@@ -21,12 +21,14 @@ import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import { usePayrollPeriodVerify } from "@/hooks/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
 import { Modal, ModalDialog } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
   const [openFinalizeModal, setOpenFinalizeModal] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
@@ -38,23 +40,27 @@ export default function Home() {
   const { data: verify, isLoading: loadingVerify } = usePayrollPeriodVerify(
     Number(periodId),
   );
-  if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
-    const newPath = pathname.replace("/summary", "/view");
-    router.push(`${newPath}?id=${periodId}`);
-  }
+  useEffect(() => {
+    if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
+      const newPath = pathname.replace("/summary", "/view");
+      router.push(`${newPath}?id=${periodId}`);
+    }
+  }, [summaryData]);
 
   const backToEditHandler = () => {
     const newPath = pathname.replace("/summary", "/edit");
     router.push(`${newPath}?id=${periodId}`);
   };
 
-  const isLoading = loadingPeriod || loadingSummary || loadingVerify;
+  const isLoading =
+    loadingPeriod || loadingSummary || loadingVerify || finalizing;
 
   let loadingMessage = "";
+  if (finalizing)
+    loadingMessage = "Finalizing payroll this might take a while...";
   if (loadingPeriod) loadingMessage = "Loading Period...";
   if (loadingSummary) loadingMessage = "Calculating Payroll...";
   if (loadingVerify) loadingMessage = "Verifying Payroll...";
-  console.log(summaryData);
 
   return (
     <main className="w-full bg-gray-100 font-medium ">
@@ -74,6 +80,7 @@ export default function Home() {
       <FinalizeModal
         open={openFinalizeModal}
         setOpen={setOpenFinalizeModal}
+        setFinalizing={setFinalizing}
         periodSummary={summaryData?.data}
         problems={verify?.data || []}
       />
@@ -126,12 +133,14 @@ export default function Home() {
             <div className="flex flex-row items-center gap-3">
               <Icon
                 icon="lets-icons:check-fill"
-                className={`text-green-500`}
+                className={`text-green-600`}
                 fontSize={20}
               />
               <div>
-                <p>This payroll has been reviewed for potential issues.</p>
-                <p className="font-light text-xs">
+                <p className="text-green-900">
+                  This payroll has been reviewed for potential issues.
+                </p>
+                <p className="font-light text-xs text-green-700">
                   No issues were detected, but please verify all details before
                   finalizing.
                 </p>

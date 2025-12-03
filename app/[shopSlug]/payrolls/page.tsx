@@ -44,8 +44,8 @@ export default function Home() {
       if (!id || !user?.id) return;
       const payload: Omit<NewPayrollPeriod, "shopId"> = {
         name: `New payroll ${new Date().toLocaleDateString()}`,
-        start_date: new Date(),
-        end_date: new Date(),
+        start_period: new Date(),
+        end_period: new Date(),
       };
 
       const periodId = await createPayrollPeriod(payload, id, user?.id);

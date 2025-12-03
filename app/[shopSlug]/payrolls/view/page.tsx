@@ -37,13 +37,8 @@ import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
-  const { checked } = methods;
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-
-  const [query, setQuery] = useState("");
-  const [debouced] = useDebounce(query, 500);
-  const [branchId, setBranchId] = useState(-1);
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
   );
@@ -56,12 +51,7 @@ export default function Home() {
     Number(periodId),
   );
 
-  const { data, isLoading: loadingRecord } = usePayrollRecords(
-    Number(periodId),
-  );
 
-  const queryClient = useQueryClient();
-  const { user } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -70,16 +60,17 @@ export default function Home() {
     router.push(`${newPath}?id=${periodId}`);
   };
 
-  if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
-    const newPath = pathname.replace("/view", "/edit");
-    router.push(`${newPath}?id=${periodId}`);
-  }
+  useEffect(() => {
+    if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
+      const newPath = pathname.replace("/view", "/edit");
+      router.push(`${newPath}?id=${periodId}`);
+    }
+  }, [periodData]);
 
-  const isLoading = loadingPeriod || loadingRecord;
+  const isLoading = loadingPeriod;
 
   let loadingMessage = "";
-  if (loadingRecord) loadingMessage = "Getting Records...";
-  else if (loadingPeriod) loadingMessage = "Loading Period...";
+  if (loadingPeriod) loadingMessage = "Loading Period...";
 
   return (
     <main className="w-full bg-gray-100 font-medium ">
@@ -121,19 +112,24 @@ export default function Home() {
           </div>
           <div className="mt-5 flex flex-row justify-between items-center   ">
             <div>
-              <p className="flex flex-row  items-center  text-black text-4xl font-bold">
-                {periodData?.data?.name} <p className="text-lg opacity-50">(read only)</p>
-              </p>
+              <span className="flex flex-row  items-center  text-black text-4xl font-bold">
+                {periodData?.data?.name}{" "}
+                <p className="text-lg opacity-50">(read only)</p>
+              </span>
               <p className="opacity-50 mt-2">
                 You cannot edit finalized payroll
               </p>
             </div>
 
             <div className="flex gap-3 h-fit">
-                <div className="flex items-center gap-2 px-4 rounded-md bg-green-100 text-green-700">
-                    <Icon icon="lets-icons:check-fill" fontSize={20}/>
-                    <p>FINALIZED</p>
-                </div>
+              <div className="flex items-center gap-2 px-4 rounded-md bg-green-50 text-green-800 border-green-200 border">
+                <Icon
+                  icon="icon-park-outline:check-one"
+                  className="text-green-600"
+                  fontSize={20}
+                />
+                <p className="font-medium">FINALIZED</p>
+              </div>
               <Button
                 startDecorator={<Icon icon="uil:unlock" fontSize={20} />}
                 color="warning"
@@ -205,7 +201,8 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-orange-700 font-medium">Period</p>
                   <p className="text-xl font-bold text-orange-900 mt-1">
-                    {new Date(periodData?.data?.start_date!).toDateString()}
+                    {new Date(periodData?.data?.start_period!).toDateString()} -{" "}
+                    {new Date(periodData?.data?.end_period!).toDateString()}
                   </p>
                 </div>
                 <div className="bg-orange-200 p-2 rounded-lg">
@@ -220,8 +217,128 @@ export default function Home() {
           </section>
         </section>
 
-        <section className="px-10 overflow-y-auto flex-1">
-          <div className="space-y-3 my-5">
+        <section className="px-10 overflow-y-auto flex-1 my-5 space-y-3 ">
+          <div className={`bg-green-50 p-4 border border-green-200 rounded-md`}>
+            <div className="flex flex-row gap-3">
+              <Icon
+                icon="icon-park-outline:check-one"
+                className={`text-green-600 mt-1`}
+                fontSize={20}
+              />
+              <div>
+                <p className="text-green-900">Payroll Successfully Finalized</p>
+                <p className="font-light text-xs text-green-700 ">
+                  Finalized by Admin User on 2025-12-02 14:30
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-start gap-4">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <Icon
+                  icon="mage:file-3"
+                  className="text-blue-600"
+                  fontSize={24}
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Generate Pay Slips
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Create PDF slips for all employees
+                </p>
+                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                  Generate{" "}
+                  <Icon
+                    icon="lsicon:right-outline"
+                    className="text-blue-600"
+                    fontSize={24}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-start gap-4">
+              <div className="bg-purple-100 p-3 rounded-lg">
+                <Icon
+                  icon="mynaui:send"
+                  className="text-purple-600"
+                  fontSize={24}
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Send Emails
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Email slips to employees
+                </p>
+                <button className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
+                  Send Emails{" "}
+                  <Icon
+                    icon="lsicon:right-outline"
+                    className="text-purple-600"
+                    fontSize={24}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-start gap-4">
+              <div className="bg-orange-100 p-3 rounded-lg">
+                <Icon
+                  icon="qlementine-icons:export-16"
+                  className="text-orange-600"
+                  fontSize={24}
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Export Report
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Excel or PDF format
+                </p>
+                <button className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1">
+                  Excel | PDF
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-start gap-4">
+              <div className="bg-indigo-100 p-3 rounded-lg">
+                <Icon
+                  icon="famicons:card-outline"
+                  className="text-indigo-600"
+                  fontSize={24}
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1">Payment</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Generate bank transfer file
+                </p>
+                <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                  To payment
+                  <Icon
+                    icon="lsicon:right-outline"
+                    className="text-indigo-600"
+                    fontSize={24}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3 ">
             {summaryData?.data?.records.map((record) => {
               return <SummaryCard key={record.id} record={record} />;
             })}

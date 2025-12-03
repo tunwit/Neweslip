@@ -36,7 +36,8 @@ export async function GET(
         name: payrollPeriodsTable.name,
         status: payrollPeriodsTable.status,
         shopId: payrollPeriodsTable.shopId,
-        start_date: payrollPeriodsTable.start_date,
+        start_period: payrollPeriodsTable.start_period,
+        end_period: payrollPeriodsTable.end_period,
         work_hours_per_day: payrollPeriodsTable.work_hours_per_day,
         workdays_per_month: payrollPeriodsTable.workdays_per_month,
       })

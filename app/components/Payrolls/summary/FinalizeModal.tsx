@@ -4,44 +4,65 @@ import UsersIcon from "@/assets/icons/UsersIcon";
 import { PAYROLL_PROBLEM } from "@/types/enum/enum";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { PayrollProblem } from "@/types/payrollProblem";
-import { moneyFormat } from "@/utils/formmatter";
+import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { showError } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
+import { useQueryClient } from "@tanstack/react-query";
+import { usePathname, useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useState } from "react";
 
 interface FinalizeModalPros {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  setFinalizing: Dispatch<SetStateAction<boolean>>;
   periodSummary?: PayrollPeriodSummary;
   problems: PayrollProblem[];
 }
 export default function FinalizeModal({
   open,
   setOpen,
+  setFinalizing,
   periodSummary,
   problems,
 }: FinalizeModalPros) {
   const { user } = useUser();
   const [confirmCheckbox, setConfirmCheckbox] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const queryClient = useQueryClient();
+
   const isCriticalPresence =
     problems.filter((p) => p.type === PAYROLL_PROBLEM.CRITICAL).length > 0;
 
   const finalizeHandler = async () => {
     if (!periodSummary || isCriticalPresence || !user) return;
+    setFinalizing(true);
     try {
       await finalizePayroll(periodSummary.id, user.id);
-      setOpen(false)
-    } catch (err){
-        showError(`Cannot finalize payroll ${err}`)
+      const newPath = pathname.replace("/summary", "/view");
+      router.push(`${newPath}?id=${periodSummary.id}`);
+      queryClient.invalidateQueries({
+        queryKey: ["payrollRecord", periodSummary.id],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["payrollPeriod", periodSummary.id],
+        exact: false,
+      });
+      setOpen(false);
+    } catch (err) {
+      showError(`Cannot finalize payroll ${err}`);
+    } finally {
+      setFinalizing(false);
     }
   };
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog sx={{ padding: 0, width: "50%" }}>
         <ModalClose />
-        <section className="bg-blue-100 px-6 py-4 border-b border-gray-200 flex items-center justify-between rounded-lg">
+        <section className="bg-blue-100 px-6 py-4 border-b border-gray-200 flex items-center justify-between rounded-t-lg">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 p-2 ">
               <Icon
@@ -70,7 +91,9 @@ export default function FinalizeModal({
                   <span className="text-sm">Period</span>
                 </div>
                 <span className="font-semibold text-gray-900">
-                  {periodSummary?.start_date}
+                  {dateFormat(new Date(periodSummary?.start_period || 0))}{" "}
+                  {" - "}
+                  {dateFormat(new Date(periodSummary?.end_period || 0))}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -172,9 +195,9 @@ export default function FinalizeModal({
                   <ul className="space-y-2">
                     {problems
                       .filter((p) => p.type === PAYROLL_PROBLEM.WARNNING)
-                      .map((p) => {
+                      .map((p, _) => {
                         return (
-                          <li className="text-sm text-yellow-800">
+                          <li key={_} className="text-sm text-yellow-800">
                             <span className="font-medium">
                               {p.employee.firstName} {p.employee.lastName} :
                             </span>{" "}
