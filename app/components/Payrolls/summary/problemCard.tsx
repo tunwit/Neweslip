@@ -11,7 +11,7 @@ interface problemCardProps {
 const style = {
   [PAYROLL_PROBLEM.WARNNING]: {
     icon: "ion:warning-outline",
-    color: "yellow",
+    color: "amber",
   },
   [PAYROLL_PROBLEM.CRITICAL]: {
     icon: "mdi:forbid",

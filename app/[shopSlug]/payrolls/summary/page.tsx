@@ -1,31 +1,12 @@
 "use client";
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import { Add } from "@mui/icons-material";
-import { useEffect, useMemo, useState } from "react";
-import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { useSelectedEmployees } from "@/app/components/Payrolls/new/hooks/useSelectedEmployee";
-import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { usePayrollRecords } from "@/hooks/usePayrollRecords";
 import {
   useParams,
   usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { useCheckBox } from "@/hooks/useCheckBox";
-import { getRandomPastelColor } from "@/utils/generatePastelColor";
-import BranchSelector from "@/widget/BranchSelector";
-import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
-import { Employee } from "@/types/employee";
-import { PayrollRecord } from "@/types/payrollRecord";
-import { deletePayrollRecords } from "@/app/action/deletePayrollRecord";
-import { showError, showSuccess } from "@/utils/showSnackbar";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRecordDetails } from "@/hooks/useRecordDetails";
-import { useUser } from "@clerk/nextjs";
 import { moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
@@ -36,30 +17,55 @@ import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import { usePayrollPeriodVerify } from "@/hooks/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
+import { Modal, ModalDialog } from "@mui/joy";
+import { useState } from "react";
+import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
 
 export default function Home() {
-  const methods = useCheckBox<number>("payrollRecordTable");
-  const { checked } = methods;
-
-  const [query, setQuery] = useState("");
   const periodId = useSearchParams().get("id");
-  const { data: periodData } = usePayrollPeriod(Number(periodId));
-  const queryClient = useQueryClient();
-  const { user } = useUser();
+  const [openFinalizeModal,setOpenFinalizeModal] = useState(false)
+  const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
+    Number(periodId),
+  );
 
-  const { data: summaryData } = usePayrollPeriodSummary(Number(periodId));
+  const { data: summaryData, isLoading: loadingSummary } =
+    usePayrollPeriodSummary(Number(periodId));
   const pathname = usePathname();
   const router = useRouter();
-  const { data: verify } = usePayrollPeriodVerify(Number(periodId));
-  console.log(verify?.data);
+  const { data: verify, isLoading: loadingVerify } = usePayrollPeriodVerify(
+    Number(periodId),
+  );
+  
 
   const backToEditHandler = () => {
     const newPath = pathname.replace("/summary", "/edit");
     router.push(`${newPath}?id=${periodId}`);
   };
 
+  const isLoading = loadingPeriod || loadingSummary || loadingVerify;
+
+  let loadingMessage = "";
+  if (loadingPeriod) loadingMessage = "Loading Period...";
+  if (loadingSummary) loadingMessage = "Calculating Payroll...";
+  if (loadingVerify) loadingMessage = "Verifying Payroll...";
+  console.log(summaryData);
+  
   return (
     <main className="w-full bg-gray-100 font-medium ">
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
+           
+            <p> {loadingMessage}</p>
+          </div>
+        </ModalDialog>
+      </Modal>
+      <FinalizeModal open={openFinalizeModal} setOpen={setOpenFinalizeModal} periodSummary={summaryData?.data} problems={verify?.data || []}/>
       <title>{periodData?.data?.name}</title>
       <div className="flex flex-col h-full overflow-y-auto flex-1">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
@@ -93,6 +99,7 @@ export default function Home() {
               <Button
                 sx={{ height: 40 }}
                 startDecorator={<Icon icon="gg:check-o" fontSize={20} />}
+                onClick={()=>setOpenFinalizeModal(true)}
               >
                 Finalize
               </Button>

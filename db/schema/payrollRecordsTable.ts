@@ -1,4 +1,4 @@
-import { date, decimal, int, mysqlEnum, mysqlTable, primaryKey, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
+import { date, decimal, index, int, mysqlEnum, mysqlTable, primaryKey, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 import { shopsTable } from "./shopsTable";
 import { relations } from "drizzle-orm";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
@@ -17,11 +17,13 @@ export const payrollRecordsTable = mysqlTable("payroll_records", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 },(t) => ({
+    payrollPeriodIndex: index("payroll_period_idx").on(t.payrollPeriodId),
     payrollPeriodEmployeeUnique: uniqueIndex("payroll_period_employee_unique").on(
         t.payrollPeriodId,
         t.employeeId
     )
 }));
+
 
 export const payrollRecordRelations = relations(payrollRecordsTable, ({ one, many }) => ({
   employee: one(employeesTable,{

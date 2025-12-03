@@ -19,6 +19,7 @@ interface PayrollTableProps<T extends { id: number }> {
   setIsDirty: Dispatch<SetStateAction<boolean>>;
   baseSalary?: Decimal;
   setBaseSalary?: Dispatch<SetStateAction<Decimal>>;
+  showFooter?:boolean
 }
 
 export default function PayrollTable<T>({
@@ -35,8 +36,10 @@ export default function PayrollTable<T>({
   setIsDirty,
   baseSalary,
   setBaseSalary,
+  showFooter=true
 }: PayrollTableProps<T>) {
   const [total, setTotal] = useState<Decimal>();
+  
   const updateValue = (id: number, val: number) => {
     setInputValues((prev) => ({
       ...prev,
@@ -204,7 +207,7 @@ export default function PayrollTable<T>({
             );
           })}
         </tbody>
-        <tfoot>
+        <tfoot hidden={!showFooter}>
           <tr>
             <th colSpan={showValueColumn ? 3 : 2}>Total</th>
             <th>{moneyFormat(total || 0)}</th>

@@ -2,6 +2,7 @@ import {
   date,
   datetime,
   decimal,
+  index,
   int,
   mysqlEnum,
   mysqlTable,
@@ -44,7 +45,11 @@ export const employeesTable = mysqlTable("employees", {
     .notNull(),
   status: mysqlEnum(EMPLOYEE_STATUS).default(EMPLOYEE_STATUS.ACTIVE).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+},
+  (table) => ({
+    branchIndex: index("employees_branch_idx").on(table.branchId),
+    shopIndex: index("employees_shop_idx").on(table.shopId),
+  }));
 
 export const employeeRelations = relations(employeesTable, ({ one }) => ({
   branch: one(branchesTable, {

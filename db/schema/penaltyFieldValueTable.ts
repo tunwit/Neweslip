@@ -1,6 +1,7 @@
 import {
   date,
   decimal,
+  index,
   int,
   mysqlEnum,
   mysqlTable,
@@ -25,7 +26,11 @@ export const penaltyFieldValueTable = mysqlTable("penalty_field_value", {
   value: decimal({ precision: 10, scale: 2 }).default("0.00").notNull(),
   amount: decimal({ precision: 10, scale: 2 }).default("0.00").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+},(table) => {
+    return {
+      payrollRecordIndex: index("payroll_record_idx").on(table.payrollRecordId),
+    };
+  });
 
 export const penaltyFieldValueRelations = relations(
   penaltyFieldValueTable,

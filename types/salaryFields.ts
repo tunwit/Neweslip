@@ -6,4 +6,4 @@ export type SalaryField = InferSelectModel<typeof salaryFieldsTable>
 
 export type NewSalaryField = InferInsertModel<typeof salaryFieldsTable>
 
-export type SalaryFieldGrouped = Record<string, SalaryField[]>;
+export type SalaryFieldGrouped = Record<keyof typeof SALARY_FIELD_DEFINATION_TYPE, SalaryField[]>;

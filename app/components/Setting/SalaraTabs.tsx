@@ -1,17 +1,16 @@
 import { Button, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
-import React from "react";
-import OTTable from "./Salary/OT/OTTable";
 import IncomeTab from "./Salary/Income/IncomeTab";
 import DeductionTab from "./Salary/Deduction/DeductionTab";
 import OTTab from "./Salary/OT/OTTab";
-import PenaltyTab from "./Salary/Penalty/PenaltyTab";
 import { useQueryClient } from "@tanstack/react-query";
+import DisplayOnlyTab from "./Salary/DisplayOnly/DIsplayOnlyTab";
+import PenaltyTab from "./Salary/Penalty/PenaltyTab";
 
 export default function SalaraTabs() {
-  const queryClient = useQueryClient()
-  queryClient.prefetchQuery({queryKey:["salaryFields"]})
-  queryClient.prefetchQuery({queryKey:["OTFields"]})
-  queryClient.prefetchQuery({queryKey:["penaltyFields"]})
+  const queryClient = useQueryClient();
+  queryClient.prefetchQuery({ queryKey: ["salaryFields"] });
+  queryClient.prefetchQuery({ queryKey: ["OTFields"] });
+  queryClient.prefetchQuery({ queryKey: ["penaltyFields"] });
 
   return (
     <>
@@ -34,6 +33,7 @@ export default function SalaraTabs() {
           <Tab>Deduction</Tab>
           <Tab>OT</Tab>
           <Tab>Penalty</Tab>
+          <Tab>Display Only</Tab>
         </TabList>
         <TabPanel value={0}>
           <IncomeTab />
@@ -46,6 +46,9 @@ export default function SalaraTabs() {
         </TabPanel>
         <TabPanel value={3}>
           <PenaltyTab />
+        </TabPanel>
+        <TabPanel value={4}>
+          <DisplayOnlyTab />
         </TabPanel>
       </Tabs>
     </>

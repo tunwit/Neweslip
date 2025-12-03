@@ -108,6 +108,9 @@ export default function PayrollEditEmployeeModal({
   const [penaltyAmount, setPenaltyAmount] = useState<
     Record<number, { value: number; amount: number }>
   >({});
+  const [displayAmount, setDisplayAmount] = useState<
+    Record<number, { amount: number }>
+  >({});
   const [baseSalary, setBaseSalary] = useState<Decimal>(new Decimal(0));
   const [isDirty, setIsDirty] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,7 +144,7 @@ export default function PayrollEditEmployeeModal({
     }, 1200);
 
     return () => clearTimeout(handler);
-  }, [incomeAmount, deductionAmount, otAmount, penaltyAmount, baseSalary]);
+  }, [incomeAmount, deductionAmount, otAmount, penaltyAmount,displayAmount, baseSalary]);
 
   if (!id || data === null) router.back();
 
@@ -156,6 +159,10 @@ export default function PayrollEditEmployeeModal({
           amount: data.amount,
         })),
         ...Object.entries(deductionAmount).map(([id, data]) => ({
+          id: Number(id),
+          amount: data.amount,
+        })),
+        ...Object.entries(displayAmount).map(([id, data]) => ({
           id: Number(id),
           amount: data.amount,
         })),
@@ -205,6 +212,7 @@ export default function PayrollEditEmployeeModal({
           >
             <Tabs aria-label="Basic tabs" defaultValue={0}>
               <TabList
+              tabFlex="auto"
                 disableUnderline
                 sx={{
                   [`& .${tabClasses.root}`]: {
@@ -223,6 +231,7 @@ export default function PayrollEditEmployeeModal({
                 <Tab color="danger">Deduction</Tab>
                 <Tab color="neutral">Overtime</Tab>
                 <Tab color="neutral">Absent</Tab>
+                <Tab color="neutral" sx={{ whiteSpace: 'nowrap' }}>Display Only</Tab>
                 <Tab color="warning">Summary</Tab>
               </TabList>
               <TabPanel value={0}>
@@ -304,7 +313,25 @@ export default function PayrollEditEmployeeModal({
                   setIsDirty={setIsDirty}
                 />
               </TabPanel>
-              <TabPanel value={4}>
+              <TabPanel value={4} keepMounted={true}>
+                <PayrollTable
+                  data={
+                    data?.data?.salaryValues.filter(
+                      (v) =>
+                        v.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED,
+                    ) ?? []
+                  }
+                  renderName={(item) => item.name}
+                  renderAmount={(item) => Number(item.amount)}
+                  amountValues={displayAmount}
+                  setInputValues={setDisplayAmount}
+                  setIsDirty={setIsDirty}
+                  baseSalary={baseSalary}
+                  setBaseSalary={setBaseSalary}
+                  showFooter={false}
+                />
+              </TabPanel>
+              <TabPanel value={5}>
                 <PayrollSummaryTab recordId={selectedRecord?.id || -1} />
               </TabPanel>
             </Tabs>

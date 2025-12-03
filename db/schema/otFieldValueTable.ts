@@ -1,6 +1,7 @@
 import {
   date,
   decimal,
+  index,
   int,
   mysqlEnum,
   mysqlTable,
@@ -27,7 +28,11 @@ export const otFieldValueTable = mysqlTable("ot_field_value", {
   value: decimal({ precision: 10, scale: 2 }).default("0.00").notNull(),
   amount: decimal({ precision: 10, scale: 2 }).default("0.00").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+},(table) => {
+    return {
+      payrollRecordIndex: index("payroll_record_idx").on(table.payrollRecordId),
+    };
+  },);
 
 export const otFieldValueRelations = relations(
   otFieldValueTable,

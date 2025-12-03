@@ -6,8 +6,6 @@ import Option from "@mui/joy/Option";
 import { Add } from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { useSelectedEmployees } from "@/app/components/Payrolls/new/hooks/useSelectedEmployee";
-import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { usePayrollRecords } from "@/hooks/usePayrollRecords";
 import {
   useParams,
@@ -31,6 +29,8 @@ import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
+import { Modal, ModalDialog } from "@mui/joy";
+import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -46,9 +46,13 @@ export default function Home() {
   );
   const periodId = useSearchParams().get("id");
 
-  const { data: periodData } = usePayrollPeriod(Number(periodId));
+  const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
+    Number(periodId),
+  );
 
-  const { data } = usePayrollRecords(Number(periodId));
+  const { data, isLoading: loadingRecord } = usePayrollRecords(
+    Number(periodId),
+  );
 
   const queryClient = useQueryClient();
   const { user } = useUser();
@@ -71,6 +75,12 @@ export default function Home() {
     router.push(`${newPath}?id=${periodId}`);
   };
 
+  const isLoading = loadingPeriod || loadingRecord;
+
+  let loadingMessage = "";
+  if (loadingRecord) loadingMessage = "Getting Records...";
+  else if (loadingPeriod) loadingMessage = "Loading Period...";
+
   return (
     <main className="w-full bg-gray-100 font-medium ">
       <PayrollsAddEmployeeModal
@@ -86,6 +96,19 @@ export default function Home() {
           setOpen={setOpenEdit}
         />
       )}
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
+
+            <p> {loadingMessage}</p>
+          </div>
+        </ModalDialog>
+      </Modal>
       <title>{periodData?.data?.name}</title>
       <div className="flex flex-col h-full">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
@@ -111,9 +134,7 @@ export default function Home() {
               >
                 Summary
               </Button>
-              <Button startDecorator={<Icon icon="gg:check-o" fontSize={20} />}>
-                Finalize
-              </Button>
+              
             </div>
           </div>
 
@@ -123,7 +144,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-blue-700 font-medium">Status</p>
                   <p className="text-xl font-bold text-blue-900 mt-1">
-                    {periodData?.data?.status}
+                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!] }
                   </p>
                 </div>
                 <div className="bg-blue-200 p-2 rounded-lg">
