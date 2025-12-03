@@ -32,6 +32,8 @@ import { useDebounce } from "use-debounce";
 import { Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
+import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
+import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -47,6 +49,9 @@ export default function Home() {
   );
   const periodId = useSearchParams().get("id");
 
+  const { data: summaryData, isLoading: loadingSummary } =
+    usePayrollPeriodSummary(Number(periodId));
+
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
@@ -60,26 +65,15 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const deleteHandler = async () => {
-    if (!user?.id) return;
-    try {
-      await deletePayrollRecords(checked, Number(periodId), user?.id);
-      queryClient.invalidateQueries({ queryKey: ["payrollRecord"] });
-      showSuccess(`Delete employee success`);
-    } catch (err: any) {
-      showError(`Delete employee failed \n ${err}`);
-    }
-  };
-
   const summaryHandler = () => {
     const newPath = pathname.replace("/edit", "/summary");
     router.push(`${newPath}?id=${periodId}`);
   };
 
-  if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
-      const newPath = pathname.replace("/edit", "/view");
-      router.push(`${newPath}?id=${periodId}`);
-    }
+  if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
+    const newPath = pathname.replace("/view", "/edit");
+    router.push(`${newPath}?id=${periodId}`);
+  }
 
   const isLoading = loadingPeriod || loadingRecord;
 
@@ -123,24 +117,31 @@ export default function Home() {
               {" "}
               Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
             </p>
-            <p className="text-blue-800">New Payrolls</p>
+            <p className="text-blue-800">View Payroll</p>
           </div>
-          <div className="mt-5 flex flex-row justify-between">
-            <p className="text-black text-4xl font-bold">
-              {periodData?.data?.name}
-            </p>
-            <div className="flex gap-3">
+          <div className="mt-5 flex flex-row justify-between items-center   ">
+            <div>
+              <p className="flex flex-row  items-center  text-black text-4xl font-bold">
+                {periodData?.data?.name} <p className="text-lg opacity-50">(read only)</p>
+              </p>
+              <p className="opacity-50 mt-2">
+                You cannot edit finalized payroll
+              </p>
+            </div>
+
+            <div className="flex gap-3 h-fit">
+                <div className="flex items-center gap-2 px-4 rounded-md bg-green-100 text-green-700">
+                    <Icon icon="lets-icons:check-fill" fontSize={20}/>
+                    <p>FINALIZED</p>
+                </div>
               <Button
-                startDecorator={
-                  <Icon icon="fluent:list-bar-24-regular" fontSize={20} />
-                }
-                color="neutral"
+                startDecorator={<Icon icon="uil:unlock" fontSize={20} />}
+                color="warning"
                 variant="outlined"
                 onClick={summaryHandler}
               >
-                Summary
+                Unlock
               </Button>
-              
             </div>
           </div>
 
@@ -150,7 +151,7 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-blue-700 font-medium">Status</p>
                   <p className="text-xl font-bold text-blue-900 mt-1">
-                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!] }
+                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]}
                   </p>
                 </div>
                 <div className="bg-blue-200 p-2 rounded-lg">
@@ -220,52 +221,10 @@ export default function Home() {
         </section>
 
         <section className="px-10 overflow-y-auto flex-1">
-          <div className="mt-8 flex flex-row justify-between bg-white p-4 rounded-md shadow">
-            <div className="flex flex-row gap-3">
-              <div className="w-96 ">
-                <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
-                  <Icon
-                    className="text-[#424242]"
-                    icon={"material-symbols:search-rounded"}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search name, branch"
-                    className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="h-5">
-              <Button
-                onClick={() => setOpenAdd(true)}
-                startDecorator={<Add sx={{ fontSize: "20px" }} />}
-                sx={{ fontSize: "13px", "--Button-gap": "5px" }}
-              >
-                Add Employee
-              </Button>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center pb-10">
-            <div className="flex flex-row-reverse">
-              <Button
-                disabled={checked ? checked.length === 0 : true}
-                variant="plain"
-                onClick={deleteHandler}
-              >
-                <p className="underline font-medium">delete</p>
-              </Button>
-            </div>
-
-            <PeriodEmployeeTable
-              searchQuery={debouced}
-              checkBoxMethod={methods}
-              periodData={periodData?.data}
-              records={data?.data || []}
-              setSelected={setSelectedRecord}
-              setOpenEdit={setOpenEdit}
-            />
+          <div className="space-y-3 my-5">
+            {summaryData?.data?.records.map((record) => {
+              return <SummaryCard key={record.id} record={record} />;
+            })}
           </div>
         </section>
       </div>

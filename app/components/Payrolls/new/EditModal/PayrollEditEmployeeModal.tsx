@@ -139,12 +139,23 @@ export default function PayrollEditEmployeeModal({
     setState(0);
     const handler = setTimeout(async () => {
       setState(1);
-      await saveDataHandler();
+      try {
+        await saveDataHandler();
+      } catch (err) {
+        showError(`Cannot save data ${err}`)
+      }
       setState(2);
     }, 1200);
 
     return () => clearTimeout(handler);
-  }, [incomeAmount, deductionAmount, otAmount, penaltyAmount,displayAmount, baseSalary]);
+  }, [
+    incomeAmount,
+    deductionAmount,
+    otAmount,
+    penaltyAmount,
+    displayAmount,
+    baseSalary,
+  ]);
 
   if (!id || data === null) router.back();
 
@@ -212,7 +223,7 @@ export default function PayrollEditEmployeeModal({
           >
             <Tabs aria-label="Basic tabs" defaultValue={0}>
               <TabList
-              tabFlex="auto"
+                tabFlex="auto"
                 disableUnderline
                 sx={{
                   [`& .${tabClasses.root}`]: {
@@ -231,7 +242,9 @@ export default function PayrollEditEmployeeModal({
                 <Tab color="danger">Deduction</Tab>
                 <Tab color="neutral">Overtime</Tab>
                 <Tab color="neutral">Absent</Tab>
-                <Tab color="neutral" sx={{ whiteSpace: 'nowrap' }}>Display Only</Tab>
+                <Tab color="neutral" sx={{ whiteSpace: "nowrap" }}>
+                  Display Only
+                </Tab>
                 <Tab color="warning">Summary</Tab>
               </TabList>
               <TabPanel value={0}>

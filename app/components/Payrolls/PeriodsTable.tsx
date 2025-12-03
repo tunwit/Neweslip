@@ -161,7 +161,7 @@ export default function PeriodsTable({
                   <div className="flex items-center justify-end gap-3">
                     {getStatusBadge(payroll.status)}
                     <Link
-                      href={`${pathname}/edit?id=${payroll.id}`}
+                      href={`${pathname}/${payroll.status === PAY_PERIOD_STATUS.DRAFT ? "edit" : "view"}?id=${payroll.id}`}
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
                     >
                       {editable ? "Edit" : "View"}

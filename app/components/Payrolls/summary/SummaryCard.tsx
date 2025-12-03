@@ -49,7 +49,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
           <div className="grid grid-cols-[1fr_auto] gap-5 items-center">
             <div className="text-right">
               <p className="text-sm text-gray-500 uppercase mb-1">Net Salary</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-2xl font-semibold text-gray-900">
                 ฿ {moneyFormat(record.totals.net)}
               </p>
             </div>
@@ -304,7 +304,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                       <p className="text-sm text-gray-500 uppercase mb-1">
                         Net Salary
                       </p>
-                      <p className="text-3xl font-bold text-gray-900">
+                      <p className="text-3xl font-semibold text-gray-900">
                         {moneyFormat(record.totals.net)}
                       </p>
                     </div>

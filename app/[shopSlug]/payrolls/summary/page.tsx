@@ -13,7 +13,10 @@ import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import {
+  PAY_PERIOD_STATUS,
+  SALARY_FIELD_DEFINATION_TYPE,
+} from "@/types/enum/enum";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import { usePayrollPeriodVerify } from "@/hooks/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
@@ -23,7 +26,7 @@ import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
-  const [openFinalizeModal,setOpenFinalizeModal] = useState(false)
+  const [openFinalizeModal, setOpenFinalizeModal] = useState(false);
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
@@ -35,7 +38,10 @@ export default function Home() {
   const { data: verify, isLoading: loadingVerify } = usePayrollPeriodVerify(
     Number(periodId),
   );
-  
+  if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
+    const newPath = pathname.replace("/summary", "/view");
+    router.push(`${newPath}?id=${periodId}`);
+  }
 
   const backToEditHandler = () => {
     const newPath = pathname.replace("/summary", "/edit");
@@ -49,7 +55,7 @@ export default function Home() {
   if (loadingSummary) loadingMessage = "Calculating Payroll...";
   if (loadingVerify) loadingMessage = "Verifying Payroll...";
   console.log(summaryData);
-  
+
   return (
     <main className="w-full bg-gray-100 font-medium ">
       <Modal open={isLoading}>
@@ -60,12 +66,17 @@ export default function Home() {
               className="animate-spin"
               fontSize={50}
             />
-           
+
             <p> {loadingMessage}</p>
           </div>
         </ModalDialog>
       </Modal>
-      <FinalizeModal open={openFinalizeModal} setOpen={setOpenFinalizeModal} periodSummary={summaryData?.data} problems={verify?.data || []}/>
+      <FinalizeModal
+        open={openFinalizeModal}
+        setOpen={setOpenFinalizeModal}
+        periodSummary={summaryData?.data}
+        problems={verify?.data || []}
+      />
       <title>{periodData?.data?.name}</title>
       <div className="flex flex-col h-full overflow-y-auto flex-1">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
@@ -99,7 +110,7 @@ export default function Home() {
               <Button
                 sx={{ height: 40 }}
                 startDecorator={<Icon icon="gg:check-o" fontSize={20} />}
-                onClick={()=>setOpenFinalizeModal(true)}
+                onClick={() => setOpenFinalizeModal(true)}
               >
                 Finalize
               </Button>
