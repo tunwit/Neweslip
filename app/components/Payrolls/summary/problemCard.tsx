@@ -11,11 +11,13 @@ interface problemCardProps {
 const style = {
   [PAYROLL_PROBLEM.WARNNING]: {
     icon: "ion:warning-outline",
-    color: "amber",
+    textColor: "bg-amber-50",
+    borderColor: "border-amber-200",
   },
   [PAYROLL_PROBLEM.CRITICAL]: {
     icon: "mdi:forbid",
-    color: "red",
+    textColor: "bg-red-50",
+    borderColor: "border-red-200",
   },
 };
 export default function ProblemCard({
@@ -25,12 +27,12 @@ export default function ProblemCard({
 }: problemCardProps) {
   return (
     <div
-      className={`bg-${style[type].color}-50 p-4 border border-${style[type].color}-200 rounded-md`}
+      className={`${style[type].textColor} ${style[type].borderColor} p-4 border  rounded-md`}
     >
       <div className="flex flex-row items-center gap-3">
         <Icon
           icon={style[type].icon}
-          className={`text-${style[type].color}-500`}
+          className={`${style[type].textColor}`}
           fontSize={20}
         />
         <div>

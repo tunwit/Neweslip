@@ -36,7 +36,7 @@ export default function Home() {
   const [creatingPeriod, setCreatingPeriod] = useState(false);
 
   const pathname = usePathname();
-  const { data } = usePayrollPeriods(id);
+  const { data } = usePayrollPeriods(id || -1);
 
   const newHandler = async () => {
     setCreatingPeriod(true);
@@ -100,7 +100,6 @@ export default function Home() {
                   type="text"
                   placeholder="Search name, branch"
                   className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
-                  onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
             </div>

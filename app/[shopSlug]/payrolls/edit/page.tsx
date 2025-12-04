@@ -142,6 +142,22 @@ export default function Home() {
     }
   }, [periodData]);
 
+  const onExport = async () => {
+    const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `payroll_summary_${Date.now()}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
   const isLoading = loadingPeriod || loadingRecord;
 
   let loadingMessage = "";
@@ -200,7 +216,7 @@ export default function Home() {
                 }
                 color="neutral"
                 variant="outlined"
-                onClick={summaryHandler}
+                onClick={onExport}
               >
                 Export
               </Button>

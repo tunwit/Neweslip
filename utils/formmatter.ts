@@ -22,6 +22,16 @@ export function dateFormat(date: Date) {
   }).format(date);
 }
 
+export function dateTimeFormat(date: Date) {
+  return new Intl.DateTimeFormat("th-TH", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 export function formatModifiedTime(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();

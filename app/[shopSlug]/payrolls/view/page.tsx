@@ -51,6 +51,22 @@ export default function Home() {
     Number(periodId),
   );
 
+  const onExportAsExcel = async () => {
+    const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `payroll_summary_${Date.now()}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
 
   const router = useRouter();
   const pathname = usePathname();
@@ -306,9 +322,21 @@ export default function Home() {
                 <p className="text-sm text-gray-600 mb-3">
                   Excel or PDF format
                 </p>
-                <button className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1">
-                  Excel | PDF
-                </button>
+                <span className="flex flex-row gap-2">
+                  <button
+                    className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1"
+                    onClick={onExportAsExcel}
+                  >
+                    Excel
+                  </button>
+                  <p className="text-gray-400">|</p>
+                  <button
+                    className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1"
+                    onClick={onExportAsExcel}
+                  >
+                    Excel PDF
+                  </button>
+                </span>
               </div>
             </div>
           </div>

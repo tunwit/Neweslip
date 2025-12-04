@@ -53,6 +53,7 @@ export default function Home() {
     router.push(`${newPath}?id=${periodId}`);
   };
 
+  
   const isLoading =
     loadingPeriod || loadingSummary || loadingVerify || finalizing;
 
