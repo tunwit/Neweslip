@@ -107,7 +107,7 @@ export default function PeriodsTable({
                 fontSize={15}
               />
             )}
-            <h2 className="font-semibold text-gray-900">{title}</h2>
+            <h2 className="font-medium text-gray-900">{title}</h2>
             <span className="text-sm text-gray-500">({periods.length})</span>
           </div>
           {checked.length > 0 && (

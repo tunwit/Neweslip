@@ -12,6 +12,7 @@ import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { NewOtField, OtField } from "@/types/otField";
 import { NewPayrollPeriod, PayrollPeriod } from "@/types/payrollPeriod";
+import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 
 export async function updatePayrollPeriod(
   id: PayrollPeriod["id"],
@@ -27,6 +28,10 @@ export async function updatePayrollPeriod(
   if (!period) {
     throw new Error("Period not found");
   }
+
+  const isNotDraft = period.status !== PAY_PERIOD_STATUS.DRAFT;
+
+  if (isNotDraft) throw new Error("Cannot edit finalized period");
 
   const ownerCheck = await isOwner(period.shopId, userId);
   if (!ownerCheck) {

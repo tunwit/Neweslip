@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 button {
@@ -94,6 +97,7 @@ input[type="number"] {
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+   
 }
 
 .dark {

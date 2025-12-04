@@ -1,15 +1,7 @@
 "use client";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CreateStepper from "@/app/components/Employees/new/CreateStepper";
-import { useEffect, useState } from "react";
-import PersonalForm from "@/app/components/Employees/new/PersonalForm";
-import AddressForm from "@/app/components/Employees/new/AddressForm";
-import ContractForm from "@/app/components/Employees/new/ContractForm";
-import { Breadcrumbs, Link } from "@mui/joy";
-import { KeyboardArrowRight } from "@mui/icons-material";
+import {  useState } from "react";
 import FormSection from "@/app/components/Employees/new/FormSection";
-import SnackBar from "@/widget/SnackBar";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);

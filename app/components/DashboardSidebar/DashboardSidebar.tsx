@@ -90,7 +90,6 @@ export default function DashboardSidebar() {
           <div className="my-5 px-3">
             <hr className="border-t border-[#747474] h-[2px]" />
           </div>
-
           <p className="pl-4 text-xs text-[#797979] font-bold mb-4">
             DASHBOARD
           </p>
