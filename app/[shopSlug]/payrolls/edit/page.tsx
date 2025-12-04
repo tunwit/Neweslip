@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { Add } from "@mui/icons-material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
 import { usePayrollRecords } from "@/hooks/usePayrollRecords";
 import {
@@ -74,6 +74,7 @@ export default function Home() {
   const { data, isLoading: loadingRecord } = usePayrollRecords(
     Number(periodId),
   );
+  const didMount = useRef(false);
 
   const deleteHandler = async () => {
     if (!user?.id) return;
@@ -118,16 +119,29 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (!periodData?.data) return; //prevent firing too early
+    if (!titleDebounced || !debouncedDateRange) return;
+
     saveDataHandler();
+    queryClient.invalidateQueries({
+      queryKey: ["payrollPeriod", periodId],
+      exact: false,
+    });
   }, [titleDebounced, debouncedDateRange]);
 
   useEffect(() => {
+    if (!periodData?.data) return;
+    setPeriodTitle(periodData.data.name);
+    setDateRange({
+      from: periodData.data.start_period,
+      to: periodData.data.end_period,
+    });
     if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/edit", "/view");
       router.push(`${newPath}?id=${periodId}`);
     }
   }, [periodData]);
-  
+
   const isLoading = loadingPeriod || loadingRecord;
 
   let loadingMessage = "";
@@ -179,7 +193,17 @@ export default function Home() {
               onChange={(e) => setPeriodTitle(e.target.value)}
               className="text-black text-3xl font-bold p-2"
             ></input>
-            <div className="flex gap-3 z-10">
+            <div className="flex gap-3 z-10 h-5">
+              <Button
+                startDecorator={
+                  <Icon icon="qlementine-icons:export-16" fontSize={20} />
+                }
+                color="neutral"
+                variant="outlined"
+                onClick={summaryHandler}
+              >
+                Export
+              </Button>
               <Button
                 startDecorator={
                   <Icon icon="fluent:list-bar-24-regular" fontSize={20} />

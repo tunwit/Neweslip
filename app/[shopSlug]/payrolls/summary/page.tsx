@@ -41,6 +41,7 @@ export default function Home() {
     Number(periodId),
   );
   useEffect(() => {
+    if(!summaryData?.data) return
     if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodId}`);

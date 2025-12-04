@@ -245,7 +245,7 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Generate Pay Slips
+                  Regenerate Pay Slips
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
                   Create PDF slips for all employees

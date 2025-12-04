@@ -233,7 +233,7 @@ export default function FinalizeModal({
                         (p) => p.type === PAYROLL_PROBLEM.CRITICAL,
                       ).length
                     }{" "}
-                    Issue(s) Detected
+                    Critical Issue(s) Detected
                   </h4>
                   <ul className="space-y-2">
                     {problems
