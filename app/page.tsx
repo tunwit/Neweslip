@@ -12,13 +12,12 @@ import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import SnackBar from "../widget/SnackBar";
 import { useQueryClient } from "@tanstack/react-query";
+import { Modal, ModalDialog } from "@mui/joy";
 
 export default function Home() {
-  const queryClient = useQueryClient()
-  queryClient.prefetchQuery({queryKey:["shop"]})
+  const queryClient = useQueryClient();
+  queryClient.prefetchQuery({ queryKey: ["shop"] });
   const { data, isLoading, isSuccess, isError, error } = useShop();
-  
-  if (isLoading) return <p>Loading...</p>;
 
   if (isError) {
     const status = (error as any)?.status;
@@ -28,16 +27,30 @@ export default function Home() {
     return <p>Error: {(error as Error).message}</p>;
   }
 
-   if (data && data.data && data.data.length > 0) {
-    const shopslug = createSlug(data.data[0].name,String(data.data[0].id));
-    redirect(`/${shopslug}/employees`);
-  } else {
-    redirect(`/no-shop`);
-  }
+  useEffect(() => {
+    if (data && data.data && data.data.length > 0) {
+      const shopslug = createSlug(data.data[0].name, String(data.data[0].id));
+      redirect(`/${shopslug}/employees`);
+    } else {
+      redirect(`/no-shop`);
+    }
+  }, [isSuccess]);
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
-      you have no shop
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
+
+            <p> Loading Shop</p>
+          </div>
+        </ModalDialog>
+      </Modal>
     </main>
   );
 }

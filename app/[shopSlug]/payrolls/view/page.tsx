@@ -34,11 +34,14 @@ import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
+import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openPayslipGenerate, setOpenPayslipGenerate] = useState(false);
+
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
   );
@@ -103,6 +106,14 @@ export default function Home() {
           setOpen={setOpenEdit}
         />
       )}
+      {openPayslipGenerate && summaryData?.data && (
+        <PaySlipGenerateModal
+          summaryData={summaryData.data}
+          open={openPayslipGenerate}
+          setOpen={setOpenPayslipGenerate}
+        />
+      )}
+
       <Modal open={isLoading}>
         <ModalDialog>
           <div className="flex flex-col items-center justify-center">
@@ -128,9 +139,9 @@ export default function Home() {
           </div>
           <div className="mt-5 flex flex-row justify-between items-center   ">
             <div>
-              <span className="flex flex-row  items-center  text-black text-4xl font-bold">
-                {periodData?.data?.name}{" "}
-                <p className="text-lg opacity-50">(read only)</p>
+              <span className="flex flex-row gap-3  items-center  text-black text-4xl font-bold">
+                <p>{periodData?.data?.name}</p>
+                <p className="text-lg opacity-50 font-light">(read only)</p>
               </span>
               <p className="opacity-50 mt-2">
                 You cannot edit finalized payroll
@@ -261,12 +272,15 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Regenerate Pay Slips
+                  Generate Pay Slips
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
                   Create PDF slips for all employees
                 </p>
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                <button
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                  onClick={() => setOpenPayslipGenerate(true)}
+                >
                   Generate{" "}
                   <Icon
                     icon="lsicon:right-outline"

@@ -107,7 +107,16 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     row["Deduction"] = rec.totals.totalDeduction;
     row["Net"] = rec.totals.net;
 
-    // initialize other columns as empty
+    /* PRE-INITALIZE ALL DYNAMIC FIELDS WITH 0 */
+    [
+      ...incomeCols,
+      ...otCols,
+      ...deductionCols,
+      ...penaltyCols,
+      ...nonCalcCols,
+    ].forEach((col) => {
+      row[col] = 0; // default = 0
+    });
 
     rec.fields
       .filter((r) => r.type === SALARY_FIELD_DEFINATION_TYPE.INCOME)
