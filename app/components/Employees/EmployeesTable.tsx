@@ -61,7 +61,19 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
         <tbody>
           {isLoading && (
             <tr className="text-center">
-              <td colSpan={6}>Loading...</td>
+              <td
+                colSpan={6}
+                className="text-center"
+              >
+                <span className="flex items-center gap-2 w-full justify-center">
+                  <Icon
+                    icon={"mynaui:spinner"}
+                    className="animate-spin"
+                    fontSize={25}
+                  />
+                  <p>Loading...</p>
+                </span>
+              </td>
             </tr>
           )}
 

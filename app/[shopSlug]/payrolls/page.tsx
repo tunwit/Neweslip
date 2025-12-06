@@ -77,7 +77,7 @@ export default function Home() {
         </ModalDialog>
       </Modal>
       <section className="px-10 pb-5 bg-white w-full border-b border-gray-200">
-        <div className=" flex flex-row text-[#424242] text-xs pt-5 ">
+        <div className=" flex flex-row text-[#424242] text-xs pt-10 ">
           <p>
             {" "}
             Haris {">"} Dashboard {">"} &nbsp;

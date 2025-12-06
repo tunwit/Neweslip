@@ -81,9 +81,19 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {isLoading && (
-              <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer">
-                <td colSpan={columns.length + (editColumn ? 2 : 1)}>
-                  Loading...
+              <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer ">
+                <td
+                  colSpan={columns.length + (editColumn ? 2 : 1)}
+                  className="text-center"
+                >
+                  <span className="flex items-center gap-2 w-full justify-center">
+                    <Icon
+                      icon={"mynaui:spinner"}
+                      className="animate-spin"
+                      fontSize={25}
+                    />
+                    <p>Loading...</p>
+                  </span>
                 </td>
               </tr>
             )}

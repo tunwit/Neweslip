@@ -28,8 +28,8 @@ export default function DocumentTableElement<T extends { id: number; key: string
   };
 
   return (
-    <tr key={doc.id}>
-      <td>
+    <tr key={doc.id} className="h-14 hover:bg-gray-50 transition-colors cursor-pointer">
+      <td className="pl-6">
         <div className="flex items-center gap-2 fill-red-200">
           <img src={getFileIcon(doc.fileName)} alt="Icon" width={20} height={20} />
           <Link href="#" onClick={async () => window.open(await getPresignedUrl(doc.key, 3600,false), "_blank")} className="text-blue-600 underline">
@@ -45,7 +45,7 @@ export default function DocumentTableElement<T extends { id: number; key: string
         </div>
       </td>
       <td>{formatBytes(doc.size || 0)}</td>
-      <td>
+      <td className="pr-6">
         <Dropdown>
           <MenuButton size="sm" slots={{ root: IconButton }} slotProps={{ root: { variant: "plain", color: "neutral" } }}>
             <MoreVert />

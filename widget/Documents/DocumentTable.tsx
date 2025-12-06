@@ -29,9 +29,9 @@ export default function DocumentTable<
   const [open, setOpen] = useState(false);
   const [openRename, setOpenRename] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<T | null>(null);
-  
+
   return (
-    <div>
+    <div className="w-full">
       {openRename && selectedDoc && (
         <RenameModal
           doc={selectedDoc}
@@ -50,7 +50,7 @@ export default function DocumentTable<
         />
       )}
 
-      <div className="bg-white rounded-md border border-gray-300 py-4 px-4 mb-3">
+      <div className="">
         <section className="flex justify-between items-center mb-2">
           <p className="font-semibold">{title}</p>
           <Button
@@ -65,35 +65,45 @@ export default function DocumentTable<
           </Button>
         </section>
 
-        <Table stickyHeader stickyFooter noWrap>
-          <thead>
-            <tr>
-              <th className="w-[50%]">Name</th>
-              <th className="w-[15%]">Modified</th>
-              <th className="w-[20%]">Uploaded by</th>
-              <th className="w-[15%]">Size</th>
-              <th className="w-[10%]"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.length === 0 && (
-              <tr>
-                <td colSpan={5} className="text-center">
-                  <p>No document found</p>
-                </td>
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="bg-gray-50 border border-gray-200 w-full">
+            <thead className=" bg-gray-50 border border-gray-200">
+              <tr className="bg-gray-100 h-15 rounded-t-md text-left">
+                <th className="w-[45%] font-light text-sm whitespace-nowrap pl-6">
+                  Name
+                </th>
+                <th className="w-[20%] font-light text-sm whitespace-nowrap">
+                  Modified
+                </th>
+                <th className="w-[20%] font-light text-sm whitespace-nowrap">
+                  Uploaded by
+                </th>
+                <th className="w-[15%] font-light text-sm whitespace-nowrap">
+                  Size
+                </th>
+                <th className="w-[10%] font-light text-sm whitespace-nowrap pr-6"></th>
               </tr>
-            )}
-            {data.map((doc) => (
-              <DocumentTableElement
-                key={doc.id}
-                doc={doc}
-                setSelectedDoc={setSelectedDoc}
-                setOpenRename={setOpenRename}
-                onDelete={() => onDelete?.(doc)}
-              />
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.length === 0 && (
+                <tr>
+                  <td colSpan={5} className=" h-16 text-center">
+                    <p>No document found</p>
+                  </td>
+                </tr>
+              )}
+              {data.map((doc) => (
+                <DocumentTableElement
+                  key={doc.id}
+                  doc={doc}
+                  setSelectedDoc={setSelectedDoc}
+                  setOpenRename={setOpenRename}
+                  onDelete={() => onDelete?.(doc)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
