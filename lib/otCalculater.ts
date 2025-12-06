@@ -43,8 +43,7 @@ export function calculateOT(
     }
   }
 
-  console.log(value,baseRate.toNumber(),decimalRate.toNumber());
-  
+
   const result = new Decimal(value).mul(baseRate).mul(decimalRate) || 0;
 
   return Number(result.toFixed(2));

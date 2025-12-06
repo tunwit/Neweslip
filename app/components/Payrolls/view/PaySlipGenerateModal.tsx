@@ -13,6 +13,7 @@ import { Modal, ModalDialog } from "@mui/joy";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { showError } from "@/utils/showSnackbar";
 interface PaySlipGenerateModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -24,123 +25,77 @@ export default function PaySlipGenerateModal({
   setOpen,
 }: PaySlipGenerateModalProps) {
   const [showModal, setShowModal] = useState(true);
-  const [loadingStates, setLoadingStates] = useState({});
+  const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>(
+    {},
+  );
   const [downloadingAll, setDownloadingAll] = useState(false);
 
-  const payrollData = {
-    id: "PAY-2025-001",
-    period: "Mon Dec 01 2025",
+  const getBlob = async (recordId: number) => {
+    const response = await fetch(`/api/payroll/records/${recordId}/payslip`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const blob = await response.blob();
+    return blob;
   };
 
-  const employees = [
-    {
-      id: 1,
-      name: "เอมฤดี สมรักษ์",
-      nickname: "เอม",
-      branch: "ป่าตกกรีด",
-      email: "aom@company.com",
-      amount: 15000.0,
-    },
-    {
-      id: 2,
-      name: "สุขสันต์ ระยับ",
-      nickname: "นัท",
-      branch: "รามอินทรา",
-      email: "nat@company.com",
-      amount: 0.0,
-    },
-    {
-      id: 3,
-      name: "สมชาย วงศ์สุข",
-      nickname: "ชาย",
-      branch: "ป่าตกกรีด",
-      email: "chai@company.com",
-      amount: 17800.0,
-    },
-  ];
+  const getAllBlob = async (periodId: number) => {
+    const response = await fetch(`/api/payroll/periods/${periodId}/payslips`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
 
-  // const handlePreview = async (employeeId) => {
-  //   setLoadingStates(prev => ({ ...prev, [`preview-${employeeId}`]: true }));
+    const blob = await response.blob();
+    return blob;
+  };
 
-  //   try {
-  //     // Call API to generate pay slip
-  //     const response = await fetch(`/api/payroll/${payrollData.id}/payslip/${employeeId}`, {
-  //       method: 'GET'
-  //     });
+  const onPreview = async (recordId: number) => {
+    const blob = await getBlob(recordId);
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, "_blank");
+    window.URL.revokeObjectURL(url);
+  };
 
-  //     if (!response.ok) throw new Error('Failed to generate pay slip');
-
-  //     // Open in new tab
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     window.open(url, '_blank');
-
-  //     // Clean up
-  //     setTimeout(() => window.URL.revokeObjectURL(url), 100);
-  //   } catch (error) {
-  //     console.error('Preview error:', error);
-  //     alert('Failed to preview pay slip');
-  //   } finally {
-  //     setLoadingStates(prev => ({ ...prev, [`preview-${employeeId}`]: false }));
-  //   }
-  // };
-
-  // const handleDownload = async (employeeId, employeeName) => {
-  //   setLoadingStates(prev => ({ ...prev, [`download-${employeeId}`]: true }));
-
-  //   try {
-  //     const response = await fetch(`/api/payroll/${payrollData.id}/payslip/${employeeId}`, {
-  //       method: 'GET'
-  //     });
-
-  //     if (!response.ok) throw new Error('Failed to generate pay slip');
-
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement('a');
-  //     a.href = url;
-  //     a.download = `PaySlip_${employeeName}_${payrollData.period}.xlsx`;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //     window.URL.revokeObjectURL(url);
-
-  //     alert('✅ Pay slip downloaded successfully!');
-  //   } catch (error) {
-  //     console.error('Download error:', error);
-  //     alert('❌ Failed to download pay slip');
-  //   } finally {
-  //     setLoadingStates(prev => ({ ...prev, [`download-${employeeId}`]: false }));
-  //   }
-  // };
-
-  const handleDownloadAll = async () => {
-    setDownloadingAll(true);
-
+  const onDownloadIndividule = async (recordId: number) => {
+    setLoadingStates((prev) => ({ ...prev, [recordId]: true }));
     try {
-      const response = await fetch(
-        `/api/payroll/${payrollData.id}/payslips/all`,
-        {
-          method: "POST",
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to generate pay slips");
-
-      const blob = await response.blob();
+      const blob = await getBlob(recordId);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `PaySlips_${payrollData.period}.zip`;
+      a.download = `payslip${Date.now()}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+    } catch {
+      showError("Download payslip failed");
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [recordId]: false }));
+    }
+  };
 
-      alert("✅ All pay slips downloaded successfully!");
-    } catch (error) {
-      console.error("Download all error:", error);
-      alert("❌ Failed to download pay slips");
+  const handleDownloadAll = async (periodId: number) => {
+    setDownloadingAll(true);
+    try {
+      const blob = await getAllBlob(periodId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const start = new Date(summaryData.start_period)
+        .toISOString()
+        .split("T")[0];
+
+      const end = new Date(summaryData.end_period).toISOString().split("T")[0];
+
+      a.download = `payslip_${start}_to_${end}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      showError("Download payslip failed");
     } finally {
       setDownloadingAll(false);
     }
@@ -219,7 +174,7 @@ export default function PaySlipGenerateModal({
                   <div className="flex gap-2 flex-shrink-0">
                     {/* Preview */}
                     <button
-                      onClick={() => {}}
+                      onClick={() => onPreview(record.id)}
                       className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       title="Preview"
                     >
@@ -232,10 +187,15 @@ export default function PaySlipGenerateModal({
 
                     {/* Download */}
                     <button
+                      onClick={() => onDownloadIndividule(record.id)}
                       className="p-2 border border-blue-300 bg-blue-50 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       title="Download"
                     >
-                      <Download size={18} className="text-blue-600" />
+                      {loadingStates[record.id] ? (
+                        <Loader2 size={18} className="animate-spin text-blue-600" />
+                      ) : (
+                        <Download size={18} className="text-blue-600" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -267,7 +227,7 @@ export default function PaySlipGenerateModal({
                 Close
               </button>
               <button
-                onClick={handleDownloadAll}
+                onClick={() => handleDownloadAll(summaryData.id)}
                 disabled={downloadingAll}
                 className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium transition-colors"
               >
@@ -289,7 +249,7 @@ export default function PaySlipGenerateModal({
 
         {/* Loading Overlay for Download All */}
         {downloadingAll && (
-          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/25 backdrop-blur-xs  rounded-lg  flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 flex flex-col items-center gap-4">
               <Loader2 size={48} className="animate-spin text-blue-600" />
               <div className="text-center">

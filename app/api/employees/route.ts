@@ -121,9 +121,6 @@ export async function GET(request: NextRequest) {
       ({ totalCount, ...employee }) => employee as EmployeeWithShop
     );
 
-    console.log("Employees fetched:", employees.length);
-    console.log("Total count:", total);
-
     return successPaginationResponse(employees, {
       page,
       pageSize: limit,
