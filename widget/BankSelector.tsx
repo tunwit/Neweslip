@@ -19,6 +19,8 @@ const banks = [
   { label: "ไทยพาณิชย์", code: "scb" },
   { label: "ยูโอบี", code: "uob" },
   { label: "ไอซีบีซี (ไทย)", code: "icbc" },
+  { label: "ออมสิน", code: "gsb" },
+
 ];
 
 interface BankSelectorProps {
@@ -49,7 +51,6 @@ export default function BankSelector({ bank,onChange,disable=false }: BankSelect
       startDecorator={
         selectedBank ?
         <Image
-              quality={0}
               unoptimized={true}
               loading="lazy"
               width="20"
@@ -63,7 +64,6 @@ export default function BankSelector({ bank,onChange,disable=false }: BankSelect
         <AutocompleteOption {...props}>
           <ListItemDecorator>
             <Image
-              quality={1}
               unoptimized={true}
               loading="lazy"
               width="20"

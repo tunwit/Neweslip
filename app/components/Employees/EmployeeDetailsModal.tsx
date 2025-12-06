@@ -9,6 +9,11 @@ import {
   ModalClose,
   ModalDialog,
   ModalOverflow,
+  Tab,
+  tabClasses,
+  TabList,
+  TabPanel,
+  Tabs,
   Typography,
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
@@ -24,7 +29,7 @@ import {
   createEmployeeFormField,
   createEmployeeFormSchema,
 } from "@/types/formField";
-import EmployeeDetailsForm from "./EmployeeDetailsForm";
+import EmployeeDetailsForm from "./detailsTab/EmployeeDetailsForm";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { useZodForm } from "@/lib/useZodForm";
 import normalizeNull from "@/utils/normallizeNull";
@@ -32,6 +37,8 @@ import { updateEmployee } from "@/app/action/updateEmployee";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
+import EmployeeDetailsFiles from "./documentsTab/EmployeeDetailsDocuments";
+import EmployeeDetailsDocuments from "./documentsTab/EmployeeDetailsDocuments";
 
 interface EmployeeDetailsModalProps {
   employee: EmployeeWithShop;
@@ -50,7 +57,11 @@ export default function EmployeeDetailsModal({
   const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
     setStatus(newValue);
     try {
-      await changeEmployeeStatus({ employeeId: employee.id, status: newValue ,userId: user.user?.id || null});
+      await changeEmployeeStatus({
+        employeeId: employee.id,
+        status: newValue,
+        userId: user.user?.id || null,
+      });
       showSuccess(`Change Status to ${newValue} successful`);
     } catch (err) {
       showError(`Change Status failed\n${err}`);
@@ -58,8 +69,6 @@ export default function EmployeeDetailsModal({
 
     queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
-  const { show, setMessage } = useSnackbar();
-
 
   const methods = useZodForm(createEmployeeFormSchema, {
     defaultValues: normalizeNull({
@@ -96,7 +105,11 @@ export default function EmployeeDetailsModal({
 
   const onSave = async (data: createEmployeeFormField) => {
     try {
-      await updateEmployee(employee.id, normalizeNull(data),user.user?.id || null);
+      await updateEmployee(
+        employee.id,
+        normalizeNull(data),
+        user.user?.id || null,
+      );
       reset(data);
       showSuccess(`update employee successful`);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -107,7 +120,7 @@ export default function EmployeeDetailsModal({
 
   return (
     <>
-      <Modal open={open} onClose={() => setOpen(false)}>
+      <Modal open={open} onClose={() => setOpen(false)} sx={{zIndex:100}}>
         <ModalDialog
           sx={{ background: "#fafafa", overflow: "scroll", width: "70%" }}
         >
@@ -149,9 +162,42 @@ export default function EmployeeDetailsModal({
               </Button>
             </div>
           </div>
-          <FormProvider {...methods}>
-            <EmployeeDetailsForm employee={employee} />
-          </FormProvider>
+
+          <Tabs
+            aria-label="Basic tabs"
+            defaultValue={0}
+            orientation="horizontal"
+          >
+            <TabList
+              sx={{
+                [`& .${tabClasses.root}`]: {
+                  fontSize: "sm",
+                  fontWeight: "lg",
+                  [`&[aria-selected="true"]`]: {
+                    bgcolor: "background.surface",
+                  },
+                  [`&.${tabClasses.focusVisible}`]: {
+                    outlineOffset: "-4px",
+                  },
+                },
+              }}
+            >
+              <Tab>Details</Tab>
+              <Tab>Documents</Tab>
+            </TabList>
+            <TabPanel value={0}>
+              <FormProvider {...methods}>
+                <EmployeeDetailsForm employee={employee} />
+              </FormProvider>
+            </TabPanel>
+            <TabPanel value={1}>
+              <EmployeeDetailsDocuments
+                title="Personal Documents"
+                tag="personal"
+                employeeId={employee.id}
+              />
+            </TabPanel>
+          </Tabs>
         </ModalDialog>
       </Modal>
     </>

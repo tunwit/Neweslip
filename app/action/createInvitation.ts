@@ -50,7 +50,7 @@ export async function createInvitation(email:string,redirectUrl:string,shopId:nu
             subject:"Invitation to join shop",
             html:invitationEmailTemplate({
               shopName:shop.name,
-              inviteUrl:`${process.env.NEXT_APP_URL}/accept-invitation?token=${token}`,
+              inviteUrl:`${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation?token=${token}`,
               invitedEmail:email
             })
           })

@@ -16,10 +16,6 @@ const sarabun = Sarabun({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: "E Slip",
-  description: "Web application to store employee data",
-};
 
 export default async function RootLayout({
   children,

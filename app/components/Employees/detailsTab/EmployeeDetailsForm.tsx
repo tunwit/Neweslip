@@ -1,9 +1,14 @@
 "use client";
 import { FormControl, FormLabel } from "@mui/joy";
 import React, { Suspense } from "react";
-import BranchSelector from "../../../widget/BranchSelector";
+import BranchSelector from "../../../../widget/BranchSelector";
 import { EmployeeWithShop } from "@/types/employee";
-import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
+import {
+  Controller,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createEmployeeFormField,
@@ -24,7 +29,6 @@ export default function EmployeeDetailsForm({
 }: {
   employee: EmployeeWithShop;
 }) {
- 
   const {
     control,
     handleSubmit,
@@ -33,17 +37,10 @@ export default function EmployeeDetailsForm({
     typeof createEmployeeFormSchema
   >;
 
-  const onSubmit = (data: createEmployeeFormField) => {
-    console.log(data);
-  };
 
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          handleSubmit(onSubmit)(e);
-        }}
-      >
+      <form>
         <div className="flex flex-col gap-3 ">
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
             <p className="font-semibold mb-2">Personal Infomation</p>
@@ -55,16 +52,8 @@ export default function EmployeeDetailsForm({
                 name="firstName"
                 label="First Name"
               />
-              <InputForm
-                control={control}
-                name="lastName"
-                label="Last Name"
-              />
-              <InputForm
-                control={control}
-                name="nickName"
-                label="Nick Name"
-              />
+              <InputForm control={control} name="lastName" label="Last Name" />
+              <InputForm control={control} name="nickName" label="Nick Name" />
               <FormControl required>
                 <FormLabel>
                   Gender
@@ -80,7 +69,7 @@ export default function EmployeeDetailsForm({
                   render={({ field }) => (
                     <Suspense>
                       <GenderSelector
-                        gender={field.value}
+                        gender={field.value ? field.value : null}
                         onChange={field.onChange}
                       />
                     </Suspense>
@@ -184,7 +173,7 @@ export default function EmployeeDetailsForm({
                   render={({ field }) => (
                     <Suspense>
                       <BranchSelector
-                        branchId={field.value}
+                        branchId={field.value || -1}
                         onChange={field.onChange}
                       />
                     </Suspense>

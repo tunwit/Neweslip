@@ -124,7 +124,7 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
               defaultValue={GENDER.MALE}
               render={({ field }) => (
                 <GenderSelector
-                  gender={field.value}
+                  gender={field.value ? field.value : null}
                   onChange={(value) => field.onChange(value)}
                 />
               )}

@@ -116,7 +116,8 @@ export async function GET(request: NextRequest) {
         ),
       )
       .offset(Number(offset))
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .orderBy(employeesTable.createdAt)
 
     return successPaginationResponse(employees, {
       page: Number(page),
