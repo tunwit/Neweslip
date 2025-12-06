@@ -18,7 +18,7 @@ import calculateTotalSalary from "@/lib/calculateTotalSalary";
 import { and, eq } from "drizzle-orm";
 import nunjucks from "nunjucks";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import { PAY_PERIOD_STATUS, SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 
 nunjucks.configure({
@@ -41,18 +41,20 @@ export async function POST(
       .where(eq(payrollRecordsTable.id, Number(recordId)))
       .limit(1);
 
-    const [employee] = await globalDrizzle
-      .select()
-      .from(employeesTable)
-      .where(eq(employeesTable.id, Number(record.employeeId)))
-      .limit(1);
-
     const [period] = await globalDrizzle
       .select()
       .from(payrollPeriodsTable)
       .where(eq(payrollPeriodsTable.id, record.payrollPeriodId))
       .limit(1);
 
+    const [employee] = await globalDrizzle
+      .select()
+      .from(employeesTable)
+      .where(eq(employeesTable.id, Number(record.employeeId)))
+      .limit(1);
+    if (period.status === PAY_PERIOD_STATUS.DRAFT) {
+      return errorResponse("Cannot send unfinalized period", 403);
+    }
     const [shop] = await globalDrizzle
       .select()
       .from(shopsTable)
@@ -65,79 +67,8 @@ export async function POST(
       .where(and(eq(branchesTable.id, Number(employee.branchId))))
       .limit(1);
 
+      if()
     const data = await calculateTotalSalary(Number(recordId));
-
-    const render = {
-      company: { name: shop.name, taxId: shop.taxId },
-      employee: {
-        position: employee.position,
-        branch: { name: branch.name, address: branch.address },
-        name: `${employee.firstName} ${employee.lastName}`,
-        id: employee.id,
-      },
-      payPeriod: `${dateFormat(new Date(period.start_period))} - ${dateFormat(new Date(period.end_period))}`,
-      earnings: [
-        {
-          description: "ค่าจ้าง",
-          amount: moneyFormat(record.salary),
-        },
-        ...data.salaryValues
-          .filter((s) => s.type === SALARY_FIELD_DEFINATION_TYPE.INCOME)
-          .map((s) => {
-            return {
-              description: s.name,
-              amount: moneyFormat(s.amount),
-            };
-          }),
-      ],
-      overtime: [
-        ...data.otValues.map((s) => {
-          return {
-            description: s.name,
-            value: s.value,
-            amount: moneyFormat(s.amount),
-          };
-        }),
-      ],
-      deductions: [
-        ...data.salaryValues
-          .filter((s) => s.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION)
-          .map((s) => {
-            return {
-              description: s.name,
-              amount: moneyFormat(s.amount),
-            };
-          }),
-      ],
-      penalties: [
-        ...data.penaltyValues.map((s) => {
-          return {
-            description: s.name,
-            value: s.value,
-            amount: moneyFormat(s.amount),
-          };
-        }),
-      ],
-      details: [
-        ...data.salaryValues
-          .filter((s) => s.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED)
-          .map((s) => {
-            return {
-              description: s.name,
-              amount: moneyFormat(s.amount),
-            };
-          }),
-      ],
-      summary: {
-        grossEarnings: moneyFormat(data.totals.totalSalaryIncome),
-        totalOvertime: moneyFormat(data.totals.totalOT),
-        totalEarnings: moneyFormat(data.totals.totalEarning),
-        totalDeductions: moneyFormat(data.totals.totalSalaryDeduction),
-        totalPenalties: moneyFormat(data.totals.totalPenalty),
-        totalDeducted: moneyFormat(data.totals.totalDeduction),
-        netPay: moneyFormat(data.totals.net),
-      },
-    };
 
     const html = generateHTMLPayslip(
       shop,

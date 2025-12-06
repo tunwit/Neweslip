@@ -16,7 +16,10 @@ import JSZip from "jszip";
 import calculateTotalSalary from "@/lib/calculateTotalSalary";
 import { and, eq, inArray } from "drizzle-orm";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import {
+  PAY_PERIOD_STATUS,
+  SALARY_FIELD_DEFINATION_TYPE,
+} from "@/types/enum/enum";
 import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 
 nunjucks.configure({ autoescape: true });
@@ -47,6 +50,10 @@ export async function POST(
       .select()
       .from(payrollPeriodsTable)
       .where(eq(payrollPeriodsTable.id, Number(periodId)));
+
+    if (period.status === PAY_PERIOD_STATUS.DRAFT) {
+      return errorResponse("Cannot send unfinalized period", 403);
+    }
 
     const [shop] = await globalDrizzle
       .select()

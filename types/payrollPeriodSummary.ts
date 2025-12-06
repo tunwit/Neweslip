@@ -39,6 +39,7 @@ export interface PayrollRecordSummary {
     nickName: string;
     branch: string;
     branchEng: string;
+    email: string;
   };
   totals: TotalSalary;
   fields: InferSelectModel<typeof payrollFieldValueTable>[];

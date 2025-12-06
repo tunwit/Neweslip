@@ -52,6 +52,7 @@ export async function summaryPeriod(
         nickName: employeesTable.nickName,
         branch: branchesTable.name,
         branchEng: branchesTable.nameEng,
+        email: employeesTable.email,
       },
     })
     .from(payrollRecordsTable)

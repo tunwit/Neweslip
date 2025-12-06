@@ -7,7 +7,7 @@ import Option from "@mui/joy/Option";
 import EmployeesTable from "@/app/components/Employees/EmployeesTable";
 import PendingElement from "@/app/components/Payrolls/PendingElement";
 import dayjs from "dayjs";
-import { Checkbox } from "@mui/joy";
+import { Checkbox, Modal, ModalDialog } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add, ChevronRight } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
@@ -36,7 +36,7 @@ export default function Home() {
   const [creatingPeriod, setCreatingPeriod] = useState(false);
 
   const pathname = usePathname();
-  const { data } = usePayrollPeriods(id || -1);
+  const { data,isLoading } = usePayrollPeriods(id || -1);
 
   const newHandler = async () => {
     setCreatingPeriod(true);
@@ -63,6 +63,19 @@ export default function Home() {
 
   return (
     <main className="min-h-screen w-full bg-gray-50 font-medium">
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
+
+            <p>Loading payrolls</p>
+          </div>
+        </ModalDialog>
+      </Modal>
       <section className="px-10 pb-5 bg-white w-full border-b border-gray-200">
         <div className=" flex flex-row text-[#424242] text-xs pt-5 ">
           <p>

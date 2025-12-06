@@ -24,7 +24,6 @@ export default function PaySlipGenerateModal({
   open,
   setOpen,
 }: PaySlipGenerateModalProps) {
-  const [showModal, setShowModal] = useState(true);
   const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>(
     {},
   );
@@ -101,7 +100,7 @@ export default function PaySlipGenerateModal({
     }
   };
 
-  if (!showModal) return null;
+  if (!open) return null;
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
@@ -124,7 +123,7 @@ export default function PaySlipGenerateModal({
               </div>
             </div>
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => setOpen(false)}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={24} />
@@ -152,7 +151,7 @@ export default function PaySlipGenerateModal({
                     {record.employee.firstName.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 truncate">
+                    <p className="font-medium text-gray-900 truncate">
                       {record.employee.firstName} {record.employee.lastName}
                     </p>
                     <div className="flex items-center gap-3 mt-1">
@@ -165,7 +164,7 @@ export default function PaySlipGenerateModal({
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-medium text-gray-900">
                       ฿{moneyFormat(record.totals.net)}
                     </p>
                   </div>
@@ -221,7 +220,7 @@ export default function PaySlipGenerateModal({
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => setOpen(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Close

@@ -35,12 +35,14 @@ import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
+import SendEmailsModal from "@/app/components/Payrolls/view/SendEmailsModal";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openPayslipGenerate, setOpenPayslipGenerate] = useState(false);
+  const [openSendEmails, setOpenSendEmails] = useState(false);
 
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
@@ -111,6 +113,14 @@ export default function Home() {
           summaryData={summaryData.data}
           open={openPayslipGenerate}
           setOpen={setOpenPayslipGenerate}
+        />
+      )}
+
+      {openSendEmails && summaryData?.data && (
+        <SendEmailsModal
+          summaryData={summaryData.data}
+          open={openSendEmails}
+          setOpen={setOpenSendEmails}
         />
       )}
 
@@ -308,7 +318,10 @@ export default function Home() {
                 <p className="text-sm text-gray-600 mb-3">
                   Email slips to employees
                 </p>
-                <button className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
+                <button
+                  onClick={() => setOpenSendEmails(true)}
+                  className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
+                >
                   Send Emails{" "}
                   <Icon
                     icon="lsicon:right-outline"
@@ -334,7 +347,7 @@ export default function Home() {
                   Export Report
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Excel or PDF format
+                  Export summary to Excel format
                 </p>
                 <span className="flex flex-row gap-2">
                   <button
@@ -342,13 +355,11 @@ export default function Home() {
                     onClick={onExportAsExcel}
                   >
                     Excel
-                  </button>
-                  <p className="text-gray-400">|</p>
-                  <button
-                    className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1"
-                    onClick={onExportAsExcel}
-                  >
-                    Excel PDF
+                    <Icon
+                      icon="lsicon:right-outline"
+                      className="text-orange-600"
+                      fontSize={24}
+                    />
                   </button>
                 </span>
               </div>
