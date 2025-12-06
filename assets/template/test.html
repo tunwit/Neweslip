@@ -194,8 +194,8 @@
       <div class="header">
         <div class="company-name">{{ company.name }}</div>
         <div class="company-details">
-          {{ company.address }}<br />
-          {{ company.contact }}
+          {{ employee.branch.address }}<br />
+          Tax ID: {{ company.taxId }}
         </div>
       </div>
 
@@ -220,7 +220,7 @@
         </div>
         <div class="info-row">
           <span class="info-label">Branch</span>
-          <span class="info-value">{{ employee.branch }}</span>
+          <span class="info-value">{{ employee.branch.name }}</span>
         </div>
       </div>
 

@@ -19,6 +19,7 @@ import { and, eq } from "drizzle-orm";
 import nunjucks from "nunjucks";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 
 nunjucks.configure({
   autoescape: true,
@@ -67,10 +68,10 @@ export async function POST(
     const data = await calculateTotalSalary(Number(recordId));
 
     const render = {
-      company: { name: shop.name, address: "...", contact: "..." },
+      company: { name: shop.name, taxId: shop.taxId },
       employee: {
         position: employee.position,
-        branch: branch.name,
+        branch: { name: branch.name, address: branch.address },
         name: `${employee.firstName} ${employee.lastName}`,
         id: employee.id,
       },
@@ -138,7 +139,14 @@ export async function POST(
       },
     };
 
-    const html = nunjucks.render("assets/template/test.html", render);
+    const html = generateHTMLPayslip(
+      shop,
+      employee,
+      branch,
+      period,
+      record,
+      data,
+    );
     return new NextResponse(html, {
       headers: {
         "Content-Type": "text/html",

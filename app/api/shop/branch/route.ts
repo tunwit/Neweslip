@@ -21,7 +21,8 @@ export async function GET(request: NextRequest) {
       return errorResponse("Illegel Arguments", 400);
     }
 
-    if(!await isOwner(Number(shopId),userId)) return errorResponse("Forbidden", 403);
+    if (!(await isOwner(Number(shopId), userId)))
+      return errorResponse("Forbidden", 403);
 
     const data: Branch[] = await globalDrizzle
       .select({
@@ -29,6 +30,7 @@ export async function GET(request: NextRequest) {
         name: branchesTable.name,
         nameEng: branchesTable.nameEng,
         shopId: branchesTable.shopId,
+        address: branchesTable.address,
       })
       .from(branchesTable)
       .innerJoin(
@@ -41,7 +43,6 @@ export async function GET(request: NextRequest) {
           eq(shopOwnerTable.ownerId, userId),
         ),
       );
-
 
     return successResponse(data);
   } catch (err) {

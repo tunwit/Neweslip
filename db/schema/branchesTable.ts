@@ -14,12 +14,13 @@ export const branchesTable = mysqlTable(
     id: int().autoincrement().notNull().primaryKey(),
     name: varchar({ length: 50 }).notNull(),
     nameEng: varchar({ length: 50 }).notNull(),
+    address: varchar({ length: 255 }).notNull().default("-"),
     shopId: int()
       .notNull()
-      .references(() => shopsTable.id,{onDelete:"cascade"})
+      .references(() => shopsTable.id, { onDelete: "cascade" })
       .notNull(),
   },
-  (table) => [uniqueIndex("name_shopId").on(table.shopId, table.name)]
+  (table) => [uniqueIndex("name_shopId").on(table.shopId, table.name)],
 );
 
 export const branchRelations = relations(branchesTable, ({ one, many }) => ({

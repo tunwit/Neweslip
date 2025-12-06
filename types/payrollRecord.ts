@@ -7,7 +7,7 @@ export interface PayrollRecord {
   periodId: number;
   updatedAt: Date;
   createdAt: Date;
-  baseSalry: number;
+  salary: number;
   employee: {
     id: number;
     firstName: string;
@@ -16,7 +16,7 @@ export interface PayrollRecord {
     branch: string;
     branchEng: string;
   };
-  totals: TotalSalary
+  totals: TotalSalary;
 }
 
 export type NewPayrollRecord = InferInsertModel<typeof payrollRecordsTable>;

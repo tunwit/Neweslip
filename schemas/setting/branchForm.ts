@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const branchSchema = z.object({
-  name: z.string().max(50,"Branch name cannot exceed 50 charecter"),
-  nameEng: z.string().max(50,"Branch name cannot exceed 50 charecter")
+  name: z.string().max(50, "Branch name cannot exceed 50 charecter"),
+  nameEng: z.string().max(50, "Branch name cannot exceed 50 charecter"),
+  address: z.string().max(255, "Branch address cannot exceed 255 charecter"),
 });

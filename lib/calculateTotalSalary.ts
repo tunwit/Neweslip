@@ -6,10 +6,13 @@ import {
   penaltyFieldValueTable,
 } from "@/db/schema";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import { RecordDetails } from "@/types/RecordDetails";
 import Decimal from "decimal.js";
 import { eq } from "drizzle-orm";
 
-export default async function calculateTotalSalary(recordId: number) {
+export default async function calculateTotalSalary(
+  recordId: number,
+) {
   const record = await globalDrizzle
     .select()
     .from(payrollRecordsTable)

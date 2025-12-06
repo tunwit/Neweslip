@@ -16,32 +16,31 @@ import { useUser } from "@clerk/nextjs";
 import ConfirmModal from "@/widget/ConfirmModal";
 
 export default function BranchesTab() {
-  const [open,setOpen] = useState(false)
-  const [openConfirm,setOpenConfirm] = useState(false)
-  const [selectedBranch,setSelectedBranch] = useState<Branch|null>(null)
-  const {id:shopId} = useCurrentShop();
-  const checkboxMethods = useCheckBox<number>("allBranchTable")
-  const {checked, checkall, uncheckall} = checkboxMethods
-  const queryClient = useQueryClient()
-  const router = useRouter()
-  const user = useUser()
-  const addHandler = () =>{
+  const [open, setOpen] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
+  const { id: shopId } = useCurrentShop();
+  const checkboxMethods = useCheckBox<number>("allBranchTable");
+  const { checked, checkall, uncheckall } = checkboxMethods;
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const user = useUser();
+  const addHandler = () => {
     setSelectedBranch(null);
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
-  const {data,isLoading,isSuccess} = useBranch()
-
+  const { data, isLoading, isSuccess } = useBranch();
 
   const handleDelete = async () => {
     try {
       if (!shopId) return;
-      uncheckall()
-      await deleteBranch(checked, shopId,user.user?.id || null);
+      uncheckall();
+      await deleteBranch(checked, shopId, user.user?.id || null);
       showSuccess("Delete branch success");
       queryClient.invalidateQueries({ queryKey: ["branch"] });
-      
-      router.refresh()
+
+      router.refresh();
     } catch {
       showError("Delete branch failed");
     }
@@ -50,37 +49,40 @@ export default function BranchesTab() {
   return (
     <>
       <div className="-mt-4">
-        <ConfirmModal 
-          title="Delete" 
-          description={`This action will remove all employee within this branch\nAre you sure to continue?`} 
-          open={openConfirm} 
-          setOpen={()=>setOpenConfirm(!openConfirm)} 
+        <ConfirmModal
+          title="Delete"
+          description={`This action will remove all employee within this branch\nAre you sure to continue?`}
+          open={openConfirm}
+          setOpen={() => setOpenConfirm(!openConfirm)}
           onConfirm={handleDelete}
-          onCancel={()=>setOpenConfirm(false)}/>
+          onCancel={() => setOpenConfirm(false)}
+        />
 
-
-        <AddBranchModal open={open} setOpen={setOpen} branch={selectedBranch}/>
+        <AddBranchModal open={open} setOpen={setOpen} branch={selectedBranch} />
         <h1 className="font-medium text-3xl">Branches</h1>
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
             <Button
               disabled={checked ? checked.length === 0 : true}
               variant="plain"
-              onClick={()=>setOpenConfirm(true)}
+              onClick={() => setOpenConfirm(true)}
             >
               <p className="underline font-medium">delete</p>
             </Button>
           </div>
-          <TableWithCheckBox data={data?.data}
+          <TableWithCheckBox
+            data={data?.data}
             isLoading={isLoading}
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}
             setSelectedItem={setSelectedBranch}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Branch Name" },
-              { key: "nameEng", label: "Branch Name (English)" },
-            ]}/>
+              { key: "name", label: "Branch Name", width: "30%" },
+              { key: "nameEng", label: "Branch Name (English)", width: "30%" },
+              { key: "address", label: "Address" },
+            ]}
+          />
         </div>
 
         <div className="mt-2">

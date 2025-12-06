@@ -28,19 +28,24 @@ import { FormProvider } from "react-hook-form";
 interface AddAbsentModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  branch:Branch | null
+  branch: Branch | null;
 }
 
-export default function AddEditBranchModal({ open, setOpen ,branch}: AddAbsentModalProps) {
+export default function AddEditBranchModal({
+  open,
+  setOpen,
+  branch,
+}: AddAbsentModalProps) {
   const methods = useZodForm(branchSchema, {
     defaultValues: {
       name: branch?.name || "",
       nameEng: branch?.nameEng || "",
+      address: branch?.address || "",
     },
-  })
-  const {control, handleSubmit} = methods
-  const {id} = useCurrentShop()
-  const user = useUser()
+  });
+  const { control, handleSubmit } = methods;
+  const { id } = useCurrentShop();
+  const user = useUser();
   const queryClient = useQueryClient();
 
   const closeHandler = () => {
@@ -51,33 +56,32 @@ export default function AddEditBranchModal({ open, setOpen ,branch}: AddAbsentMo
     methods.reset({
       name: branch?.name || "",
       nameEng: branch?.nameEng || "",
+      address: branch?.address || "",
     });
-    
   }, [branch, methods.reset]);
 
-  const submitHandler = async(data:Omit<NewBranch,"shopId">) => {
-    if(!id) return
-    try{
+  const submitHandler = async (data: Omit<NewBranch, "shopId">) => {
+    if (!id) return;
+    try {
       if (branch) {
         // edit mode
-        await updateBranch(branch.id, data,user.user?.id || null);
+        await updateBranch(branch.id, data, user.user?.id || null);
         showSuccess("Branch updated successfully");
       } else {
         // add mode
-        await createBranch(data, id,user.user?.id || null);
+        await createBranch(data, id, user.user?.id || null);
         showSuccess("Branch added successfully");
       }
       queryClient.invalidateQueries({ queryKey: ["branch"] });
-    }catch(err:any){
-      let msg = err
-      if(err.message== "ER_DUP_ENTRY") msg = "Branch cannot have duplicate name"
+    } catch (err: any) {
+      let msg = err;
+      if (err.message == "ER_DUP_ENTRY")
+        msg = "Branch cannot have duplicate name";
 
-      showError(`Add branch failed\n${msg}`)
+      showError(`Add branch failed\n${msg}`);
     }
     closeHandler();
   };
-
-
 
   return (
     <>
@@ -85,18 +89,22 @@ export default function AddEditBranchModal({ open, setOpen ,branch}: AddAbsentMo
         <ModalDialog sx={{ background: "#fafafa" }}>
           <ModalClose></ModalClose>
           <FormProvider {...methods}>
-            
-          <form onSubmit={handleSubmit(submitHandler)}>
-            <div className="grid  gap-3">
-              <InputForm control={control} name="name" label="Name"/>
-              <InputForm control={control} name="nameEng" label="Name English"/>
-            </div>
-            <div className="mt-3">
-              <Button type="summit" sx={{ width: "100%" }}>
-                {branch ? "Update" : "Add"}
-              </Button>
-            </div>
-          </form>
+            <form onSubmit={handleSubmit(submitHandler)}>
+              <div className="grid  gap-3">
+                <InputForm control={control} name="name" label="Name" />
+                <InputForm
+                  control={control}
+                  name="nameEng"
+                  label="Name English"
+                />
+                <InputForm control={control} name="address" label="Address" />
+              </div>
+              <div className="mt-3">
+                <Button type="summit" sx={{ width: "100%" }}>
+                  {branch ? "Update" : "Add"}
+                </Button>
+              </div>
+            </form>
           </FormProvider>
         </ModalDialog>
       </Modal>
