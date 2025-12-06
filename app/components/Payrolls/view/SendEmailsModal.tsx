@@ -1,10 +1,16 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Loader2, Package, X } from "lucide-react";
-import { Checkbox, Input, Modal, ModalDialog } from "@mui/joy";
+import {
+  Checkbox,
+  CircularProgress,
+  Input,
+  Modal,
+  ModalDialog,
+} from "@mui/joy";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { showError } from "@/utils/showSnackbar";
+import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 
 interface SendEmailsModalProps {
@@ -99,6 +105,23 @@ export default function SendEmailsModal({
       ),
     }));
   };
+
+  const handleResetAllEmail = () => {
+    setData((prev) => ({
+      ...prev,
+      records: prev.records.map((record) => {
+        const originalEmail = originalEmails[record.id];
+        return {
+          ...record,
+          employee: {
+            ...record.employee,
+            email: originalEmail ?? record.employee.email, // fallback
+          },
+        };
+      }),
+    }));
+  };
+
   const handleAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.checked) {
       checkall(data.records.map((r) => r.id));
@@ -117,9 +140,7 @@ export default function SendEmailsModal({
       (record) => record.employee.email !== originalEmails[record.id],
     ).length;
   };
-  useEffect(() => {
-    console.log(progress);
-  }, [progress]);
+
   const onSend = async () => {
     const payload = data.records
       .filter((r) => checked.includes(r.id))
@@ -136,9 +157,9 @@ export default function SendEmailsModal({
         body: JSON.stringify(payload),
       });
 
-      const reader = response.body.getReader();
+      const reader = response.body?.getReader();
       const decoder = new TextDecoder();
-
+      if (!reader) return;
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -215,6 +236,7 @@ export default function SendEmailsModal({
           }
         }
       }
+      showSuccess(`Successfully send email to ${progress.total} employee(s)`);
     } catch (error) {
       console.error("Error:", error);
       setProgress((prev) => ({
@@ -230,6 +252,29 @@ export default function SendEmailsModal({
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog sx={{ padding: 0 }}>
         <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+          {isSubmitting && (
+            <Modal open={true}>
+              <ModalDialog>
+                <div className="flex flex-col gap-2 items-center justify-center">
+                  <CircularProgress
+                    sx={{
+                      "--CircularProgress-size": "90px",
+                      "--CircularProgress-trackThickness": "10px",
+                      "--CircularProgress-progressThickness": "10px",
+                      "--CircularProgress-progressColor": "#9810fa",
+                    }}
+                    determinate
+                    value={(progress.current / progress.total) * 100 || 0}
+                  >
+                    {Math.round((progress.current / progress.total) * 100)}%
+                  </CircularProgress>
+                  <p>Sending payslip</p>
+                  <p className="text-gray-600">{progress.message}</p>
+                </div>
+              </ModalDialog>
+            </Modal>
+          )}
+
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-50 to-purple-100">
             <div className="flex items-center gap-3">
@@ -255,14 +300,14 @@ export default function SendEmailsModal({
           </div>
 
           {/* Info Banner */}
-          <div className="px-6 py-3 bg-blue-50 border-b border-blue-100">
+          <div className="px-6 py-3 bg-purple-50 border-b border-purple-100">
             <div className="flex items-start gap-2">
               <Icon
                 icon="mdi:information-outline"
-                className="text-blue-600 mt-0.5"
+                className="text-purple-600 mt-0.5"
                 fontSize={16}
               />
-              <p className="text-sm text-blue-900">
+              <p className="text-sm text-purple-900">
                 <strong>Tip:</strong> Click the edit icon to temporarily change
                 where the pay slip will be sent. The original email will remain
                 unchanged in the system.
@@ -299,6 +344,15 @@ export default function SendEmailsModal({
                 <p className="font-medium text-gray-700">
                   Select All Employees ({data.employeeCount})
                 </p>
+                {overrideCount > 0 && (
+                  <button
+                    onClick={() => handleResetAllEmail()}
+                    className="px-2 py-1 text-xs text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded transition-colors font-medium"
+                    title="Reset to original email"
+                  >
+                    Reset All
+                  </button>
+                )}
               </label>
             </div>
 
