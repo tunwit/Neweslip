@@ -43,10 +43,14 @@ export async function finalizePayroll(
     if (isCrititalPresence) {
       throw new Error("Critical issue presence");
     }
-    
+
     await globalDrizzle
       .update(payrollPeriodsTable)
-      .set({ status: PAY_PERIOD_STATUS.FINALIZED })
+      .set({
+        status: PAY_PERIOD_STATUS.FINALIZED,
+        finalized_at: new Date(),
+        finalized_by: userId,
+      })
       .where(and(eq(payrollPeriodsTable.id, periodId)));
   } catch (err) {
     throw err;

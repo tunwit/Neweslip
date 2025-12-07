@@ -208,7 +208,10 @@ export default function AdvancedFilters({
     <>
       <div hidden={activeFilters.length === 0} className="flex gap-3  mt-4">
         {activeFilters.map((a) => (
-          <span className="flex flex-row gap-2 text-blue-700 bg-blue-100 px-3 py-2 rounded-md text-sm">
+          <span
+            key={a.id}
+            className="flex flex-row gap-2 text-blue-700 bg-blue-100 px-3 py-2 rounded-md text-sm"
+          >
             <p>
               {a.field} {numberOperatorsSymbol[a.operator] || "unknown"}{" "}
               {a.value}
@@ -229,8 +232,9 @@ export default function AdvancedFilters({
         <h1 className="text-gray-700">Advanced Filters (Beta)</h1>
         <p className="text-xs text-gray-700 mt-2">Quick filters</p>
         <section className="flex gap-3">
-          {quickFilters.map((q) => (
+          {quickFilters.map((q, _) => (
             <button
+              key={_}
               onClick={() =>
                 addQuickFilter(
                   q.filter.field,

@@ -1,4 +1,5 @@
 import {
+  boolean,
   date,
   decimal,
   int,
@@ -24,6 +25,9 @@ export const payrollPeriodsTable = mysqlTable("payroll_periods", {
   status: mysqlEnum(PAY_PERIOD_STATUS)
     .default(PAY_PERIOD_STATUS.DRAFT)
     .notNull(),
+  finalized_at: timestamp("finalized_at"),
+  finalized_by: varchar("finalized_by", { length: 255 }),
+  edited: boolean().default(false),
   work_hours_per_day: decimal({ precision: 4, scale: 2 }).default("8.0"),
   workdays_per_month: decimal({ precision: 4, scale: 2 }).default("22.0"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

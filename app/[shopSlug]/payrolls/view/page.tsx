@@ -24,7 +24,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRecordDetails } from "@/hooks/useRecordDetails";
 import { useUser } from "@clerk/nextjs";
-import { moneyFormat } from "@/utils/formmatter";
+import { dateTimeFormat, moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
@@ -310,14 +310,17 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>
-        <button
-          className={`flex w-full items-center justify-center rotate-180 mt-4 transition-all ${hideHeader ? "opacity-100" :"opacity-0"}`}
-          onClick={() => setHideHeader(!hideHeader)}
-        >
-          <Icon icon="icon-park-outline:up" fontSize={20} />
-        </button>
-        <section className="px-10 overflow-y-auto flex-1 my-5 space-y-3 ">
-          <div className={`bg-green-50 p-4 border border-green-200 rounded-md`}>
+
+        <section className="px-10 overflow-y-auto flex-1  space-y-3 ">
+          <button
+            className={`flex w-full items-center justify-center rotate-180  transition-all ${hideHeader ? "opacity-100  mt-4" : "opacity-0"}`}
+            onClick={() => setHideHeader(!hideHeader)}
+          >
+            <Icon icon="icon-park-outline:up" fontSize={20} />
+          </button>
+          <div
+            className={`bg-green-50 p-4 border border-green-200 rounded-md my-5`}
+          >
             <div className="flex flex-row gap-3">
               <Icon
                 icon="icon-park-outline:check-one"
@@ -327,7 +330,8 @@ export default function Home() {
               <div>
                 <p className="text-green-900">Payroll Successfully Finalized</p>
                 <p className="font-light text-xs text-green-700 ">
-                  Finalized by Admin User on 2025-12-02 14:30
+                  Finalized by {summaryData?.data?.finalized_by} on{" "}
+                  {dateTimeFormat(new Date(summaryData?.data?.finalized_at || 0))}
                 </p>
               </div>
             </div>
@@ -491,7 +495,7 @@ export default function Home() {
               />
             </div>
           </section>
-          <div className="space-y-3 ">
+          <div className="space-y-3 mb-5">
             {filtered.map((record) => {
               return <SummaryCard key={record.id} record={record} />;
             })}

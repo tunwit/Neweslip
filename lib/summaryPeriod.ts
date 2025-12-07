@@ -32,6 +32,9 @@ export async function summaryPeriod(
       end_period: payrollPeriodsTable.end_period,
       work_hours_per_day: payrollPeriodsTable.work_hours_per_day,
       workdays_per_month: payrollPeriodsTable.workdays_per_month,
+      finalized_at: payrollPeriodsTable.finalized_at,
+      finalized_by: payrollPeriodsTable.finalized_by,
+      edited: payrollPeriodsTable.edited,
     })
     .from(payrollPeriodsTable)
     .where(eq(payrollPeriodsTable.id, Number(periodId)));

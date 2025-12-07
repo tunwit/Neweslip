@@ -34,9 +34,9 @@ export const useEmployees = ({
     ...(branchId && branchId !== -1 && { branchId: branchId.toString() }),
     ...(status && status !== null && { status: status }),
     ...(page && { page: page.toString() }),
-    ...(limit && { limit: limit.toString() })
+    ...(limit && { limit: limit.toString() }),
   });
-  
+
   return useQuery<PaginatedResponse<EmployeeWithShop[]>>({
     queryKey: ["employees", slug, search_query, page, branchId, status],
     queryFn: () => {

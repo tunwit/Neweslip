@@ -20,6 +20,9 @@ export interface PayrollPeriodSummary {
   end_period: string;
   work_hours_per_day: number;
   workdays_per_month: number;
+  finalized_at: string;
+  finalized_by: string;
+  edited: boolean;
   employeeCount: number;
   totalBaseSalary: number;
   totalNet: number;

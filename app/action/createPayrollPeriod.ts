@@ -38,6 +38,9 @@ export async function createPayrollPeriod(
     shopId: shopId,
     work_hours_per_day: shop.work_hours_per_day,
     workdays_per_month: shop.workdays_per_month,
+    finalized_at: null,
+    finalized_by: null,
+    edited: false,
   };
 
   try {
