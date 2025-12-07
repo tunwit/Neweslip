@@ -39,6 +39,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { updatePayrollRecord } from "@/app/action/updatePayrollRecord";
 import { updatePayrollPeriod } from "@/app/action/updatePayrollPeriod";
 import { ClickAwayListener } from "@mui/material";
+import { usePeriodFields } from "@/hooks/usePeriodFields";
+import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -46,6 +48,8 @@ export default function Home() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openCalendar, setOpenCalendar] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
@@ -74,7 +78,9 @@ export default function Home() {
   const { data, isLoading: loadingRecord } = usePayrollRecords(
     Number(periodId),
   );
-  const didMount = useRef(false);
+
+  const [baseRecords, setBaseRecords] = useState<PayrollRecord[]>([]);
+  const [filterdRecord, setFilterdRecord] = useState<PayrollRecord[]>([]);
 
   const deleteHandler = async () => {
     if (!user?.id) return;
@@ -130,6 +136,12 @@ export default function Home() {
   }, [titleDebounced, debouncedDateRange]);
 
   useEffect(() => {
+    if (!data?.data) return;
+    setBaseRecords(data.data);
+    setFilterdRecord(data.data);
+  }, [data]);
+
+  useEffect(() => {
     if (!periodData?.data) return;
     setPeriodTitle(periodData.data.name);
     setDateRange({
@@ -143,20 +155,27 @@ export default function Home() {
   }, [periodData]);
 
   const onExport = async () => {
-    const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+    setIsExporting(true);
+    try {
+      const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `payroll_summary_${Date.now()}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `payroll_summary_${Date.now()}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      showError(`Export failed ${err}`);
+    } finally {
+      setIsExporting(false);
+    }
   };
   const isLoading = loadingPeriod || loadingRecord;
 
@@ -209,8 +228,11 @@ export default function Home() {
               onChange={(e) => setPeriodTitle(e.target.value)}
               className="text-black text-3xl font-bold p-2"
             ></input>
+
             <div className="flex gap-3 z-10 h-5">
               <Button
+                loading={isExporting}
+                disabled={isExporting}
                 startDecorator={
                   <Icon icon="qlementine-icons:export-16" fontSize={20} />
                 }
@@ -330,32 +352,51 @@ export default function Home() {
         </section>
 
         <section className="px-10 overflow-y-auto flex-1">
-          <div className="mt-8 flex flex-row justify-between bg-white p-4 rounded-md shadow">
-            <div className="flex flex-row gap-3">
-              <div className="w-96 ">
-                <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
-                  <Icon
-                    className="text-[#424242]"
-                    icon={"material-symbols:search-rounded"}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search name, branch"
-                    className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
+          <div className="mt-8 flex flex-col justify-between p-4 bg-white  rounded-md shadow">
+            <div className="flex flex-row justify-between ">
+              <div className="flex flex-row gap-3">
+                <div className="w-96 ">
+                  <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] h-full px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
+                    <Icon
+                      className="text-[#424242]"
+                      icon={"material-symbols:search-rounded"}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search name, branch"
+                      className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </div>
                 </div>
+                <button
+                  className="text-gray-700 border border-gray-300 rounded-md px-4 hover:bg-gray-50"
+                  onClick={() => setShowFilter(!showFilter)}
+                >
+                  <span className="flex items-center gap-1">
+                    <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
+                    <p className="font-light text-sm">Filters</p>
+                  </span>
+                </button>
+              </div>
+              <div>
+                <button
+                  onClick={() => setOpenAdd(true)}
+                  className="flex items-center gap-2 bg-blue-600 text-white p-2 rounded-md"
+                >
+                  <Add sx={{ fontSize: "20px" }} /> <p>Add Employee</p>
+                </button>
               </div>
             </div>
-            <div>
-              <button
-                onClick={() => setOpenAdd(true)}
-                className="flex items-center gap-2 bg-blue-600 text-white p-2 rounded-md"
-              >
-                <Add sx={{ fontSize: "20px" }} /> <p>Add Employee</p>
-              </button>
-            </div>
+            <AdvancedFilters
+              periodId={periodData?.data?.id || -1}
+              show={showFilter}
+              setShow={setShowFilter}
+              originalData={data?.data || []}
+              setData={setFilterdRecord}
+            />
           </div>
+
           <div className="flex flex-col justify-center pb-10">
             <div className="flex flex-row-reverse">
               <button
@@ -371,7 +412,7 @@ export default function Home() {
               searchQuery={debouced}
               checkBoxMethod={methods}
               periodData={periodData?.data}
-              records={data?.data || []}
+              records={filterdRecord || []}
               setSelected={setSelectedRecord}
               setOpenEdit={setOpenEdit}
             />

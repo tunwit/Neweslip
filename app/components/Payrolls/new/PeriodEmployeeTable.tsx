@@ -1,10 +1,17 @@
 import { UseCheckBoxResult } from "@/hooks/useCheckBox";
+import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox } from "@mui/joy";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 interface PeriodEmployeeTableProps {
   searchQuery: string;
@@ -54,6 +61,9 @@ export default function PeriodEmployeeTable({
     }
   };
 
+  const filteredTotalNet = useMemo(() => {
+    return filterd.reduce((sum, r) => sum + (r.totals.net || 0), 0);
+  }, [filterd]);
   return (
     <>
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -196,7 +206,7 @@ export default function PeriodEmployeeTable({
                       TOTAL PAYROLL
                     </p>
                     <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">
-                      ฿ {moneyFormat(periodData?.totalNet || 0)}
+                      ฿ {moneyFormat(filteredTotalNet || 0)}
                     </p>
                   </div>
                 </th>

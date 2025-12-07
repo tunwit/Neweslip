@@ -18,7 +18,10 @@ import calculateTotalSalary from "@/lib/calculateTotalSalary";
 import { and, eq } from "drizzle-orm";
 import nunjucks from "nunjucks";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
-import { PAY_PERIOD_STATUS, SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import {
+  PAY_PERIOD_STATUS,
+  SALARY_FIELD_DEFINATION_TYPE,
+} from "@/types/enum/enum";
 import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 
 nunjucks.configure({
@@ -67,7 +70,6 @@ export async function POST(
       .where(and(eq(branchesTable.id, Number(employee.branchId))))
       .limit(1);
 
-      if()
     const data = await calculateTotalSalary(Number(recordId));
 
     const html = generateHTMLPayslip(

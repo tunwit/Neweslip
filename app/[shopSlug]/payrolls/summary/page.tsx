@@ -21,14 +21,20 @@ import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import { usePayrollPeriodVerify } from "@/hooks/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
 import { Modal, ModalDialog } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
+import { PayrollRecord } from "@/types/payrollRecord";
+import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
+import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
   const [openFinalizeModal, setOpenFinalizeModal] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
-
+  const [query, setQuery] = useState("");
+  const [debouced] = useDebounce(query, 500);
+  const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
+  const [showFilter, setShowFilter] = useState(false);
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
@@ -41,7 +47,7 @@ export default function Home() {
     Number(periodId),
   );
   useEffect(() => {
-    if(!summaryData?.data) return
+    if (!summaryData?.data) return;
     if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodId}`);
@@ -53,7 +59,25 @@ export default function Home() {
     router.push(`${newPath}?id=${periodId}`);
   };
 
-  
+  useEffect(() => {
+    if (!summaryData?.data?.records) return;
+    const q = debouced.toLowerCase();
+
+    setFiltered(
+      summaryData?.data?.records.filter((r) => {
+        return (
+          r.employee.firstName.toLowerCase().includes(q) ||
+          r.employee.lastName.toLowerCase().includes(q) ||
+          (r.employee.firstName + r.employee.lastName)
+            .toLowerCase()
+            .includes(q) ||
+          r.employee.nickName.toLowerCase().includes(q) ||
+          r.employee.branch.toLowerCase().includes(q)
+        );
+      }),
+    );
+  }, [summaryData?.data?.records, debouced]);
+
   const isLoading =
     loadingPeriod || loadingSummary || loadingVerify || finalizing;
 
@@ -63,6 +87,21 @@ export default function Home() {
   if (loadingPeriod) loadingMessage = "Loading Period...";
   if (loadingSummary) loadingMessage = "Calculating Payroll...";
   if (loadingVerify) loadingMessage = "Verifying Payroll...";
+
+  const filteredTotalNet = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.totals.net || 0), 0);
+  }, [filtered]);
+
+  const filteredTotalEarning = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.totals.totalEarning || 0), 0);
+  }, [filtered]);
+  const filteredTotalDeduction = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.totals.totalDeduction || 0), 0);
+  }, [filtered]);
+
+  const filteredTotalSalary = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.baseSalary || 0), 0);
+  }, [filtered]);
 
   return (
     <main className="w-full bg-gray-100 font-medium ">
@@ -182,8 +221,47 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="flex-1">
+          <div className="mt-8 mx-10 flex flex-col justify-between p-4   bg-white  rounded-md shadow">
+            <div className="flex flex-row justify-between h-10">
+              <div className="flex flex-row gap-3 h-full">
+                <div className="w-96 ">
+                  <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] h-full px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
+                    <Icon
+                      className="text-[#424242]"
+                      icon={"material-symbols:search-rounded"}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search name, branch"
+                      className="text-[#424242] font-light text-sm  w-full h-full  focus:outline-none "
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <button
+                  className="text-gray-700 border border-gray-300 rounded-md px-4 hover:bg-gray-50"
+                  onClick={() => setShowFilter(!showFilter)}
+                >
+                  <span className="flex items-center gap-1">
+                    <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
+                    <p className="font-light text-sm">Filters</p>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <AdvancedFilters
+              periodId={periodData?.data?.id || -1}
+              show={showFilter}
+              setShow={setShowFilter}
+              originalData={summaryData?.data?.records || []}
+              setData={setFiltered}
+            />
+          </div>
+        </section>
+
         <section className="flex flex-col px-10  mt-5 gap-4">
-          {summaryData?.data?.records.map((record) => {
+          {filtered.map((record) => {
             return <SummaryCard key={record.id} record={record} />;
           })}
         </section>
@@ -196,19 +274,19 @@ export default function Home() {
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">Total Base Salary</p>
                 <p className="text-xl font-bold text-gray-900">
-                  ฿ {moneyFormat(summaryData?.data?.totalBaseSalary || 0)}
+                  ฿ {moneyFormat(filteredTotalSalary || 0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <p className="text-sm text-green-700 mb-2">Total Earnings</p>
                 <p className="text-xl font-bold text-green-900">
-                  ฿ {moneyFormat(summaryData?.data?.totalEarning || 0)}
+                  ฿ {moneyFormat(filteredTotalEarning || 0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg">
                 <p className="text-sm text-red-700 mb-2">Total Deductions</p>
                 <p className="text-xl font-bold text-red-900">
-                  ฿ {moneyFormat(summaryData?.data?.totalDeduction || 0)}
+                  ฿ {moneyFormat(filteredTotalDeduction || 0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg border-2 border-blue-300">
@@ -216,7 +294,7 @@ export default function Home() {
                   Grand Total
                 </p>
                 <p className="text-2xl font-bold text-blue-900">
-                  ฿ {moneyFormat(summaryData?.data?.totalNet || 0)}
+                  ฿ {moneyFormat(filteredTotalNet || 0)}
                 </p>
               </div>
             </div>

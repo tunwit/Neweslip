@@ -61,7 +61,9 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
   ----------------------------------- */
   const incomeCols = new Set<string>();
   const deductionCols = new Set<string>();
+  const otValueCols = new Set<string>();
   const otCols = new Set<string>();
+  const penaltyValueCols = new Set<string>();
   const penaltyCols = new Set<string>();
   const nonCalcCols = new Set<string>();
 
@@ -73,8 +75,9 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
         deductionCols.add(f.name);
       else nonCalcCols.add(f.name);
     });
-
+    rec.ot.forEach((o) => otCols.add(`${o.name} (value)`));
     rec.ot.forEach((o) => otCols.add(o.name));
+    rec.penalties.forEach((p) => otCols.add(`${p.name} (value)`));
     rec.penalties.forEach((p) => penaltyCols.add(p.name));
   });
 
@@ -84,8 +87,10 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     "Branch",
     "Base Salary",
     ...incomeCols,
+    ...otValueCols,
     ...otCols,
     ...deductionCols,
+    ...penaltyValueCols,
     ...penaltyCols,
     ...nonCalcCols,
     "Gross",
@@ -110,8 +115,10 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     /* PRE-INITALIZE ALL DYNAMIC FIELDS WITH 0 */
     [
       ...incomeCols,
+      ...otValueCols,
       ...otCols,
       ...deductionCols,
+      ...penaltyValueCols,
       ...penaltyCols,
       ...nonCalcCols,
     ].forEach((col) => {
@@ -124,7 +131,9 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     rec.fields
       .filter((r) => r.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION)
       .forEach((f) => (row[f.name] = f.amount));
+    rec.ot.forEach((o) => (row[`${o.name} (value)`] = o.value));
     rec.ot.forEach((o) => (row[o.name] = o.amount));
+    rec.penalties.forEach((p) => (row[`${p.name} (value)`] = p.value));
     rec.penalties.forEach((p) => (row[p.name] = p.amount));
     rec.fields
       .filter((r) => r.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED)

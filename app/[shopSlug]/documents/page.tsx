@@ -28,20 +28,24 @@ import { uploadShopDocument } from "@/app/action/uploadShopDocument";
 import deleteShopDocument from "@/app/action/deleteShopDocument";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { renameShopDocument } from "@/app/action/renameShopDocument";
+import { Modal, ModalDialog } from "@mui/joy";
 
 export default function page() {
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
-  const { data, isLoading } = useShopDocuments({ shopId: shopId || -1, search_query:debounced});
+  const { data, isLoading } = useShopDocuments({
+    shopId: shopId || -1,
+    search_query: debounced,
+  });
   const { name } = useCurrentShop();
   const queryClient = useQueryClient();
 
   const onRename = async (doc: ShopDocumentWithUploader, newName: string) => {
     if (!shopId || !user?.id) return;
     const prefix = doc.key.substring(0, doc.key.lastIndexOf("/"));
-    
+
     try {
       await renameShopDocument(
         doc.id,
@@ -81,6 +85,19 @@ export default function page() {
   return (
     <>
       <title>Documents - E Slip</title>
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
+
+            <p>Loading Document...</p>
+          </div>
+        </ModalDialog>
+      </Modal>
       <main className="min-h-screen w-full bg-white font-medium">
         <div className="mx-10">
           <div className="flex flex-row text-[#424242] text-xs mt-10">
@@ -112,20 +129,17 @@ export default function page() {
             </div>
           </div>
           <div className="flex justify-center mt-5">
-              <DocumentTable
-                title="Files"
-                tag="files"
-                data={data?.data || []}
-                targetId={shopId || -1}
-                onRename={async (doc, newName) => onRename(doc, newName)}
-                onUpload={async (
-                  files: File[],
-                  tag: string,
-                  targetId: number,
-                ) => onUpload(files, tag, targetId)}
-                onDelete={async (doc) => onDelete(doc)}
-              />
-         
+            <DocumentTable
+              title="Files"
+              tag="files"
+              data={data?.data || []}
+              targetId={shopId || -1}
+              onRename={async (doc, newName) => onRename(doc, newName)}
+              onUpload={async (files: File[], tag: string, targetId: number) =>
+                onUpload(files, tag, targetId)
+              }
+              onDelete={async (doc) => onDelete(doc)}
+            />
           </div>
         </div>
       </main>

@@ -33,7 +33,7 @@ export default function BankSelector({ bank,onChange,disable=false }: BankSelect
   const selectedBank = banks.find((b) => b.label === bank) ?? null;
   return (
     <Autocomplete
-    disabled={disable}
+      disabled={disable}
       value={selectedBank}
       options={banks}
       freeSolo={true}

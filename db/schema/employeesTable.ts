@@ -33,9 +33,9 @@ export const employeesTable = mysqlTable("employees", {
   address3: varchar({ length: 255 }),
   avatar: varchar({ length: 255 }),
   salary:  decimal("salary", { precision: 10, scale: 2 }).notNull(),
-  bankName: text().notNull(),
-  bankAccountOwner: text().notNull(),
-  bankAccountNumber: text().notNull(),
+  bankName: text(),
+  bankAccountOwner: text(),
+  bankAccountNumber: text(),
   promtpay: text(),
   shopId: int()
     .references(() => shopsTable.id)
