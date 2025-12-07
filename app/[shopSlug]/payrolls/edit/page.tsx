@@ -87,6 +87,11 @@ export default function Home() {
     try {
       await deletePayrollRecords(checked, Number(periodId), user?.id);
       queryClient.invalidateQueries({ queryKey: ["payrollRecord"] });
+      queryClient.invalidateQueries({
+        queryKey: ["payrollPeriod", periodId],
+        exact: false,
+      });
+
       showSuccess(`Delete employee success`);
     } catch (err: any) {
       showError(`Delete employee failed \n ${err}`);

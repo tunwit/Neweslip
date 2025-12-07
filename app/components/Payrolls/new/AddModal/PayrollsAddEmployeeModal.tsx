@@ -61,6 +61,11 @@ export default function PayrollsAddEmployeeModal({
     try {
       await createPayrollRecords(checked, periodId, user?.id);
       queryClient.invalidateQueries({ queryKey: ["payrollRecord"] });
+      queryClient.invalidateQueries({
+        queryKey: ["payrollPeriod", periodId],
+        exact: false,
+      });
+
       showSuccess(`Add employee success`);
       setOpen(false);
     } catch (err: any) {
@@ -80,7 +85,7 @@ export default function PayrollsAddEmployeeModal({
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
         {/* <ModalOverflow> */}
-        <ModalDialog sx={{width:"50%"}}>
+        <ModalDialog sx={{ width: "50%" }}>
           <div className="flex flex-col justify-center w-full">
             <div className="flex flex-row items-center gap-2">
               <p className="font-bold text-lg">
