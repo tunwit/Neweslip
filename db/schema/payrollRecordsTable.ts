@@ -1,4 +1,4 @@
-import { date, decimal, index, int, mysqlEnum, mysqlTable, primaryKey, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
+import { boolean, date, decimal, index, int, mysqlEnum, mysqlTable, primaryKey, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 import { shopsTable } from "./shopsTable";
 import { relations } from "drizzle-orm";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
@@ -14,6 +14,7 @@ export const payrollRecordsTable = mysqlTable("payroll_records", {
     .references(() => employeesTable.id, { onDelete : "cascade"})
     .notNull(),
   salary: decimal("salary", { precision: 10, scale: 2 }).notNull(),
+  sentMail:boolean("sent_mail").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 },(t) => ({

@@ -45,7 +45,7 @@ export default function PayrollSummaryTab({
           {data?.data?.otValues.map((ot) => (
             <tr key={ot.id}>
               <td className="font-medium">{ot.name}</td>
-              <td>{ot.amount}</td>
+              <td>{ot.amount} ({ot.value})</td>
               <td></td>
             </tr>
           ))}
@@ -53,7 +53,7 @@ export default function PayrollSummaryTab({
             <tr key={penalty.id}>
               <td className="font-medium">{penalty.name}</td>
               <td></td>
-              <td>{penalty.amount}</td>
+              <td>{penalty.amount} ({penalty.value})</td>
             </tr>
           ))}
         </tbody>

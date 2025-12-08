@@ -63,6 +63,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen w-full bg-gray-50 font-medium">
+      <title>Payrolls - Eslip</title>
       <Modal open={isLoading}>
         <ModalDialog>
           <div className="flex flex-col items-center justify-center">
@@ -125,7 +126,7 @@ export default function Home() {
               (period) => period.status === PAY_PERIOD_STATUS.DRAFT,
             ).length > 0 && (
               <PeriodsTable
-                title="Pending"
+                title="Draft"
                 color="gray"
                 periods={
                   data?.data?.filter(

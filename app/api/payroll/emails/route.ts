@@ -35,11 +35,12 @@ export async function POST(request: NextRequest) {
 
     // Setup SSE
     const encoder = new TextEncoder();
+    let success: number[] = [];
     const stream = new ReadableStream({
       async start(controller) {
         const sendProgress = (data: any) => {
           controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
+            encoder.encode(`data: ${JSON.stringify(data)}\n\n`),
           );
         };
 
@@ -58,7 +59,10 @@ export async function POST(request: NextRequest) {
             return;
           }
 
-          sendProgress({ type: "progress", message: "Fetching employee data..." });
+          sendProgress({
+            type: "progress",
+            message: "Fetching employee data...",
+          });
 
           const employeeIds = [...new Set(records.map((r) => r.employeeId))];
           const periodIds = [...new Set(records.map((r) => r.payrollPeriodId))];
@@ -76,7 +80,10 @@ export async function POST(request: NextRequest) {
 
           const period = periods[0];
           if (period.status === PAY_PERIOD_STATUS.DRAFT) {
-            sendProgress({ type: "error", message: "Cannot send unfinalized period" });
+            sendProgress({
+              type: "error",
+              message: "Cannot send unfinalized period",
+            });
             controller.close();
             return;
           }
@@ -88,8 +95,11 @@ export async function POST(request: NextRequest) {
           }
 
           const branchIds = [...new Set(employees.map((e) => e.branchId))];
-          
-          sendProgress({ type: "progress", message: "Loading shop configuration..." });
+
+          sendProgress({
+            type: "progress",
+            message: "Loading shop configuration...",
+          });
 
           const [shop, branches] = await Promise.all([
             globalDrizzle
@@ -116,13 +126,20 @@ export async function POST(request: NextRequest) {
           const recordMap = new Map(records.map((r) => [r.id, r]));
           const periodMap = new Map(periods.map((p) => [p.id, p]));
 
-          sendProgress({ type: "progress", message: "Calculating salaries..." });
+          sendProgress({
+            type: "progress",
+            message: "Calculating salaries...",
+          });
 
           const salaryData = await Promise.all(
-            body.map((item) => calculateTotalSalary(Number(item.id)))
+            body.map((item) => calculateTotalSalary(Number(item.id))),
           );
 
-          sendProgress({ type: "progress", message: "Sending emails...", current: 0 });
+          sendProgress({
+            type: "progress",
+            message: "Sending emails...",
+            current: 0,
+          });
 
           // Track progress with atomic counters
           const progress = { completed: 0, failed: 0 };
@@ -130,7 +147,7 @@ export async function POST(request: NextRequest) {
           // Send all emails in parallel with progress tracking
           const emailPromises = body.map(async (item, index) => {
             const record = recordMap.get(item.id);
-            
+
             if (!record) {
               progress.failed++;
               sendProgress({
@@ -138,7 +155,7 @@ export async function POST(request: NextRequest) {
                 current: progress.completed + progress.failed,
                 total: body.length,
                 email: item.email,
-                error: "Record not found"
+                error: "Record not found",
               });
               return { success: false, email: item.email };
             }
@@ -151,7 +168,7 @@ export async function POST(request: NextRequest) {
                 current: progress.completed + progress.failed,
                 total: body.length,
                 email: item.email,
-                error: "Employee not found"
+                error: "Employee not found",
               });
               return { success: false, email: item.email };
             }
@@ -167,7 +184,7 @@ export async function POST(request: NextRequest) {
                 branch,
                 recordPeriod,
                 record,
-                data
+                data,
               );
 
               await sendMail({
@@ -189,16 +206,16 @@ export async function POST(request: NextRequest) {
                   },
                 ],
               });
-
+              success.push(record.id);
               progress.completed++;
               sendProgress({
                 type: "item_success",
                 current: progress.completed + progress.failed,
                 total: body.length,
                 email: item.email,
-                employeeName: employee.name
+                employeeName: employee.name,
               });
-              
+
               return { success: true, email: item.email };
             } catch (error) {
               progress.failed++;
@@ -207,21 +224,32 @@ export async function POST(request: NextRequest) {
                 current: progress.completed + progress.failed,
                 total: body.length,
                 email: item.email,
-                error: error.message
+                error: error.message,
               });
-              
-              return { success: false, email: item.email, error: error.message };
+
+              return {
+                success: false,
+                email: item.email,
+                error: error.message,
+              };
             }
           });
 
           // Wait for all emails to complete
           await Promise.allSettled(emailPromises);
 
+          await globalDrizzle
+            .update(payrollRecordsTable)
+            .set({
+              sentMail: true,
+            })
+            .where(inArray(payrollRecordsTable.id, success));
+
           sendProgress({
             type: "complete",
             total: body.length,
             completed: progress.completed,
-            failed: progress.failed
+            failed: progress.failed,
           });
 
           controller.close();
@@ -236,7 +264,7 @@ export async function POST(request: NextRequest) {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
       },
     });
   } catch (err) {

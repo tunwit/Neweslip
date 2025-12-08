@@ -12,6 +12,7 @@ import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useCheckBox } from "@/hooks/useCheckBox";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SendEmailsModalProps {
   summaryData: PayrollPeriodSummary;
@@ -24,6 +25,7 @@ export default function SendEmailsModal({
   open,
   setOpen,
 }: SendEmailsModalProps) {
+
   const [data, setData] = useState(summaryData);
   const [originalEmails, setOriginalEmails] = useState(() => {
     const emails: Record<number, string> = {};
@@ -32,6 +34,7 @@ export default function SendEmailsModal({
     });
     return emails;
   });
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEmail, setEditingEmail] = useState(-1);
   const [tempEmail, setTempEmail] = useState("");
@@ -236,6 +239,10 @@ export default function SendEmailsModal({
           }
         }
       }
+      queryClient.invalidateQueries({
+        queryKey: ["payrollPeriod", "summary", summaryData.id],
+        exact: false,
+      });
       showSuccess(`Successfully send email to ${progress.total} employee(s)`);
     } catch (error) {
       console.error("Error:", error);
@@ -375,8 +382,17 @@ export default function SendEmailsModal({
                     />
 
                     {/* Employee Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-orange-300 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                    <div className="relative w-10 h-10 rounded-full bg-orange-300 flex items-center justify-center text-white font-semibold flex-shrink-0">
                       {record.employee.firstName.charAt(0)}
+                      <div
+                        className={`absolute -bottom-1 -right-1  ${record.sentMail ? "bg-green-700" : "bg-red-700"} rounded-full p-1`}
+                      >
+                        {record.sentMail ? (
+                          <Icon icon="prime:send" fontSize={14} />
+                        ) : (
+                          <Icon icon="carbon:not-sent" fontSize={14} />
+                        )}
+                      </div>
                     </div>
 
                     {/* Employee Info */}

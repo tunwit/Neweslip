@@ -37,6 +37,7 @@ export interface PayrollPeriodSummary {
 export interface PayrollRecordSummary {
   id: number;
   baseSalary: number;
+  sentMail: boolean;
   employee: {
     id: number;
     firstName: string;

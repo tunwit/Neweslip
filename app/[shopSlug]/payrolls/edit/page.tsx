@@ -122,7 +122,6 @@ export default function Home() {
 
     try {
       await updatePayrollPeriod(Number(periodId), result, user?.id);
-      showSuccess("Update payroll success");
     } catch (err) {
       showError(`Cannot save data \n ${err}`);
     } finally {
@@ -231,7 +230,7 @@ export default function Home() {
             <input
               defaultValue={periodTitle}
               onChange={(e) => setPeriodTitle(e.target.value)}
-              className="text-black text-3xl font-bold p-2"
+              className="text-black rounded-md text-3xl font-bold p-2"
             ></input>
 
             <div className="flex gap-3 z-10 h-5">

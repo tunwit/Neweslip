@@ -145,7 +145,7 @@ export default function PayrollEditEmployeeModal({
         showError(`Cannot save data ${err}`)
       }
       setState(2);
-    }, 1200);
+    }, 1000);
 
     return () => clearTimeout(handler);
   }, [
