@@ -64,7 +64,7 @@ export default function FinalizeModal({
         <ModalClose />
         <section className="bg-blue-100 px-6 py-4 border-b border-gray-200 flex items-center justify-between rounded-t-lg">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 ">
+            <div className="bg-blue-600 p-2 rounded-sm">
               <Icon
                 icon="simple-line-icons:check"
                 fontSize={24}

@@ -39,6 +39,7 @@ import SendEmailsModal from "@/app/components/Payrolls/view/SendEmailsModal";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { motion, AnimatePresence } from "framer-motion";
+import UnlockModal from "@/app/components/Payrolls/view/UnlockModal";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -46,6 +47,8 @@ export default function Home() {
   const [openEdit, setOpenEdit] = useState(false);
   const [openPayslipGenerate, setOpenPayslipGenerate] = useState(false);
   const [openSendEmails, setOpenSendEmails] = useState(false);
+  const [openUnlock, setOpenUnlock] = useState(false);
+
   const [hideHeader, setHideHeader] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
@@ -149,6 +152,11 @@ export default function Home() {
           setOpen={setOpenSendEmails}
         />
       )}
+      <UnlockModal
+        periodId={Number(periodId) || -1}
+        open={openUnlock}
+        setOpen={setOpenUnlock}
+      />
 
       <Modal open={isLoading}>
         <ModalDialog>
@@ -210,7 +218,9 @@ export default function Home() {
                       startDecorator={<Icon icon="uil:unlock" fontSize={20} />}
                       color="warning"
                       variant="outlined"
-                      onClick={summaryHandler}
+                      onClick={() => {
+                        setOpenUnlock(true);
+                      }}
                     >
                       Unlock
                     </Button>
