@@ -29,8 +29,8 @@ export default function EmployeesElement({
   return (
     <>
       <EmployeeDetailsModal employee={employee} open={open} setOpen={setOpen} />
-      <tr className="cursor-pointer">
-        <td>
+      <tr className="h-15 hover:bg-gray-50 transition-colors cursor-pointer">
+        <td className="pl-6 border-b">
           <div className="flex gap-4  items-center">
             <Checkbox
               checked={isChecked(employee.id)}
@@ -47,16 +47,16 @@ export default function EmployeesElement({
             </div>
           </div>
         </td>
-        <td onClick={() => setOpen(true)}>
+        <td onClick={() => setOpen(true)} className="border-b">
           <div className="flex flex-col gap-[0.5px]">
             <p>{employee.firstName + " " + employee.lastName}</p>
             <p className="text-xs opacity-65">{employee.email}</p>
           </div>
         </td>
-        <td onClick={() => setOpen(true)}>{employee.nickName}</td>
-        <td onClick={() => setOpen(true)}>{moneyFormat(employee.salary)} ฿</td>
-        <td onClick={() => setOpen(true)}>{employee.branch.name}</td>
-        <td onClick={() => setOpen(true)}>
+        <td onClick={() => setOpen(true)} className="border-b">{employee.nickName}</td>
+        <td onClick={() => setOpen(true)} className="border-b">{moneyFormat(employee.salary)} ฿</td>
+        <td onClick={() => setOpen(true)} className="border-b">{employee.branch.name}</td>
+        <td onClick={() => setOpen(true)} className="border-b">
           <EmployeeStatusBadge status={employee.status} />
         </td>
       </tr>

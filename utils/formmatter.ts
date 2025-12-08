@@ -61,3 +61,26 @@ export function formatModifiedTime(date: Date): string {
     minute: "2-digit",
   }).format(date);
 }
+
+
+export function formatBankAccountNumber(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+
+  // Standard 10-digit formatting: 3-1-5-1 (SCB, KBank, etc.)
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 4)}-${digits.slice(4, 9)}-${digits.slice(9)}`;
+  }
+
+  // 11-digit standard format: 3-1-5-2
+  if (digits.length === 11) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 4)}-${digits.slice(4, 9)}-${digits.slice(9, 11)}`;
+  }
+
+  // 12-digit format: 3-1-6-2 (some TTB & GSB)
+  if (digits.length === 12) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 4)}-${digits.slice(4, 10)}-${digits.slice(10, 12)}`;
+  }
+
+  // Fallback: return cleaned digits
+  return digits;
+}

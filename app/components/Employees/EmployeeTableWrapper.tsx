@@ -35,11 +35,11 @@ export function EmployeeTableWrapper({
     limit,
   });
 
-  const { checked, uncheckall} = useCheckBox<number>("allEmployeeTable");
+  const { checked, uncheckall } = useCheckBox<number>("allEmployeeTable");
   const { id } = useCurrentShop();
   const queryClient = useQueryClient();
   const { setMessage, show } = useSnackbar();
-  const user = useUser()
+  const user = useUser();
   const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
     setPage(page);
   };
@@ -47,18 +47,18 @@ export function EmployeeTableWrapper({
   const onDeleteEmployee = async () => {
     try {
       if (!id) return;
-      uncheckall()
-      await deleteEmployee(checked, id,user.user?.id || null);
+      uncheckall();
+      await deleteEmployee(checked, id, user.user?.id || null);
       showSuccess("Delete employee success");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-    } catch(err) {
+    } catch (err) {
       showError(`Delete employee failed \n ${err}`);
     }
   };
 
   return (
     <>
-      <section className="flex flex-col justify-center items-center">
+      <section className="flex flex-col justify-center items-center w-full">
         <div className="w-full -mt-3">
           <Button
             disabled={checked ? checked.length === 0 : true}
@@ -70,12 +70,14 @@ export function EmployeeTableWrapper({
             <p className="underline font-medium">delete</p>
           </Button>
         </div>
-        <div className=" mb-3 w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
-          <EmployeesTable
-            data={data}
-            isLoading={isLoading}
-            isSuccess={isSuccess}
-          />
+        <div className="mb-3 w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">
+          <div>
+            <EmployeesTable
+              data={data}
+              isLoading={isLoading}
+              isSuccess={isSuccess}
+            />
+          </div>
         </div>
         <Pagination
           count={data?.pagination.totalPages || 1}

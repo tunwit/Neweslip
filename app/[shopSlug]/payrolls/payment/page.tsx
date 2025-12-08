@@ -47,11 +47,7 @@ import PaymentCard from "@/app/components/Payrolls/payment/PaymentCard";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
-  const { checked } = methods;
-  const [openAdd, setOpenAdd] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [openCalendar, setOpenCalendar] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
+  const router = useRouter();
   const [showFilter, setShowFilter] = useState(false);
   const periodId = useSearchParams().get("id");
   const [selectedTab, setSelectedTab] = useState("manual");
@@ -84,9 +80,16 @@ export default function Home() {
     );
   }, [summaryData?.data?.records, debouced]);
 
+  const isLoading = loadingPeriod || loadingSummary;
+
+  let loadingMessage = "Preparing...";
+  if (loadingPeriod) loadingMessage = "Loading Period...";
+  if (loadingSummary) loadingMessage = "Calculating...";
+
   return (
     <main className="w-full bg-gray-100 font-medium ">
-      <Modal open={loadingPeriod}>
+      <title>Payment - Eslip</title>
+      <Modal open={isLoading}>
         <ModalDialog>
           <div className="flex flex-col items-center justify-center">
             <Icon
@@ -95,11 +98,10 @@ export default function Home() {
               fontSize={50}
             />
 
-            <p> {"Loading..."}</p>
+            <p> {loadingMessage}</p>
           </div>
         </ModalDialog>
       </Modal>
-      <title>{periodData?.data?.name}</title>
 
       <div className="flex flex-1 flex-col h-full gap-5 items-center overflow-y-scroll">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
@@ -112,6 +114,19 @@ export default function Home() {
           </div>
           <div className="mt-3 flex flex-row justify-between items-center  text-black text-4xl font-bold">
             <p>{periodData?.data?.name}</p>
+            <Button
+              sx={{ height: 40 }}
+              startDecorator={
+                <Icon icon="lets-icons:back-light" fontSize={20} />
+              }
+              color="neutral"
+              variant="outlined"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              Back
+            </Button>
           </div>
 
           <section className="grid grid-cols-4 gap-4 mt-5">
@@ -169,10 +184,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div
-              className="relative bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200 cursor-pointer"
-              onClick={() => setOpenCalendar(true)}
-            >
+            <div className="relative bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-orange-700 font-medium">Period</p>
@@ -190,28 +202,12 @@ export default function Home() {
                   />
                 </div>
               </div>
-              {openCalendar && (
-                <ClickAwayListener onClickAway={() => setOpenCalendar(false)}>
-                  <div className="absolute top-full right-0 mt-2 z-50">
-                    <Calendar
-                      mode="range"
-                      defaultMonth={dateRange?.from}
-                      selected={dateRange}
-                      onSelect={(range) => {
-                        setDateRange(range);
-                      }}
-                      numberOfMonths={2}
-                      className="rounded-lg border shadow-md bg-white"
-                    />
-                  </div>
-                </ClickAwayListener>
-              )}
             </div>
           </section>
         </section>
         <div className="w-fit">
-          <section className="flex w-full justify-center items-center">
-            <div className="space-x-5">
+          <section className="flex w-full justify-center items-center ">
+            <div className="flex gap-5 flex-col lg:flex-row w-full">
               <button
                 onClick={() => setSelectedTab("manual")}
                 className={`p-6 rounded-xl border-2 transition-all ${
@@ -325,9 +321,9 @@ export default function Home() {
               />
             </div>
           </section>
-          <section className="space-y-3 mt-3">
+          <section className="space-y-3 my-3">
             {filtered?.map((record) => {
-              return <PaymentCard record={record} />;
+              return <PaymentCard key={record.id} record={record} />;
             })}
           </section>
         </div>

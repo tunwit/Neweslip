@@ -40,31 +40,38 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
 
   return (
     <>
-      <Table stickyHeader stickyFooter hoverRow variant="plain" noWrap>
-        <thead>
-          <tr>
-            <th className="w-[8%]">
+      <table className="w-full border-separate border-spacing-0">
+        <thead className=" bg-gray-50 border border-gray-200 sticky top-0 z-10">
+          <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
+            <th className="font-light text-sm pl-6 w-[7%] whitespace-nowrap min-w-15 border-b">
               <Checkbox
                 checked={isAllChecked(data?.data?.length ?? 0)}
                 indeterminate={isSomeChecked(data?.data?.length ?? 0)}
                 onChange={(e) => handleAllCheckbox(e)}
               />
             </th>
-            <th className="font-medium w-[25%]">Name</th>
-            <th className="font-medium">Nickname</th>
-            <th className="font-medium">Base Salary</th>
-            <th className="font-medium">Branch</th>
-            <th className="font-medium">Status</th>
+            <th className="font-light text-sm whitespace-nowrap border-b">
+              Name
+            </th>
+            <th className="font-light text-sm whitespace-nowrap border-b">
+              Nickname
+            </th>
+            <th className="font-light text-sm whitespace-nowrap border-b">
+              Base Salary
+            </th>
+            <th className="font-light text-sm whitespace-nowrap border-b">
+              Branch
+            </th>
+            <th className="font-light text-sm whitespace-nowrap border-b">
+              Status
+            </th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="bg-white divide-y divide-gray-200">
           {isLoading && (
-            <tr className="text-center">
-              <td
-                colSpan={6}
-                className="text-center"
-              >
+            <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer ">
+              <td colSpan={6} className="text-center">
                 <span className="flex items-center gap-2 w-full justify-center">
                   <Icon
                     icon={"mynaui:spinner"}
@@ -78,8 +85,8 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
           )}
 
           {!isLoading && data?.data?.length == 0 && (
-            <tr className="text-center">
-              <td colSpan={6}>No Employee</td>
+            <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer ">
+              <td colSpan={6} className="text-center">No Employee</td>
             </tr>
           )}
 
@@ -88,24 +95,24 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
               return <EmployeesElement key={emp.id} employee={emp} />;
             })}
         </tbody>
-        <tfoot>
+        <tfoot className="h-20 bg-gray-50   sticky bottom-0 z-10 ">
           <tr>
-            <th scope="row">Totals</th>
-            <td>
+            <th className="border-t" scope="row">Totals</th>
+            <td className="border-t">
               <div className="flex flex-row gap-1 items-center ">
                 <p>{employeeStat?.data?.totalEmployees || 0}</p>
                 <Icon icon={"mdi:users"} />
               </div>
             </td>
-            <td></td>
-            <td>
+            <td className="border-t"></td>
+            <td className="border-t">
               {moneyFormat(employeeStat?.data?.salary.activeSalary || 0)} ฿
             </td>
-            <td></td>
-            <td></td>
+            <td className="border-t"></td>
+            <td className="border-t"></td>
           </tr>
         </tfoot>
-      </Table>
+      </table>
     </>
   );
 }

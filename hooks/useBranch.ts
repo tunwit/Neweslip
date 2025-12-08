@@ -2,7 +2,11 @@ import { Branch } from "@/types/branch";
 import { ApiResponse } from "@/types/response";
 import { extractSlug } from "@/utils/extractSlug";
 import { fetchwithauth } from "@/utils/fetcher";
-import { useQuery, UseQueryResult, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  UseQueryResult,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 
 export const useBranch = () => {
@@ -16,6 +20,7 @@ export const useBranch = () => {
         endpoint: `/shop/branch?shopId=${data.id}`,
         method: "GET",
       }),
+    enabled: data.id > 0,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });

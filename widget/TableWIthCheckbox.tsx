@@ -64,7 +64,7 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
                 <Checkbox
                   checked={isAllChecked(data?.length ?? 0)}
                   indeterminate={isSomeChecked(data?.length ?? 0)}
-                  onChange={handleAllCheckbox}
+                  onChange={(e) => handleAllCheckbox(e)}
                 />
               </th>
               {columns.map((col) => (

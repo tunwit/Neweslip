@@ -75,6 +75,10 @@ export async function summaryPeriod(
         branch: branchesTable.name,
         branchEng: branchesTable.nameEng,
         email: employeesTable.email,
+        bankAccountNumber: employeesTable.bankAccountNumber,
+        bankAccountOwner: employeesTable.bankAccountOwner,
+        bankName: employeesTable.bankName,
+        promtpay: employeesTable.promtpay,
       },
     })
     .from(payrollRecordsTable)

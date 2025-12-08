@@ -221,7 +221,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="flex-1">
+        <section>
           <div className="mt-8 mx-10 flex flex-col justify-between p-4   bg-white  rounded-md shadow">
             <div className="flex flex-row justify-between h-10">
               <div className="flex flex-row gap-3 h-full">

@@ -86,6 +86,11 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const onPayment = () => {
+    const newPath = pathname.replace("/view", "/payment");
+    router.push(`${newPath}?id=${periodId}`);
+  };
+
   useEffect(() => {
     if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/view", "/edit");
@@ -456,7 +461,10 @@ export default function Home() {
                 <p className="text-sm text-gray-600 mb-3">
                   Generate bank transfer file
                 </p>
-                <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1">
+                <button
+                  onClick={onPayment}
+                  className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+                >
                   To payment
                   <Icon
                     icon="lsicon:right-outline"

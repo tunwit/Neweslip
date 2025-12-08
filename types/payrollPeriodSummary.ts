@@ -46,6 +46,10 @@ export interface PayrollRecordSummary {
     branch: string;
     branchEng: string;
     email: string;
+    bankAccountNumber: string;
+    bankAccountOwner: string;
+    bankName: string;
+    promtpay: string;
   };
   totals: TotalSalary;
   fields: InferSelectModel<typeof payrollFieldValueTable>[];
