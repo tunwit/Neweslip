@@ -16,6 +16,7 @@ import {
   PayrollPeriodSummary,
   PayrollRecordSummary,
 } from "@/types/payrollPeriodSummary";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function summaryPeriod(
   periodId: number,
@@ -42,6 +43,23 @@ export async function summaryPeriod(
   if (!period) throw new Error("Payroll period not found");
   if (!(await isOwner(Number(period.shopId), userId)))
     throw new Error("Forbidden");
+
+  let finalizedByUser = null;
+  if (period.finalized_by) {
+    const client = await clerkClient();
+    const clerkUser = await client.users.getUser(period.finalized_by);
+    finalizedByUser = {
+      id: clerkUser.id,
+      firstName: clerkUser.firstName,
+      lastName: clerkUser.lastName,
+      fullName: clerkUser.fullName,
+      email: clerkUser.primaryEmailAddress?.emailAddress,
+      hasImage: clerkUser.hasImage,
+      imageUrl: clerkUser.imageUrl,
+      lastSignInAt: clerkUser.lastSignInAt,
+      lastActiveAt: clerkUser.lastActiveAt,
+    };
+  }
 
   // Fetch payroll records with employee info
   const records = await globalDrizzle
@@ -113,6 +131,7 @@ export async function summaryPeriod(
 
   return {
     ...period,
+    finalizedByUser,
     employeeCount: records.length,
     totalNet,
     totalBaseSalary,

@@ -24,7 +24,7 @@ export default function MerchantTabs() {
             },
           }}
         >
-          <Tab>Profile</Tab>
+          <Tab>Overview</Tab>
           <Tab>Branches</Tab>
           <Tab>Owners</Tab>
           <Tab>Email Service</Tab>

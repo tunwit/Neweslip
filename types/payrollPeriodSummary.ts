@@ -9,6 +9,7 @@ import {
   payrollFieldValueTable,
   penaltyFieldValueTable,
 } from "@/db/schema";
+import { Owner } from "./owner";
 
 // Main response for GET /payroll-period/:periodId
 export interface PayrollPeriodSummary {
@@ -22,6 +23,7 @@ export interface PayrollPeriodSummary {
   workdays_per_month: number;
   finalized_at: string;
   finalized_by: string;
+  finalizedByUser: Owner;
   edited: boolean;
   employeeCount: number;
   totalBaseSalary: number;

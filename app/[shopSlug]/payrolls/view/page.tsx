@@ -116,7 +116,7 @@ export default function Home() {
 
   const isLoading = loadingPeriod || !summaryData;
 
-  let loadingMessage = "";
+  let loadingMessage = "Preparing...";
   if (loadingPeriod) loadingMessage = "Loading Period...";
 
   return (
@@ -312,12 +312,14 @@ export default function Home() {
         </AnimatePresence>
 
         <section className="px-10 overflow-y-auto flex-1  space-y-3 ">
-          <button
-            className={`flex w-full items-center justify-center rotate-180  transition-all ${hideHeader ? "opacity-100  mt-4" : "opacity-0"}`}
-            onClick={() => setHideHeader(!hideHeader)}
-          >
-            <Icon icon="icon-park-outline:up" fontSize={20} />
-          </button>
+          <div hidden={!hideHeader} className={`bg-white py-3 sticky top-0`}>
+            <button
+              className={`flex w-full items-center justify-center rotate-180  transition-all `}
+              onClick={() => setHideHeader(!hideHeader)}
+            >
+              <Icon icon="icon-park-outline:up" fontSize={20} />
+            </button>
+          </div>
           <div
             className={`bg-green-50 p-4 border border-green-200 rounded-md my-5`}
           >
@@ -330,8 +332,11 @@ export default function Home() {
               <div>
                 <p className="text-green-900">Payroll Successfully Finalized</p>
                 <p className="font-light text-xs text-green-700 ">
-                  Finalized by {summaryData?.data?.finalized_by} on{" "}
-                  {dateTimeFormat(new Date(summaryData?.data?.finalized_at || 0))}
+                  Finalized by{" "}
+                  {summaryData?.data?.finalizedByUser?.fullName || "Unknown"} on{" "}
+                  {dateTimeFormat(
+                    new Date(summaryData?.data?.finalized_at || 0),
+                  )}
                 </p>
               </div>
             </div>

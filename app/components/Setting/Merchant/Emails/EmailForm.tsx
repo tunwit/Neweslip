@@ -49,7 +49,6 @@ export default function EmailForm({ shopData }: EmailFormProps) {
 
   const onSubmit = async (data: Omit<NewShop, "name">) => {
     if (!shopId || !user?.id) return;
-    console.log(data);
 
     const emailVerify = await verify(
       data.SMTPHost || "",
