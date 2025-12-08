@@ -86,11 +86,6 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const summaryHandler = () => {
-    const newPath = pathname.replace("/edit", "/summary");
-    router.push(`${newPath}?id=${periodId}`);
-  };
-
   useEffect(() => {
     if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/view", "/edit");
