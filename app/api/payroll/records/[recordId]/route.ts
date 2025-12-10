@@ -25,7 +25,7 @@ import calculateTotalSalary from "@/lib/calculateTotalSalary";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { recordId: string } },
+  { params }: { params: Promise<{ recordId: string }> },
 ) {
   try {
     const { userId } = await auth();

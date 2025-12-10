@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai, Prompt, Sarabun } from "next/font/google";
+import { Prompt } from "next/font/google";
 import "./globals.css";
 import DashboardSidebar from "./components/DashboardSidebar/DashboardSidebar";
 import Providers from "./providers";
@@ -11,11 +11,6 @@ import SnackBar from "../widget/SnackBar";
 import ClientWrapper from "@/widget/ClientWrapper";
 import { ClerkProvider } from "@clerk/nextjs";
 import './globals.css'
-
-const sarabun = Sarabun({
-  subsets: ["thai", "latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
-});
 
 const propmt = Prompt({
   subsets: ["thai", "latin"],

@@ -51,6 +51,10 @@ export default function FinalizeModal({
         queryKey: ["payrollPeriod", periodSummary.id],
         exact: false,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["payrollPeriod", "summary", periodSummary.id],
+        exact: false,
+      });
       setOpen(false);
     } catch (err) {
       showError(`Cannot finalize payroll ${err}`);

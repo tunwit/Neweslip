@@ -41,6 +41,7 @@ import { updatePayrollPeriod } from "@/app/action/updatePayrollPeriod";
 import { ClickAwayListener } from "@mui/material";
 import { usePeriodFields } from "@/hooks/usePeriodFields";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
+import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -80,7 +81,9 @@ export default function Home() {
   );
 
   const [baseRecords, setBaseRecords] = useState<PayrollRecord[]>([]);
-  const [filterdRecord, setFilterdRecord] = useState<PayrollRecord[]>([]);
+  const [filterdRecord, setFilterdRecord] = useState<
+    PayrollRecordSummary[] | PayrollRecord[]
+  >([]);
 
   const deleteHandler = async () => {
     if (!user?.id) return;
@@ -416,7 +419,7 @@ export default function Home() {
               searchQuery={debouced}
               checkBoxMethod={methods}
               periodData={periodData?.data}
-              records={filterdRecord || []}
+              records={(filterdRecord as PayrollRecord[]) || []}
               setSelected={setSelectedRecord}
               setOpenEdit={setOpenEdit}
             />

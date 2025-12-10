@@ -24,7 +24,10 @@ import { Modal, ModalDialog } from "@mui/joy";
 import { useEffect, useMemo, useState } from "react";
 import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
 import { PayrollRecord } from "@/types/payrollRecord";
-import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
+import {
+  PayrollPeriodSummary,
+  PayrollRecordSummary,
+} from "@/types/payrollPeriodSummary";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 
 export default function Home() {
@@ -262,7 +265,12 @@ export default function Home() {
 
         <section className="flex flex-col px-10  mt-5 gap-4">
           {filtered.map((record) => {
-            return <SummaryCard key={record.id} record={record} />;
+            return (
+              <SummaryCard
+                key={record.id}
+                record={record as PayrollRecordSummary}
+              />
+            );
           })}
         </section>
         <section className="px-10 mb-5">

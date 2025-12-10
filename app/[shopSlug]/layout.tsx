@@ -69,6 +69,7 @@ export default async function ShoppLayout({
         name: branchesTable.name,
         nameEng: branchesTable.nameEng,
         shopId: branchesTable.shopId,
+        address: branchesTable.address
       })
       .from(branchesTable)
       .innerJoin(

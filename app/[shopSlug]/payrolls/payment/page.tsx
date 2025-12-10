@@ -53,13 +53,24 @@ export default function Home() {
   const [selectedTab, setSelectedTab] = useState("manual");
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
+  const [filtered, setFiltered] = useState<
+    PayrollRecordSummary[] | PayrollRecord[]
+  >([]);
+  const pathname = usePathname();
 
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
   const { data: summaryData, isLoading: loadingSummary } =
     usePayrollPeriodSummary(Number(periodId));
+
+  useEffect(() => {
+    if (!summaryData?.data) return;
+    if (summaryData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
+      const newPath = pathname.replace("/payment", "/edit");
+      router.push(`${newPath}?id=${periodId}`);
+    }
+  }, [summaryData]);
 
   useEffect(() => {
     if (!summaryData?.data?.records) return;
@@ -323,7 +334,7 @@ export default function Home() {
           </section>
           <section className="space-y-3 my-3">
             {filtered?.map((record) => {
-              return <PaymentCard key={record.id} record={record} />;
+              return <PaymentCard key={record.id} record={record as PayrollRecordSummary} />;
             })}
           </section>
         </div>

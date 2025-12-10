@@ -60,7 +60,7 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
         <table className="w-full">
           <thead className=" bg-gray-50 border border-gray-200">
             <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
-              <th className="font-light text-sm pl-6 w-[6%] whitespace-nowrap min-w-15">
+              <th className="font-light text-sm pl-6 w-[4%] whitespace-nowrap min-w-15">
                 <Checkbox
                   checked={isAllChecked(data?.length ?? 0)}
                   indeterminate={isSomeChecked(data?.length ?? 0)}
