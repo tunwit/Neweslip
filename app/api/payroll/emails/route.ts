@@ -22,12 +22,13 @@ import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { sendMail } from "@/lib/emailService";
 import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 import calculateTotalSalary from "@/lib/calculateTotalSalary";
+import { RecordDetails } from "@/types/RecordDetails";
 
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return new Response("Unauthorized", { status: 401 });
+      return errorResponse("Unauthorized", 401);
     }
 
     const body: { id: number; email: string }[] = await request.json();
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
 
           sendProgress({
             type: "progress",
-            message: "Sending emails...",
+            message: "Processing...",
             current: 0,
           });
 
@@ -176,6 +177,18 @@ export async function POST(request: NextRequest) {
             const branch = branchMap.get(employee.branchId);
             const recordPeriod = periodMap.get(record.payrollPeriodId);
             const data = salaryData[index];
+            if (!branch || !recordPeriod)
+              return errorResponse("data not found", 404);
+            if (
+              !shop.SMTPHost ||
+              !shop.SMTPPort ||
+              !shop.SMTPSecure ||
+              !shop.emailAddress ||
+              !shop.emailPassword ||
+              !shop.emailAddress ||
+              !shop.emailName
+            )
+              return errorResponse("email not set", 405);
 
             try {
               const html = generateHTMLPayslip(
@@ -213,11 +226,12 @@ export async function POST(request: NextRequest) {
                 current: progress.completed + progress.failed,
                 total: body.length,
                 email: item.email,
-                employeeName: employee.name,
+                employeeName: employee.firstName + " " + employee.lastName,
+                message: `Sending to ${employee.firstName + " " + employee.lastName}`,
               });
 
               return { success: true, email: item.email };
-            } catch (error) {
+            } catch (error: any) {
               progress.failed++;
               sendProgress({
                 type: "item_failed",
@@ -253,7 +267,7 @@ export async function POST(request: NextRequest) {
           });
 
           controller.close();
-        } catch (error) {
+        } catch (error: any) {
           sendProgress({ type: "error", message: error.message });
           controller.close();
         }

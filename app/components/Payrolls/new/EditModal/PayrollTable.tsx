@@ -22,7 +22,7 @@ interface PayrollTableProps<T extends { id: number }> {
   showFooter?:boolean
 }
 
-export default function PayrollTable<T>({
+export default function PayrollTable<T extends { id: number }>({
   data,
   renderName,
   renderAmount,

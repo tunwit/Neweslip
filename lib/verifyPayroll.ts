@@ -16,11 +16,20 @@ import Decimal from "decimal.js";
 import { calculateOT } from "./otCalculater";
 import { calculatePenalty } from "./penaltyCalculater";
 
-const groupBy = (rows, key) =>
-  rows.reduce((acc, row) => {
-    (acc[row[key]] ||= []).push(row);
-    return acc;
-  }, {});
+function groupBy<
+  T,
+  K extends keyof T,
+  KeyType extends string | number | symbol = T[K] & (string | number | symbol),
+>(rows: T[], key: K): Record<KeyType, T[]> {
+  return rows.reduce(
+    (acc, row) => {
+      const groupKey = row[key] as KeyType;
+      (acc[groupKey] ||= []).push(row);
+      return acc;
+    },
+    {} as Record<KeyType, T[]>,
+  );
+}
 
 export default async function verifyPayroll(periodId: number) {
   let problems = [];

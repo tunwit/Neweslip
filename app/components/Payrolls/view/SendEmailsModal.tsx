@@ -14,6 +14,20 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useQueryClient } from "@tanstack/react-query";
 
+interface ProgressItem {
+  email: string;
+  name?: string;
+  status: "success" | "failed";
+  error?: string;
+}
+
+interface ProgressState {
+  current: number;
+  total: number;
+  message: string;
+  items: ProgressItem[];
+}
+
 interface SendEmailsModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -25,7 +39,6 @@ export default function SendEmailsModal({
   open,
   setOpen,
 }: SendEmailsModalProps) {
-
   const [data, setData] = useState(summaryData);
   const [originalEmails, setOriginalEmails] = useState(() => {
     const emails: Record<number, string> = {};
@@ -38,7 +51,7 @@ export default function SendEmailsModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEmail, setEditingEmail] = useState(-1);
   const [tempEmail, setTempEmail] = useState("");
-  const [progress, setProgress] = useState({
+  const [progress, setProgress] = useState<ProgressState>({
     current: 0,
     total: 0,
     message: "",

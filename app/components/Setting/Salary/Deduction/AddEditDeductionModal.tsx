@@ -3,7 +3,10 @@ import { updateSalaryFIeld } from "@/app/action/updateSalaryFIeld";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
+import {
+  SALARY_FIELD_DEFINATION_TYPE,
+  SALARY_FIELD_STATUS,
+} from "@/types/enum/enum";
 import { NewSalaryField, SalaryField } from "@/types/salaryFields";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
@@ -24,71 +27,78 @@ import { FormProvider } from "react-hook-form";
 interface AddDeductionModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  field: SalaryField | null
+  field: SalaryField | null;
 }
 
+const defaultType = SALARY_FIELD_DEFINATION_TYPE.DEDUCTION;
 
-const defaultType = SALARY_FIELD_DEFINATION_TYPE.DEDUCTION
+export default function AddEditDeductionModal({
+  open,
+  setOpen,
+  field,
+}: AddDeductionModalProps) {
+  const { id: shopId } = useCurrentShop();
+  const { user } = useUser();
 
-export default function AddEditDeductionModal({ open, setOpen, field }: AddDeductionModalProps) {
-  const {id:shopId} = useCurrentShop()
-  const {user} = useUser()
-
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const methods = useZodForm(salaryFieldSchema, {
-      defaultValues: {
-        name: field?.name || "",
-        nameEng: field?.nameEng || "",
-        type: defaultType,
-        formular: undefined
-      },
-    })
+    defaultValues: {
+      name: field?.name || "",
+      nameEng: field?.nameEng || "",
+      type: defaultType,
+      formular: undefined,
+    },
+  });
 
-  const { control , handleSubmit, formState:{isSubmitSuccessful,isSubmitting}} = methods
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitSuccessful, isSubmitting },
+  } = methods;
   const closeHandler = () => {
     methods.reset();
     setOpen(false);
   };
 
-    const submitHandler = async(data:Omit<NewSalaryField,"shopId">) => {
-      if(!shopId || !user?.id) return
-      try{
-        if (field) {
-          // edit mode
-          const payload: Omit<SalaryField, "id" | "shopId"> = {
-            ...data,
-            type: defaultType,
-            formular: data.formular ?? null,
-          };
-
-          await updateSalaryFIeld(field.id, payload,user?.id);
-          showSuccess("Deduction updated successfully");
-        } else {
-          // add mode
-          await createSalaryField(data, shopId,user?.id);
-          showSuccess("Deduction added successfully");
-        }
-        queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
-      }catch(err:any){
-        let msg = err
-        if(err.message== "ER_DUP_ENTRY") msg = "Deduction cannot have duplicate name"
-  
-        showError(`Add Deduction failed\n${msg}`)
-      }
-      closeHandler();
-    };
-  
-      useEffect(() => {
-        methods.reset({
-          name: field?.name || "",
-          nameEng: field?.nameEng || "",
+  const submitHandler = async (data: Omit<NewSalaryField, "shopId">) => {
+    if (!shopId || !user?.id) return;
+    try {
+      if (field) {
+        // edit mode
+        const payload: Omit<SalaryField, "id" | "shopId"> = {
+          ...data,
           type: defaultType,
-          formular: undefined
-        });
+          formular: data.formular ?? null,
+          isActive: SALARY_FIELD_STATUS.ACTIVE,
+        };
 
-      }, [field, methods.reset]);
+        await updateSalaryFIeld(field.id, payload, user?.id);
+        showSuccess("Deduction updated successfully");
+      } else {
+        // add mode
+        await createSalaryField(data, shopId, user?.id);
+        showSuccess("Deduction added successfully");
+      }
+      queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
+    } catch (err: any) {
+      let msg = err;
+      if (err.message == "ER_DUP_ENTRY")
+        msg = "Deduction cannot have duplicate name";
 
+      showError(`Add Deduction failed\n${msg}`);
+    }
+    closeHandler();
+  };
+
+  useEffect(() => {
+    methods.reset({
+      name: field?.name || "",
+      nameEng: field?.nameEng || "",
+      type: defaultType,
+      formular: undefined,
+    });
+  }, [field, methods.reset]);
 
   return (
     <>
@@ -96,18 +106,27 @@ export default function AddEditDeductionModal({ open, setOpen, field }: AddDeduc
         <ModalDialog sx={{ background: "#fafafa" }}>
           <ModalClose></ModalClose>
           <FormProvider {...methods}>
-            
-          <form onSubmit={handleSubmit(submitHandler)}>
-            <div className="grid  gap-3">
-              <InputForm control={control} name="name" label="Name"/>
-              <InputForm control={control} name="nameEng" label="Name English"/>
-            </div>
-            <div className="mt-3">
-              <Button disabled={isSubmitting || isSubmitSuccessful} loadingPosition="start" loading={isSubmitting} type="summit" sx={{ width: "100%" }} loadingPosition="start" loading={isSubmitting}>
-                {field ? "Update" : "Add"}
-              </Button>
-            </div>
-          </form>
+            <form onSubmit={handleSubmit(submitHandler)}>
+              <div className="grid  gap-3">
+                <InputForm control={control} name="name" label="Name" />
+                <InputForm
+                  control={control}
+                  name="nameEng"
+                  label="Name English"
+                />
+              </div>
+              <div className="mt-3">
+                <Button
+                  disabled={isSubmitting || isSubmitSuccessful}
+                  loadingPosition="start"
+                  loading={isSubmitting}
+                  type="summit"
+                  sx={{ width: "100%" }}
+                >
+                  {field ? "Update" : "Add"}
+                </Button>
+              </div>
+            </form>
           </FormProvider>
         </ModalDialog>
       </Modal>

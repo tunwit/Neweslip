@@ -9,6 +9,9 @@ import { useUser } from "@clerk/nextjs";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { FormProvider } from "react-hook-form";
+import z from "zod";
+
+type ChangePasswordForm = z.infer<typeof changePasswordSchema>;
 
 interface ChangePasswordModalProps {
   open: boolean;
@@ -28,7 +31,7 @@ export default function ChangePasswordModal({
   } = methods;
   const [err, setError] = useState("");
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: ChangePasswordForm) => {
     if (!id || !user) return;
     setError("");
     if (data.newpassword !== data.confirmpassword) {

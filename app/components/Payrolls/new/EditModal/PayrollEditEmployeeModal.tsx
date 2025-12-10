@@ -103,10 +103,10 @@ export default function PayrollEditEmployeeModal({
     Record<number, { amount: number }>
   >({});
   const [otAmount, setOtAmount] = useState<
-    Record<number, { value: number; amount: number }>
+    Record<number, { value?: number; amount: number }>
   >({});
   const [penaltyAmount, setPenaltyAmount] = useState<
-    Record<number, { value: number; amount: number }>
+    Record<number, { value?: number; amount: number }>
   >({});
   const [displayAmount, setDisplayAmount] = useState<
     Record<number, { amount: number }>
@@ -142,7 +142,7 @@ export default function PayrollEditEmployeeModal({
       try {
         await saveDataHandler();
       } catch (err) {
-        showError(`Cannot save data ${err}`)
+        showError(`Cannot save data ${err}`);
       }
       setState(2);
     }, 1000);

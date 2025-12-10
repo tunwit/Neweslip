@@ -28,7 +28,7 @@ export async function GET(request:NextRequest) {
       .from(salaryFieldsTable)
       .where(eq(salaryFieldsTable.shopId, Number(shopId)));
 
-    const grouped: SalaryFieldGrouped = data.reduce((acc, field) => {
+    const grouped = data.reduce((acc, field) => {
     (acc[field.type] ??= []).push(field);
     return acc;
     }, {} as Record<string, typeof data>);

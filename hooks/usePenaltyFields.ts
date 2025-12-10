@@ -1,4 +1,3 @@
-
 import { OtField } from "@/types/otField";
 import { PenaltyField } from "@/types/penaltyField";
 import { ApiResponse } from "@/types/response";
@@ -8,15 +7,16 @@ import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export const usePenaltyFields = (shopId:number) => {
+export const usePenaltyFields = (shopId: number) => {
   const { session } = useSession();
   const query = useQuery<ApiResponse<PenaltyField[]>>({
-    queryKey: ["penaltyFields",shopId, session?.user?.emailAddresses],
+    queryKey: ["penaltyFields", shopId, session?.user?.emailAddresses],
     queryFn: () =>
       fetchwithauth({
         endpoint: `/payroll/penalty?shopId=${shopId}`,
         method: "GET",
       }),
+    enabled: shopId > 0,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,

@@ -2,9 +2,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/useBranch";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { deleteBranch } from "@/app/action/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
@@ -12,18 +10,6 @@ import { useSalaryFields } from "@/hooks/useSalaryFields";
 import { SalaryField } from "@/types/salaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { deleteSalaryField } from "@/app/action/deleteSalaryField";
-import AddEditIncomeModal from "../Income/AddEditIncomeModal";
-import { useOTFields } from "@/hooks/useOTFields";
-import { OtField } from "@/types/otField";
-
-import { PenaltyField } from "@/types/penaltyField";
-import { usePenaltyFields } from "@/hooks/usePenaltyFields";
-import {
-  PENALTY_METHOD_LABELS,
-  PENALTY_TYPE_LABELS,
-  SALARY_FIELD_DEFINATION_TYPE_LABELS,
-} from "@/types/enum/enumLabel";
-import AddEditPenaltyModal from "./AddEditPenaltyModal";
 import { deletePenaltyField } from "@/app/action/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";

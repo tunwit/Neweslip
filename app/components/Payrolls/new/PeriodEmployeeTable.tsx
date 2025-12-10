@@ -30,6 +30,7 @@ export default function PeriodEmployeeTable({
   setOpenEdit,
 }: PeriodEmployeeTableProps) {
   const [filterd, setFilterd] = useState(records);
+  console.log(filterd);
 
   useEffect(() => {
     const q = searchQuery.toLowerCase();

@@ -4,33 +4,31 @@ import { and, eq } from "drizzle-orm";
 import { isOwner } from "./isOwner";
 import { Branch } from "@/types/branch";
 
-export default async function getBranches(userId:string,shopId:number) {
-     try {
-          
-       
-       const data: Branch[] = await globleDrizzle
-         .select({
-           id: branchesTable.id,
-           name: branchesTable.name,
-           nameEng: branchesTable.nameEng,
-           shopId: branchesTable.shopId,
-         })
-         .from(branchesTable)
-         .innerJoin(
-           shopOwnerTable,
-           eq(branchesTable.shopId, shopOwnerTable.shopId),
-         )
-         .where(
-           and(
-             eq(branchesTable.shopId, Number(shopId)),
-             eq(shopOwnerTable.ownerId, userId),
-           ),
-         );
-   
-   
-       return data
-     } catch (err) {
-       console.error(err);
-       throw Error("Internal server error");
-     }
+export default async function getBranches(userId: string, shopId: number) {
+  try {
+    const data: Branch[] = await globleDrizzle
+      .select({
+        id: branchesTable.id,
+        name: branchesTable.name,
+        nameEng: branchesTable.nameEng,
+        address: branchesTable.address,
+        shopId: branchesTable.shopId,
+      })
+      .from(branchesTable)
+      .innerJoin(
+        shopOwnerTable,
+        eq(branchesTable.shopId, shopOwnerTable.shopId),
+      )
+      .where(
+        and(
+          eq(branchesTable.shopId, Number(shopId)),
+          eq(shopOwnerTable.ownerId, userId),
+        ),
+      );
+
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw Error("Internal server error");
+  }
 }

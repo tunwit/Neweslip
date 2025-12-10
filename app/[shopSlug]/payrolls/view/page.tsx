@@ -515,7 +515,12 @@ export default function Home() {
           </section>
           <div className="space-y-3 mb-5">
             {filtered.map((record) => {
-              return <SummaryCard key={record.id} record={record} />;
+              return (
+                <SummaryCard
+                  key={record.id}
+                  record={record as PayrollRecordSummary}
+                />
+              );
             })}
           </div>
         </section>

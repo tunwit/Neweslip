@@ -1,4 +1,3 @@
-
 import { OtField } from "@/types/otField";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { PenaltyField } from "@/types/penaltyField";
@@ -10,16 +9,16 @@ import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export const useRecordDetails = (recordId:number) => {
+export const useRecordDetails = (recordId: number) => {
   const { session } = useSession();
   const query = useQuery<ApiResponse<RecordDetails>>({
-    queryKey: ["record",recordId ,session?.user?.emailAddresses],
+    queryKey: ["record", recordId, session?.user?.emailAddresses],
     queryFn: () =>
       fetchwithauth({
         endpoint: `/payroll/records/${recordId}`,
         method: "GET",
       }),
-    enabled: !!recordId,
+    enabled: recordId > 0,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 0,

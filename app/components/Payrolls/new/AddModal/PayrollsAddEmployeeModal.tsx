@@ -10,9 +10,7 @@ import {
 } from "@mui/joy";
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Employee, EmployeeWithShop } from "@/types/employee";
-import data from "@/assets/employee";
-import { useSelectedEmployees } from "../hooks/useSelectedEmployee";
+import { EmployeeWithShop } from "@/types/employee";
 import BranchSelector from "@/widget/BranchSelector";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";

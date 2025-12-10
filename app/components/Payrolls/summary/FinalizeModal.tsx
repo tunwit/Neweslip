@@ -310,7 +310,7 @@ export default function FinalizeModal({
               <input
                 type="checkbox"
                 className="mt-1 rounded"
-                value={confirmCheckbox}
+                checked={confirmCheckbox}
                 onChange={(e) => setConfirmCheckbox(!confirmCheckbox)}
               />
               <span className="text-sm text-gray-700">

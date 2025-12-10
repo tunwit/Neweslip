@@ -53,9 +53,7 @@ export default function Home() {
   const [selectedTab, setSelectedTab] = useState("manual");
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [filtered, setFiltered] = useState<
-    PayrollRecordSummary[] | PayrollRecord[]
-  >([]);
+  const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
   const pathname = usePathname();
 
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
@@ -334,7 +332,12 @@ export default function Home() {
           </section>
           <section className="space-y-3 my-3">
             {filtered?.map((record) => {
-              return <PaymentCard key={record.id} record={record as PayrollRecordSummary} />;
+              return (
+                <PaymentCard
+                  key={record.id}
+                  record={record as PayrollRecordSummary}
+                />
+              );
             })}
           </section>
         </div>

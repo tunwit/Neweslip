@@ -13,7 +13,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import ChangePasswordModal from "./ChangePasswordModal";
-
+import z from "zod";
+type OverviewFormValues = z.infer<typeof overviewSchema>;
 interface OverviewFormProps {
   shopData: Shop;
 }
@@ -31,10 +32,18 @@ export default function OverviewForm({ shopData }: OverviewFormProps) {
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
   const queryClient = useQueryClient();
 
-  const onSubmit = async (data: NewShop) => {
+  const onSubmit = async (data: OverviewFormValues) => {
     if (!shopData.id || !user?.id) return;
     try {
-      await updateShop(data, shopData.id, user?.id);
+      await updateShop(
+        {
+          ...data,
+          work_hours_per_day: String(data.work_hours_per_day),
+          workdays_per_month: String(data.workdays_per_month),
+        },
+        shopData.id,
+        user?.id,
+      );
       showSuccess("Update shop successfully");
       queryClient.invalidateQueries({ queryKey: ["shop"], exact: false });
     } catch (err) {

@@ -81,9 +81,7 @@ export default function Home() {
   );
 
   const [baseRecords, setBaseRecords] = useState<PayrollRecord[]>([]);
-  const [filterdRecord, setFilterdRecord] = useState<
-    PayrollRecordSummary[] | PayrollRecord[]
-  >([]);
+  const [filterdRecord, setFilterdRecord] = useState<PayrollRecord[]>([]);
 
   const deleteHandler = async () => {
     if (!user?.id) return;

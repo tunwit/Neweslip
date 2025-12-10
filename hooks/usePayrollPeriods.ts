@@ -1,14 +1,18 @@
-
 import { Owner } from "@/types/owner";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { ApiResponse } from "@/types/response";
 import { Shop } from "@/types/shop";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
-import { keepPreviousData, useQuery, UseQueryResult, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  UseQueryResult,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Session } from "inspector/promises";
 
-export const usePayrollPeriods= (shopId:number) => {
+export const usePayrollPeriods = (shopId: number) => {
   const { session } = useSession();
   const query = useQuery<ApiResponse<PayrollPeriod[]>>({
     queryKey: ["payrollPeriods", session?.user?.emailAddresses],
@@ -17,7 +21,8 @@ export const usePayrollPeriods= (shopId:number) => {
         endpoint: `/payroll/periods?shopId=${shopId}`,
         method: "GET",
       }),
-    placeholderData:keepPreviousData,
+    placeholderData: keepPreviousData,
+    enabled: shopId > 0,
     staleTime: 1000 * 60 * 5,
   });
 

@@ -10,7 +10,6 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { deletePayrollPeriod } from "@/app/action/deletePayrollPeriod";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePayrollPeriodStats } from "@/hooks/usePayrollPeriodSummary";
 import { useUser } from "@clerk/nextjs";
 
 export default function PendingSection() {

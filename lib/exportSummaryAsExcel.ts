@@ -7,12 +7,18 @@ import {
   PayrollRecordSummary,
 } from "@/types/payrollPeriodSummary";
 import { dateFormat, dateTimeFormat } from "@/utils/formmatter";
-import XLSX from "xlsx-js-style";
+import XLSX, { WorkSheet } from "xlsx-js-style";
 
 /* ============================
    Utility: Apply Money Format
 =============================== */
-function applyMoneyFormat(ws, startRow, startCol, endRow, endCol) {
+function applyMoneyFormat(
+  ws: WorkSheet,
+  startRow: number,
+  startCol: number,
+  endRow: number,
+  endCol: number,
+) {
   for (let r = startRow; r <= endRow; r++) {
     for (let c = startCol; c <= endCol; c++) {
       const cellRef = XLSX.utils.encode_cell({ r, c });
@@ -145,7 +151,10 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
   /* ----------------------------------
      3) Create sheet at row 5
   ----------------------------------- */
-  const ws = XLSX.utils.json_to_sheet(rows, { origin: "A5", header: columns });
+  const ws = XLSX.utils.json_to_sheet(rows, {
+    origin: "A5",
+    header: columns,
+  } as any);
 
   /* ----------------------------------
      Now define setCell AFTER ws exists
@@ -289,7 +298,7 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
   /* ----------------------------------
      9) Fix !ref range correctly
   ----------------------------------- */
-  const range = XLSX.utils.decode_range(ws["!ref"]);
+  const range = XLSX.utils.decode_range(ws["!ref"] as any);
   range.e.r = totalRow;
   ws["!ref"] = XLSX.utils.encode_range(range);
   const tableRange = {

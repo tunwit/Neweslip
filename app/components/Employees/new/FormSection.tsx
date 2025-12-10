@@ -44,7 +44,7 @@ export default function FormSection({
   const rounter = useRouter();
   const { show, setMessage } = useSnackbar();
   const queryClient = useQueryClient();
-  const user = useUser()
+  const user = useUser();
 
   const onCreatError = () => {
     setMessage({ message: "Something went wrong", type: "failed" });
@@ -61,16 +61,17 @@ export default function FormSection({
   const onSubmit = async (data: FormField) => {
     const valid = await methods.trigger();
     if (!valid) return;
-    
+
     const slug = pathname[1];
     const { id } = extractSlug(slug);
     // Construct the final data object, merging the form data with the required shopId
     const employeePayload: NewEmployee = {
-        ...data,
-        shopId: id,
+      ...data,
+      salary: String(data.salary),
+      shopId: id,
     };
     try {
-      await createEmployee(employeePayload,user.user?.id || null);
+      await createEmployee(employeePayload, user.user?.id || null);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       onCreateSuccess();
     } catch {
@@ -81,7 +82,7 @@ export default function FormSection({
       onCreatError();
     }
   };
-  
+
   return (
     <div className="">
       <FormProvider {...methods}>

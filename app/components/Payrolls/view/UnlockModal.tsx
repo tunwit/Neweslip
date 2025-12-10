@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { FormProvider } from "react-hook-form";
 
 interface ChangePasswordModalProps {
@@ -34,7 +34,7 @@ export default function UnlockModal({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const onUnlock = async (e) => {
+  const onUnlock = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
     setError("");
@@ -56,7 +56,7 @@ export default function UnlockModal({
         exact: false,
       });
       setOpen(false);
-    } catch (err: unknown) {
+    } catch (err: any) {
       if (err.message === "wrong password") {
         setError("wrong password");
       } else {

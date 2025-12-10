@@ -1,9 +1,13 @@
-
 import { ApiResponse } from "@/types/response";
 import { Shop } from "@/types/shop";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
-import { keepPreviousData, useQuery, UseQueryResult, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  UseQueryResult,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Session } from "inspector/promises";
 
 export const useShop = () => {
@@ -15,6 +19,7 @@ export const useShop = () => {
         endpoint: "/shop",
         method: "GET",
       }),
+
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,

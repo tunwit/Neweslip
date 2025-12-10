@@ -20,6 +20,7 @@ export const usePayrollPeriodVerify = (periodId: number) => {
         endpoint: `/payroll/periods/${periodId}/verify`,
         method: "GET",
       }),
+    enabled: periodId > 0,
     refetchOnWindowFocus: true,
     staleTime: 1000 * 60 * 5,
   });

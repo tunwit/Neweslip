@@ -125,9 +125,21 @@ export async function summaryPeriod(
 
     recordsSummary.push({
       id: r.id,
-      sentMail: r.sentMail,
+      sentMail: r.sentMail || false,
       baseSalary: Number(r.baseSalary),
-      employee: r.employee,
+      employee: {
+        id: r.employee.id ?? 0,
+        firstName: r.employee.firstName ?? "",
+        lastName: r.employee.lastName ?? "",
+        nickName: r.employee.nickName ?? "",
+        branch: r.employee.branch,
+        branchEng: r.employee.branchEng,
+        email: r.employee.email ?? "",
+        bankAccountNumber: r.employee.bankAccountNumber ?? "",
+        bankAccountOwner: r.employee.bankAccountOwner ?? "",
+        bankName: r.employee.bankName ?? "",
+        promtpay: r.employee.promtpay ?? "",
+      },
       totals: totals,
       fields,
       ot,
@@ -137,6 +149,12 @@ export async function summaryPeriod(
 
   return {
     ...period,
+    start_period: period.start_period?.toISOString(),
+    end_period: period.end_period?.toISOString(),
+    finalized_at: period.finalized_at?.toISOString() || "",
+    work_hours_per_day: 8,
+    workdays_per_month: 22,
+    edited: period.edited || false,
     finalizedByUser,
     employeeCount: records.length,
     totalNet,

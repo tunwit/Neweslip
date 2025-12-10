@@ -1,4 +1,3 @@
-
 import { ApiResponse } from "@/types/response";
 import { SalaryField, SalaryFieldGrouped } from "@/types/salaryFields";
 import { Shop } from "@/types/shop";
@@ -6,7 +5,7 @@ import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export const useSalaryFields = (shopId:number) => {
+export const useSalaryFields = (shopId: number) => {
   const { session } = useSession();
   const query = useQuery<ApiResponse<SalaryFieldGrouped>>({
     queryKey: ["salaryFields", session?.user?.emailAddresses],
@@ -15,6 +14,7 @@ export const useSalaryFields = (shopId:number) => {
         endpoint: `/payroll/fields?shopId=${shopId}`,
         method: "GET",
       }),
+    enabled: shopId > 0,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,

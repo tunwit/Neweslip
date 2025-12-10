@@ -20,6 +20,7 @@ export const usePeriodFields = (periodId: number) => {
         endpoint: `/payroll/periods/${periodId}/fields`,
         method: "GET",
       }),
+    enabled: periodId > 0,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });

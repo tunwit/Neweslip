@@ -108,7 +108,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                             loading="lazy"
                             width="20"
                             height="20"
-                            src={`/bankIcons/${bank.code}.png`}
+                            src={`/bankIcons/${bank?.code}.png`}
                             alt="bank logo"
                           />
                           <p className="font-medium text-gray-900">

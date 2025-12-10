@@ -12,7 +12,7 @@ import OverviewForm from "./OverviewForm";
 export default function Profilesetting() {
   const { id, name } = useCurrentShop();
   const { data, isLoading } = useShopDetails(id);
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading || !data?.data) return <p>Loading...</p>;
   return (
     <>
       <div className="flex flex-col max-w-[50%] justify-center items-center gap-3">

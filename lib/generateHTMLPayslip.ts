@@ -20,7 +20,10 @@ export default function generateHTMLPayslip(
   branch: Branch,
   period: Omit<PayrollPeriod, "totalNet" | "employeeCount">,
   record: InferSelectModel<typeof payrollRecordsTable>,
-  data: RecordDetails,
+  data: Omit<
+    RecordDetails,
+    "payrollRecordId" | "employeeId" | "salary" | "periodId"
+  >,
 ) {
   const render = {
     company: { name: shop.name, taxId: shop.taxId },

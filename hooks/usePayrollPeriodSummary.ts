@@ -19,6 +19,7 @@ export const usePayrollPeriodSummary = (periodId: number) => {
         endpoint: `/payroll/periods/${periodId}/summary`,
         method: "GET",
       }),
+    enabled: periodId > 0,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });

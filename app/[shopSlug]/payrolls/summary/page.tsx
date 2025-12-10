@@ -103,7 +103,9 @@ export default function Home() {
   }, [filtered]);
 
   const filteredTotalSalary = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.baseSalary || 0), 0);
+    return filtered.reduce((sum, r) => {
+      return sum + ("baseSalary" in r ? r.baseSalary || 0 : 0);
+    }, 0);
   }, [filtered]);
 
   return (

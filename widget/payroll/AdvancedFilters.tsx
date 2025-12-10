@@ -23,9 +23,9 @@ const numberOperators = [
   { value: "gte", label: "≥ (greater or equal)" },
   { value: "lt", label: "< (less than)" },
   { value: "lte", label: "≤ (less or equal)" },
-];
+] as const;
 
-const numberOperatorsSymbol = {
+const numberOperatorsSymbol: Record<string, string> = {
   eq: "=",
   neq: "≠",
   gt: ">",
@@ -57,28 +57,36 @@ const quickFilters = [
   },
 ];
 
-interface AdvancedFiltersProps {
+/**
+ * Generic AdvancedFilters component
+ *
+ * T: the record type passed in (PayrollRecord | PayrollRecordSummary)
+ * T must have `.id: number`
+ */
+interface AdvancedFiltersProps<T extends { id: number }> {
   periodId: number;
   show: boolean;
   setShow: Dispatch<SetStateAction<boolean>>;
-  originalData: PayrollRecord[] | PayrollRecordSummary[]; // Original unfiltered data
-  setData: Dispatch<SetStateAction<PayrollRecord[] | PayrollRecordSummary[]>>;
+  originalData: T[]; // Original unfiltered data
+  setData: Dispatch<SetStateAction<T[]>>;
 }
 
-export default function AdvancedFilters({
+export default function AdvancedFilters<T extends { id: number }>({
   periodId,
   show,
   setShow,
   originalData,
   setData,
-}: AdvancedFiltersProps) {
+}: AdvancedFiltersProps<T>) {
   const { data } = usePayrollPeriodSummary(periodId);
   const { data: periodFields } = usePeriodFields(Number(periodId));
   const [filters, setFilters] = useState<FilterRule[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterRule[]>([]);
 
   const updateFilter = (id: string, key: string, value: string) => {
-    setFilters(filters.map((f) => (f.id === id ? { ...f, [key]: value } : f)));
+    setFilters((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, [key]: value } : f)),
+    );
   };
 
   const removeFilter = (id: string) => {
@@ -86,65 +94,76 @@ export default function AdvancedFilters({
     setActiveFilters((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const applyFilter = () => {
-    if (!data?.data) return;
-    const filtered = applyFilterLogic(data?.data, filters);
-
-    setData(filtered);
-    setActiveFilters([...filters]);
-    setShow(false);
-  };
-
+  /**
+   * applyFilterLogic
+   * - summary: PayrollPeriodSummary (source of totals/fields/ot/penalties)
+   * - records: the list of records to filter (generic T[])
+   * - filterRules: the active filter rules
+   *
+   * Returns filtered array of the same generic T[] type.
+   */
   const applyFilterLogic = (
     summary: PayrollPeriodSummary,
+    records: T[],
     filterRules: FilterRule[],
-  ): PayrollRecord[] => {
-    if (filterRules.length === 0) return originalData;
+  ): T[] => {
+    if (filterRules.length === 0) return records;
 
-    // Create a lookup map from summary.records → totals / fields
+    // Build summary map: id -> PayrollRecordSummary
     const summaryMap = new Map<number, PayrollRecordSummary>();
     summary.records.forEach((rec) => summaryMap.set(rec.id, rec));
 
-    return originalData.filter((origRecord) => {
+    return records.filter((origRecord) => {
       const summaryRecord = summaryMap.get(origRecord.id);
 
+      // If no matching summary record, exclude (or you could choose to include)
       if (!summaryRecord) return false;
 
+      // Every filter must pass
       return filterRules.every((filter) => {
         let recordValue: number | string | undefined = undefined;
 
-        // 1. Match totals (net, totalOT, totalDeduction, etc)
-        if (summaryRecord.totals.hasOwnProperty(filter.field)) {
-          recordValue =
-            summaryRecord.totals[
-              filter.field as keyof typeof summaryRecord.totals
-            ];
+        // 1) totals (net, totalEarning, totalDeduction, totalPenalty, totalOT, etc)
+        if (
+          Object.prototype.hasOwnProperty.call(
+            summaryRecord.totals,
+            filter.field,
+          )
+        ) {
+          recordValue = (summaryRecord.totals as any)[filter.field];
         }
 
-        // 2. Match custom fields (in summaryRecord.fields[])
+        // 2) custom salary fields
         if (recordValue === undefined) {
           const customField = summaryRecord.fields.find(
-            (f) => f.name === filter.field || f.nameEng === filter.field,
+            (f) =>
+              f.name === filter.field || (f as any).nameEng === filter.field,
           );
-          if (customField) recordValue = customField.amount;
+          if (customField) recordValue = (customField as any).amount;
         }
 
+        // 3) OT fields
         if (recordValue === undefined) {
-          const customField = summaryRecord.ot.find(
-            (f) => f.name === filter.field || f.nameEng === filter.field,
+          const otField = summaryRecord.ot.find(
+            (f) =>
+              f.name === filter.field || (f as any).nameEng === filter.field,
           );
-          if (customField) recordValue = customField.amount;
+          if (otField) recordValue = (otField as any).amount;
         }
 
+        // 4) Penalty fields
         if (recordValue === undefined) {
-          const customField = summaryRecord.penalties.find(
-            (f) => f.name === filter.field || f.nameEng === filter.field,
+          const penField = summaryRecord.penalties.find(
+            (f) =>
+              f.name === filter.field || (f as any).nameEng === filter.field,
           );
-          if (customField) recordValue = customField.amount;
+          if (penField) recordValue = (penField as any).amount;
         }
 
+        // If we still don't have a value for this field, treat as "pass" (do not filter out)
         if (recordValue === undefined) return true;
 
+        // Compare numeric values
         const filterValue = parseFloat(filter.value);
         const numericValue = parseFloat(String(recordValue));
 
@@ -170,40 +189,52 @@ export default function AdvancedFilters({
     });
   };
 
+  const applyFilter = () => {
+    if (!data?.data) return;
+    // We pass originalData (T[]) so the return is T[]
+    const filtered = applyFilterLogic(data.data, originalData, filters);
+    setData(filtered);
+    setActiveFilters([...filters]);
+    setShow(false);
+  };
+
   const clearFilter = () => {
     setFilters([]);
     setActiveFilters([]);
   };
 
   useEffect(() => {
+    // Run initial filter on mount (keeps behavior consistent with original)
     applyFilter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addQuickFilter = (field: string, operator: string, value: string) => {
     if (!periodFields?.data) return;
-    if (periodFields?.data?.length === 0) return;
+    if (periodFields.data.length === 0) return;
     const newFilter: FilterRule = {
       id: Date.now().toString(),
-      field: field,
-      operator: operator,
-      value: value,
+      field,
+      operator,
+      value,
     };
 
-    setFilters([...filters, newFilter]);
+    setFilters((prev) => [...prev, newFilter]);
   };
 
   const addFilter = () => {
     if (!periodFields?.data) return;
-    if (periodFields?.data?.length === 0) return;
+    if (periodFields.data.length === 0) return;
 
     const newFilter: FilterRule = {
       id: Date.now().toString(),
-      field: periodFields?.data[0],
+      field: periodFields.data[0] ?? "",
       operator: numberOperators[0].value,
       value: "0",
     };
-    setFilters([...filters, newFilter]);
+    setFilters((prev) => [...prev, newFilter]);
   };
+
   return (
     <>
       <div hidden={activeFilters.length === 0} className="flex gap-3  mt-4">
@@ -232,9 +263,9 @@ export default function AdvancedFilters({
         <h1 className="text-gray-700">Advanced Filters (Beta)</h1>
         <p className="text-xs text-gray-700 mt-2">Quick filters</p>
         <section className="flex gap-3">
-          {quickFilters.map((q, _) => (
+          {quickFilters.map((q, i) => (
             <button
-              key={_}
+              key={i}
               onClick={() =>
                 addQuickFilter(
                   q.filter.field,
@@ -248,6 +279,7 @@ export default function AdvancedFilters({
             </button>
           ))}
         </section>
+
         <div className="flex flex-col max-w-[700px] justify-center mt-3">
           <div className="space-y-3 mb-4">
             {filters.length === 0 ? (
@@ -268,8 +300,8 @@ export default function AdvancedFilters({
                       updateFilter(filter.id, "field", e.target.value)
                     }
                   >
-                    {periodFields?.data?.map((field, _) => (
-                      <option key={_} value={field!}>
+                    {periodFields?.data?.map((field, idx) => (
+                      <option key={idx} value={field ?? ""}>
                         {field}
                       </option>
                     ))}
@@ -313,6 +345,7 @@ export default function AdvancedFilters({
               ))
             )}
           </div>
+
           <button
             onClick={addFilter}
             className="flex items-center justify-center max-w-96 py-2 rounded-md mt-2 w-full border border-dashed border-gray-600 text-gray-600"
@@ -321,6 +354,7 @@ export default function AdvancedFilters({
             <p>Add filter</p>
           </button>
         </div>
+
         <div className="flex flex-row-reverse border-t py-2 mt-2">
           <div className="space-x-3">
             <button

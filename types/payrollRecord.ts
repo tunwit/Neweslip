@@ -7,7 +7,7 @@ export interface PayrollRecord {
   periodId: number;
   updatedAt: Date;
   createdAt: Date;
-  salary: number;
+  baseSalry: number;
   employee: {
     id: number;
     firstName: string;

@@ -21,9 +21,9 @@ export interface PayrollPeriodSummary {
   end_period: string;
   work_hours_per_day: number;
   workdays_per_month: number;
-  finalized_at: string;
-  finalized_by: string;
-  finalizedByUser: Owner;
+  finalized_at?: string | null;
+  finalized_by?: string | null;
+  finalizedByUser?: Owner | null;
   edited: boolean;
   employeeCount: number;
   totalBaseSalary: number;
