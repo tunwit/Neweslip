@@ -6,7 +6,6 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-    volumes:
-      - .:/app:cached  # optional, for dev hot reload
-    command: bun run start
+    env_file:
+      - .env
 
