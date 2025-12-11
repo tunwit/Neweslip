@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mysql  
+      - mysql
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
@@ -29,6 +29,9 @@ services:
 
     volumes:
       - mysql_data:/var/lib/mysql
+
+    networks:
+      - nginx
 
 volumes:
   mysql_data:
