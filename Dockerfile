@@ -1,5 +1,5 @@
 # Use Bun official image
-FROM jarredsumner/bun:latest AS deps
+FROM oven/bun:latest AS deps
 WORKDIR /app
 
 # Copy package files
