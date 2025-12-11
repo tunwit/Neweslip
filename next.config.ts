@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:3000'],
       bodySizeLimit: '60mb',
     },
-  },
-  output:"standalone"
+  }
 };
 
 export default nextConfig;
