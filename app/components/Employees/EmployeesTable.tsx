@@ -43,7 +43,7 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
       <table className="w-full border-separate border-spacing-0">
         <thead className=" bg-gray-50 border border-gray-200 sticky top-0 z-10">
           <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
-            <th className="font-light text-sm pl-6 w-[7%] whitespace-nowrap min-w-15 border-b">
+            <th className="font-light text-sm pl-6 w-[4%] whitespace-nowrap min-w-15 border-b">
               <Checkbox
                 checked={isAllChecked(data?.data?.length ?? 0)}
                 indeterminate={isSomeChecked(data?.data?.length ?? 0)}
@@ -95,7 +95,7 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
               return <EmployeesElement key={emp.id} employee={emp} />;
             })}
         </tbody>
-        <tfoot className="h-20 bg-gray-50   sticky bottom-0 z-10 ">
+        <tfoot className="h-15 bg-gray-50   sticky bottom-0 z-10 ">
           <tr>
             <th className="border-t" scope="row">Totals</th>
             <td className="border-t">
