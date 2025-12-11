@@ -9,7 +9,7 @@ COPY package.json bun.lockb* ./
 RUN bun install --production
 
 # Copy source code
-FROM jarredsumner/bun:latest AS builder
+FROM oven/bun:latest AS builder
 WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
@@ -18,7 +18,7 @@ COPY --from=deps /app/node_modules ./node_modules
 RUN bun run build
 
 # Production runner
-FROM jarredsumner/bun:latest AS runner
+FROM oven/bun:latest AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
