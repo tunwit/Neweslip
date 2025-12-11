@@ -39,5 +39,5 @@ volumes:
   mysql_data:
 
 networks:
-  nginx-network:
+  nginx:
     external: true
