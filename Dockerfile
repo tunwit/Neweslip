@@ -1,10 +1,9 @@
 # -----------------------------------------------------------------------------
 # This Dockerfile.bun is specifically configured for projects using Bun
-# For npm/pnpm or yarn, refer to the Dockerfile instead
 # -----------------------------------------------------------------------------
 
 # Use Bun's official image
-FROM oven/bun:latest AS base
+FROM oven/bun:canary-alpine AS base
 
 WORKDIR /app
 
@@ -19,10 +18,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED=1
+# FORCES SWC TO BE STATICALLY COMPILED, FIXING THE RUNTIME CRASH
+ENV NEXT_PRIVATE_STANDALONE_SWC=1
 
 RUN bun run build
 
@@ -30,20 +27,17 @@ RUN bun run build
 FROM base AS runner
 WORKDIR /app
 
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED=1
-
 ENV NODE_ENV=production \
     PORT=3000 \
     HOSTNAME="0.0.0.0"
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+# Install user management tools and create non-root user/group (Alpine method)
+RUN apk update && apk add --no-cache shadow && \
+    addgroup -g 1001 nodejs && \
+    adduser -u 1001 -G nodejs -S nextjs
 
+# Automatically leverage output traces to reduce image size (Next.js Standalone mode)
 COPY --from=builder /app/public ./public
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
@@ -51,4 +45,5 @@ USER nextjs
 
 EXPOSE 3000
 
+# Use the generated server.js entrypoint
 CMD ["bun", "./server.js"]
