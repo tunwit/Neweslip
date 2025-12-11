@@ -1,10 +1,10 @@
 # Use Bun official image
-FROM oven/bun:latest AS base
+FROM oven/bun:canary-alpine AS base
 WORKDIR /app
 
 # Install dependencies
 COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile 
 
 # Copy all source code
 COPY . .

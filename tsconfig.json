@@ -38,7 +38,7 @@
     ".next/types/**/*.ts",
     "db/schema/penaltyFieldValueTable.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "next.config.ts"  ],
   "exclude": [
     "node_modules"
   ]
