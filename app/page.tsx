@@ -19,14 +19,6 @@ export default function Home() {
   queryClient.prefetchQuery({ queryKey: ["shop"] });
   const { data, isLoading, isSuccess, isError, error } = useShop();
 
-  if (isError) {
-    const status = (error as any)?.status;
-    if (status === 401) {
-      return <p>Unauthorized. Please log in again.</p>;
-    }
-    return <p>Error: {(error as Error).message}</p>;
-  }
-
   useEffect(() => {
     if (data && data.data && data.data.length > 0) {
       const shopslug = createSlug(data.data[0].name, String(data.data[0].id));
@@ -34,7 +26,15 @@ export default function Home() {
     } else {
       redirect(`/no-shop`);
     }
-  }, [isSuccess]);
+  }, [isSuccess,data]);
+
+  if (isError) {
+    const status = (error as any)?.status;
+    if (status === 401) {
+      return <p>Unauthorized. Please log in again.</p>;
+    }
+    return <p>Error: {(error as Error).message}</p>;
+  }
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
