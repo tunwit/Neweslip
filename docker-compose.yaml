@@ -1,6 +1,7 @@
 services:
   eslip:
     build: .
+    container_name: eslip
     ports:
       - "3000:3000"
     depends_on:
