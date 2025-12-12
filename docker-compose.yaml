@@ -15,7 +15,7 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_ENDPOINT: ${S3_ENDPOINT}
     networks:
-      - nginx
+      - nginx-network
 
   mysql:
     image: mysql:latest
@@ -33,11 +33,11 @@ services:
       - mysql_data:/var/lib/mysql
 
     networks:
-      - nginx
+      - nginx-network
 
 volumes:
   mysql_data:
 
 networks:
-  nginx:
+  nginx-network:
     external: true
