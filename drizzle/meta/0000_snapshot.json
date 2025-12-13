@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "17a0c9c8-83a7-416b-a197-3682b7cb4e75",
+  "id": "64781866-63bc-4323-98fc-ba0b6ac5f383",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "branches": {
@@ -27,6 +27,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'-'"
         },
         "shopId": {
           "name": "shopId",
@@ -176,7 +184,7 @@
         },
         "salary": {
           "name": "salary",
-          "type": "int",
+          "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -185,21 +193,21 @@
           "name": "bankName",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "bankAccountOwner": {
           "name": "bankAccountOwner",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "bankAccountNumber": {
           "name": "bankAccountNumber",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "promtpay": {
@@ -240,7 +248,22 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "employees_branch_idx": {
+          "name": "employees_branch_idx",
+          "columns": [
+            "branchId"
+          ],
+          "isUnique": false
+        },
+        "employees_shop_idx": {
+          "name": "employees_shop_idx",
+          "columns": [
+            "shopId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "employees_shopId_shops_id_fk": {
           "name": "employees_shopId_shops_id_fk",
@@ -349,6 +372,83 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "taxId": {
+          "name": "taxId",
+          "type": "varchar(13)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'-'"
+        },
+        "work_hours_per_day": {
+          "name": "work_hours_per_day",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'8.0'"
+        },
+        "workdays_per_month": {
+          "name": "workdays_per_month",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'22.0'"
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'$argon2id$v=19$m=65536,t=3,p=4$a5oCZIxj4yYJpanqEaaSPg$8iW06/tr7zIu3d3iP8ZbPrk4rBfTQb9Gv38/VNh+A+Y'"
+        },
+        "SMTPHost": {
+          "name": "SMTPHost",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'smtp.gmail.com'"
+        },
+        "SMTPPort": {
+          "name": "SMTPPort",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 465
+        },
+        "SMTPSecure": {
+          "name": "SMTPSecure",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": true
+        },
+        "emailName": {
+          "name": "emailName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emailAddress": {
+          "name": "emailAddress",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emailPassword": {
+          "name": "emailPassword",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -404,7 +504,7 @@
         },
         "type": {
           "name": "type",
-          "type": "enum('INCOME','DEDUCTION')",
+          "type": "enum('INCOME','DEDUCTION','NON_CALCULATED')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
@@ -434,7 +534,15 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "payroll_record_idx": {
+          "name": "payroll_record_idx",
+          "columns": [
+            "payrollRecordId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "payroll_field_value_payrollRecordId_payroll_records_id_fk": {
           "name": "payroll_field_value_payrollRecordId_payroll_records_id_fk",
@@ -485,15 +593,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "start_date": {
-          "name": "start_date",
+        "start_period": {
+          "name": "start_period",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "end_date": {
-          "name": "end_date",
+        "end_period": {
+          "name": "end_period",
           "type": "date",
           "primaryKey": false,
           "notNull": true,
@@ -506,6 +614,44 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'DRAFT'"
+        },
+        "finalized_at": {
+          "name": "finalized_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "finalized_by": {
+          "name": "finalized_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "edited": {
+          "name": "edited",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "work_hours_per_day": {
+          "name": "work_hours_per_day",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'8.0'"
+        },
+        "workdays_per_month": {
+          "name": "workdays_per_month",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'22.0'"
         },
         "created_at": {
           "name": "created_at",
@@ -576,6 +722,21 @@
           "notNull": true,
           "autoincrement": false
         },
+        "salary": {
+          "name": "salary",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sent_mail": {
+          "name": "sent_mail",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -595,6 +756,13 @@
         }
       },
       "indexes": {
+        "payroll_period_idx": {
+          "name": "payroll_period_idx",
+          "columns": [
+            "payrollPeriodId"
+          ],
+          "isUnique": false
+        },
         "payroll_period_employee_unique": {
           "name": "payroll_period_employee_unique",
           "columns": [
@@ -702,7 +870,8 @@
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'0'"
         },
         "created_at": {
           "name": "created_at",
@@ -835,7 +1004,15 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "payroll_record_idx": {
+          "name": "payroll_record_idx",
+          "columns": [
+            "payrollRecordId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "ot_field_value_payrollRecordId_payroll_records_id_fk": {
           "name": "ot_field_value_payrollRecordId_payroll_records_id_fk",
@@ -914,7 +1091,8 @@
           "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'0'"
         },
         "created_at": {
           "name": "created_at",
@@ -1040,7 +1218,15 @@
           "default": "(now())"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "payroll_record_idx": {
+          "name": "payroll_record_idx",
+          "columns": [
+            "payrollRecordId"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "penalty_field_value_payrollRecordId_payroll_records_id_fk": {
           "name": "penalty_field_value_payrollRecordId_payroll_records_id_fk",
@@ -1100,7 +1286,7 @@
         },
         "type": {
           "name": "type",
-          "type": "enum('INCOME','DEDUCTION')",
+          "type": "enum('INCOME','DEDUCTION','NON_CALCULATED')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
@@ -1150,6 +1336,330 @@
       "compositePrimaryKeys": {
         "salary_fields_id": {
           "name": "salary_fields_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "invitations": {
+      "name": "invitations",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "redirect_url": {
+          "name": "redirect_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "enum('PENDING','ACCEPTED','REVOKE')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'PENDING'"
+        },
+        "accepted_at": {
+          "name": "accepted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "onUpdate": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "invitations_id": {
+          "name": "invitations_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "invitations_token_unique": {
+          "name": "invitations_token_unique",
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
+    "employee_files": {
+      "name": "employee_files",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "employee_id": {
+          "name": "employee_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "key": {
+          "name": "key",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tag": {
+          "name": "tag",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "size": {
+          "name": "size",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uploaded_by": {
+          "name": "uploaded_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uploaded_at": {
+          "name": "uploaded_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "onUpdate": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "employee_files_employee_id_employees_id_fk": {
+          "name": "employee_files_employee_id_employees_id_fk",
+          "tableFrom": "employee_files",
+          "tableTo": "employees",
+          "columnsFrom": [
+            "employee_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "employee_files_id": {
+          "name": "employee_files_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "shop_files": {
+      "name": "shop_files",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "shop_id": {
+          "name": "shop_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "key": {
+          "name": "key",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tag": {
+          "name": "tag",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "size": {
+          "name": "size",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uploaded_by": {
+          "name": "uploaded_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uploaded_at": {
+          "name": "uploaded_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "onUpdate": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shop_files_shop_id_shops_id_fk": {
+          "name": "shop_files_shop_id_shops_id_fk",
+          "tableFrom": "shop_files",
+          "tableTo": "shops",
+          "columnsFrom": [
+            "shop_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "shop_files_id": {
+          "name": "shop_files_id",
           "columns": [
             "id"
           ]

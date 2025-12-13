@@ -29,6 +29,7 @@ import deleteShopDocument from "@/app/action/deleteShopDocument";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { renameShopDocument } from "@/app/action/renameShopDocument";
 import { Modal, ModalDialog } from "@mui/joy";
+import { useTranslations } from "next-intl";
 
 export default function page() {
   const [search, setSearch] = useState("");
@@ -41,6 +42,8 @@ export default function page() {
   });
   const { name } = useCurrentShop();
   const queryClient = useQueryClient();
+  const tb = useTranslations("breadcrumb");
+  const t = useTranslations("documents");
 
   const onRename = async (doc: ShopDocumentWithUploader, newName: string) => {
     if (!shopId || !user?.id) return;
@@ -102,17 +105,17 @@ export default function page() {
         <div className="mx-10">
           <div className="flex flex-row text-[#424242] text-xs mt-10">
             <p>
-              {name} {">"} Dashboard {">"}&nbsp;
+              {name} {">"} {tb("dashboard")} {">"}&nbsp;
             </p>
-            <p className="text-blue-800">Documents</p>
+            <p className="text-blue-800">{tb("documents")}</p>
           </div>
           <div className=" mt-5 flex flex-row justify-between">
-            <p className="text-black text-4xl font-bold">Documents</p>
+            <p className="text-black text-4xl font-bold">{t("label")}</p>
           </div>
 
           <div className="mt-8 flex flex-row gap-2">
             <div className="w-full">
-              <p className="text-black text-xs mb-1">Search Documents</p>
+              <p className="text-black text-xs mb-1">{t("search.label")}</p>
               <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
                 <Icon
                   className="text-[#424242]"
@@ -120,7 +123,7 @@ export default function page() {
                 />
                 <input
                   type="text"
-                  placeholder="Search"
+                  placeholder={t("search.placeholder")}
                   className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -130,7 +133,7 @@ export default function page() {
           </div>
           <div className="flex justify-center mt-5">
             <DocumentTable
-              title="Files"
+              title=""
               tag="files"
               data={data?.data || []}
               targetId={shopId || -1}

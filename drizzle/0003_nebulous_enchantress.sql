@@ -1,1 +1,0 @@
-ALTER TABLE `invitations` MODIFY COLUMN `token` varchar(100) NOT NULL;

@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const { userId } = await auth();
+    
 
     if (!userId) {
       return errorResponse("Unauthorized", 401);

@@ -3,6 +3,7 @@ import { Autocomplete, Option, Select } from "@mui/joy";
 import React, { useEffect } from "react";
 import { useBranch } from "../hooks/useBranch";
 import { Branch } from "@/types/branch";
+import { useTranslations } from "next-intl";
 
 interface BranchSelectorProps {
   branchId: number;
@@ -18,7 +19,8 @@ export default function BranchSelector({
   isEnableAll = false,
 }: BranchSelectorProps) {
   const { data, isLoading } = useBranch();
-
+  const t = useTranslations("employees.filters");
+  
   return (
     <>
       <Select
@@ -28,7 +30,7 @@ export default function BranchSelector({
         onChange={(e, newvalue) => onChange(newvalue!)}
         sx={{ fontSize: "14px" }}
       >
-        {isEnableAll && <Option value={-1}>All Branches</Option>}
+        {isEnableAll && <Option value={-1}>{t("branch.all")}</Option>}
         {data?.data?.map((v: Branch) => {
           return (
             <Option key={v.id} value={v.id}>

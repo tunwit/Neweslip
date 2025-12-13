@@ -17,6 +17,7 @@ import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { moneyFormat } from "@/utils/formmatter";
 import { PaginatedResponse } from "@/types/response";
 import { useCheckBox } from "@/hooks/useCheckBox";
+import { useTranslations } from "next-intl";
 
 interface EmployeesTableProps {
   data: PaginatedResponse<EmployeeWithShop[]> | undefined;
@@ -28,6 +29,7 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
   const { data: employeeStat } = useEmployeeStats({ shopId: id! });
   const { checked, checkall, uncheckall, isAllChecked, isSomeChecked } =
     useCheckBox<number>("allEmployeeTable");
+  const t = useTranslations("employees");
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!data?.data) return;
@@ -51,19 +53,19 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
               />
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              Name
+              {t("fields.name")}
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              Nickname
+              {t("fields.nickname")}
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              Base Salary
+              {t("fields.base_salary")}
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              Branch
+              {t("fields.status")}
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              Status
+              {t("fields.branch")}
             </th>
           </tr>
         </thead>
@@ -86,7 +88,9 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
 
           {!isLoading && data?.data?.length == 0 && (
             <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer ">
-              <td colSpan={6} className="text-center">No Employee</td>
+              <td colSpan={6} className="text-center">
+                {t("table.no_employee")}
+              </td>
             </tr>
           )}
 
@@ -97,7 +101,9 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
         </tbody>
         <tfoot className="h-15 bg-gray-50   sticky bottom-0 z-10 ">
           <tr>
-            <th className="border-t" scope="row">Totals</th>
+            <th className="border-t pl-6" scope="row">
+              {t("table.total")}
+            </th>
             <td className="border-t">
               <div className="flex flex-row gap-1 items-center ">
                 <p>{employeeStat?.data?.totalEmployees || 0}</p>

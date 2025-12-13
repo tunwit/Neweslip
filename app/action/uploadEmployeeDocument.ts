@@ -31,21 +31,24 @@ export async function uploadEmployeeDocuments(
   if (!ownerCheck) throw new Error("Forbidden");
 
   const results: FileUploadResult[] = [];
-  const validatior = uploadDocumentValidator(files)
-  if(!validatior.success){
-    throw new Error(validatior.message)
+  const validatior = uploadDocumentValidator(files);
+  if (!validatior.success) {
+    throw new Error(validatior.message);
   }
 
   for (const file of files) {
     const s3Key = generateS3Key(employeeId, file?.name);
-    const resultObj: FileUploadResult = { fileName: file?.name, success: false };
+    const resultObj: FileUploadResult = {
+      fileName: file?.name,
+      success: false,
+    };
     try {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
       // 1. Upload to S3
       const putCommand = new PutObjectCommand({
-        Bucket: "eslip",
+        Bucket: process.env.S3_BUCKET,
         Key: s3Key,
         Body: buffer, // Standard Buffer upload (no streaming needed)
         ContentType: file.type,
@@ -72,13 +75,22 @@ export async function uploadEmployeeDocuments(
     } catch (error) {
       // Clean up S3 object if DB insertion failed
       try {
-        await s3Client.send(new DeleteObjectCommand({ Bucket: "eslip", Key: s3Key }));
+        await s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.S3_BUCKET,
+            Key: s3Key,
+          }),
+        );
       } catch (deleteErr) {
-        console.error("Failed to delete S3 object after failed upload/DB insertion", deleteErr);
+        console.error(
+          "Failed to delete S3 object after failed upload/DB insertion",
+          deleteErr,
+        );
       }
-      
+
       // Capture the error message for the client
-      resultObj.error = error instanceof Error ? error.message : "An unknown error occurred";
+      resultObj.error =
+        error instanceof Error ? error.message : "An unknown error occurred";
       results.push(resultObj);
     }
   }

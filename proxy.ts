@@ -1,33 +1,53 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+import { match } from "@formatjs/intl-localematcher";
+import Negotiator from "negotiator";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
 
-const isProtectedRoute = createRouteMatcher([
-  "/:shopSlug(.*)",
-]);
+let availableLocales = ["en-US", "th-TH"];
+let defaultLocale = "th-TH";
+
+const handleI18nRouting = createMiddleware(routing);
+
+const isProtectedRoute = createRouteMatcher(["/:locale/:shopSlug(.*)"]);
 
 const isPublicRoute = createRouteMatcher([
-  "/no-shop",
-  "/accept-invitation",
+  "/:locale/no-shop",
+  "/:locale/accept-invitation",
   "/api/shop/:shopId",
-  "/api/invitations/:token"
-
+  "/api/invitations/:token",
 ]);
 
+const isApiRoute = (req: NextRequest) => {
+  return (
+    req.nextUrl.pathname.startsWith("/api") ||
+    req.nextUrl.pathname.startsWith("/trpc")
+  );
+};
+
 export default clerkMiddleware(async (auth, req) => {
-  if(isPublicRoute(req)){
-    return NextResponse.next()
+  if (isApiRoute(req)) {
+    if (!isPublicRoute(req)) {
+      await auth.protect();
+    }
+    return NextResponse.next();
+  }
+
+  if (isPublicRoute(req)) {
+    return handleI18nRouting(req);
   }
   if (isProtectedRoute(req)) {
     await auth.protect();
   }
-  return NextResponse.next()
-})
+  return handleI18nRouting(req);
+});
 
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|.*\\..*).*)",
     // Always run for API routes
-    '/(api|trpc)(.*)',
+    "/(api|trpc)(.*)",
   ],
-}
+};

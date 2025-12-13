@@ -7,7 +7,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 export async function getPresignedUrl(key: string, expiresIn = 3600,attachment=false) {
     try{
         const command = new GetObjectCommand({
-            Bucket: "eslip",
+            Bucket:  process.env.S3_BUCKET,
             Key: key,
            ...(attachment && { ResponseContentDisposition: `attachment; filename="${key}"` }),
         });

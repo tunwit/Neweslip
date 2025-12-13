@@ -1,0 +1,128 @@
+{
+  "common": {
+    "filters": {
+      "all": "ทั้งหมด"
+    },
+    "snackbar": {
+      "dismiss": "ปิด"
+    }
+  },
+  "navigation": {
+    "dashboard": "ภาพรวม",
+    "employees": "พนักงาน",
+    "documents": "เอกสาร",
+    "payrolls": "เงินเดือน",
+    "settings": "ตั้งค่า"
+  },
+
+  "breadcrumb": {
+    "dashboard": "ภาพรวม",
+    "employees": "พนักงาน",
+    "documents": "เอกสาร"
+  },
+
+  "employees": {
+    "label": "พนักงาน",
+    "actions": {
+      "create": "เพิ่มพนักงาน",
+      "delete": "ลบพนักงาน"
+    },
+    "search": {
+      "label": "ค้นหาพนักงาน",
+      "placeholder": "ค้นหาพนักงาน เช่น ชื่อ นามสกุล ชื่อเล่น"
+    },
+    "fields": {
+      "name": "ชื่อ",
+      "first_name": "ชื่อจริง",
+      "last_name": "นามสกุล",
+      "nickname": "ชื่อเล่น",
+      "gender": "เพศ",
+      "date_of_birth": "วันเกิด",
+      "email": "อีเมล",
+      "phone_number": "เบอร์โทรศัพท์",
+      "status": "สถานะ",
+      "branch": "สาขา",
+      "address_line1": "ที่อยู่บรรทัดที่ 1",
+      "address_line2": "ที่อยู่บรรทัดที่ 2",
+      "address_line3": "ที่อยู่บรรทัดที่ 3",
+      "base_salary": "ฐานเงินเดือน",
+      "postion": "ตำแหน่ง",
+      "date_of_employ": "วันที่จ้าง",
+      "bank": "ธนาคาร",
+      "bank_account_number": "เลขบัญชีธนาคาร",
+      "bank_account_owner": "เจ้าของบัญชีธนาคาร",
+      "promtpay": "พร้อมเพย์ (เบอร์โทร, เลขบัตรประชาชน)"
+    },
+    "table": {
+      "no_employee": "ไม่พบพนักงาน",
+      "total": "ทั้งหมด"
+    },
+    "filters": {
+      "branch": {
+        "label": "สาขา",
+        "all": "ทุกสาขา"
+      },
+      "gender": {
+        "label": "เพศ",
+        "female": "หญิง",
+        "male": "ชาย",
+        "other": "อื่นๆ",
+        "all": "ทุกเพศ"
+      },
+      "status": {
+        "label": "สถานะ",
+        "all": "ทุกสถานะ",
+        "active": "ทำงานอยู่",
+        "parttime": "พาร์ทไทม์",
+        "inactive": "ลาออก"
+      }
+    }
+  },
+  "new_employees": {
+    "label": "เพิ่มพนักงานใหม่",
+    "steps": {
+      "personal_info": "ข้อมูลส่วนตัว",
+      "address": "ที่อยู่",
+      "contract": "สัญญาจ้าง"
+    },
+    "action": {
+      "previous": "ย้อนกลับ",
+      "next": "ถัดไป",
+      "create": "เพิ่มพนักงาน",
+      "creating": "กำลังสร้าง..."
+    },
+    "modal": {
+      "create": {
+        "success": "เพิ่มพนักงานสำเร็จ",
+        "fail": "เพิ่มพนักงานไม่สำเร็จ {err}"
+      },
+      "delete": {
+        "success": "ลบพนักงานสำเร็จ",
+        "fail": "ลบพนักงานไม่สำเร็จ {err}"
+      }
+    }
+  },
+  "documents": {
+    "label": "เอกสาร",
+    "search": {
+      "label": "ค้นหาเอกสาร",
+      "placeholder": "ค้นหาเอกสาร เช่น ชื่อ"
+    },
+    "fields": {
+      "name": "ชื่อ",
+      "modify_at": "แก้ไขเมื่อ",
+      "upload_by": "อัพโหลดโดย",
+      "size": "ขนาด"
+    },
+    "actions": {
+      "create": "เพิ่มเอกสาร",
+      "rename": "เปลี่ยนชื่อ",
+      "download": "ดาวน์โหลด",
+      "copy_url": "คัดลอกลิ้งค์",
+      "delete": "ลบเอกสาร"
+    },
+    "table": {
+      "no_document": "ไม่พบเอกสาร"
+    }
+  }
+}

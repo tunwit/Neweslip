@@ -1,15 +1,16 @@
 import { Step, StepIndicator, Stepper } from "@mui/joy";
-import React from "react";
+import React, { useTransition } from "react";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonIcon from "@mui/icons-material/Person";
+import { useTranslations } from "next-intl";
 
 const steps = [
-  { title: "Personal Infomation", icon: <PersonIcon /> },
-  { title: "Address", icon: <HomeIcon /> },
-  { title: "Contract", icon: <StickyNote2Icon /> },
+  { titleKey: "personal_info", icon: <PersonIcon /> },
+  { titleKey: "address", icon: <HomeIcon /> },
+  { titleKey: "contract", icon: <StickyNote2Icon /> },
 ];
 
 interface CreateStepperProps {
@@ -17,6 +18,7 @@ interface CreateStepperProps {
 }
 
 export default function CreateStepper({ current }: CreateStepperProps) {
+  const t = useTranslations("new_employees.steps");
   return (
     <>
       <Stepper sx={{ width: "100%" }}>
@@ -40,7 +42,7 @@ export default function CreateStepper({ current }: CreateStepperProps) {
                 </StepIndicator>
               }
             >
-              {v.title}
+              {t(v.titleKey)}
             </Step>
           );
         })}

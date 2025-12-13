@@ -17,7 +17,7 @@ export default async function deleteEmployeeDocument(docId:number,key:string,sho
         .where(eq(employeeFilesTable.id, docId));
 
         const deleteCommand = new DeleteObjectCommand({
-          Bucket: "eslip",
+          Bucket: process.env.S3_BUCKET,
           Key: key,
         });
         await s3Client.send(deleteCommand);

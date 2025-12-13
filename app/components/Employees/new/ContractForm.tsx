@@ -27,6 +27,7 @@ import { createEmployeeFormSchema } from "@/types/formField";
 import { ZodForm } from "@/lib/useZodForm";
 import dayjs, { Dayjs } from "dayjs";
 import DatePickerLocalize from "@/widget/DatePickerLocalize";
+import { useTranslations } from "next-intl";
 
 interface ContractFormProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
@@ -42,6 +43,8 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
   } = useFormContext<z.infer<typeof createEmployeeFormSchema>>() as ZodForm<
     typeof createEmployeeFormSchema
   >;
+  const t = useTranslations("employees");
+  const tn = useTranslations("new_employees");
 
   const handlerPrevious = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -58,19 +61,23 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           <InputForm
             control={control}
             name="salary"
-            label="Base Salary"
+            label={t("fields.base_salary")}
             type="number"
           />
         </div>
 
         <div className="col-span-2">
-          <InputForm control={control} name="position" label="Position" />
+          <InputForm
+            control={control}
+            name="position"
+            label={t("fields.postion")}
+          />
         </div>
 
         <div className="col-span-1 ">
           <FormControl required>
             <FormLabel>
-              Date of Employment
+              {t("fields.date_of_employ")}
               {errors.dateEmploy && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.dateEmploy.message}
@@ -93,7 +100,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
         <div className="col-span-1 ">
           <FormControl required>
             <FormLabel>
-              Bank
+              {t("fields.bank")}
               {errors.bankName && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.bankName.message}
@@ -114,14 +121,14 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           <InputForm
             control={control}
             name="bankAccountNumber"
-            label="Bank Account"
+            label={t("fields.bank_account_number")}
           />
         </div>
         <div className="col-span-2">
           <InputForm
             control={control}
             name="bankAccountOwner"
-            label="Bank Owner"
+            label={t("fields.bank_account_owner")}
           />
         </div>
 
@@ -129,13 +136,13 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           <InputForm
             control={control}
             name="promtpay"
-            label="Promtpay (Phone ,ID)"
+            label={t("fields.promtpay")}
           />
         </div>
         <div className="col-span-2">
           <FormControl required>
             <FormLabel>
-              Branch
+              {t("fields.branch")}
               {errors.branchId && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.branchId.message}
@@ -157,7 +164,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
         <div className="col-span-2">
           <FormControl required>
             <FormLabel>
-              Status
+              {t("fields.status")}
               {errors.status && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.status.message}
@@ -182,7 +189,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
       <div className="flex justify-end items-center mt-5 gap-3 mr-5">
         <Button onClick={(e) => handlerPrevious(e)} variant="outlined">
           <Icon className="text-lg" icon={"mingcute:left-line"} />
-          <p>Previous</p>
+          <p>{tn("action.previous")}</p>
         </Button>
         <Button
           type="submit"
@@ -191,11 +198,7 @@ export default function ContractForm({ setCurrentPage }: ContractFormProps) {
           loadingPosition="start"
           disabled={isSubmitting || isSubmitSuccessful}
         >
-          {isSubmitting ? (
-              "Creating Employee..."
-          ) : (
-            "Create Employee"
-          )}
+          {isSubmitting ? tn("action.creating") : tn("action.create")}
           <Icon className="text-lg" icon={"mingcute:right-line"} />
         </Button>
       </div>

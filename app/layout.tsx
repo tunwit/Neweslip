@@ -10,34 +10,39 @@ import { Suspense } from "react";
 import SnackBar from "../widget/SnackBar";
 import ClientWrapper from "@/widget/ClientWrapper";
 import { ClerkProvider } from "@clerk/nextjs";
-import './globals.css'
+import "./globals.css";
+import { NextIntlClientProvider } from "next-intl";
 
 const propmt = Prompt({
   subsets: ["thai", "latin"],
   weight: ["100", "200", "300", "400"],
-  variable:"--font-propmt",
+  variable: "--font-propmt",
 });
 
 export default async function RootLayout({
   children,
+  params: { locale },
 }: Readonly<{
   children: React.ReactNode;
+  params: { locale: string };
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${propmt.variable} antialiased`}>
+      <html lang={locale} className={`${propmt.variable} antialiased`}>
         <body className={`${propmt.className} antialiased flex`}>
-          <Providers>
-            <Suspense>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
+          <NextIntlClientProvider locale={locale}>
+            <Providers>
+              <Suspense>
+                <div className="flex flex-col min-h-screen">
+                  <Navbar />
 
-                <div className="flex flex-row h-full max-h-[calc(100vh-80px)] w-screen overflow-hidden">
-                  <ClientWrapper>{children}</ClientWrapper>
+                  <div className="flex flex-row h-full max-h-[calc(100vh-80px)] w-screen overflow-hidden">
+                    <ClientWrapper>{children}</ClientWrapper>
+                  </div>
                 </div>
-              </div>
-            </Suspense>
-          </Providers>
+              </Suspense>
+            </Providers>
+          </NextIntlClientProvider>
         </body>
       </html>
     </ClerkProvider>

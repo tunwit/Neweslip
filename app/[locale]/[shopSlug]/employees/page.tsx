@@ -19,7 +19,7 @@ import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { useEmployeeStats } from "@/hooks/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
 import Head from "next/head";
-
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const rounter = useRouter();
@@ -28,7 +28,9 @@ export default function Home() {
   const [branchId, setBranchId] = useState(-1);
   const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
   const { name } = useCurrentShop();
-
+  const tb = useTranslations("breadcrumb");
+  const t = useTranslations("employees");
+  const t2 = useTranslations();
   return (
     <>
       <title>Employee - E Slip</title>
@@ -36,12 +38,12 @@ export default function Home() {
         <div className="mx-10">
           <div className="flex flex-row text-[#424242] text-xs mt-10">
             <p>
-              {name} {">"} Dashboard {">"}&nbsp;
+              {name} {">"} {tb("dashboard")} {">"}&nbsp;
             </p>
-            <p className="text-blue-800">Employees</p>
+            <p className="text-blue-800">{tb("employees")}</p>
           </div>
           <div className=" mt-5 flex flex-row justify-between">
-            <p className="text-black text-4xl font-bold">Employees</p>
+            <p className="text-black text-4xl font-bold">{t("label")}</p>
             <Button
               onClick={() => rounter.push("employees/new")}
               startDecorator={<Add sx={{ fontSize: "20px" }} />}
@@ -51,13 +53,13 @@ export default function Home() {
                 padding: 1.2,
               }}
             >
-              New Employee
+              {t("actions.create")}
             </Button>
           </div>
 
           <div className="mt-8 flex flex-row gap-2">
             <div className="w-[60%]">
-              <p className="text-black text-xs mb-1">Search Employee</p>
+              <p className="text-black text-xs mb-1"> {t("search.label")}</p>
               <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
                 <Icon
                   className="text-[#424242]"
@@ -65,7 +67,7 @@ export default function Home() {
                 />
                 <input
                   type="text"
-                  placeholder="Search"
+                  placeholder={t("search.placeholder")}
                   className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -74,7 +76,7 @@ export default function Home() {
             </div>
 
             <div className="w-[20%]">
-              <p className="text-black text-xs mb-1">Status</p>
+              <p className="text-black text-xs mb-1">{t("filters.status.label")}</p>
               <StatusSelector
                 isEnableAll={true}
                 status={status}
@@ -83,7 +85,7 @@ export default function Home() {
             </div>
 
             <div className="w-[20%]">
-              <p className="text-black text-xs mb-1">Brach</p>
+              <p className="text-black text-xs mb-1">{t("filters.branch.label")}</p>
               <BranchSelector
                 branchId={branchId}
                 onChange={(n) => {

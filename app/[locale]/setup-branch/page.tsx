@@ -6,29 +6,35 @@ import { useZodForm } from "@/lib/useZodForm";
 import { branchSchema } from "@/schemas/setting/branchForm";
 import { InputForm } from "@/widget/InputForm";
 import { FormProvider } from "react-hook-form";
-import { createBranch } from "../action/createBranch";
 import { NewBranch } from "@/types/branch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { Button, CircularProgress } from "@mui/joy";
 import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
+import { createBranch } from "@/app/action/createBranch";
+import { useLocale } from "@/hooks/useLocale";
 
 export default function SetupBranchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const shopId = searchParams.get("shopId");
-  const user = useUser()
-  const method = useZodForm(branchSchema)
-  const { control, handleSubmit, formState:{isSubmitting, isSubmitSuccessful} } = method
+  const user = useUser();
+  const method = useZodForm(branchSchema);
+  const locale = useLocale();
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, isSubmitSuccessful },
+  } = method;
 
-  const onSubmit = async (data:Omit<NewBranch,"shopId">) => {
-    if(!shopId) return
-    
+  const onSubmit = async (data: Omit<NewBranch, "shopId">) => {
+    if (!shopId) return;
+
     try {
-      await createBranch(data,Number(shopId),user.user?.id || null);
+      await createBranch(data, Number(shopId), user.user?.id || null);
       // Redirect back to shop page after successful creation
-      showSuccess("Create branch successful")
-      router.push("/");
+      showSuccess("Create branch successful");
+      router.push(`/${locale}`);
     } catch (err) {
       showError(err instanceof Error ? err.message : "Something went wrong");
     }
@@ -62,9 +68,26 @@ export default function SetupBranchPage() {
         </div>
         <FormProvider {...method}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <InputForm control={control} name="name" label="Branch Name" placeHolder="e.g., Main Branch, สาขาหลัก"/>
+            <InputForm
+              control={control}
+              name="name"
+              label="Branch Name"
+              placeHolder="e.g., Main Branch, สาขาหลัก"
+            />
 
-            <InputForm control={control} name="nameEng" label="Branch Name (English)" placeHolder="e.g., Main Branch"/>
+            <InputForm
+              control={control}
+              name="nameEng"
+              label="Branch Name (English)"
+              placeHolder="e.g., Main Branch"
+            />
+
+            <InputForm
+              control={control}
+              name="address"
+              label="Address"
+              placeHolder="e.g., 56/458 Queen street"
+            />
 
             <Button
               type="submit"
@@ -73,11 +96,7 @@ export default function SetupBranchPage() {
               loading={isSubmitting}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? (
-                  "Creating Branch..."
-              ) : (
-                "Create Branch"
-              )}
+              {isSubmitting ? "Creating Branch..." : "Create Branch"}
             </Button>
           </form>
         </FormProvider>

@@ -1,0 +1,9 @@
+{
+  "nav": {
+    "dashboard": "dashboard",
+    "employees": "employees",
+    "documents":"documents",
+    "payrolls": "payrolls",
+    "settings": "settings"
+  }
+}

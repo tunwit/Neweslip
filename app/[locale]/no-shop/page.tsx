@@ -1,19 +1,21 @@
-"use client"
+"use client";
+import { useLocale } from "@/hooks/useLocale";
 import { useShop } from "@/hooks/useShop";
 import { SignOutButton } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SetupShopPage() {
-  const {data,isSuccess} = useShop()
-  useEffect(()=>{
-    if(!isSuccess) return
-    if(!data || !data?.data) return
-    if(data?.data?.length > 0){
-      redirect("/")
+  const { data, isSuccess } = useShop();
+  const locale = useLocale();
+  useEffect(() => {
+    if (!isSuccess) return;
+    if (!data || !data?.data) return;
+    if (data?.data?.length > 0) {
+      redirect(`/${locale}`);
     }
-  },[data,isSuccess])
-  
+  }, [data, isSuccess]);
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8 ">
@@ -36,15 +38,15 @@ export default function SetupShopPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             You are not the owner of any shop
           </h1>
-          <p className="text-gray-600 mt-2">
-            you need to be one of the owner 
-          </p>
+          <p className="text-gray-600 mt-2">you need to be one of the owner</p>
         </div>
         <div className="flex flex-col items-center justify-center gap-5">
-          <p className="opacity-50">Please contact supervisor or admin to add you to shop owner</p>
-          <SignOutButton/>
+          <p className="opacity-50">
+            Please contact supervisor or admin to add you to shop owner
+          </p>
+          <SignOutButton />
         </div>
-        
+
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}

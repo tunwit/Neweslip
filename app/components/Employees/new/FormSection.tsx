@@ -18,6 +18,8 @@ import { useZodForm } from "@/lib/useZodForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
+import { showError, showSuccess } from "@/utils/showSnackbar";
 
 interface FormSectionProps {
   currentPage: number;
@@ -25,9 +27,9 @@ interface FormSectionProps {
 }
 
 const formPages = [
-  { title: "Personal Information", component: PersonalForm },
-  { title: "Address", component: AddressForm },
-  { title: "Contract", component: ContractForm },
+  { titleKey: "personal_info", component: PersonalForm },
+  { titleKey: "address", component: AddressForm },
+  { titleKey: "contract", component: ContractForm },
 ];
 
 const createEmployeeFormSchema = personalSchema
@@ -45,24 +47,15 @@ export default function FormSection({
   const { show, setMessage } = useSnackbar();
   const queryClient = useQueryClient();
   const user = useUser();
-
-  const onCreatError = () => {
-    setMessage({ message: "Something went wrong", type: "failed" });
-    show();
-  };
-
-  const onCreateSuccess = () => {
-    setMessage({ message: "Create employee successful", type: "success" });
-    show();
-    rounter.push(`/${pathname[1]}/employees`);
-  };
+  const tn = useTranslations("new_employees");
+  const tnm = useTranslations("new_employees.modal.create");
 
   // FIX: Change the input type of onSubmit from NewEmployee to FormField
   const onSubmit = async (data: FormField) => {
     const valid = await methods.trigger();
     if (!valid) return;
 
-    const slug = pathname[1];
+    const slug = pathname[2];
     const { id } = extractSlug(slug);
     // Construct the final data object, merging the form data with the required shopId
     const employeePayload: NewEmployee = {
@@ -73,13 +66,14 @@ export default function FormSection({
     try {
       await createEmployee(employeePayload, user.user?.id || null);
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-      onCreateSuccess();
-    } catch {
+      showSuccess(tnm("success"));
+      rounter.push("/");
+    } catch (err: any) {
       methods.setError("firstName", {
         type: "server",
         message: "Backend error",
       });
-      onCreatError();
+      showError(tnm("fail", { err: err.message }));
     }
   };
 
@@ -95,7 +89,7 @@ export default function FormSection({
                   hidden={currentPage !== index}
                   className="font-bold text-2xl mt-10"
                 >
-                  {value.title}
+                  {tn(`steps.${value.titleKey}`)}
                 </p>
                 <div hidden={currentPage !== index}>
                   <Component setCurrentPage={setCurrentPage} />

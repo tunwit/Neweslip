@@ -25,11 +25,13 @@ export async function renameShopDocument(
   const ownerCheck = await isOwner(shopId, userId);
   if (!ownerCheck) throw new Error("Forbidden");
   try {
-    await s3Client.send(new CopyObjectCommand({
-      Bucket: "eslip",
-      CopySource: encodeURIComponent(`eslip/${oldKey}`),
-      Key: newKey,
-    }));
+    await s3Client.send(
+      new CopyObjectCommand({
+        Bucket: process.env.S3_BUCKET,
+        CopySource: encodeURIComponent(`${process.env.S3_BUCKET}/${oldKey}`),
+        Key: newKey,
+      }),
+    );
 
     await globalDrizzle.transaction(async (tx) => {
       await tx
@@ -41,10 +43,12 @@ export async function renameShopDocument(
         .where(eq(shopFilesTable.id, docId));
     });
 
-    await s3Client.send(new DeleteObjectCommand({
-      Bucket: "eslip",
-      Key: oldKey,
-    }));
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET,
+        Key: oldKey,
+      }),
+    );
   } catch (error) {
     console.error("Error renaming object:", error);
     throw error;

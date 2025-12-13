@@ -11,6 +11,7 @@ import {
   Option,
   Select,
 } from "@mui/joy";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -19,13 +20,13 @@ interface AddressFormProps {
 }
 
 export default function AddressForm({ setCurrentPage }: AddressFormProps) {
-  const { register, trigger ,control } = useFormContext<z.infer<typeof createEmployeeFormSchema>>() as ZodForm<typeof createEmployeeFormSchema>;
+  const { register, trigger, control } = useFormContext<
+    z.infer<typeof createEmployeeFormSchema>
+  >() as ZodForm<typeof createEmployeeFormSchema>;
+  const t = useTranslations("employees");
+  const tn = useTranslations("new_employees");
   const handlerNext = async () => {
-    const valid = await trigger([
-      "address1",
-      "address2",
-      "address3",
-    ]);
+    const valid = await trigger(["address1", "address2", "address3"]);
     if (valid) {
       setCurrentPage(2);
     }
@@ -45,34 +46,34 @@ export default function AddressForm({ setCurrentPage }: AddressFormProps) {
           <InputForm
             control={control}
             name="address1"
-            label="Address Line 1"
-            />
+            label={t("fields.address_line1")}
+          />
         </div>
 
         <div className="col-span-4">
           <InputForm
             control={control}
             name="address2"
-            label="Address Line 2"
-            />
+            label={t("fields.address_line2")}
+          />
         </div>
 
         <div className="col-span-4">
           <InputForm
             control={control}
             name="address3"
-            label="Address Line 3"
-            />
+            label={t("fields.address_line3")}
+          />
         </div>
       </div>
 
       <div className="flex justify-end items-center mt-5 gap-3 mr-5">
         <Button onClick={(e) => handlerPrevious(e)} variant="outlined">
           <Icon className="text-lg" icon={"mingcute:left-line"} />
-          <p>Previous</p>
+          <p>{tn("action.previous")}</p>
         </Button>
         <Button onClick={() => handlerNext()} variant="soft">
-          <p>Next</p>
+          <p>{tn("action.next")}</p>
           <Icon className="text-lg" icon={"mingcute:right-line"} />
         </Button>
       </div>

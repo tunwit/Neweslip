@@ -15,6 +15,8 @@ import TemplateIcon from "@/assets/icons/TemplateIcon";
 import DocumentIcon from "@/assets/icons/DocumentIcon";
 import SettingIcon from "@/assets/icons/SettingIcon";
 import { useSession } from "@clerk/nextjs";
+import { useLocale } from "@/hooks/useLocale";
+import { useTranslations } from "next-intl";
 
 interface Shop {
   id: number;
@@ -23,25 +25,25 @@ interface Shop {
 }
 const DashboardRails = [
   {
-    title: "Employees",
+    titleKey: "employees",
     icon: UsersIcon,
     id: "employees",
     href: "/employees",
   },
   {
-    title: "Documents",
+    titleKey: "documents",
     icon: DocumentIcon,
     id: "documents",
     href: "/documents",
   },
   {
-    title: "Payrolls",
+    titleKey: "payrolls",
     icon: MoneyIcon,
     id: "payrolls",
     href: "/payrolls",
   },
   // {
-  //   title: "Records",
+  //   titleKey: "Records",
   //   icon: HistoryIcon,
   //   id: "records",
   //   href: "/records",
@@ -50,13 +52,13 @@ const DashboardRails = [
 
 const ConfigureRails = [
   // {
-  //   title: "Template",
+  //   titleKey: "Template",
   //   icon: TemplateIcon,
   //   id: "template",
   //   href: "/template",
   // },
   {
-    title: "Setting",
+    titleKey: "settings",
     icon: SettingIcon,
     id: "settings",
     href: "/settings",
@@ -65,10 +67,11 @@ const ConfigureRails = [
 
 export default function DashboardSidebar() {
   const pathname = usePathname().split("/");
-  const shopSlug = pathname[1];
-  const page = pathname[2];
+  const shopSlug = pathname[2];
+  const page = pathname[3];
   const sidebarState = useHamburger((state) => state.open);
   const { data, isPending } = useShop();
+  const t = useTranslations("navigation");
 
   return (
     <>
@@ -93,13 +96,15 @@ export default function DashboardSidebar() {
         <div className="my-5 px-3">
           <hr className="border-t border-[#747474] h-[2px]" />
         </div>
-        <p className="pl-4 text-xs text-[#797979] font-bold mb-4">DASHBOARD</p>
+        <p className="pl-4 text-xs text-[#797979] font-bold mb-4">
+          {t("dashboard")}
+        </p>
         <div className="pl-3 flex flex-col text-sm gap-1">
           {DashboardRails.map((v, i) => {
             return (
               <DashboardButton
                 key={i}
-                title={v.title}
+                title={t(v.titleKey)}
                 icon={v.icon}
                 id={v.id}
                 selected={page == v.id}
@@ -117,7 +122,7 @@ export default function DashboardSidebar() {
             return (
               <DashboardButton
                 key={i}
-                title={v.title}
+                title={t(v.titleKey)}
                 icon={v.icon}
                 id={v.id}
                 selected={page == v.id}

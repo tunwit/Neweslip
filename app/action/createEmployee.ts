@@ -7,6 +7,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function createEmployee(data: NewEmployee,userId:string|null) {
   const ownerCheck = await isOwner(data.shopId,userId);
+
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

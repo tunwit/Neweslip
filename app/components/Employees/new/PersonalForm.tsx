@@ -22,6 +22,7 @@ import { createEmployeeFormSchema } from "@/types/formField";
 import GenderSelector from "@/widget/GenderSelector";
 import { GENDER } from "@/types/enum/enum";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 interface PersonalFormProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -38,6 +39,8 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | undefined>();
   const router = useRouter();
+  const t = useTranslations("employees");
+  const tn = useTranslations("new_employees");
 
   const handlerNext = async () => {
     const valid = await trigger([
@@ -54,10 +57,10 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
     }
   };
 
-   const handlerBack = async () => {
-      router.back()
+  const handlerBack = async () => {
+    router.back();
   };
-  
+
   const handleClick = () => {
     fileRef.current?.click();
   };
@@ -97,21 +100,33 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
       </FormControl>
       <div className="grid grid-cols-4 gap-x-3 gap-y-5 mt-4 px-5">
         <div className="col-span-2">
-          <InputForm control={control} name="firstName" label="First name" />
+          <InputForm
+            control={control}
+            name="firstName"
+            label={t("fields.first_name")}
+          />
         </div>
 
         <div className="col-span-2">
-          <InputForm control={control} name="lastName" label="Last name" />
+          <InputForm
+            control={control}
+            name="lastName"
+            label={t("fields.last_name")}
+          />
         </div>
 
         <div className="col-span-2">
-          <InputForm control={control} name="nickName" label="Nick name" />
+          <InputForm
+            control={control}
+            name="nickName"
+            label={t("fields.nickname")}
+          />
         </div>
 
         <div className="col-span-1">
           <FormControl required>
             <FormLabel>
-              Gender
+              {t("fields.gender")}
               {errors.gender && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.gender.message}
@@ -135,7 +150,7 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
         <div className="col-span-1 ">
           <FormControl required>
             <FormLabel>
-              Date of Birth
+              {t("fields.date_of_birth")}
               {errors.dateOfBirth && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.dateOfBirth.message}
@@ -155,25 +170,25 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
         </div>
 
         <div className="col-span-2">
-          <InputForm control={control} name="email" label="Email" />
+          <InputForm control={control} name="email" label={t("fields.email")} />
         </div>
 
         <div className="col-span-2">
           <InputForm
             control={control}
             name="phoneNumber"
-            label="Phone Number"
+            label={t("fields.phone_number")}
           />
         </div>
       </div>
 
       <div className="flex gap-3 flex-row-reverse mt-5">
         <Button onClick={() => handlerNext()} variant="soft">
-          <p>Next</p>
+          <p>{tn("action.next")}</p>
           <Icon className="text-lg" icon={"mingcute:right-line"} />
         </Button>
         <Button onClick={() => handlerBack()} variant="outlined">
-          <p>Back</p>
+          <p>{tn("action.previous")}</p>
         </Button>
       </div>
     </>

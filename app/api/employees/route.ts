@@ -19,7 +19,6 @@ import { isOwner } from "@/lib/isOwner";
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-
     if (!userId) {
       return errorResponse("Unauthorized", 401);
     }
@@ -30,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (!shopIdQ) {
       return errorResponse("Illegal Argument", 400);
     }
-
+    
     if (!(await isOwner(Number(shopIdQ), userId))) {
       return errorResponse("Forbidden", 403);
     }
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
           like(employeesTable.lastName, `%${trimmedSearch}%`),
           like(employeesTable.nickName, `%${trimmedSearch}%`),
           like(employeesTable.email, `%${trimmedSearch}%`),
-          like(employeesTable.position, `%${trimmedSearch}%`)
+          like(employeesTable.position, `%${trimmedSearch}%`),
         )
       : undefined;
 
@@ -71,7 +70,7 @@ export async function GET(request: NextRequest) {
       ...(branchIdQ ? [eq(employeesTable.branchId, Number(branchIdQ))] : []),
       ...(validateEmpStatus !== undefined
         ? [eq(employeesTable.status, validateEmpStatus)]
-        : [])
+        : []),
     );
 
     const { shopId, branchId, ...rest } = getTableColumns(employeesTable);
@@ -104,7 +103,7 @@ export async function GET(request: NextRequest) {
       .from(employeesTable)
       .innerJoin(
         shopOwnerTable,
-        eq(employeesTable.shopId, shopOwnerTable.shopId)
+        eq(employeesTable.shopId, shopOwnerTable.shopId),
       )
       .innerJoin(shopsTable, eq(shopOwnerTable.shopId, shopsTable.id))
       .innerJoin(branchesTable, eq(employeesTable.branchId, branchesTable.id))
@@ -118,7 +117,7 @@ export async function GET(request: NextRequest) {
 
     // Remove totalCount from results before returning
     const employees: EmployeeWithShop[] = results.map(
-      ({ totalCount, ...employee }) => employee as EmployeeWithShop
+      ({ totalCount, ...employee }) => employee as EmployeeWithShop,
     );
 
     return successPaginationResponse(employees, {

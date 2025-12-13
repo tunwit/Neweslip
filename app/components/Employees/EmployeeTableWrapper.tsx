@@ -12,6 +12,7 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 
 interface EmployeeTableWrapperProps {
   search_query?: string;
@@ -38,8 +39,11 @@ export function EmployeeTableWrapper({
   const { checked, uncheckall } = useCheckBox<number>("allEmployeeTable");
   const { id } = useCurrentShop();
   const queryClient = useQueryClient();
-  const { setMessage, show } = useSnackbar();
+  const t = useTranslations("employees");
+  const tnm = useTranslations("new_employees.modal.delete");
+
   const user = useUser();
+
   const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
     setPage(page);
   };
@@ -49,10 +53,10 @@ export function EmployeeTableWrapper({
       if (!id) return;
       uncheckall();
       await deleteEmployee(checked, id, user.user?.id || null);
-      showSuccess("Delete employee success");
+      showSuccess(tnm("success"));
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-    } catch (err) {
-      showError(`Delete employee failed \n ${err}`);
+    } catch (err: any) {
+      showError(tnm("fail", { err: err.message }));
     }
   };
 
@@ -67,7 +71,7 @@ export function EmployeeTableWrapper({
               onDeleteEmployee();
             }}
           >
-            <p className="underline font-medium">delete</p>
+            <p className="underline font-medium">{t("actions.delete")}</p>
           </Button>
         </div>
         <div className="mb-3 w-full border border-[#d4d4d4] rounded-sm max-h-[calc(100vh-400px)] overflow-x-auto overflow-y-auto shadow-sm">

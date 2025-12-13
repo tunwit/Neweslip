@@ -25,7 +25,7 @@ export const useEmployees = ({
   branchId,
 }: useEmployeesProps) => {
   const pathname = usePathname().split("/");
-  const slug = pathname[1];
+  const slug = pathname[2];
   const { name, id } = extractSlug(slug);
 
   const queryParams = new URLSearchParams({
