@@ -4,8 +4,6 @@ services:
     container_name: eslip
     ports:
       - "3000:3000"
-    depends_on:
-      - mysql
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
@@ -17,7 +15,7 @@ services:
       S3_ENDPOINT: ${S3_ENDPOINT}
     networks:
       - nginx-network
-      
+
 networks:
   nginx-network:
     external: true
