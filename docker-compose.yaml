@@ -1,6 +1,7 @@
 services:
   eslip:
     build: .
+    container_name: eslip
     ports:
       - "3000:3000"
     depends_on:
@@ -15,8 +16,29 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       S3_ENDPOINT: ${S3_ENDPOINT}
     networks:
-      - nginx
+      - nginx-network
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - nginx-network
+
+volumes:
+  mysql_data:
 
 networks:
-  nginx:
+  nginx-network:
     external: true

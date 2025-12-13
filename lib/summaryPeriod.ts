@@ -47,18 +47,20 @@ export async function summaryPeriod(
   let finalizedByUser = null;
   if (period.finalized_by) {
     const client = await clerkClient();
-    const clerkUser = await client.users.getUser(period.finalized_by);
-    finalizedByUser = {
-      id: clerkUser.id,
-      firstName: clerkUser.firstName,
-      lastName: clerkUser.lastName,
-      fullName: clerkUser.fullName,
-      email: clerkUser.primaryEmailAddress?.emailAddress,
-      hasImage: clerkUser.hasImage,
-      imageUrl: clerkUser.imageUrl,
-      lastSignInAt: clerkUser.lastSignInAt,
-      lastActiveAt: clerkUser.lastActiveAt,
-    };
+    try {
+      const clerkUser = await client.users.getUser(period.finalized_by);
+      finalizedByUser = {
+        id: clerkUser.id,
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        fullName: clerkUser.fullName,
+        email: clerkUser.primaryEmailAddress?.emailAddress,
+        hasImage: clerkUser.hasImage,
+        imageUrl: clerkUser.imageUrl,
+        lastSignInAt: clerkUser.lastSignInAt,
+        lastActiveAt: clerkUser.lastActiveAt,
+      };
+    } catch {}
   }
 
   // Fetch payroll records with employee info
