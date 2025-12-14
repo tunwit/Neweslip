@@ -23,6 +23,7 @@ import BankSelector from "@/widget/BankSelector";
 import { useZodForm, ZodForm } from "@/lib/useZodForm";
 import { InputForm } from "@/widget/InputForm";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
 export default function EmployeeDetailsForm({
   employee,
@@ -37,24 +38,39 @@ export default function EmployeeDetailsForm({
     typeof createEmployeeFormSchema
   >;
 
+  const tn = useTranslations("new_employees");
+  const t = useTranslations("employees");
+
   return (
     <>
       <form>
         <div className="flex flex-col gap-3 ">
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
-            <p className="font-semibold mb-2">Personal Infomation</p>
+            <p className="font-semibold mb-2">{tn("steps.personal_info")}</p>
             <div className="grid grid-cols-2 gap-y-4 gap-x-3">
-              <InputForm control={control} name="email" label="Email" />
+              <InputForm
+                control={control}
+                name="email"
+                label={t("fields.email")}
+              />
               <InputForm
                 control={control}
                 name="firstName"
-                label="First Name"
+                label={t("fields.first_name")}
               />
-              <InputForm control={control} name="lastName" label="Last Name" />
-              <InputForm control={control} name="nickName" label="Nick Name" />
+              <InputForm
+                control={control}
+                name="lastName"
+                label={t("fields.last_name")}
+              />
+              <InputForm
+                control={control}
+                name="nickName"
+                label={t("fields.nickname")}
+              />
               <FormControl required>
                 <FormLabel>
-                  Gender
+                  {t("fields.gender")}
                   {errors.gender && (
                     <p className="text-xs ml-2 font-normal text-red-500 italic">
                       {errors.gender.message}
@@ -77,11 +93,11 @@ export default function EmployeeDetailsForm({
               <InputForm
                 control={control}
                 name="phoneNumber"
-                label="Phone Number"
+                label={t("fields.phone_number")}
               />
               <FormControl required>
                 <FormLabel>
-                  Date of Birth
+                  {t("fields.date_of_birth")}
                   {errors.dateOfBirth && (
                     <p className="text-xs ml-2 font-normal text-red-500 italic">
                       {errors.dateOfBirth.message}
@@ -105,40 +121,44 @@ export default function EmployeeDetailsForm({
           </div>
 
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
-            <p className="font-semibold mb-2">Address</p>
+            <p className="font-semibold mb-2">{tn("steps.address")}</p>
             <div className="grid grid-cols-2 gap-y-4 gap-x-3">
               <InputForm
                 control={control}
                 name="address1"
-                label="Address Line 1"
+                label={t("fields.address_line1")}
               />
               <InputForm
                 control={control}
                 name="address2"
-                label="Address Line 2"
+                label={t("fields.address_line2")}
               />
               <InputForm
                 control={control}
                 name="address3"
-                label="Address Line 3"
+                label={t("fields.address_line3")}
               />
             </div>
           </div>
 
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
-            <p className="font-semibold mb-2">Job Information</p>
+            <p className="font-semibold mb-2">{tn("steps.contract")}</p>
             <div className="grid grid-cols-2 gap-y-4 gap-x-3">
               <InputForm
                 control={control}
                 name="salary"
-                label="Base Salary"
+                label={t("fields.base_salary")}
                 type="number"
               />
-              <InputForm control={control} name="position" label="Position" />
+              <InputForm
+                control={control}
+                name="position"
+                label={t("fields.postion")}
+              />
 
               <FormControl required>
                 <FormLabel>
-                  Date of Employ
+                  {t("fields.date_of_employ")}
                   {errors.dateEmploy && (
                     <p className="text-xs ml-2 font-normal text-red-500 italic">
                       {errors.dateEmploy.message}
@@ -160,7 +180,7 @@ export default function EmployeeDetailsForm({
               </FormControl>
               <FormControl required>
                 <FormLabel>
-                  Branch{" "}
+                  {t("fields.branch")}
                   {errors.branchId && (
                     <p className="text-xs ml-2 font-normal text-red-500 italic">
                       {errors.branchId.message}
@@ -182,7 +202,7 @@ export default function EmployeeDetailsForm({
               </FormControl>
               <FormControl required>
                 <FormLabel>
-                  Bank Name
+                  {t("fields.bank")}
                   {errors.bankName && (
                     <p className="text-xs ml-2 font-normal text-red-500 italic">
                       {errors.bankName.message}
@@ -203,14 +223,18 @@ export default function EmployeeDetailsForm({
               <InputForm
                 control={control}
                 name="bankAccountNumber"
-                label="Bank Account"
+                label={t("fields.bank_account_number")}
               />
               <InputForm
                 control={control}
                 name="bankAccountOwner"
-                label="Bank Account Owner"
+                label={t("fields.bank_account_owner")}
               />
-              <InputForm control={control} name="promtpay" label="Promtpay" />
+              <InputForm
+                control={control}
+                name="promtpay"
+                label={t("fields.promtpay")}
+              />
             </div>
           </div>
         </div>

@@ -23,6 +23,10 @@
 
   "employees": {
     "label": "พนักงาน",
+    "tabs": {
+      "details": "รายละเอียด",
+      "documents": "เอกสาร"
+    },
     "actions": {
       "create": "เพิ่มพนักงาน",
       "delete": "ลบพนักงาน"

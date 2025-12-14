@@ -41,7 +41,12 @@ export default function FormSection({
   currentPage,
   setCurrentPage,
 }: FormSectionProps) {
-  const methods = useZodForm(createEmployeeFormSchema);
+  const methods = useZodForm(createEmployeeFormSchema, {
+    defaultValues: {
+      dateOfBirth: new Date(),
+      dateEmploy: new Date(),
+    },
+  });
   const pathname = usePathname().split("/");
   const rounter = useRouter();
   const { show, setMessage } = useSnackbar();

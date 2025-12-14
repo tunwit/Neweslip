@@ -20,7 +20,7 @@ export default function BranchSelector({
 }: BranchSelectorProps) {
   const { data, isLoading } = useBranch();
   const t = useTranslations("employees.filters");
-  
+
   return (
     <>
       <Select

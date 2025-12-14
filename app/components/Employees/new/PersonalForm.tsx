@@ -11,7 +11,7 @@ import {
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import React, { useEffect, useRef, useState } from "react";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { Controller, useFormContext } from "react-hook-form";
 import { personalSchema } from "@/schemas/createEmployeeForm/personalForm";
 import { z } from "zod";
@@ -162,6 +162,7 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
               name="dateOfBirth"
               render={({ field }) => (
                 <DatePickerLocalize
+                  date={dayjs(field?.value)}
                   onChange={(newvalue) => field.onChange(newvalue!.toDate())}
                 />
               )}

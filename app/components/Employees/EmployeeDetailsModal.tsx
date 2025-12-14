@@ -39,6 +39,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
 import EmployeeDetailsFiles from "./documentsTab/EmployeeDetailsDocuments";
 import EmployeeDetailsDocuments from "./documentsTab/EmployeeDetailsDocuments";
+import { useTranslations } from "next-intl";
 
 interface EmployeeDetailsModalProps {
   employee: EmployeeWithShop;
@@ -53,6 +54,7 @@ export default function EmployeeDetailsModal({
   const [status, setStatus] = useState(employee.status);
   const queryClient = useQueryClient();
   const user = useUser();
+  const t = useTranslations("employees")
 
   const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
     setStatus(newValue);
@@ -70,7 +72,6 @@ export default function EmployeeDetailsModal({
     queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
 
-  
   const methods = useZodForm(createEmployeeFormSchema, {
     defaultValues: normalizeNull({
       avatar: employee.avatar,
@@ -86,7 +87,9 @@ export default function EmployeeDetailsModal({
       gender: employee.gender,
       branchId: employee.branch.id,
       salary: Number(employee.salary) || 0,
-      dateEmploy: employee.dateEmploy,
+      dateEmploy: employee.dateEmploy
+        ? new Date(employee.dateEmploy)
+        : undefined,
       bankName: employee.bankName,
       bankAccountNumber: employee.bankAccountNumber,
       bankAccountOwner: employee.bankAccountOwner,
@@ -94,13 +97,13 @@ export default function EmployeeDetailsModal({
       status: employee.status,
     }),
     mode: "onChange",
-    criteriaMode: "all"
+    criteriaMode: "all",
   });
 
   const {
     handleSubmit,
     reset,
-    formState: { isValid, dirtyFields, errors,isValidating},
+    formState: { isValid, dirtyFields, errors, isValidating },
   } = methods;
 
   const onSave = async (data: createEmployeeFormField) => {
@@ -118,7 +121,6 @@ export default function EmployeeDetailsModal({
       showError(`Update employee failed failed\n${err}`);
     }
   };
-
 
   return (
     <>
@@ -153,7 +155,7 @@ export default function EmployeeDetailsModal({
             </div>
             <div className="ml-auto">
               <Button
-                disabled={Object.keys(dirtyFields).length <= 0 || !isValid}
+                disabled={Object.keys(dirtyFields).length <= 0}
                 onClick={handleSubmit(onSave)}
                 startDecorator={<Save sx={{ fontSize: "16px" }} />}
                 sx={{ fontSize: "12px", gap: 0 }}
@@ -184,8 +186,8 @@ export default function EmployeeDetailsModal({
                 },
               }}
             >
-              <Tab>Details</Tab>
-              <Tab>Documents</Tab>
+              <Tab>{t("tabs.details")}</Tab>
+              <Tab>{t("tabs.documents")}</Tab>
             </TabList>
             <TabPanel value={0}>
               <FormProvider {...methods}>

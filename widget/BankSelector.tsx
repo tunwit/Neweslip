@@ -20,16 +20,19 @@ const banks = [
   { label: "ยูโอบี", code: "uob" },
   { label: "ไอซีบีซี (ไทย)", code: "icbc" },
   { label: "ออมสิน", code: "gsb" },
-
 ];
 
 interface BankSelectorProps {
-  bank?:string
+  bank?: string;
   onChange: (newValue: string) => void;
-  disable?:boolean
+  disable?: boolean;
 }
 
-export default function BankSelector({ bank,onChange,disable=false }: BankSelectorProps) {
+export default function BankSelector({
+  bank,
+  onChange,
+  disable = false,
+}: BankSelectorProps) {
   const selectedBank = banks.find((b) => b.label === bank) ?? null;
   return (
     <Autocomplete
@@ -37,28 +40,29 @@ export default function BankSelector({ bank,onChange,disable=false }: BankSelect
       value={selectedBank}
       options={banks}
       freeSolo={true}
-
       onChange={(_, newValue) => {
         if (typeof newValue === "string") {
-          onChange(newValue); 
+          onChange(newValue);
         } else if (newValue && "label" in newValue) {
-          onChange(newValue.label); 
+          onChange(newValue.label);
         } else {
           onChange(""); // cleared
         }
       }}
       sx={{ "--Input-focusedThickness": 0 }}
       startDecorator={
-        selectedBank ?
-        <Image
-              unoptimized={true}
-              loading="lazy"
-              width="20"
-              height="20"
-              src={`/bankIcons/${selectedBank?.code}.png`}
-              alt="bank logo"
-            />
-            :<></>
+        selectedBank ? (
+          <Image
+            unoptimized={true}
+            loading="lazy"
+            width="20"
+            height="20"
+            src={`/bankIcons/${selectedBank?.code}.png`}
+            alt="bank logo"
+          />
+        ) : (
+          <></>
+        )
       }
       renderOption={(props, bank) => (
         <AutocompleteOption {...props}>
