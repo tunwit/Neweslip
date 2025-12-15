@@ -13,11 +13,9 @@ import { createSlug } from "@/utils/createSlug";
 import SnackBar from "../widget/SnackBar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Modal, ModalDialog } from "@mui/joy";
-import { useLocale } from "@/hooks/useLocale";
 
 export default function Home() {
-  const locale = useLocale();
-  redirect(`/${locale}`);
+  redirect(`/`);
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">

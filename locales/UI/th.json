@@ -108,6 +108,15 @@
   },
   "documents": {
     "label": "เอกสาร",
+    "load":{
+      "loading_doc":"กำลังโหลดเอกสาร"
+    },
+    "type":{
+      "personal_doc":"เอกสารส่วนบุคคล",
+      "contract_doc":"เอกสารสัญญา",
+      "others_doc":"เอกสารอื่นๆ"
+
+    },
     "search": {
       "label": "ค้นหาเอกสาร",
       "placeholder": "ค้นหาเอกสาร เช่น ชื่อ"
@@ -123,10 +132,55 @@
       "rename": "เปลี่ยนชื่อ",
       "download": "ดาวน์โหลด",
       "copy_url": "คัดลอกลิ้งค์",
-      "delete": "ลบเอกสาร"
+      "delete": "ลบเอกสาร",
+      "browse": "เลือกไฟล์",
+      "cancel": "ยกเลิก",
+      "confirm": "ยืนยัน",
+      "upload": "อัพโหลด"
+    },
+    "upload":{
+      "label":"อัพโหลด เอกสาร",
+      "info":{
+        "support_format":"รองรับไฟล์: PNG, JPG, WEBP, PDF",
+        "filesize_limit":"ขนาดสูงสุด",
+        "size":"ขนาด",
+        "file_limit":"จำกัดจำนวนไฟล์",
+        "file_limit_description":"สามารถอัพโหลดไฟล์ได้ทีละ {filesLimit} ไฟล์"
+      },
+      "status":{
+        "failed":"ไม่สำเร็จ",
+        "ready":"พร้อม",
+        "uploading":"กำลังอัพโหลด",
+        "uploaded":"สำเร็จ"
+
+      },
+      "dropzone":{
+        "title":"เลือกไฟล์ หรือลากมาไว้ที่นี่",
+        "description":"กดปุ่มด้านล่างเพื่อเลือกไฟล์",
+        "drop_here":"ปล่อยที่นี่"
+      }
+    },
+    "rename":{
+      "label":"เปลี่ยนชื่อ"
+    },
+    "modal":{
+      "delete":{
+        "success":"ลบสำเร็จ",
+        "fail":"ลบเอกสารไม่สำเร็จ {err}"
+      },
+      "rename":{
+        "success":"เปลี่ยนชื่อสำเร็จ",
+        "fail":"เปลี่ยนชื่อไม่สำเร็จ {err}"
+      }
     },
     "table": {
       "no_document": "ไม่พบเอกสาร"
     }
+  },
+  "date_format":{
+    "justNow": "เมื่อสักครู่",
+    "minutesAgo": "{count} นาทีที่แล้ว",
+    "hoursAgo": "{count} ชั่วโมงที่แล้ว",
+    "yesterdayAt": "เมื่อวาน เวลา {time}"
   }
 }

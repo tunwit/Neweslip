@@ -16,7 +16,6 @@ import QRCode from "qrcode";
 import { showError } from "@/utils/showSnackbar";
 import { isOwner } from "@/lib/isOwner";
 import { getUserByEmail } from "@/app/action/getUserByEmail";
-import { useLocale } from "@/hooks/useLocale";
 
 interface InvitationModalProps {
   open: boolean;
@@ -33,7 +32,6 @@ export default function InvitationModal({
   const [isCopied, setIscopied] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [error, setError] = useState("");
-  const locale = useLocale();
   const canvas = useRef(null);
   const user = useUser();
 
@@ -53,7 +51,7 @@ export default function InvitationModal({
       }
       const invitation = await createInvitation(
         email,
-        `/${locale}/accept-invitation`,
+        `/accept-invitation`,
         shopId,
         user.user?.id,
       );
@@ -62,7 +60,7 @@ export default function InvitationModal({
         showError("create invitaion failed");
         return;
       }
-      const url = `${window.origin}/${locale}/accept-invitation?token=${invitation.token}`;
+      const url = `${window.origin}/accept-invitation?token=${invitation.token}`;
       setInvitationUrl(url);
 
       QRCode.toCanvas(

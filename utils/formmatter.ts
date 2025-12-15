@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { IntlShape } from "next-intl";
 
 export function moneyFormat(value: number | string | Decimal): string {
   const decimals = 2;
@@ -32,7 +33,10 @@ export function dateTimeFormat(date: Date) {
   }).format(date);
 }
 
-export function formatModifiedTime(date: Date): string {
+export function formatModifiedTime(
+  date: Date,
+  t: IntlShape["formatMessage"],
+): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
 
@@ -41,9 +45,9 @@ export function formatModifiedTime(date: Date): string {
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (seconds < 60) return "Just now";
-  if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (seconds < 60) return t("justNow");
+  if (minutes < 60) return t("minutesAgo",{count:minutes});
+  if (hours < 24) return t("hoursAgo",{count:hours});
 
   const isYesterday = days === 1;
   const time = date.toLocaleTimeString("th-TH", {
@@ -51,7 +55,7 @@ export function formatModifiedTime(date: Date): string {
     minute: "2-digit",
   });
 
-  if (isYesterday) return `Yesterday at ${time}`;
+  if (isYesterday) return t("yesterdayAt",{count:time});
 
   return new Intl.DateTimeFormat("th-TH", {
     year: "numeric",
@@ -61,7 +65,6 @@ export function formatModifiedTime(date: Date): string {
     minute: "2-digit",
   }).format(date);
 }
-
 
 export function formatBankAccountNumber(raw: string): string {
   const digits = raw.replace(/\D/g, "");

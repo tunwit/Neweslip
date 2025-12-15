@@ -15,7 +15,6 @@ import TemplateIcon from "@/assets/icons/TemplateIcon";
 import DocumentIcon from "@/assets/icons/DocumentIcon";
 import SettingIcon from "@/assets/icons/SettingIcon";
 import { useSession } from "@clerk/nextjs";
-import { useLocale } from "@/hooks/useLocale";
 import { useTranslations } from "next-intl";
 
 interface Shop {

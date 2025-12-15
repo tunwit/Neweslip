@@ -51,6 +51,8 @@ export default function DocumentTableElement<
   onDelete,
 }: DocumentTableElementProps<T>) {
   const t = useTranslations("documents");
+  const td = useTranslations("date_format");
+
   const onCopy = async () => {
     const url = await getPresignedUrl(doc.key, 3600, false);
     navigator.clipboard.writeText(url);
@@ -80,7 +82,7 @@ export default function DocumentTableElement<
           </Link>
         </div>
       </td>
-      <td>{formatModifiedTime(new Date(doc.uploadedAt || doc.createdAt!))}</td>
+      <td>{formatModifiedTime(new Date(doc.uploadedAt || doc.createdAt!),td)}</td>
       <td>
         <div className="flex flex-row items-center gap-2">
           <Avatar

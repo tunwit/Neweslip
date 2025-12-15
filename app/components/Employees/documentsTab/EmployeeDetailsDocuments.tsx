@@ -11,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { uploadEmployeeDocuments } from "@/app/action/uploadEmployeeDocument";
 import deleteEmployeeDocument from "@/app/action/deleteEmployeeDocument";
+import { useTranslations } from "next-intl";
 interface EmployeeDetailsDocumentsProps {
   title: string;
   tag: string;
@@ -22,6 +23,7 @@ export default function EmployeeDetailsDocuments({
   employeeId,
 }: EmployeeDetailsDocumentsProps) {
   const { data } = useEmployeeDocuments({ employeeId: employeeId });
+  const t = useTranslations("documents")
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
   const personalDocs = data?.data?.filter((doc) => doc.tag === "personal");
@@ -84,7 +86,7 @@ export default function EmployeeDetailsDocuments({
     <>
       <div className="flex flex-col gap-4">
         <DocumentTable
-          title="Personal Document"
+          title={t("type.personal_doc")}
           tag="personal"
           data={personalDocs || []}
           targetId={employeeId}
@@ -95,7 +97,7 @@ export default function EmployeeDetailsDocuments({
           onDelete={async (doc) => onDelete(doc)}
         />
         <DocumentTable
-          title="Contract Document"
+          title={t("type.contract_doc")}
           tag="contract"
           data={contractDocs || []}
           targetId={employeeId}
@@ -106,7 +108,7 @@ export default function EmployeeDetailsDocuments({
           onDelete={async (doc) => onDelete(doc)}
         />
         <DocumentTable
-          title="Others Document"
+          title={t("type.others_doc")}
           tag="Others"
           data={otherDocs || []}
           targetId={employeeId}

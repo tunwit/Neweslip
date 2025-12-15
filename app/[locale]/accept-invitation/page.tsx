@@ -22,7 +22,7 @@ import { useInvitation } from "@/hooks/useInvitation";
 import { getUserByEmail } from "../../action/getUserByEmail";
 import { acceptInvitation } from "../../action/acceptInvitation";
 import { showError } from "@/utils/showSnackbar";
-import { useLocale } from "@/hooks/useLocale";
+import Link from "next/link";
 
 export default function InvitaionPage() {
   const params = useSearchParams();
@@ -40,7 +40,6 @@ export default function InvitaionPage() {
     invitationData?.data?.metaData?.shopId,
   );
   const shopId = invitationData?.data?.metaData?.shopId;
-  const locale = useLocale();
 
   const acceptHandler = async (
     e?: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -61,20 +60,20 @@ export default function InvitaionPage() {
       } catch (err) {
         showError(`Cannot accept invitaion ${err}`);
       }
-      if (success) redirect(`/${locale}`);
+      if (success) redirect(`/`);
     } else {
       const exist = await getUserByEmail(invitationData.data?.email || "");
       if (exist.length > 0) {
         await signIn?.authenticateWithRedirect({
           strategy: "oauth_google",
           redirectUrl: "/sso-callback",
-          redirectUrlComplete: `${window.location.origin}/${locale}/accept-invitation?token=${token}&method=auto`,
+          redirectUrlComplete: `${window.location.origin}/accept-invitation?token=${token}&method=auto`,
         });
       } else {
         await signUp?.authenticateWithRedirect({
           strategy: "oauth_google",
           redirectUrl: "/sso-callback",
-          redirectUrlComplete: `${window.location.origin}/${locale}/accept-invitation?token=${token}&method=auto`,
+          redirectUrlComplete: `${window.location.origin}/accept-invitation?token=${token}&method=auto`,
         });
       }
     }
@@ -200,9 +199,9 @@ export default function InvitaionPage() {
         <div className="pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}
-            <a href="/support" className="text-blue-600 hover:underline">
+            <Link href="/support" className="text-blue-600 hover:underline">
               Contact Support
-            </a>
+            </Link>
           </p>
         </div>
       </div>

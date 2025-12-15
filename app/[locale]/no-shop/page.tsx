@@ -1,18 +1,17 @@
 "use client";
-import { useLocale } from "@/hooks/useLocale";
 import { useShop } from "@/hooks/useShop";
 import { SignOutButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SetupShopPage() {
   const { data, isSuccess } = useShop();
-  const locale = useLocale();
   useEffect(() => {
     if (!isSuccess) return;
     if (!data || !data?.data) return;
     if (data?.data?.length > 0) {
-      redirect(`/${locale}`);
+      redirect(`/`);
     }
   }, [data, isSuccess]);
 
@@ -50,9 +49,9 @@ export default function SetupShopPage() {
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}
-            <a href="/support" className="text-blue-600 hover:underline">
+            <Link href="/support" className="text-blue-600 hover:underline">
               Contact Support
-            </a>
+            </Link>
           </p>
         </div>
       </div>

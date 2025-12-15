@@ -31,7 +31,7 @@ import { renameShopDocument } from "@/app/action/renameShopDocument";
 import { Modal, ModalDialog } from "@mui/joy";
 import { useTranslations } from "next-intl";
 
-export default function page() {
+export default function Document() {
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
   const { id: shopId } = useCurrentShop();
@@ -58,8 +58,9 @@ export default function page() {
         shopId,
         user?.id,
       );
-    } catch (err) {
-      showError(`cannot rename ${err}`);
+      showSuccess(t("modal.rename.success"));
+    } catch (err: any) {
+      showError(t("modal.rename.fail", { err: err.message }));
     }
 
     queryClient.invalidateQueries({
@@ -78,12 +79,16 @@ export default function page() {
 
   const onDelete = async (doc: ShopDocumentWithUploader) => {
     if (!shopId || !user) return;
-    await deleteShopDocument(doc.id, doc.key, shopId, user.id);
-    queryClient.invalidateQueries({
-      queryKey: ["shop", "document"],
-      exact: false,
-    });
-    showSuccess("Deleted");
+    try {
+      await deleteShopDocument(doc.id, doc.key, shopId, user.id);
+      queryClient.invalidateQueries({
+        queryKey: ["shop", "document"],
+        exact: false,
+      });
+      showSuccess(t("modal.delete.success"));
+    } catch (err) {
+      showError(t("modal.delete.fail"), { err: err.message });
+    }
   };
   return (
     <>
@@ -97,7 +102,7 @@ export default function page() {
               fontSize={50}
             />
 
-            <p>Loading Document...</p>
+            <p>{t("load.loading_doc")}...</p>
           </div>
         </ModalDialog>
       </Modal>

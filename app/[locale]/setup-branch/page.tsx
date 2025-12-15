@@ -12,7 +12,7 @@ import { Button, CircularProgress } from "@mui/joy";
 import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import { createBranch } from "@/app/action/createBranch";
-import { useLocale } from "@/hooks/useLocale";
+import Link from "next/link";
 
 export default function SetupBranchPage() {
   const router = useRouter();
@@ -20,7 +20,6 @@ export default function SetupBranchPage() {
   const shopId = searchParams.get("shopId");
   const user = useUser();
   const method = useZodForm(branchSchema);
-  const locale = useLocale();
   const {
     control,
     handleSubmit,
@@ -34,7 +33,7 @@ export default function SetupBranchPage() {
       await createBranch(data, Number(shopId), user.user?.id || null);
       // Redirect back to shop page after successful creation
       showSuccess("Create branch successful");
-      router.push(`/${locale}`);
+      router.push(`/`);
     } catch (err) {
       showError(err instanceof Error ? err.message : "Something went wrong");
     }
@@ -104,9 +103,9 @@ export default function SetupBranchPage() {
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}
-            <a href="/support" className="text-blue-600 hover:underline">
+            <Link href="/support" className="text-blue-600 hover:underline">
               Contact Support
-            </a>
+            </Link>
           </p>
         </div>
       </div>

@@ -1,19 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { match } from "@formatjs/intl-localematcher";
-import Negotiator from "negotiator";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-
-let availableLocales = ["en-US", "th-TH"];
-let defaultLocale = "th-TH";
 
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher(["/:locale/:shopSlug(.*)"]);
 
 const isPublicRoute = createRouteMatcher([
-  "/:locale/no-shop",
   "/:locale/accept-invitation",
   "/api/shop/:shopId",
   "/api/invitations/:token",
@@ -27,6 +21,7 @@ const isApiRoute = (req: NextRequest) => {
 };
 
 export default clerkMiddleware(async (auth, req) => {
+  
   if (isApiRoute(req)) {
     if (!isPublicRoute(req)) {
       await auth.protect();

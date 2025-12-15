@@ -11,19 +11,17 @@ import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import { useQueryClient } from "@tanstack/react-query";
 import { Modal, ModalDialog } from "@mui/joy";
-import { useLocale } from "@/hooks/useLocale";
 
 export default function Home() {
   const queryClient = useQueryClient();
   queryClient.prefetchQuery({ queryKey: ["shop"] });
   const { data, isLoading, isSuccess, isError, error } = useShop();
-  const locale = useLocale();
   useEffect(() => {
     if (data && data.data && data.data.length > 0) {
       const shopslug = createSlug(data.data[0].name, String(data.data[0].id));
-      redirect(`${locale}/${shopslug}/employees`);
+      redirect(`/${shopslug}/employees`);
     } else {
-      redirect(`${locale}/no-shop`);
+      redirect(`/no-shop`);
     }
   }, [isSuccess, data]);
 

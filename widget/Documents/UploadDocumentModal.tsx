@@ -12,6 +12,7 @@ import {
   ModalDialog,
 } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 
 interface FileProgress {
@@ -23,31 +24,6 @@ interface FileProgress {
 
 const filesLimit = 5;
 const filesSizeLimit = 30 * 1024 * 1024;
-
-const statusSpan = {
-  ready: (
-    <span className="flex flex-row gap-1 items-center">
-      <Icon icon="mdi:cloud-upload" className="text-blue-600" fontSize={15} />
-      <p className="text-xs">ready</p>
-    </span>
-  ),
-  uploading: (
-    <span className="flex flex-row gap-1 items-center">
-      <Icon icon="ph:spinner" className="animate-spin" fontSize={15} />
-      <p className="text-xs">uploading</p>
-    </span>
-  ),
-  uploaded: (
-    <span className="flex flex-row gap-1 items-center">
-      <Icon
-        icon="lets-icons:check-fill"
-        fontSize={15}
-        className="text-green-600"
-      />
-      <p className="text-xs">uploaded</p>
-    </span>
-  ),
-};
 
 interface UploadDocumentModalProps {
   open: boolean;
@@ -77,6 +53,7 @@ export default function UploadDocumentModal({
   const queryClient = useQueryClient();
   const { id: shopId } = useCurrentShop();
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("documents");
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -150,8 +127,8 @@ export default function UploadDocumentModal({
         queryKey: ["employees", "document", targetId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["shop","document"],
-        exact:false
+        queryKey: ["shop", "document"],
+        exact: false,
       });
     }
   };
@@ -193,11 +170,42 @@ export default function UploadDocumentModal({
 
   const onBrowseClick = () => inputRef.current?.click();
 
+  const statusSpan = {
+    failed: (
+      <span className="flex flex-row gap-1 items-center">
+        <Icon icon="mdi:cross-circle" className="text-red-600" fontSize={15} />
+        <p className="text-xs">{t("upload.status.failed")}</p>
+      </span>
+    ),
+    ready: (
+      <span className="flex flex-row gap-1 items-center">
+        <Icon icon="mdi:cloud-upload" className="text-blue-600" fontSize={15} />
+        <p className="text-xs">{t("upload.status.ready")}</p>
+      </span>
+    ),
+    uploading: (
+      <span className="flex flex-row gap-1 items-center">
+        <Icon icon="ph:spinner" className="animate-spin" fontSize={15} />
+        <p className="text-xs">{t("upload.status.uploading")}</p>
+      </span>
+    ),
+    uploaded: (
+      <span className="flex flex-row gap-1 items-center">
+        <Icon
+          icon="lets-icons:check-fill"
+          fontSize={15}
+          className="text-green-600"
+        />
+        <p className="text-xs">{t("upload.status.uploaded")}</p>
+      </span>
+    ),
+  };
+
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog>
         <ModalClose />
-        <h1 className="font-bold text-xl">Document Uploader</h1>
+        <h1 className="font-bold text-xl">{t("upload.label")}</h1>
         <section>
           <div
             className={`relative flex flex-col gap-2 justify-center items-center min-w-96 min-h-56 border border-dashed rounded-md ${isDragOver ? "border-2 border-green-700" : "border-gray-400"}`}
@@ -213,7 +221,7 @@ export default function UploadDocumentModal({
                 icon="ic:round-download"
                 fontSize={50}
               />
-              <p className="text-black">Drop here!</p>
+              <p className="text-black">{t("upload.dropzone.drop_here")}</p>
             </div>
 
             {files.length >= filesLimit && (
@@ -223,9 +231,11 @@ export default function UploadDocumentModal({
                   icon="ion:ban"
                   fontSize={50}
                 />
-                <p className="text-black">File Limit</p>
+                <p className="text-black">{t("upload.info.file_limit")}</p>
                 <p className="mt-1 text-sm font-normal">
-                  You can only upload {filesLimit} files at a time
+                  {t("upload.info.file_limit_description", {
+                    filesLimit: filesLimit,
+                  })}
                 </p>
               </div>
             )}
@@ -236,11 +246,13 @@ export default function UploadDocumentModal({
               fontSize={50}
             />
             <h1 className="font-semibold opacity-70">
-              Choose a file or Drag and Drop file here
+              {t("upload.dropzone.title")}
             </h1>
-            <p className="text-sm opacity-50">Click button below to browse</p>
+            <p className="text-sm opacity-50">
+              {t("upload.dropzone.description")}
+            </p>
             <Button color="neutral" size="sm" onClick={onBrowseClick}>
-              Browse
+              {t("actions.browse")}
             </Button>
             <input
               ref={inputRef}
@@ -253,54 +265,72 @@ export default function UploadDocumentModal({
           </div>
           <div className="flex flex-row justify-between">
             <p className="text-xs text-gray-400 font-light mt-2">
-              Support format: PNG, JPG, WEBP, PDF
+              {t("upload.info.support_format")}
             </p>
             <p className="text-xs text-gray-400 font-light mt-2">
-              Size limit: {filesSizeLimit / 1024 / 1024}MB
+              {t("upload.info.filesize_limit")}: {filesSizeLimit / 1024 / 1024}
+              MB
             </p>
           </div>
         </section>
 
         <section className="flex flex-col gap-2 mt-2">
           <span className="flex flex-row gap-2">
-            <p className={` text-xs ${files.length >= filesLimit? "text-red-900":"text-gray-400"}`}>
+            <p
+              className={` text-xs ${files.length >= filesLimit ? "text-red-900" : "text-gray-400"}`}
+            >
               {files.length} / {filesLimit}
             </p>
             <p className="text-xs text-red-900">{error}</p>
           </span>
 
-          {files.map((f, index) => (
-            <div
-              className="relative bg-gray-200 p-3 w-full rounded-lg"
-              key={index}
-            >
-              <button
-                hidden={progressList[index]?.progress !== undefined}
-                className="absolute right-3 bg-white border rounded-full"
-                onClick={() => setFiles(files.filter((_, i) => i !== index))}
+          {files.map((f, index) => {
+            const item = progressList[index];
+            
+            let status = statusSpan.ready;
+            if(!item){
+              status = statusSpan.ready
+            }
+            else if (item?.success === false) {
+              status = statusSpan.failed;
+            }
+            else if (item?.success === true) {
+              status = statusSpan.uploaded;
+            } 
+            else if (item?.progress) {
+              status = statusSpan.uploading;
+            } 
+            return (
+              <div
+                className="relative bg-gray-200 p-3 w-full rounded-lg"
+                key={index}
               >
-                <Icon icon="basil:cross-solid" fontSize={15} />
-              </button>
-              <div className="flex flex-row gap-2 mb-2 items-center">
-                <img src={getFileIcon(f.name)} width={30} />
-                <div className="flex flex-col">
-                  <p className="font-semibold text-md">{f.name}</p>
-                  <div className="flex flex-row gap-2">
-                    <p className="text-xs text-gray-500">
-                      total size {formatBytes(f.size)}
-                    </p>
-                    {progressList[index]?.progress
-                      ? statusSpan[progressList[index]?.progress]
-                      : statusSpan.ready}
+                <button
+                  hidden={progressList[index]?.progress !== undefined}
+                  className="absolute right-3 bg-white border rounded-full"
+                  onClick={() => setFiles(files.filter((_, i) => i !== index))}
+                >
+                  <Icon icon="basil:cross-solid" fontSize={15} />
+                </button>
+                <div className="flex flex-row gap-2 mb-2 items-center">
+                  <img src={getFileIcon(f.name)} width={30} />
+                  <div className="flex flex-col">
+                    <p className="font-semibold text-md">{f.name}</p>
+                    <div className="flex flex-row gap-2">
+                      <p className="text-xs text-gray-500">
+                        {t("upload.info.size")} {formatBytes(f.size)}
+                      </p>
+                      {status}
+                    </div>
                   </div>
                 </div>
+                <LinearProgress
+                  hidden={progressList[index]?.progress !== "uploading"}
+                  sx={{ marginTop: "8px" }}
+                />
               </div>
-              <LinearProgress
-                hidden={progressList[index]?.progress !== "uploading"}
-                sx={{ marginTop: "8px" }}
-              />
-            </div>
-          ))}
+            );
+          })}
         </section>
 
         <section className="flex gap-3 flex-row-reverse mt-2">
@@ -313,10 +343,10 @@ export default function UploadDocumentModal({
             loading={isUploading}
             onClick={onUploadHandler}
           >
-            Upload
+            {t("actions.upload")}
           </Button>
           <Button variant="outlined" onClick={() => setOpen(false)}>
-            Cancel
+            {t("actions.cancel")}
           </Button>
         </section>
       </ModalDialog>
