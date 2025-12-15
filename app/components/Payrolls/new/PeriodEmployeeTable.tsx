@@ -5,6 +5,7 @@ import { PayrollRecord } from "@/types/payrollRecord";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox } from "@mui/joy";
+import { useTranslations } from "next-intl";
 import React, {
   Dispatch,
   SetStateAction,
@@ -30,7 +31,7 @@ export default function PeriodEmployeeTable({
   setOpenEdit,
 }: PeriodEmployeeTableProps) {
   const [filterd, setFilterd] = useState(records);
-  console.log(filterd);
+  const t = useTranslations("record")
 
   useEffect(() => {
     const q = searchQuery.toLowerCase();
@@ -78,19 +79,19 @@ export default function PeriodEmployeeTable({
                     onChange={handleAllCheckbox}
                   />
                 </th>
-                <th className="font-light text-sm w-[20%]">Employee</th>
-                <th className="font-light text-sm w-[5%]">Branch</th>
+                <th className="font-light text-sm w-[20%]">{t("fields.employee")}</th>
+                <th className="font-light text-sm w-[5%]">{t("fields.branch")}</th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
-                  Base Salary
+                  {t("fields.base_salary")}
                 </th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
-                  Earning
+                  {t("fields.earning")}
                 </th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
-                  Deduction
+                  {t("fields.deduction")}
                 </th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
-                  Total
+                 {t("fields.total")}
                 </th>
                 <th className="font-light text-sm w-[6%]"></th>
               </tr>
@@ -199,12 +200,12 @@ export default function PeriodEmployeeTable({
                   colSpan={6}
                   className="text-left pl-6 text-sm font-normal text-gray-700 whitespace-nowrap"
                 >
-                  Showing {filterd.length} employee(s)
+                  {t("info.showing",{count:filterd.length})}
                 </th>
                 <th colSpan={2}>
                   <div className="text-right pr-6">
                     <p className="text-xs text-gray-500 uppercase whitespace-nowrap">
-                      TOTAL PAYROLL
+                       {t("info.total_payroll")}
                     </p>
                     <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">
                       ฿ {moneyFormat(filteredTotalNet || 0)}

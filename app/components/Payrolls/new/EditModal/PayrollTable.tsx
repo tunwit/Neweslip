@@ -1,7 +1,8 @@
 import { moneyFormat } from "@/utils/formmatter";
 import { Checkbox, Table } from "@mui/joy";
 import Decimal from "decimal.js";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import React, { Dispatch, SetStateAction, useEffect, useState, useTransition } from "react";
 
 interface PayrollTableProps<T extends { id: number }> {
   data: T[];
@@ -39,7 +40,9 @@ export default function PayrollTable<T extends { id: number }>({
   showFooter=true
 }: PayrollTableProps<T>) {
   const [total, setTotal] = useState<Decimal>();
-  
+  const t = useTranslations("record.edit")
+  const tr = useTranslations("record")
+
   const updateValue = (id: number, val: number) => {
     setInputValues((prev) => ({
       ...prev,
@@ -125,9 +128,9 @@ export default function PayrollTable<T extends { id: number }>({
         <thead>
           <tr>
             <th className="w-8 lg:w-[5%] "></th>
-            <th>Title</th>
-            {showValueColumn && <th>Value</th>}
-            <th>Amount</th>
+            <th>{t("fields.title")}</th>
+            {showValueColumn && <th>{t("fields.value")}</th>}
+            <th>{t("fields.amount")}</th>
           </tr>
         </thead>
 
@@ -138,7 +141,7 @@ export default function PayrollTable<T extends { id: number }>({
                 <Checkbox checked={true} />
               </td>
 
-              <td>Base Salary</td>
+              <td>{tr("fields.base_salary")}</td>
 
               {/* Amount */}
               <td>
@@ -209,7 +212,7 @@ export default function PayrollTable<T extends { id: number }>({
         </tbody>
         <tfoot hidden={!showFooter}>
           <tr>
-            <th colSpan={showValueColumn ? 3 : 2}>Total</th>
+            <th colSpan={showValueColumn ? 3 : 2}>{t("fields.total")}</th>
             <th>{moneyFormat(total || 0)}</th>
           </tr>
         </tfoot>

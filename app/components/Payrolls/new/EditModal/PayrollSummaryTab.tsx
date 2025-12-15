@@ -2,8 +2,8 @@ import { useRecordDetails } from "@/hooks/useRecordDetails";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { moneyFormat } from "@/utils/formmatter";
 import { Table } from "@mui/joy";
-import Decimal from "decimal.js";
-import React from "react";
+import { useTranslations } from "next-intl";
+
 interface PayrollSummaryTabProps {
   recordId: number;
 }
@@ -11,19 +11,20 @@ export default function PayrollSummaryTab({
   recordId,
 }: PayrollSummaryTabProps) {
   const { data } = useRecordDetails(recordId);
+  const t = useTranslations("record")
   return (
     <>
       <Table borderAxis="both" >
         <thead>
           <tr>
-            <th className="w-[45%]">Title</th>
-            <th>Earning</th>
-            <th>Deduction</th>
+            <th className="w-[45%]">{t("fields.title")}</th>
+            <th>{t("fields.earning")}</th>
+            <th>{t("fields.deduction")}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="font-medium">Base Salary</td>
+            <td className="font-medium">{t("fields.base_salary")}</td>
             <td>{data?.data?.salary}</td>
             <td></td>
           </tr>
@@ -68,7 +69,7 @@ export default function PayrollSummaryTab({
             </td>
           </tr>
           <tr className="bg-gray-50">
-            <td className="py-3 px-4 font-bold text-lg text-gray-700">Net</td>
+            <td className="py-3 px-4 font-bold text-lg text-gray-700">{t("fields.total")}</td>
             <td
               colSpan={2}
               className="py-3 px-4 font-bold text-lg text-gray-900"

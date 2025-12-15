@@ -11,9 +11,11 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronRight } from "@mui/icons-material";
 import { Checkbox } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { IntlShape } from "next-intl";
 
 interface PeriodsTableProps {
   periods: PayrollPeriod[];
@@ -22,7 +24,10 @@ interface PeriodsTableProps {
   editable?: boolean;
 }
 
-const getStatusBadge = (status: keyof typeof PAY_PERIOD_STATUS) => {
+const getStatusBadge = (
+  status: keyof typeof PAY_PERIOD_STATUS,
+  t: IntlShape["formatMessage"],
+) => {
   const styles = {
     [PAY_PERIOD_STATUS.DRAFT]: "bg-gray-100 text-gray-800",
     [PAY_PERIOD_STATUS.FINALIZED]: "bg-green-100 text-green-800",
@@ -40,7 +45,7 @@ const getStatusBadge = (status: keyof typeof PAY_PERIOD_STATUS) => {
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${styles[status]}`}
     >
       {icons[status]}
-      {status}
+      {t(`status.${status.toLowerCase()}`)}
     </span>
   );
 };
@@ -55,6 +60,9 @@ export default function PeriodsTable({
   const queryClient = useQueryClient();
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
+  const t = useTranslations("payrolls");
+  const tPeriod = useTranslations("period");
+
   const {
     checked,
     isSomeChecked,
@@ -140,31 +148,35 @@ export default function PeriodsTable({
                     </h3>
                     <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                       <UsersIcon />
-                      {payroll.employeeCount} people
+                      {payroll.employeeCount} {t("info.people")}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Created</p>
+                    <p className="text-sm text-gray-500">
+                      {tPeriod("fields.created_at")}
+                    </p>
                     <p className="text-sm font-bold text-gray-900">
                       {dateFormat(payroll.createdAt)}
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">Amount</p>
+                    <p className="text-sm text-gray-500">
+                      {tPeriod("fields.total_amount")}
+                    </p>
                     <p className="font-semibold text-gray-900">
                       {moneyFormat(payroll.totalNet)}฿
                     </p>
                   </div>
 
                   <div className="flex items-center justify-end gap-3">
-                    {getStatusBadge(payroll.status)}
+                    {getStatusBadge(payroll.status,tPeriod)}
                     <Link
                       href={`${pathname}/${payroll.status === PAY_PERIOD_STATUS.DRAFT ? "edit" : "view"}?id=${payroll.id}`}
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
                     >
-                      {editable ? "Edit" : "View"}
+                      {editable ? t("actions.edit") : t("actions.view")}
                       <ChevronRight />
                     </Link>
                   </div>

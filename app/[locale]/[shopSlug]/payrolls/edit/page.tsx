@@ -42,6 +42,7 @@ import { ClickAwayListener } from "@mui/material";
 import { usePeriodFields } from "@/hooks/usePeriodFields";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -82,7 +83,7 @@ export default function Home() {
 
   const [baseRecords, setBaseRecords] = useState<PayrollRecord[]>([]);
   const [filterdRecord, setFilterdRecord] = useState<PayrollRecord[]>([]);
-
+  const tPeriod = useTranslations("period");
   const deleteHandler = async () => {
     if (!user?.id) return;
     try {
@@ -186,7 +187,7 @@ export default function Home() {
 
   let loadingMessage = "";
   if (loadingRecord) loadingMessage = "Getting Records...";
-  else if (loadingPeriod) loadingMessage = "Loading Period...";
+  else if (loadingPeriod) loadingMessage = tPeriod("load.loading_records");
 
   return (
     <main className="w-full bg-gray-100 font-medium ">
@@ -245,7 +246,7 @@ export default function Home() {
                 variant="outlined"
                 onClick={onExport}
               >
-                Export
+                {tPeriod("actions.export")}
               </Button>
               <Button
                 startDecorator={
@@ -255,7 +256,7 @@ export default function Home() {
                 variant="outlined"
                 onClick={summaryHandler}
               >
-                Summary
+                {tPeriod("actions.summary")}
               </Button>
             </div>
           </div>
@@ -264,9 +265,13 @@ export default function Home() {
             <div className="bg-blue-50 from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-blue-700 font-medium">Status</p>
+                  <p className="text-sm text-blue-700 font-medium">
+                    {tPeriod("fields.status")}
+                  </p>
                   <p className="text-xl font-bold text-blue-900 mt-1">
-                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]}
+                    {tPeriod(
+                      `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status ?? "DRAFT"].toLowerCase()}`,
+                    )}
                   </p>
                 </div>
                 <div className="bg-blue-200 p-2 rounded-lg">
@@ -283,7 +288,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-700 font-medium">
-                    Employee
+                    {tPeriod("fields.employees")}
                   </p>
                   <p className="text-xl font-bold text-purple-900 mt-1">
                     {periodData?.data?.employeeCount}
@@ -299,7 +304,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-green-700 font-medium">
-                    Total Amount
+                    {tPeriod("fields.total_amount")}
                   </p>
                   <p className="text-xl font-bold text-green-900 mt-1">
                     {moneyFormat(periodData?.data?.totalNet || 0)}
@@ -321,7 +326,9 @@ export default function Home() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-orange-700 font-medium">Period</p>
+                  <p className="text-sm text-orange-700 font-medium">
+                    {tPeriod("fields.period")}
+                  </p>
                   <p className="text-xl font-bold text-orange-900 mt-1">
                     {dateFormat(new Date(periodData?.data?.start_period || 0))}{" "}
                     {" - "}
@@ -368,7 +375,7 @@ export default function Home() {
                     />
                     <input
                       type="text"
-                      placeholder="Search name, branch"
+                      placeholder={tPeriod("search.placeholder")}
                       className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
                       onChange={(e) => setQuery(e.target.value)}
                     />
@@ -380,7 +387,7 @@ export default function Home() {
                 >
                   <span className="flex items-center gap-1">
                     <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
-                    <p className="font-light text-sm">Filters</p>
+                    <p className="font-light text-sm">{tPeriod("filters.label")}</p>
                   </span>
                 </button>
               </div>
@@ -389,7 +396,7 @@ export default function Home() {
                   onClick={() => setOpenAdd(true)}
                   className="flex items-center gap-2 bg-blue-600 text-white p-2 rounded-md"
                 >
-                  <Add sx={{ fontSize: "20px" }} /> <p>Add Employee</p>
+                  <Add sx={{ fontSize: "20px" }} /> <p>{tPeriod("actions.add_employee")}</p>
                 </button>
               </div>
             </div>
@@ -409,7 +416,7 @@ export default function Home() {
                 onClick={deleteHandler}
                 className="flex items-center gap-2 text-blue-600 disabled:text-gray-300 p-2 rounded-md"
               >
-                <p className="underline font-medium">delete</p>
+                <p className="underline font-medium">{tPeriod("actions.delete")}</p>
               </button>
             </div>
 

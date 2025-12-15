@@ -6,6 +6,7 @@ import {
 } from "@/types/payrollPeriodSummary";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface FilterRule {
@@ -17,12 +18,12 @@ interface FilterRule {
 
 // Operators for number fields
 const numberOperators = [
-  { value: "eq", label: "= (equals)" },
-  { value: "neq", label: "≠ (not equals)" },
-  { value: "gt", label: "> (greater than)" },
-  { value: "gte", label: "≥ (greater or equal)" },
-  { value: "lt", label: "< (less than)" },
-  { value: "lte", label: "≤ (less or equal)" },
+  { value: "eq" },
+  { value: "neq" },
+  { value: "gt" },
+  { value: "gte" },
+  { value: "lt" },
+  { value: "lte" },
 ] as const;
 
 const numberOperatorsSymbol: Record<string, string> = {
@@ -36,24 +37,24 @@ const numberOperatorsSymbol: Record<string, string> = {
 
 const quickFilters = [
   {
-    label: "Has Overtime",
+    label: "has_overtime",
     filter: { field: "totalOT", operator: "gt", value: "0" },
   },
   {
-    label: "Has Penalty",
+    label: "has_penalty",
     filter: { field: "totalPenalty", operator: "gt", value: "0" },
   },
   {
-    label: "No Deductions",
+    label: "no_deduction",
     filter: { field: "totalDeduction", operator: "eq", value: "0" },
   },
   {
-    label: "High Earners (>50k)",
-    filter: { field: "net", operator: "gt", value: "50000" },
+    label: "high_earners",
+    filter: { field: "net", operator: "gt", value: "20000" },
   },
   {
-    label: "Low Earners (<20k)",
-    filter: { field: "net", operator: "lt", value: "20000" },
+    label: "low_earners",
+    filter: { field: "net", operator: "lt", value: "16000" },
   },
 ];
 
@@ -80,9 +81,10 @@ export default function AdvancedFilters<T extends { id: number }>({
 }: AdvancedFiltersProps<T>) {
   const { data } = usePayrollPeriodSummary(periodId);
   const { data: periodFields } = usePeriodFields(Number(periodId));
+  
   const [filters, setFilters] = useState<FilterRule[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterRule[]>([]);
-
+  const t = useTranslations("period");
   const updateFilter = (id: string, key: string, value: string) => {
     setFilters((prev) =>
       prev.map((f) => (f.id === id ? { ...f, [key]: value } : f)),
@@ -260,8 +262,10 @@ export default function AdvancedFilters<T extends { id: number }>({
       </div>
 
       <div hidden={!show} className="bg-white mt-4 flex flex-col gap-2">
-        <h1 className="text-gray-700">Advanced Filters (Beta)</h1>
-        <p className="text-xs text-gray-700 mt-2">Quick filters</p>
+        <h1 className="text-gray-700">{t("filters.title")} (Beta)</h1>
+        <p className="text-xs text-gray-700 mt-2">
+          {t("filters.quick_filters.label")}
+        </p>
         <section className="flex gap-3">
           {quickFilters.map((q, i) => (
             <button
@@ -275,7 +279,7 @@ export default function AdvancedFilters<T extends { id: number }>({
               }
               className="flex items-center justify-center text-xs text-gray-700 bg-gray-200 w-fit h-fit px-3 py-1 pt-2 rounded-sm"
             >
-              {q.label}
+              {t(`filters.quick_filters.filters.${q.label}`)}
             </button>
           ))}
         </section>
@@ -284,7 +288,7 @@ export default function AdvancedFilters<T extends { id: number }>({
           <div className="space-y-3 mb-4">
             {filters.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">
-                No filters added. Click "Add Filter" to create one.
+                {t("filters.no_filter")}
               </p>
             ) : (
               filters.map((filter) => (
@@ -317,7 +321,7 @@ export default function AdvancedFilters<T extends { id: number }>({
                   >
                     {numberOperators.map((op) => (
                       <option key={op.value} value={op.value}>
-                        {op.label}
+                       {numberOperatorsSymbol[op.value]} ({t(`filters.operator.${op.value}`)})
                       </option>
                     ))}
                   </select>
@@ -351,7 +355,7 @@ export default function AdvancedFilters<T extends { id: number }>({
             className="flex items-center justify-center max-w-96 py-2 rounded-md mt-2 w-full border border-dashed border-gray-600 text-gray-600"
           >
             <Icon icon="material-symbols:add-rounded" />
-            <p>Add filter</p>
+            <p>{t("filters.actions.add_filter")}</p>
           </button>
         </div>
 
@@ -362,13 +366,13 @@ export default function AdvancedFilters<T extends { id: number }>({
               onClick={clearFilter}
               className="text-sm text-gray-700 disabled:text-gray-300"
             >
-              <p>Clear All</p>
+              <p>{t("filters.actions.clear_all")}</p>
             </button>
             <button
               onClick={applyFilter}
               className="text-sm py-2 px-5 rounded-md bg-blue-600 text-white "
             >
-              <p>Apply Filters</p>
+              <p>{t("filters.actions.apply")}</p>
             </button>
           </div>
         </div>

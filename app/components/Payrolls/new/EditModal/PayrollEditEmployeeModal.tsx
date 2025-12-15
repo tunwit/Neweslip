@@ -30,6 +30,7 @@ import PayrollSummaryTab from "./PayrollSummaryTab";
 import { height } from "@mui/system";
 import { useQueryClient } from "@tanstack/react-query";
 import { PayrollPeriod } from "@/types/payrollPeriod";
+import { useTranslations } from "next-intl";
 
 interface PayrollEditEmployeeModalProps {
   periodData?: PayrollPeriod;
@@ -38,37 +39,6 @@ interface PayrollEditEmployeeModalProps {
   selectedRecord: PayrollRecord | null;
 }
 
-const stateIcon = {
-  0: (
-    <span className="flex flex-row gap-1 item-center justify-center">
-      <Icon
-        className="text-gray-500"
-        width={20}
-        icon={"material-symbols-light:save-outline"}
-      />
-      <p className="text-sm">Changed</p>
-    </span>
-  ),
-
-  1: (
-    <span className="flex flex-row gap-1 item-center justify-center">
-      <Icon className="text-gray-500" width={20} icon={"line-md:upload-loop"} />
-      <p className="text-sm">Uploading</p>
-    </span>
-  ),
-
-  2: (
-    <span className="flex flex-row gap-1 item-center justify-center">
-      <Icon
-        className="text-gray-500"
-        width={20}
-        icon={"material-symbols:check-rounded"}
-      />
-      <p className="text-sm">Saved</p>
-    </span>
-  ),
-};
-
 export default function PayrollEditEmployeeModal({
   periodData,
   open,
@@ -76,6 +46,7 @@ export default function PayrollEditEmployeeModal({
   selectedRecord,
 }: PayrollEditEmployeeModalProps) {
   const queryClient = useQueryClient();
+  const t = useTranslations("record");
   const doneHandler = async () => {
     await saveDataHandler();
     queryClient.invalidateQueries({
@@ -197,12 +168,48 @@ export default function PayrollEditEmployeeModal({
       setIsSubmitting(false);
     }
   };
+
+  const stateIcon = {
+    0: (
+      <span className="flex flex-row gap-1 item-center justify-center">
+        <Icon
+          className="text-gray-500"
+          width={20}
+          icon={"material-symbols-light:save-outline"}
+        />
+        <p className="text-sm">{t("edit.status.changed")}</p>
+      </span>
+    ),
+
+    1: (
+      <span className="flex flex-row gap-1 item-center justify-center">
+        <Icon
+          className="text-gray-500"
+          width={20}
+          icon={"line-md:upload-loop"}
+        />
+        <p className="text-sm">{t("edit.status.uploading")}</p>
+      </span>
+    ),
+
+    2: (
+      <span className="flex flex-row gap-1 item-center justify-center">
+        <Icon
+          className="text-gray-500"
+          width={20}
+          icon={"material-symbols:check-rounded"}
+        />
+        <p className="text-sm">{t("edit.status.saved")}</p>
+      </span>
+    ),
+  };
+
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
         <ModalDialog sx={{ background: "#fafafa", maxHeight: "70%" }}>
           <div className="flex flex-row justify-between items-center">
-            <p>Salary Details</p>
+            <p>{t("edit.label")}</p>
 
             {stateIcon[state]}
           </div>
@@ -215,7 +222,7 @@ export default function PayrollEditEmployeeModal({
             className="flex flex-col justify-center items-center gap-2"
           >
             <Icon icon="ph:spinner" className="animate-spin" fontSize={40} />
-            <p>Loading ...</p>
+            <p>{t("edit.load.loading")}</p>
           </div>
           <div
             hidden={isLoading}
@@ -238,14 +245,14 @@ export default function PayrollEditEmployeeModal({
                   },
                 }}
               >
-                <Tab color="success">Income</Tab>
-                <Tab color="danger">Deduction</Tab>
-                <Tab color="neutral">Overtime</Tab>
-                <Tab color="neutral">Absent</Tab>
+                <Tab color="success">{t("edit.tabs.income")}</Tab>
+                <Tab color="danger">{t("edit.tabs.deduction")}</Tab>
+                <Tab color="neutral">{t("edit.tabs.overtime")}</Tab>
+                <Tab color="neutral">{t("edit.tabs.absent")}</Tab>
                 <Tab color="neutral" sx={{ whiteSpace: "nowrap" }}>
-                  Display Only
+                  {t("edit.tabs.display_only")}
                 </Tab>
-                <Tab color="warning">Summary</Tab>
+                <Tab color="warning">{t("edit.tabs.summary")}</Tab>
               </TabList>
               <TabPanel value={0}>
                 <PayrollTable
@@ -357,7 +364,7 @@ export default function PayrollEditEmployeeModal({
               doneHandler();
             }}
           >
-            Done
+            {t("edit.actions.done")}
           </Button>
         </ModalDialog>
       </Modal>

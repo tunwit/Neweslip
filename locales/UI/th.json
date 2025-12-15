@@ -18,7 +18,8 @@
   "breadcrumb": {
     "dashboard": "ภาพรวม",
     "employees": "พนักงาน",
-    "documents": "เอกสาร"
+    "documents": "เอกสาร",
+    "payrolls": "เงินเดือน"
   },
 
   "employees": {
@@ -108,14 +109,13 @@
   },
   "documents": {
     "label": "เอกสาร",
-    "load":{
-      "loading_doc":"กำลังโหลดเอกสาร"
+    "load": {
+      "loading_doc": "กำลังโหลดเอกสาร"
     },
-    "type":{
-      "personal_doc":"เอกสารส่วนบุคคล",
-      "contract_doc":"เอกสารสัญญา",
-      "others_doc":"เอกสารอื่นๆ"
-
+    "type": {
+      "personal_doc": "เอกสารส่วนบุคคล",
+      "contract_doc": "เอกสารสัญญา",
+      "others_doc": "เอกสารอื่นๆ"
     },
     "search": {
       "label": "ค้นหาเอกสาร",
@@ -138,46 +138,161 @@
       "confirm": "ยืนยัน",
       "upload": "อัพโหลด"
     },
-    "upload":{
-      "label":"อัพโหลด เอกสาร",
-      "info":{
-        "support_format":"รองรับไฟล์: PNG, JPG, WEBP, PDF",
-        "filesize_limit":"ขนาดสูงสุด",
-        "size":"ขนาด",
-        "file_limit":"จำกัดจำนวนไฟล์",
-        "file_limit_description":"สามารถอัพโหลดไฟล์ได้ทีละ {filesLimit} ไฟล์"
+    "upload": {
+      "label": "อัพโหลด เอกสาร",
+      "info": {
+        "support_format": "รองรับไฟล์: PNG, JPG, WEBP, PDF",
+        "filesize_limit": "ขนาดสูงสุด",
+        "size": "ขนาด",
+        "file_limit": "จำกัดจำนวนไฟล์",
+        "file_limit_description": "สามารถอัพโหลดไฟล์ได้ทีละ {filesLimit} ไฟล์"
       },
-      "status":{
-        "failed":"ไม่สำเร็จ",
-        "ready":"พร้อม",
-        "uploading":"กำลังอัพโหลด",
-        "uploaded":"สำเร็จ"
-
+      "status": {
+        "failed": "ไม่สำเร็จ",
+        "ready": "พร้อม",
+        "uploading": "กำลังอัพโหลด",
+        "uploaded": "สำเร็จ"
       },
-      "dropzone":{
-        "title":"เลือกไฟล์ หรือลากมาไว้ที่นี่",
-        "description":"กดปุ่มด้านล่างเพื่อเลือกไฟล์",
-        "drop_here":"ปล่อยที่นี่"
+      "dropzone": {
+        "title": "เลือกไฟล์ หรือลากมาไว้ที่นี่",
+        "description": "กดปุ่มด้านล่างเพื่อเลือกไฟล์",
+        "drop_here": "ปล่อยที่นี่"
       }
     },
-    "rename":{
-      "label":"เปลี่ยนชื่อ"
+    "rename": {
+      "label": "เปลี่ยนชื่อ"
     },
-    "modal":{
-      "delete":{
-        "success":"ลบสำเร็จ",
-        "fail":"ลบเอกสารไม่สำเร็จ {err}"
+    "modal": {
+      "delete": {
+        "success": "ลบสำเร็จ",
+        "fail": "ลบเอกสารไม่สำเร็จ {err}"
       },
-      "rename":{
-        "success":"เปลี่ยนชื่อสำเร็จ",
-        "fail":"เปลี่ยนชื่อไม่สำเร็จ {err}"
+      "rename": {
+        "success": "เปลี่ยนชื่อสำเร็จ",
+        "fail": "เปลี่ยนชื่อไม่สำเร็จ {err}"
       }
     },
     "table": {
       "no_document": "ไม่พบเอกสาร"
     }
   },
-  "date_format":{
+  "payrolls": {
+    "label": "เงินเดือน",
+    "load": {
+      "loading_payrolls": "กำลังโหลดเงินเดือน",
+      "loading_records": "คำนวนพนักงาน"
+    },
+    "actions": {
+      "create": "สร้างเงินเดือนใหม่",
+      "edit": "แก้ไข",
+      "view": "รายละเอียด"
+    },
+    "search": {
+      "label": "ค้นหาพนักงาน",
+      "placeholder": "ค้นหาเงินเดือน"
+    },
+    "info": {
+      "people": "คน"
+    }
+  },
+  "period": {
+    "fields": {
+      "status": "สถานะ",
+      "employees": "พนักงาน",
+      "total_amount": "รายจ่าย",
+      "created_at": "สร้างเมื่อ",
+      "period": "ช่วงที่จ่าย"
+    },
+    "actions": {
+      "export": "นำออก",
+      "summary": "สรุป",
+      "add_employee": "เพิ่มพนักงาน",
+      "delete": "ลบพนักงาน"
+    },
+    "search": {
+      "label": "ค้นหาพนักงาน",
+      "placeholder": "ค้นหาพนักงาน เช่น ชื่อ สาขา"
+    },
+    "filters": {
+      "label": "กรอง",
+      "title": "กรองขั้นสูง",
+      "no_filter": "ไม่มีการกรอง กด \"เพิ่มตัวกรอง\" เพื่อสร้าง",
+      "actions": {
+        "add_filter": "เพิ่มตัวกรอง",
+        "apply": "ยืนยัน",
+        "clear_all": "ลบทั้งหมด"
+      },
+      "quick_filters": {
+        "label": "กรองพื้นฐาน",
+        "filters": {
+          "has_overtime": "มีค่าล่วงเวลา",
+          "has_penalty": "มีบทลงโทษ",
+          "no_deduction": "ไม่มีรายหีก",
+          "high_earners": "รายได้สูง (>20k)",
+          "low_earners": "รายได้ต่ำ (<16k)"
+        }
+      },
+      "operator": {
+        "eq": "เท่ากับ",
+        "neq": "ไม่เท่ากับ",
+        "gt": "มากกว่า",
+        "gte": "มากกว่าเท่ากับ",
+        "lt": "น้อยกว่า",
+        "lte": "น้อยกว่าเท่ากับ"
+      }
+    },
+    "status": {
+      "draft": "กำลังแก้ไข",
+      "finalized": "เสร็จสมบูรณ์",
+      "paid": "จ่ายเเล้ว"
+    }
+  },
+  "record":{
+    "fields":{
+      "title":"รายการ",
+      "employee":"พนักงาน",
+      "branch":"สาขา",
+      "base_salary":"ฐานเงินเดือน",
+      "deduction":"รายหัก",
+      "earning":"รายได้",
+      "total":"รายได้สุทธิ"
+    },
+    "info":{
+      "showing":"แสดงพนักงาน {count} คน",
+      "total_payroll":"รายจ่ายทั้งหมด"
+    },
+    "edit":{
+      "label":"รายละเอียดเงินเดือน",
+      "load":{
+        "loading":"กำลังดึงข้อมูล"
+      },
+      "fields":{
+        "title":"รายการ",
+        "value":"จำนวน",
+        "amount":"มูลค่า",
+        "total":"รวม"
+
+      },
+      "tabs":{
+        "income":"รายได้",
+        "deduction":"รายหัก",
+        "overtime":"ค่าล่วงเวลา",
+        "absent":"ขาด / ลา / มาสาย",
+        "display_only":"แสดงเท่านั้น",
+        "summary":"สรุป"
+      },
+      "status":{
+        "changed":"แก้ไข",
+        "uploading":"กำลังบันทึก",
+        "saved":"บันทึกสำเร็จ"
+
+      },
+      "actions":{
+        "done":"เสร็จสิ้น"
+      }
+    }
+  },
+  "date_format": {
     "justNow": "เมื่อสักครู่",
     "minutesAgo": "{count} นาทีที่แล้ว",
     "hoursAgo": "{count} ชั่วโมงที่แล้ว",

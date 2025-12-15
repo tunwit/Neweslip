@@ -26,6 +26,7 @@ import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import PeriodsTable from "@/app/components/Payrolls/PeriodsTable";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const rounter = useRouter();
@@ -36,7 +37,10 @@ export default function Home() {
   const [creatingPeriod, setCreatingPeriod] = useState(false);
 
   const pathname = usePathname();
-  const { data,isLoading } = usePayrollPeriods(id || -1);
+  const { data, isLoading } = usePayrollPeriods(id || -1);
+  const tb = useTranslations("breadcrumb");
+  const t = useTranslations("payrolls");
+  const tPeriod = useTranslations("period");
 
   const newHandler = async () => {
     setCreatingPeriod(true);
@@ -73,7 +77,7 @@ export default function Home() {
               fontSize={50}
             />
 
-            <p>Loading payrolls</p>
+            <p>{t("load.loading_payrolls")}</p>
           </div>
         </ModalDialog>
       </Modal>
@@ -81,13 +85,13 @@ export default function Home() {
         <div className=" flex flex-row text-[#424242] text-xs pt-10 ">
           <p>
             {" "}
-            Haris {">"} Dashboard {">"} &nbsp;
+            Haris {">"} {tb("dashboard")} {">"} &nbsp;
           </p>
-          <p className="text-blue-800">Payrolls</p>
+          <p className="text-blue-800">{tb("payrolls")}</p>
         </div>
         <div className="mt-5 flex flex-row justify-between">
           <span>
-            <p className="text-black text-4xl font-bold">Payrolls</p>
+            <p className="text-black text-4xl font-bold">{t("label")}</p>
             <p className=" text-gray-700 mt-2"></p>
           </span>
 
@@ -96,7 +100,7 @@ export default function Home() {
             sx={{ height: 40 }}
             startDecorator={<Add sx={{ fontSize: "20px" }} />}
           >
-            New Payroll
+            {t("actions.create")}
           </Button>
         </div>
       </section>
@@ -112,7 +116,7 @@ export default function Home() {
                 />
                 <input
                   type="text"
-                  placeholder="Search name, branch"
+                  placeholder={t("search.placeholder")}
                   className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
                 />
               </div>
@@ -126,7 +130,7 @@ export default function Home() {
               (period) => period.status === PAY_PERIOD_STATUS.DRAFT,
             ).length > 0 && (
               <PeriodsTable
-                title="Draft"
+                title={tPeriod("status.draft")}
                 color="gray"
                 periods={
                   data?.data?.filter(
@@ -140,7 +144,7 @@ export default function Home() {
               (period) => period.status === PAY_PERIOD_STATUS.FINALIZED,
             ).length > 0 && (
               <PeriodsTable
-                title="Finalized"
+                title={tPeriod("status.finalized")}
                 color="green"
                 editable={false}
                 periods={
@@ -155,7 +159,7 @@ export default function Home() {
               (period) => period.status === PAY_PERIOD_STATUS.PAID,
             ).length > 0 && (
               <PeriodsTable
-                title="Paid"
+                title={tPeriod("status.paid")}
                 color="grey"
                 editable={false}
                 periods={
