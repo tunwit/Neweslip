@@ -40,6 +40,8 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { motion, AnimatePresence } from "framer-motion";
 import UnlockModal from "@/app/components/Payrolls/view/UnlockModal";
+import SummarySection from "@/app/components/Payrolls/SummarySection";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -58,6 +60,9 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
   const periodId = useSearchParams().get("id");
+  const tPeriod = useTranslations("period");
+  const tv = useTranslations("view_payroll");
+  const tBreadcrumb = useTranslations("breadcrumb");
 
   const { data: summaryData, isLoading: loadingSummary } =
     usePayrollPeriodSummary(Number(periodId));
@@ -116,6 +121,23 @@ export default function Home() {
       }),
     );
   }, [summaryData?.data?.records, debouced]);
+
+  const filteredTotalNet = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.totals.net || 0), 0);
+  }, [filtered]);
+
+  const filteredTotalEarning = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.totals.totalEarning || 0), 0);
+  }, [filtered]);
+  const filteredTotalDeduction = useMemo(() => {
+    return filtered.reduce((sum, r) => sum + (r.totals.totalDeduction || 0), 0);
+  }, [filtered]);
+
+  const filteredTotalSalary = useMemo(() => {
+    return filtered.reduce((sum, r) => {
+      return sum + ("baseSalary" in r ? r.baseSalary || 0 : 0);
+    }, 0);
+  }, [filtered]);
 
   const isLoading = loadingPeriod || !summaryData;
 
@@ -188,21 +210,20 @@ export default function Home() {
                 <div className="flex flex-row text-[#424242] text-xs mt-10">
                   <p>
                     {" "}
-                    Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
+                    Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+                    {tBreadcrumb("payrolls")} {">"}&nbsp;
                   </p>
-                  <p className="text-blue-800">View Payroll</p>
+                  <p className="text-blue-800">{tBreadcrumb("view_payroll")}</p>
                 </div>
                 <div className="mt-5 flex flex-row justify-between items-center   ">
                   <div>
                     <span className="flex flex-row gap-3  items-center  text-black text-4xl font-bold">
                       <p>{periodData?.data?.name}</p>
                       <p className="text-lg opacity-50 font-light">
-                        (read only)
+                        ({tv("info.read_only")})
                       </p>
                     </span>
-                    <p className="opacity-50 mt-2">
-                      You cannot edit finalized payroll
-                    </p>
+                    <p className="opacity-50 mt-2">{tv("label")}</p>
                   </div>
 
                   <div className="flex gap-3 h-fit">
@@ -212,7 +233,9 @@ export default function Home() {
                         className="text-green-600"
                         fontSize={20}
                       />
-                      <p className="font-medium">FINALIZED</p>
+                      <p className="font-medium">
+                        {tPeriod("status.finalized")}
+                      </p>
                     </div>
                     <Button
                       startDecorator={<Icon icon="uil:unlock" fontSize={20} />}
@@ -222,7 +245,7 @@ export default function Home() {
                         setOpenUnlock(true);
                       }}
                     >
-                      Unlock
+                      {tPeriod("actions.unlock")}
                     </Button>
                   </div>
                 </div>
@@ -232,10 +255,12 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-blue-700 font-medium">
-                          Status
+                          {tPeriod("fields.status")}
                         </p>
                         <p className="text-xl font-bold text-blue-900 mt-1">
-                          {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]}
+                          {tPeriod(
+                            `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]?.toLowerCase()}`,
+                          )}
                         </p>
                       </div>
                       <div className="bg-blue-200 p-2 rounded-lg">
@@ -252,7 +277,7 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-purple-700 font-medium">
-                          Employee
+                          {tPeriod("fields.employees")}
                         </p>
                         <p className="text-xl font-bold text-purple-900 mt-1">
                           {periodData?.data?.employeeCount}
@@ -268,7 +293,7 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-green-700 font-medium">
-                          Total Amount
+                          {tPeriod("fields.grand_total")}
                         </p>
                         <p className="text-xl font-bold text-green-900 mt-1">
                           {moneyFormat(periodData?.data?.totalNet || 0)}
@@ -288,7 +313,7 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-orange-700 font-medium">
-                          Period
+                          {tPeriod("fields.period")}
                         </p>
                         <p className="text-xl font-bold text-orange-900 mt-1">
                           {new Date(
@@ -340,13 +365,15 @@ export default function Home() {
                 fontSize={20}
               />
               <div>
-                <p className="text-green-900">Payroll Successfully Finalized</p>
+                <p className="text-green-900">{tv("section.label")}</p>
                 <p className="font-light text-xs text-green-700 ">
-                  Finalized by{" "}
-                  {summaryData?.data?.finalizedByUser?.fullName || "Unknown"} on{" "}
-                  {dateTimeFormat(
-                    new Date(summaryData?.data?.finalized_at || 0),
-                  )}
+                  {tv("section.description", {
+                    name:
+                      summaryData?.data?.finalizedByUser?.fullName || "unknown",
+                    date: dateTimeFormat(
+                      new Date(summaryData?.data?.finalized_at || 0),
+                    ),
+                  })}
                 </p>
               </div>
             </div>
@@ -363,16 +390,16 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Generate Pay Slips
+                  {tv("actions.generate.label")}
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Create PDF slips for all employees
+                  {tv("actions.generate.description")}
                 </p>
                 <button
                   className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
                   onClick={() => setOpenPayslipGenerate(true)}
                 >
-                  Generate{" "}
+                  {tv("actions.generate.btn")}
                   <Icon
                     icon="lsicon:right-outline"
                     className="text-blue-600"
@@ -394,16 +421,16 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Send Emails
+                  {tv("actions.send_mail.label")}
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Email slips to employees
+                  {tv("actions.send_mail.description")}
                 </p>
                 <button
                   onClick={() => setOpenSendEmails(true)}
                   className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
                 >
-                  Send Emails{" "}
+                  {tv("actions.send_mail.btn")}
                   <Icon
                     icon="lsicon:right-outline"
                     className="text-purple-600"
@@ -425,17 +452,17 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Export Report
+                  {tv("actions.export.label")}
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Export summary to Excel format
+                  {tv("actions.export.description")}
                 </p>
                 <span className="flex flex-row gap-2">
                   <button
                     className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1"
                     onClick={onExportAsExcel}
                   >
-                    Excel
+                    {tv("actions.export.btn")}
                     <Icon
                       icon="lsicon:right-outline"
                       className="text-orange-600"
@@ -457,15 +484,17 @@ export default function Home() {
                 />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1">Payment</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  {tv("actions.payment.label")}
+                </h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Generate bank transfer file
+                  {tv("actions.payment.description")}
                 </p>
                 <button
                   onClick={onPayment}
                   className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
                 >
-                  To payment
+                  {tv("actions.payment.btn")}
                   <Icon
                     icon="lsicon:right-outline"
                     className="text-indigo-600"
@@ -487,7 +516,7 @@ export default function Home() {
                       />
                       <input
                         type="text"
-                        placeholder="Search name, branch"
+                        placeholder={tPeriod("search.placeholder")}
                         className="text-[#424242] font-light text-sm  w-full h-full  focus:outline-none "
                         onChange={(e) => setQuery(e.target.value)}
                       />
@@ -499,7 +528,7 @@ export default function Home() {
                   >
                     <span className="flex items-center gap-1">
                       <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
-                      <p className="font-light text-sm">Filters</p>
+                      <p className="font-light text-sm">{tPeriod("filters.label")}</p>
                     </span>
                   </button>
                 </div>
@@ -522,6 +551,12 @@ export default function Home() {
                 />
               );
             })}
+            <SummarySection
+              totalSalary={filteredTotalSalary}
+              totalDeduction={filteredTotalDeduction}
+              totalEarning={filteredTotalEarning}
+              totalNet={filteredTotalNet}
+            />
           </div>
         </section>
       </div>

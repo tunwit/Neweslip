@@ -14,6 +14,7 @@ import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError } from "@/utils/showSnackbar";
+import { useTranslations } from "next-intl";
 interface PaySlipGenerateModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -28,6 +29,9 @@ export default function PaySlipGenerateModal({
     {},
   );
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const t = useTranslations("view_payroll.generate");
+  const tPeriod = useTranslations("period");
+  const tc = useTranslations("common");
 
   const getBlob = async (recordId: number) => {
     const response = await fetch(`/api/payroll/records/${recordId}/payslip`, {
@@ -68,8 +72,8 @@ export default function PaySlipGenerateModal({
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch {
-      showError("Download payslip failed");
+    } catch (err: any) {
+      showError(t("modal.download.fail", { err: err.message }));
     } finally {
       setLoadingStates((prev) => ({ ...prev, [recordId]: false }));
     }
@@ -93,8 +97,8 @@ export default function PaySlipGenerateModal({
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch {
-      showError("Download payslip failed");
+    } catch (err: any) {
+      showError(t("modal.download.fail", { err: err.message }));
     } finally {
       setDownloadingAll(false);
     }
@@ -104,8 +108,8 @@ export default function PaySlipGenerateModal({
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalDialog sx={{ padding: 0 }}>
-        <div className="bg-white rounded-lg  max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <ModalDialog sx={{ padding: 0, width: "30%" }}>
+        <div className="bg-white rounded-lg min-w-xl w-full max-h-[90vh] overflow-hidden">
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
             <div className="flex items-center gap-3">
@@ -114,10 +118,11 @@ export default function PaySlipGenerateModal({
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Generate Pay Slips
+                  {t("label")}
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Period: {dateFormat(new Date(summaryData.start_period))} -{" "}
+                  {tPeriod("fields.period")}:{" "}
+                  {dateFormat(new Date(summaryData.start_period))} -{" "}
                   {dateFormat(new Date(summaryData.end_period))}
                 </p>
               </div>
@@ -133,8 +138,8 @@ export default function PaySlipGenerateModal({
           {/* Info Banner */}
           <div className="px-6 py-3 bg-blue-50 border-b border-blue-100">
             <p className="text-sm text-blue-900">
-              <strong>Note:</strong> You can preview, download individually, or
-              download all at once.
+              <strong>{t("note")}: </strong>
+              {t("note_content")}
             </p>
           </div>
 
@@ -191,7 +196,10 @@ export default function PaySlipGenerateModal({
                       title="Download"
                     >
                       {loadingStates[record.id] ? (
-                        <Loader2 size={18} className="animate-spin text-blue-600" />
+                        <Loader2
+                          size={18}
+                          className="animate-spin text-blue-600"
+                        />
                       ) : (
                         <Download size={18} className="text-blue-600" />
                       )}
@@ -200,31 +208,18 @@ export default function PaySlipGenerateModal({
                 </div>
               ))}
             </div>
-
-            {/* Warning for Zero Salary */}
-            {summaryData.records.some((record) => record.totals.net === 0) && (
-              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-yellow-900">
-                  <strong>⚠️ Warning:</strong> Some employees have ฿0.00 salary.
-                  Their pay slips will be generated but may need review.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
-            <div className="text-sm text-gray-600">
-              {summaryData.employeeCount} employee(s) • Total: ฿
-              {moneyFormat(summaryData.totalNet)}
+          <div className="px-6 pb-4 border-t border-gray-200 bg-gray-50 justify-between items-center">
+            <div className="flex justify-between items-center text-sm text-gray-600 py-4 ">
+              <p> {tc("unit.people", { count: summaryData.employeeCount })}</p>
+              <p>
+                {tPeriod("fields.grand_total")}: ฿
+                {moneyFormat(summaryData.totalNet)}
+              </p>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                Close
-              </button>
+            <div className="flex flex-row-reverse gap-3">
               <button
                 onClick={() => handleDownloadAll(summaryData.id)}
                 disabled={downloadingAll}
@@ -233,14 +228,20 @@ export default function PaySlipGenerateModal({
                 {downloadingAll ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Generating...
+                    {t("action.downloading")}
                   </>
                 ) : (
                   <>
                     <Package size={18} />
-                    Download All as ZIP
+                    {t("action.download_all")}
                   </>
                 )}
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                {t("action.close")}
               </button>
             </div>
           </div>
@@ -253,10 +254,10 @@ export default function PaySlipGenerateModal({
               <Loader2 size={48} className="animate-spin text-blue-600" />
               <div className="text-center">
                 <p className="font-semibold text-gray-900">
-                  Generating Pay Slips...
+                  {t("modal.download.label")}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
-                  This may take a few moments
+                  {t("modal.download.description")}
                 </p>
               </div>
             </div>

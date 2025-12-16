@@ -30,6 +30,7 @@ import {
 } from "@/types/payrollPeriodSummary";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { useTranslations } from "next-intl";
+import SummarySection from "@/app/components/Payrolls/SummarySection";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
@@ -308,6 +309,12 @@ export default function Home() {
               </div>
             </div>
           </div>
+          <SummarySection
+            totalSalary={filteredTotalSalary}
+            totalDeduction={filteredTotalDeduction}
+            totalEarning={filteredTotalEarning}
+            totalNet={filteredTotalNet}
+          />
         </section>
       </div>
     </main>

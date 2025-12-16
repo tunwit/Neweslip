@@ -13,6 +13,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 interface ProgressItem {
   email: string;
@@ -57,6 +58,9 @@ export default function SendEmailsModal({
     message: "",
     items: [],
   });
+  const t = useTranslations("view_payroll.send_mail");
+  const tPeriod = useTranslations("period");
+  const tc = useTranslations("common");
 
   const {
     checked,
@@ -288,7 +292,7 @@ export default function SendEmailsModal({
                   >
                     {Math.round((progress.current / progress.total) * 100)}%
                   </CircularProgress>
-                  <p>Sending payslip</p>
+                  <p>{t("action.sending")}</p>
                   <p className="text-gray-600">{progress.message}</p>
                 </div>
               </ModalDialog>
@@ -303,10 +307,11 @@ export default function SendEmailsModal({
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Send Pay Slips via Email
+                  {t("label")}
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Period: {dateFormat(new Date(data.start_period))} -{" "}
+                  {tPeriod("fields.period")}{" "}
+                  {dateFormat(new Date(data.start_period))} -{" "}
                   {dateFormat(new Date(data.end_period))}
                 </p>
               </div>
@@ -328,9 +333,7 @@ export default function SendEmailsModal({
                 fontSize={16}
               />
               <p className="text-sm text-purple-900">
-                <strong>Tip:</strong> Click the edit icon to temporarily change
-                where the pay slip will be sent. The original email will remain
-                unchanged in the system.
+                <strong>{t("tip")}: </strong> {t("tip_content")}
               </p>
             </div>
           </div>
@@ -345,8 +348,10 @@ export default function SendEmailsModal({
                   fontSize={16}
                 />
                 <p className="text-sm text-orange-900">
-                  <strong>{overrideCount} email override(s) active.</strong>{" "}
-                  These are temporary and won't update employee records.
+                  <strong>
+                    {t("info.override_warn", { count: overrideCount })}
+                  </strong>{" "}
+                  {t("info.override_warn_content")}
                 </p>
               </div>
             </div>
@@ -362,7 +367,7 @@ export default function SendEmailsModal({
                   onChange={handleAll}
                 />
                 <p className="font-medium text-gray-700">
-                  Select All Employees ({data.employeeCount})
+                  {tc("select_all", { count: data.employeeCount })}
                 </p>
                 {overrideCount > 0 && (
                   <button
@@ -370,7 +375,7 @@ export default function SendEmailsModal({
                     className="px-2 py-1 text-xs text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded transition-colors font-medium"
                     title="Reset to original email"
                   >
-                    Reset All
+                    {t("action.reset_all")}
                   </button>
                 )}
               </label>
@@ -471,7 +476,7 @@ export default function SendEmailsModal({
                               </span>
                               {isOverridden && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                  Override
+                                  {t("info.override")}
                                 </span>
                               )}
                             </div>
@@ -497,7 +502,7 @@ export default function SendEmailsModal({
                               className="px-2 py-1 text-xs text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded transition-colors font-medium"
                               title="Reset to original email"
                             >
-                              Reset
+                              {t("action.reset")}
                             </button>
                           )}
                           <button
@@ -519,34 +524,24 @@ export default function SendEmailsModal({
                 );
               })}
             </div>
-
-            {/* Warning for Zero Salary */}
-            {data.records.some((record) => record.totals.net === 0) && (
-              <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-yellow-900">
-                  <strong>⚠️ Warning:</strong> Some employees have ฿0.00 salary.
-                  Their pay slips will be sent but may need review.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
             <div className="flex justify-between items-center mb-3">
               <div className="text-sm text-gray-600">
-                <span className="font-medium">
-                  {checked.length} of {data.employeeCount}
-                </span>{" "}
-                employee(s) selected
+                <span className="font-medium"></span>{" "}
+                {tc("selected", {
+                  count: `${checked.length} of ${data.employeeCount}`,
+                })}
                 {overrideCount > 0 && (
                   <span className="ml-2 text-orange-600">
-                    • {overrideCount} override(s)
+                    • {overrideCount} {t("info.override")}
                   </span>
                 )}
               </div>
               <div className="text-sm text-gray-600">
-                Total: ฿{moneyFormat(data.totalNet)}
+                {tPeriod("fields.grand_total")}: ฿{moneyFormat(data.totalNet)}
               </div>
             </div>
 
@@ -555,7 +550,7 @@ export default function SendEmailsModal({
                 onClick={() => setOpen(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                Cancel
+                {t("action.close")}
               </button>
               <button
                 onClick={onSend}
@@ -565,12 +560,13 @@ export default function SendEmailsModal({
                 {isSubmitting ? (
                   <span className="flex gap-2 items-center">
                     <Loader2 size={18} className="animate-spin" />
-                    <p>Sending...</p>
+                    <p> {t("action.sending")}</p>
                   </span>
                 ) : (
                   <span className="flex gap-2 items-center">
                     <Icon icon="mynaui:send" fontSize={18} />
-                    Send {checked.length > 0 && `(${checked.length})`}
+                    {t("action.send")}{" "}
+                    {checked.length > 0 && `(${checked.length})`}
                   </span>
                 )}
               </button>
