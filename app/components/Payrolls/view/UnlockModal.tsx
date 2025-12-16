@@ -10,6 +10,7 @@ import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { FormProvider } from "react-hook-form";
@@ -33,6 +34,7 @@ export default function UnlockModal({
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("view_payroll.unlock");
 
   const onUnlock = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,9 +60,9 @@ export default function UnlockModal({
       setOpen(false);
     } catch (err: any) {
       if (err.message === "wrong password") {
-        setError("wrong password");
+        setError(t("modal.unlock.wrong_password"));
       } else {
-        showError(`Cannot unlock payroll ${err}`);
+        showError(t("modal.unlock.fail", { err: err.message }));
       }
     } finally {
       setIsSubmitting(false);
@@ -84,18 +86,16 @@ export default function UnlockModal({
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900">
-                    Unlock Payroll
+                    {t("label")}
                   </h2>
-                  <p className="text-sm text-gray-600">
-                    Change status back to draft
-                  </p>
+                  <p className="text-sm text-gray-600">{t("description")}</p>
                 </div>
               </div>
             </section>
             <section className="px-6">
               <div>
                 <h3 className="text-md font-medium text-gray-900 mb-3">
-                  Enter password
+                  {t("password.label")}
                 </h3>
                 <div className="rounded-lg">
                   <div className="flex items-center justify-between">
@@ -104,7 +104,7 @@ export default function UnlockModal({
                       <input
                         type={`${showPassword ? "text" : "password"}`}
                         className="w-full font-ligh h-full focus:outline-0 font-light"
-                        placeholder="Password"
+                        placeholder={t("password.placeholder")}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <button
@@ -140,7 +140,7 @@ export default function UnlockModal({
                   />
                   <div className="flex-1">
                     <h4 className="font-semibold text-orange-900 mb-2">
-                      What happens after unlock?
+                      {t("info.label")}
                     </h4>
                     <ul className="space-y-1.5 text-sm text-orange-800">
                       <li className="flex items-start gap-2">
@@ -149,9 +149,7 @@ export default function UnlockModal({
                           fontSize={18}
                           className="mt-0.5 flex-shrink-0"
                         />
-                        <span>
-                          Payroll will be unlocked and can be edit again
-                        </span>
+                        <span>{t("info.unlock_payroll")}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Icon
@@ -159,7 +157,7 @@ export default function UnlockModal({
                           fontSize={18}
                           className="mt-0.5 flex-shrink-0"
                         />
-                        <span>Status will change to &quot;Draft&quot;</span>
+                        <span>{t("info.to_draft")}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <Icon
@@ -167,7 +165,7 @@ export default function UnlockModal({
                           fontSize={18}
                           className="mt-0.5 flex-shrink-0"
                         />
-                        <span>Payroll will be marked as edited</span>
+                        <span>{t("info.marked")}</span>
                       </li>
                     </ul>
                   </div>
@@ -187,7 +185,7 @@ export default function UnlockModal({
                     fontSize={20}
                   />
                 ) : (
-                  "Unlock"
+                  t("action.unlock")
                 )}
               </button>
             </div>
