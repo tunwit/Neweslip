@@ -1,14 +1,11 @@
-import { PAYROLL_PROBLEM } from "./enum/enum";
+import { PAYROLL_PROBLEM, PAYROLL_PROBLEM_CODE } from "./enum/enum";
 
 export interface PayrollProblem {
   type: PAYROLL_PROBLEM;
+  code: PAYROLL_PROBLEM_CODE;
   employee: {
-    id: number;
-    firstName: string;
-    lastName: string;
-    nickName: string;
-    branch: string;
-    branchEng: string;
+    firstName: string | null;
+    lastName: string | null;
   };
-  message: string;
+  meta?: Record<string, any>;
 }

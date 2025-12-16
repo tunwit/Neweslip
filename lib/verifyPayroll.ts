@@ -7,14 +7,18 @@ import {
   payrollRecordsTable,
   penaltyFieldValueTable,
 } from "@/db/schema";
-import { OT_METHOD, PAYROLL_PROBLEM } from "@/types/enum/enum";
-import { moneyFormat } from "@/utils/formmatter";
+import {
+  OT_METHOD,
+  PAYROLL_PROBLEM,
+  PAYROLL_PROBLEM_CODE,
+} from "@/types/enum/enum";
 import { eq, inArray } from "drizzle-orm";
 import globalDrizzle from "@/db/drizzle";
 import calculateTotalSalary from "./calculateTotalSalary";
 import Decimal from "decimal.js";
 import { calculateOT } from "./otCalculater";
 import { calculatePenalty } from "./penaltyCalculater";
+import { PayrollProblem } from "@/types/payrollProblem";
 
 function groupBy<
   T,
@@ -32,7 +36,7 @@ function groupBy<
 }
 
 export default async function verifyPayroll(periodId: number) {
-  let problems = [];
+  let problems: PayrollProblem[] = [];
   const [period] = await globalDrizzle
     .select()
     .from(payrollPeriodsTable)
@@ -64,7 +68,8 @@ export default async function verifyPayroll(periodId: number) {
     problems.push({
       type: PAYROLL_PROBLEM.CRITICAL,
       employee: { firstName: "Period", lastName: "System" },
-      message: "zero employee selected",
+      code: PAYROLL_PROBLEM_CODE.NO_EMPLOYEE,
+      meta: {},
     });
   }
   const allFieldValues = await globalDrizzle
@@ -98,8 +103,14 @@ export default async function verifyPayroll(periodId: number) {
     if (Number(r.payrollRecord.salary) <= 0) {
       problems.push({
         type: PAYROLL_PROBLEM.WARNNING,
-        employee: r.employee,
-        message: "Base salary is equal or below zero",
+        employee: {
+          firstName: r.employee.firstName,
+          lastName: r.employee.lastName,
+        },
+        code: PAYROLL_PROBLEM_CODE.BASE_SALARY_ZERO,
+        meta: {
+          salary: r.payrollRecord.salary,
+        },
       });
     }
 
@@ -107,13 +118,19 @@ export default async function verifyPayroll(periodId: number) {
       problems.push({
         type: PAYROLL_PROBLEM.WARNNING,
         employee: r.employee,
-        message: `Net salary is negative (${moneyFormat(totals.net)}) - please verify`,
+        code: PAYROLL_PROBLEM_CODE.NET_NEGATIVE,
+        meta: {
+          net: totals.net,
+        },
       });
     } else if (totals.net === 0) {
       problems.push({
         type: PAYROLL_PROBLEM.WARNNING,
         employee: r.employee,
-        message: `Net salary is zero (${moneyFormat(totals.net)}) - please verify`,
+        code: PAYROLL_PROBLEM_CODE.NET_ZERO,
+        meta: {
+          net: totals.net,
+        },
       });
     }
 
@@ -121,7 +138,11 @@ export default async function verifyPayroll(periodId: number) {
       problems.push({
         type: PAYROLL_PROBLEM.WARNNING,
         employee: r.employee,
-        message: `Total deductions (${moneyFormat(totals.totalDeduction)}) exceed gross salary (${moneyFormat(totals.totalEarning)})`,
+        code: PAYROLL_PROBLEM_CODE.DEDUCTION_EXCEED_EARNING,
+        meta: {
+          deduction: totals.totalDeduction,
+          earning: totals.totalEarning,
+        },
       });
     }
 
@@ -135,7 +156,12 @@ export default async function verifyPayroll(periodId: number) {
       problems.push({
         type: PAYROLL_PROBLEM.CRITICAL,
         employee: r.employee,
-        message: "Net salary does not match gross minus deductions",
+        code: PAYROLL_PROBLEM_CODE.NET_MISMATCH,
+        meta: {
+          earning: totals.totalEarning,
+          deduction: totals.totalDeduction,
+          net: totals.net,
+        },
       });
     }
 
@@ -153,7 +179,11 @@ export default async function verifyPayroll(periodId: number) {
       problems.push({
         type: PAYROLL_PROBLEM.CRITICAL,
         employee: r.employee,
-        message: `Total OT hours (${moneyFormat(totalOtHours)}) exceed monthly limit (144)`,
+        code: PAYROLL_PROBLEM_CODE.OT_HOURS_EXCEED_LIMIT,
+        meta: {
+          hours: totalOtHours,
+          limit: 144,
+        },
       });
     }
 
@@ -173,7 +203,11 @@ export default async function verifyPayroll(periodId: number) {
         problems.push({
           type: PAYROLL_PROBLEM.CRITICAL,
           employee: r.employee,
-          message: `OT amount (${moneyFormat(o.amount)}}) does not match expected value (${moneyFormat(expectedAmount)}) please contact developer`,
+          code: PAYROLL_PROBLEM_CODE.OT_AMOUNT_MISMATCH,
+          meta: {
+            actual: o.amount,
+            expected: expectedAmount,
+          },
         });
       }
 
@@ -181,7 +215,11 @@ export default async function verifyPayroll(periodId: number) {
         problems.push({
           type: PAYROLL_PROBLEM.CRITICAL,
           employee: r.employee,
-          message: "OT hours or amount cannot be negative",
+          code: PAYROLL_PROBLEM_CODE.OT_NEGATIVE,
+          meta: {
+            value: o.value,
+            amount: o.amount,
+          },
         });
       }
     });
@@ -190,14 +228,24 @@ export default async function verifyPayroll(periodId: number) {
       problems.push({
         type: PAYROLL_PROBLEM.WARNNING,
         employee: r.employee,
-        message: `Penalty (${moneyFormat(totals.totalPenalty)}) is greater than the employee gross salary (${moneyFormat(totals.totalEarning)}).`,
+        code: PAYROLL_PROBLEM_CODE.PENALTY_EXCEED_GROSS,
+        meta: {
+          penalty: totals.totalPenalty,
+          earning: totals.totalEarning,
+        },
       });
     }
+
     if (totals.totalPenalty > Number(r.payrollRecord.salary) * 0.3) {
       problems.push({
         type: PAYROLL_PROBLEM.WARNNING,
         employee: r.employee,
-        message: `Employee has unusually high penalties (${moneyFormat(totals.totalPenalty)}), exceeding 30% of base salary.`,
+        code: PAYROLL_PROBLEM_CODE.PENALTY_EXCEED_30_PERCENT,
+        meta: {
+          penalty: totals.totalPenalty,
+          salary: r.payrollRecord.salary,
+          percent: 30,
+        },
       });
     }
 
@@ -219,7 +267,11 @@ export default async function verifyPayroll(periodId: number) {
         problems.push({
           type: PAYROLL_PROBLEM.CRITICAL,
           employee: r.employee,
-          message: "Penalty value or amount cannot be negative",
+          code: PAYROLL_PROBLEM_CODE.PENALTY_NEGATIVE,
+          meta: {
+            value: p.value,
+            amount: p.amount,
+          },
         });
       }
     });
@@ -228,7 +280,11 @@ export default async function verifyPayroll(periodId: number) {
       problems.push({
         type: PAYROLL_PROBLEM.CRITICAL,
         employee: r.employee,
-        message: `Penalty amount (${moneyFormat(totals.totalPenalty)}) does not match expected value (${moneyFormat(totalPenalty)})`,
+        code: PAYROLL_PROBLEM_CODE.PENALTY_MISMATCH,
+        meta: {
+          actual: totals.totalPenalty,
+          expected: totalPenalty,
+        },
       });
     }
   }

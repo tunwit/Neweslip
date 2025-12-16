@@ -1,11 +1,12 @@
 import { PAYROLL_PROBLEM } from "@/types/enum/enum";
+import { PayrollProblem } from "@/types/payrollProblem";
+import { formatMetaMoney } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 interface problemCardProps {
-  type: PAYROLL_PROBLEM;
-  employeeName: string;
-  message: string;
+  issue: PayrollProblem;
 }
 
 const style = {
@@ -22,24 +23,25 @@ const style = {
     borderColor: "border-red-200",
   },
 };
-export default function ProblemCard({
-  type,
-  employeeName,
-  message,
-}: problemCardProps) {
+export default function ProblemCard({ issue }: problemCardProps) {
+  const t = useTranslations("summary_period.issues.code");
   return (
     <div
-      className={`${style[type].bgColor} ${style[type].borderColor} p-4 border  rounded-md`}
+      className={`${style[issue.type].bgColor} ${style[issue.type].borderColor} p-4 border  rounded-md`}
     >
       <div className="flex flex-row items-center gap-3">
         <Icon
-          icon={style[type].icon}
-          className={`${style[type].textColor}`}
+          icon={style[issue.type].icon}
+          className={`${style[issue.type].textColor}`}
           fontSize={20}
         />
         <div>
-          <p>{employeeName}</p>
-          <p className="font-light text-xs">{message}</p>
+          <p>
+            {issue.employee.firstName} {issue.employee.lastName}
+          </p>
+          <p className="font-light text-xs">
+            {t(issue.code, formatMetaMoney(issue.meta))}
+          </p>
         </div>
       </div>
     </div>

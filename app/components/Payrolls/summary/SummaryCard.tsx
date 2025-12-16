@@ -9,20 +9,15 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
+import { useTranslations } from "next-intl";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
 }
 
-const unitMap = {
-  [PENALTY_METHOD.DAILY]: "day(s)",
-  [PENALTY_METHOD.HOURLY]: "hour(s)",
-  [PENALTY_METHOD.PERMINUTE]: "minute(s)",
-};
-
 export default function SummaryCard({ record }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
-
+  const t = useTranslations("record");
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -52,7 +47,9 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
           <div className="grid grid-cols-[1fr_auto] gap-5 items-center">
             <div className="text-right">
-              <p className="text-sm text-gray-500 uppercase mb-1">Net Salary</p>
+              <p className="text-sm text-gray-500 uppercase mb-1">
+                {t("fields.net")}
+              </p>
               <p className="text-2xl font-semibold text-gray-900">
                 ฿ {moneyFormat(record.totals.net)}
               </p>

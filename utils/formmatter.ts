@@ -46,8 +46,8 @@ export function formatModifiedTime(
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
   if (seconds < 60) return t("justNow");
-  if (minutes < 60) return t("minutesAgo",{count:minutes});
-  if (hours < 24) return t("hoursAgo",{count:hours});
+  if (minutes < 60) return t("minutesAgo", { count: minutes });
+  if (hours < 24) return t("hoursAgo", { count: hours });
 
   const isYesterday = days === 1;
   const time = date.toLocaleTimeString("th-TH", {
@@ -55,7 +55,7 @@ export function formatModifiedTime(
     minute: "2-digit",
   });
 
-  if (isYesterday) return t("yesterdayAt",{count:time});
+  if (isYesterday) return t("yesterdayAt", { count: time });
 
   return new Intl.DateTimeFormat("th-TH", {
     year: "numeric",
@@ -86,4 +86,19 @@ export function formatBankAccountNumber(raw: string): string {
 
   // Fallback: return cleaned digits
   return digits;
+}
+
+export function formatMetaMoney(
+  meta?: Record<string, string | number | Date>,
+): Record<string, string | number | Date> {
+  if (!meta) return {};
+
+  return Object.fromEntries(
+    Object.entries(meta).map(([key, value]) => {
+      if (typeof value === "number") {
+        return [key, moneyFormat(value)];
+      }
+      return [key, value];
+    }),
+  );
 }

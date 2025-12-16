@@ -1,10 +1,17 @@
 {
   "common": {
+    "selected": "{count} ถูกเลือก",
     "filters": {
       "all": "ทั้งหมด"
     },
     "snackbar": {
       "dismiss": "ปิด"
+    },
+    "unit": {
+      "people": "{count} คน",
+      "day": "{count} วัน",
+      "hour": "{count} ชั่วโมง",
+      "minute": "{count} นาที"
     }
   },
   "navigation": {
@@ -19,7 +26,8 @@
     "dashboard": "ภาพรวม",
     "employees": "พนักงาน",
     "documents": "เอกสาร",
-    "payrolls": "เงินเดือน"
+    "payrolls": "เงินเดือน",
+    "summary_payroll": "สรุปเงินเดือน"
   },
 
   "employees": {
@@ -30,7 +38,8 @@
     },
     "actions": {
       "create": "เพิ่มพนักงาน",
-      "delete": "ลบพนักงาน"
+      "delete": "ลบพนักงาน",
+      "close": "ปิด"
     },
     "search": {
       "label": "ค้นหาพนักงาน",
@@ -196,18 +205,28 @@
     }
   },
   "period": {
+    "load": {
+      "loading_payrolls": "กำลังโหลดเงินเดือน",
+      "loading_records": "คำนวนพนักงาน"
+    },
     "fields": {
       "status": "สถานะ",
       "employees": "พนักงาน",
+      "total_employees": "พนักงานทั้งหมด",
       "total_amount": "รายจ่าย",
       "created_at": "สร้างเมื่อ",
-      "period": "ช่วงที่จ่าย"
+      "period": "ช่วงที่จ่าย",
+      "total_base_salary": "รวมฐานเงินเดือน",
+      "total_earning": "รวมรายได้",
+      "total_deduction": "รวมรายหัก",
+      "grand_total": "ยอดรวมสุทธิ"
     },
     "actions": {
       "export": "นำออก",
       "summary": "สรุป",
       "add_employee": "เพิ่มพนักงาน",
-      "delete": "ลบพนักงาน"
+      "delete": "ลบพนักงาน",
+      "finalize": "ปิดรอบ"
     },
     "search": {
       "label": "ค้นหาพนักงาน",
@@ -243,53 +262,128 @@
     },
     "status": {
       "draft": "กำลังแก้ไข",
-      "finalized": "เสร็จสมบูรณ์",
+      "finalized": "ปิดรอบแล้ว",
       "paid": "จ่ายเเล้ว"
+    },
+    "modal": {
+      "save": { "fail": "บันทึกข้อมูลไม่สำเร็จ {err}" },
+      "create": {
+        "success": "เพิ่มพนักงานสำเร็จ",
+        "fail": "เพิ่มพนักงานไม่สำเร็จ {err}"
+      },
+      "delete": {
+        "success": "ลบพนักงานสำเร็จ",
+        "fail": "ลบพนักงานไม่สำเร็จ {err}"
+      },
+      "export": {
+        "fail": "ข้อผิดพลาดขณะนำออก {err}"
+      }
     }
   },
-  "record":{
-    "fields":{
-      "title":"รายการ",
-      "employee":"พนักงาน",
-      "branch":"สาขา",
-      "base_salary":"ฐานเงินเดือน",
-      "deduction":"รายหัก",
-      "earning":"รายได้",
-      "total":"รายได้สุทธิ"
+  "record": {
+    "fields": {
+      "title": "รายการ",
+      "employee": "พนักงาน",
+      "branch": "สาขา",
+      "base_salary": "ฐานเงินเดือน",
+      "deduction": "รายหัก",
+      "overtime": "ค่าล่วงเวลา",
+      "penalties": "ค่าล่วงเวลา",
+      "earning": "รายได้",
+      "displayonly": "แสดงเท่านั้น",
+      "total_base_salary": "รวมฐานเงินเดือน",
+      "total_earning": "รวมรายได้",
+      "total_deduction": "รวมรายหัก",
+      "total_overtime": "รวมค่าล่วงเวลา",
+      "total_penalties": "รวมค่าหักลงโทษ",
+      "net": "ยอดสุทธิ"
     },
-    "info":{
-      "showing":"แสดงพนักงาน {count} คน",
-      "total_payroll":"รายจ่ายทั้งหมด"
+    "info": {
+      "calculation": "แสดงการคำนวน",
+      "showing": "แสดงพนักงาน {count} คน",
+      "total_payroll": "รายจ่ายทั้งหมด"
     },
-    "edit":{
-      "label":"รายละเอียดเงินเดือน",
-      "load":{
-        "loading":"กำลังดึงข้อมูล"
+    "edit": {
+      "label": "รายละเอียดเงินเดือน",
+      "load": {
+        "loading": "กำลังดึงข้อมูล"
       },
-      "fields":{
-        "title":"รายการ",
-        "value":"จำนวน",
-        "amount":"มูลค่า",
-        "total":"รวม"
-
+      "fields": {
+        "title": "รายการ",
+        "value": "จำนวน",
+        "amount": "มูลค่า",
+        "total": "รวม"
       },
-      "tabs":{
-        "income":"รายได้",
-        "deduction":"รายหัก",
-        "overtime":"ค่าล่วงเวลา",
-        "absent":"ขาด / ลา / มาสาย",
-        "display_only":"แสดงเท่านั้น",
-        "summary":"สรุป"
+      "tabs": {
+        "income": "รายได้",
+        "deduction": "รายหัก",
+        "overtime": "ค่าล่วงเวลา",
+        "absent": "ขาด / ลา / มาสาย",
+        "display_only": "แสดงเท่านั้น",
+        "summary": "สรุป"
       },
-      "status":{
-        "changed":"แก้ไข",
-        "uploading":"กำลังบันทึก",
-        "saved":"บันทึกสำเร็จ"
-
+      "status": {
+        "changed": "แก้ไข",
+        "uploading": "กำลังบันทึก",
+        "saved": "บันทึกสำเร็จ"
       },
-      "actions":{
-        "done":"เสร็จสิ้น"
+      "actions": {
+        "done": "เสร็จสิ้น"
       }
+    }
+  },
+  "summary_period": {
+    "label": "ตรวจสอบสรุปเงินเดือน",
+    "info": {
+      "summary": "สรุปเงินเดือน"
+    },
+    "critical_issue": {
+      "label": "พบปัญหาร้ายเเรง ( {count} )",
+      "description": "ยังไม่สามารถปิดรอบหากพบปัญหาร้ายแรง จะปิดรอบได้จนกว่าปัญหาจะถูกแก้ไข"
+    },
+    "issues": {
+      "label": "ปัญหาที่ควรตรวจสอบ ( {count} )",
+      "description": "ยังสามารถปิดรอบได้ โปรดพิจารณาด้วยความระมัดระวัง",
+      "code": {
+        "NO_EMPLOYEE": "ไม่มีพนักงานถูกเลือก กรุณาเลือกพนักงานอย่างน้อย 1 คน",
+        "BASE_SALARY_ZERO": "ฐานเงินเดือนน้อยกว่า หรือเท่ากับศูนย์ ({salary}) - กรุณาตรวจสอบ",
+        "NET_NEGATIVE": "เงินเดือนติดลบ ({net}) - กรุณาตรวจสอบ",
+        "NET_ZERO": "เงินเดือนเท่ากับศูนย์ ({net}) - กรุณาตรวจสอบ",
+        "DEDUCTION_EXCEED_EARNING": "รายหัก ({deduction}) มากกว่ารายได้ ({earning}) - กรุณาตรวจสอบ",
+        "NET_MISMATCH": "รายได้สุทธิ ({net}) ไม่ตรงจากรายได้ ({earning}) ลบ รายหัก ({deduction}) - กรุณาติดต่อฝ่ายสนับสนุน",
+        "OT_HOURS_EXCEED_LIMIT": "ค่าล่วงเวลาชั่วโมง ({hours}) เกินจำกัดรายเดือน ({limit}) - กรุณาตรวจสอบ",
+        "OT_AMOUNT_MISMATCH": "ค่าล่วงเวลา ({actual}) ไม่ตรงกับค่าที่ควรได้ ({expected}) - กรุณาติดต่อฝ่ายสนับสนุน",
+        "OT_NEGATIVE": "ค่าล่วงเวลาจำนวน ({value}) และมูลค่า ({amount}) ไม่สามารถติดลบได้ - กรุณาแก้ไข",
+        "PENALTY_EXCEED_GROSS": "ค่าหักลงโทษ ({penalty}) มากกว่ารายได้ ({earning}) - กรุณาตรวจสอบ",
+        "PENALTY_EXCEED_30_PERCENT": "พนักงานมีค่าหักลงโทษ ({penalty}) สูงผิดปกติ เกิน {percent}% ของฐานเงินเดือน  - กรุณาตรวจสอบ",
+        "PENALTY_NEGATIVE": "ค่าหักลงโทษจำนวน ({value}) และมูลค่า ({amount}) ไม่สามารถติดลบได้ - กรุณาแก้ไข",
+        "PENALTY_MISMATCH": "ค่าหักลงโทษ ({actual}) ไม่ตรงกับค่าที่ควรได้ ({expected}) - กรุณาติดต่อฝ่ายสนับสนุน"
+      }
+    },
+    "no_issue": {
+      "label": "เงินเดือนนี้ได้ถูกตรวจสอบแล้ว",
+      "description": "ไม่พบปัญหา ควรพิจารณาอีกครั้งก่อนทำให้เสร็จสมบูร์"
+    },
+    "actions": {
+      "back_to_edit": "กลับไปแก้ไข"
+    }
+  },
+  "finalized_period": {
+    "label": "ปิดรอบเงินเดือน",
+    "description": "ตรวจสอบก่อนปิดรอบเงินเดือน",
+    "sections": {
+      "information": "ข้อมูลรอบเงินเดือน",
+      "financial": "สรุปการเงิน"
+    },
+    "info": {
+      "label": "เกิดอะไรขึ้นหลังจากปิดรอบ",
+      "lock_payroll": "รอบเงินเดือนจะล็อค และจะไม่สามารถแก้ไขได้",
+      "to_finalized": "สถานะจะถูกปรับเป็น \"ปิดรอบแล้ว\"",
+      "generate_payslip": "สามารถสร้างใบสรุปเงินเดือน และส่งไปหาพนักงานได้",
+      "acknownledge": "ข้าพเข้ายืนยันว่าได้ตรวจสอบรายละเอียดเงินเดือนของพนักงานทั้งหมดแล้ว และข้อมูลถูกต้องตามที่ควรจะเป็น ข้าพเจ้ารู้ และเข้าใจว่าจะไม่สามารถแก้ไขได้อีกหลังจากปิดรอบเงินเดือน"
+    },
+    "actions": {
+      "cancle": "ยกเลิก"
     }
   },
   "date_format": {

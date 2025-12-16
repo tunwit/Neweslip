@@ -94,9 +94,9 @@ export default function Home() {
         exact: false,
       });
 
-      showSuccess(`Delete employee success`);
+      showSuccess(tPeriod("modal.delete.success"));
     } catch (err: any) {
-      showError(`Delete employee failed \n ${err}`);
+      showError(tPeriod("modal.delete.fail", { err: err.message }));
     }
   };
 
@@ -124,8 +124,8 @@ export default function Home() {
 
     try {
       await updatePayrollPeriod(Number(periodId), result, user?.id);
-    } catch (err) {
-      showError(`Cannot save data \n ${err}`);
+    } catch (err: any) {
+      showError(tPeriod("modal.save.fail", { err: err.message }));
     } finally {
     }
   };
@@ -177,8 +177,8 @@ export default function Home() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch (err) {
-      showError(`Export failed ${err}`);
+    } catch (err: any) {
+      showError(tPeriod("modal.export.fail", { err: err.message }));
     } finally {
       setIsExporting(false);
     }
@@ -186,8 +186,8 @@ export default function Home() {
   const isLoading = loadingPeriod || loadingRecord;
 
   let loadingMessage = "";
-  if (loadingRecord) loadingMessage = "Getting Records...";
-  else if (loadingPeriod) loadingMessage = tPeriod("load.loading_records");
+  if (loadingRecord) loadingMessage = tPeriod("load.loading_records");
+  else if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
 
   return (
     <main className="w-full bg-gray-100 font-medium ">
@@ -387,7 +387,9 @@ export default function Home() {
                 >
                   <span className="flex items-center gap-1">
                     <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
-                    <p className="font-light text-sm">{tPeriod("filters.label")}</p>
+                    <p className="font-light text-sm">
+                      {tPeriod("filters.label")}
+                    </p>
                   </span>
                 </button>
               </div>
@@ -396,7 +398,8 @@ export default function Home() {
                   onClick={() => setOpenAdd(true)}
                   className="flex items-center gap-2 bg-blue-600 text-white p-2 rounded-md"
                 >
-                  <Add sx={{ fontSize: "20px" }} /> <p>{tPeriod("actions.add_employee")}</p>
+                  <Add sx={{ fontSize: "20px" }} />{" "}
+                  <p>{tPeriod("actions.add_employee")}</p>
                 </button>
               </div>
             </div>
@@ -416,7 +419,9 @@ export default function Home() {
                 onClick={deleteHandler}
                 className="flex items-center gap-2 text-blue-600 disabled:text-gray-300 p-2 rounded-md"
               >
-                <p className="underline font-medium">{tPeriod("actions.delete")}</p>
+                <p className="underline font-medium">
+                  {tPeriod("actions.delete")}
+                </p>
               </button>
             </div>
 

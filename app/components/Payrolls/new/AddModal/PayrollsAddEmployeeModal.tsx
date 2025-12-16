@@ -23,6 +23,7 @@ import { Branch } from "@/types/branch";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
 import { Pagination } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;
@@ -49,6 +50,10 @@ export default function PayrollsAddEmployeeModal({
   });
   const [selected, setSelected] = useState<EmployeeWithShop | null>(null);
   const { user } = useUser();
+  const te = useTranslations("employees");
+  const tn = useTranslations("new_employees");
+  const tc = useTranslations("common");
+  const tnav = useTranslations("navigation");
 
   const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
     setPage(page);
@@ -64,12 +69,12 @@ export default function PayrollsAddEmployeeModal({
         exact: false,
       });
 
-      showSuccess(`Add employee success`);
+      showSuccess(tn("modal.create.success"));
       setOpen(false);
     } catch (err: any) {
       let msg = err.message;
       if (msg == "ER_DUP_ENTRY") msg = "You cannot add duplicate employee";
-      showError(`Add employee failed \n ${msg}`);
+      showError(tn("modal.create.fail", { err: msg }));
     } finally {
       uncheckall();
     }
@@ -87,15 +92,17 @@ export default function PayrollsAddEmployeeModal({
           <div className="flex flex-col justify-center w-full">
             <div className="flex flex-row items-center gap-2">
               <p className="font-bold text-lg">
-                Employees ({data?.pagination.totalItems} people)
+                {tnav("employees")}{" "}
+                {tc("unit.people", {
+                  count: data?.pagination.totalItems || 0,
+                })}{" "}
               </p>
-              {checked.length}
-              <p>selected</p>
+              <p>{tc("selected", { count: checked.length })}</p>
             </div>
 
             <div className="flex flex-row gap-2 my-2">
               <div className="w-[80%]">
-                <p className="text-black text-xs mb-1">Search Payrolls</p>
+                <p className="text-black text-xs mb-1">{te("search.label")}</p>
                 <div className="flex flex-row items-center gap-1 bg-[#fbfcfe] py-[7px] px-2 rounded-sm border border-[#c8cfdb] shadow-xs">
                   <Icon
                     className="text-[#424242]"
@@ -103,7 +110,7 @@ export default function PayrollsAddEmployeeModal({
                   />
                   <input
                     type="text"
-                    placeholder="Search"
+                    placeholder={te("search.placeholder")}
                     className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
                     value={search}
                     onChange={(e) => {
@@ -114,7 +121,7 @@ export default function PayrollsAddEmployeeModal({
               </div>
 
               <div className="w-[20%]">
-                <p className="text-black text-xs mb-1">Branch</p>
+                <p className="text-black text-xs mb-1">{te("fields.branch")}</p>
                 <BranchSelector
                   branchId={branchId}
                   onChange={(b) => {
@@ -137,7 +144,7 @@ export default function PayrollsAddEmployeeModal({
                 columns={[
                   {
                     key: "name",
-                    label: "Name",
+                    label: te("fields.name"),
                     width: "45%",
                     render: (row, i) => {
                       return (
@@ -159,12 +166,12 @@ export default function PayrollsAddEmployeeModal({
                   },
                   {
                     key: "nickName",
-                    label: "Nick Name",
+                    label: te("fields.nickname"),
                     render: (row) => `${row.nickName}`,
                   },
                   {
                     key: "branch",
-                    label: "Branch",
+                    label: te("fields.branch"),
                     render: (row) => `${row.branch.name}`,
                   },
                 ]}
@@ -187,19 +194,18 @@ export default function PayrollsAddEmployeeModal({
                 variant="outlined"
                 onClick={() => setOpen(false)}
               >
-                Close
+                {te("actions.close")}
               </Button>
               <Button
                 disabled={checked.length < 1}
                 size="sm"
                 onClick={() => handlerConfirm()}
               >
-                Confirm
+                {te("actions.create")}
               </Button>
             </div>
           </div>
         </ModalDialog>
-        {/* </ModalOverflow> */}
       </Modal>
     </>
   );

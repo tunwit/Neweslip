@@ -21,7 +21,7 @@ import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import { usePayrollPeriodVerify } from "@/hooks/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
 import { Modal, ModalDialog } from "@mui/joy";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
 import { PayrollRecord } from "@/types/payrollRecord";
 import {
@@ -29,6 +29,7 @@ import {
   PayrollRecordSummary,
 } from "@/types/payrollPeriodSummary";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
@@ -41,6 +42,9 @@ export default function Home() {
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
   );
+  const tBreadcrumb = useTranslations("breadcrumb");
+  const t = useTranslations("summary_period");
+  const tPeriod = useTranslations("period");
 
   const { data: summaryData, isLoading: loadingSummary } =
     usePayrollPeriodSummary(Number(periodId));
@@ -118,7 +122,6 @@ export default function Home() {
               className="animate-spin"
               fontSize={50}
             />
-
             <p> {loadingMessage}</p>
           </div>
         </ModalDialog>
@@ -136,15 +139,14 @@ export default function Home() {
           <div className=" flex flex-row text-[#424242] text-xs mt-10">
             <p>
               {" "}
-              Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
+              Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+              {tBreadcrumb("payrolls")} {">"}&nbsp;
             </p>
-            <p className="text-blue-800">Summary Review</p>
+            <p className="text-blue-800">{tBreadcrumb("summary_payroll")}</p>
           </div>
           <div className="mt-5 flex flex-row justify-between">
             <span>
-              <p className="text-black text-4xl font-bold">
-                Review Payroll Summary
-              </p>
+              <p className="text-black text-4xl font-bold">{t("label")}</p>
               <p className=" text-gray-700 mt-2">{periodData?.data?.name}</p>
             </span>
 
@@ -158,14 +160,14 @@ export default function Home() {
                 variant="outlined"
                 onClick={backToEditHandler}
               >
-                Back to edit
+                {t("actions.back_to_edit")}
               </Button>
               <Button
                 sx={{ height: 40 }}
                 startDecorator={<Icon icon="gg:check-o" fontSize={20} />}
                 onClick={() => setOpenFinalizeModal(true)}
               >
-                Finalize
+                {tPeriod("actions.finalize")}
               </Button>
             </div>
           </div>
@@ -183,12 +185,10 @@ export default function Home() {
                 fontSize={20}
               />
               <div>
-                <p className="text-green-900">
-                  This payroll has been reviewed for potential issues.
-                </p>
+                <p className="text-green-900">{t("no_issue.label")}</p>
                 <p className="font-light text-xs text-green-700">
-                  No issues were detected, but please verify all details before
-                  finalizing.
+                  {t("no_issue.label")}
+                  {t("no_issue.description")}
                 </p>
               </div>
             </div>
@@ -205,22 +205,13 @@ export default function Home() {
                 fontSize={20}
               />
               <h1 className="font-semibold text-md">
-                Issues Requiring Attention ({verify?.data?.length})
+                {t("issues.label", { count: verify?.data?.length || 0 })}
               </h1>
             </span>
 
             <div className="flex flex-col gap-2 mt-3">
               {verify?.data?.map((v, _) => {
-                return (
-                  <ProblemCard
-                    key={_}
-                    type={v.type}
-                    employeeName={
-                      v.employee.firstName + " " + v.employee.lastName
-                    }
-                    message={v.message}
-                  />
-                );
+                return <ProblemCard key={_} issue={v} />;
               })}
             </div>
           </div>
@@ -238,7 +229,7 @@ export default function Home() {
                     />
                     <input
                       type="text"
-                      placeholder="Search name, branch"
+                      placeholder={tPeriod("search.placeholder")}
                       className="text-[#424242] font-light text-sm  w-full h-full  focus:outline-none "
                       onChange={(e) => setQuery(e.target.value)}
                     />
@@ -250,7 +241,9 @@ export default function Home() {
                 >
                   <span className="flex items-center gap-1">
                     <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
-                    <p className="font-light text-sm">Filters</p>
+                    <p className="font-light text-sm">
+                      {tPeriod("filters.label")}
+                    </p>
                   </span>
                 </button>
               </div>
@@ -278,30 +271,36 @@ export default function Home() {
         <section className="px-10 mb-5">
           <div className="bg-white rounded-lg border border-gray-200 mt-6 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Payroll Summary
+              {t("info.summary")}
             </h2>
             <div className="grid grid-cols-4 gap-6">
               <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">Total Base Salary</p>
+                <p className="text-sm text-gray-600 mb-2">
+                  {tPeriod("fields.total_base_salary")}
+                </p>
                 <p className="text-xl font-bold text-gray-900">
                   ฿ {moneyFormat(filteredTotalSalary || 0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-green-700 mb-2">Total Earnings</p>
+                <p className="text-sm text-green-700 mb-2">
+                  {tPeriod("fields.total_earning")}
+                </p>
                 <p className="text-xl font-bold text-green-900">
                   ฿ {moneyFormat(filteredTotalEarning || 0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-lg">
-                <p className="text-sm text-red-700 mb-2">Total Deductions</p>
+                <p className="text-sm text-red-700 mb-2">
+                  {tPeriod("fields.total_deduction")}
+                </p>
                 <p className="text-xl font-bold text-red-900">
                   ฿ {moneyFormat(filteredTotalDeduction || 0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg border-2 border-blue-300">
                 <p className="text-sm text-blue-700 mb-2 uppercase font-semibold">
-                  Grand Total
+                  {tPeriod("fields.grand_total")}
                 </p>
                 <p className="text-2xl font-bold text-blue-900">
                   ฿ {moneyFormat(filteredTotalNet || 0)}

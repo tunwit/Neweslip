@@ -4,12 +4,13 @@ import UsersIcon from "@/assets/icons/UsersIcon";
 import { PAYROLL_PROBLEM } from "@/types/enum/enum";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { PayrollProblem } from "@/types/payrollProblem";
-import { dateFormat, moneyFormat } from "@/utils/formmatter";
+import { dateFormat, formatMetaMoney, moneyFormat } from "@/utils/formmatter";
 import { showError } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useState } from "react";
 
@@ -32,6 +33,12 @@ export default function FinalizeModal({
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const t = useTranslations("period");
+  const tf = useTranslations("finalized_period");
+  const tc = useTranslations("common");
+  const tr = useTranslations("record");
+  const tp = useTranslations("period");
+  const ts = useTranslations("summary_period");
 
   const isCriticalPresence =
     problems.filter((p) => p.type === PAYROLL_PROBLEM.CRITICAL).length > 0;
@@ -77,22 +84,22 @@ export default function FinalizeModal({
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
-                Finalize Payroll
+                {tf("label")}
               </h2>
-              <p className="text-sm text-gray-600">Review before finalizing</p>
+              <p className="text-sm text-gray-600">{tf("description")}</p>
             </div>
           </div>
         </section>
         <section className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Payroll Information
+              {tf("sections.information")}
             </h3>
             <div className="bg-gray-100 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-gray-600">
                   <Icon icon="solar:calendar-outline" fontSize={18} />
-                  <span className="text-sm">Period</span>
+                  <span className="text-sm">{t("fields.period")}</span>
                 </div>
                 <span className="font-semibold text-gray-900">
                   {dateFormat(new Date(periodSummary?.start_period || 0))}{" "}
@@ -103,10 +110,12 @@ export default function FinalizeModal({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-gray-600">
                   <Icon icon="mynaui:users" fontSize={18} />
-                  <span className="text-sm">Total Employees</span>
+                  <span className="text-sm">{t("fields.total_employees")}</span>
                 </div>
                 <span className="font-semibold text-gray-900">
-                  {periodSummary?.employeeCount} people
+                  {tc("unit.people", {
+                    count: periodSummary?.employeeCount || 0,
+                  })}
                 </span>
               </div>
             </div>
@@ -114,23 +123,29 @@ export default function FinalizeModal({
 
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Financial Summary
+              {tf("sections.financial")}
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
-                <span className="text-sm text-gray-600">Base Salary</span>
+                <span className="text-sm text-gray-600">
+                  {tr("fields.base_salary")}
+                </span>
                 <span className="font-medium text-gray-900">
                   ฿ {moneyFormat(periodSummary?.totalBaseSalary || 0)}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                <span className="text-sm text-green-700">+ Total Earnings</span>
+                <span className="text-sm text-green-700">
+                  + {tr("fields.total_earning")}
+                </span>
                 <span className="font-medium text-green-700">
                   ฿ {moneyFormat(periodSummary?.totalEarning || 0)}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                <span className="text-sm text-red-700">- Total Deductions</span>
+                <span className="text-sm text-red-700">
+                  - {tr("fields.total_deduction")}
+                </span>
                 <span className="font-medium text-red-700">
                   ฿ {moneyFormat(periodSummary?.totalDeduction || 0)}
                 </span>
@@ -142,7 +157,9 @@ export default function FinalizeModal({
                     className="text-blue-700"
                     fontSize={20}
                   />
-                  <span className="font-semibold text-blue-900">Net Total</span>
+                  <span className="font-semibold text-blue-900">
+                    {tp("fields.grand_total")}
+                  </span>
                 </div>
                 <span className="text-2xl font-bold text-blue-900">
                   ฿ {moneyFormat(periodSummary?.totalNet || 0)}
@@ -164,11 +181,10 @@ export default function FinalizeModal({
                 />
                 <div className="flex-1">
                   <h4 className="font-semibold text-green-900 mb-2">
-                    Payroll Verified
+                    {ts("no_issue.label")}
                   </h4>
                   <p className="text-sm text-green-700 mt-2">
-                    This payroll has been verified, No issues were detected, but
-                    please verify all details before finalizing.
+                    {ts("no_issue.description")}
                   </p>
                 </div>
               </div>
@@ -189,12 +205,11 @@ export default function FinalizeModal({
                 />
                 <div className="flex-1">
                   <h4 className="font-semibold text-yellow-900 mb-2">
-                    {
-                      problems.filter(
+                    {ts("issues.label", {
+                      count: problems.filter(
                         (p) => p.type === PAYROLL_PROBLEM.WARNNING,
-                      ).length
-                    }{" "}
-                    Issue(s) Detected
+                      ).length,
+                    })}
                   </h4>
                   <ul className="space-y-2">
                     {problems
@@ -205,13 +220,16 @@ export default function FinalizeModal({
                             <span className="font-medium">
                               {p.employee.firstName} {p.employee.lastName} :
                             </span>{" "}
-                            {p.message}
+                            {ts(
+                              `issues.code.${p.code}`,
+                              formatMetaMoney(p.meta) || {},
+                            )}
                           </li>
                         );
                       })}
                   </ul>
                   <p className="text-sm text-yellow-700 mt-2">
-                    You can still finalize, but please verify these entries.
+                    {ts("issues.description")}
                   </p>
                 </div>
               </div>
@@ -232,12 +250,11 @@ export default function FinalizeModal({
                 />
                 <div className="flex-1">
                   <h4 className="font-semibold text-red-900 mb-2">
-                    {
-                      problems.filter(
+                    {ts("critical_issue.label", {
+                      count: problems.filter(
                         (p) => p.type === PAYROLL_PROBLEM.CRITICAL,
-                      ).length
-                    }{" "}
-                    Critical Issue(s) Detected
+                      ).length,
+                    })}
                   </h4>
                   <ul className="space-y-2">
                     {problems
@@ -248,14 +265,16 @@ export default function FinalizeModal({
                             <span className="font-medium">
                               {p.employee.firstName} {p.employee.lastName} :
                             </span>{" "}
-                            {p.message}
+                            {ts(
+                              `issues.code.${p.code}`,
+                              formatMetaMoney(p.meta) || {},
+                            )}
                           </li>
                         );
                       })}
                   </ul>
                   <p className="text-sm text-red-700 mt-2">
-                    You can not finalize when these issue occur, please fix
-                    these before finalize
+                    {ts("critical_issue.description")}
                   </p>
                 </div>
               </div>
@@ -271,7 +290,7 @@ export default function FinalizeModal({
               />
               <div className="flex-1">
                 <h4 className="font-semibold text-blue-900 mb-2">
-                  What happens after finalizing?
+                  {tf("info.label")}
                 </h4>
                 <ul className="space-y-1.5 text-sm text-blue-800">
                   <li className="flex items-start gap-2">
@@ -280,7 +299,7 @@ export default function FinalizeModal({
                       fontSize={18}
                       className="mt-0.5 flex-shrink-0"
                     />
-                    <span>Payroll will be locked and cannot be edited</span>
+                    <span>{tf("info.lock_payroll")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Icon
@@ -288,7 +307,7 @@ export default function FinalizeModal({
                       fontSize={18}
                       className="mt-0.5 flex-shrink-0"
                     />
-                    <span>Status will change to &quot;Finalized&quot;</span>
+                    <span>{tf("info.to_finalized")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Icon
@@ -296,9 +315,7 @@ export default function FinalizeModal({
                       fontSize={18}
                       className="mt-0.5 flex-shrink-0"
                     />
-                    <span>
-                      You can generate pay slips and send them to employees
-                    </span>
+                    <span>{tf("info.generate_payslip")}</span>
                   </li>
                 </ul>
               </div>
@@ -314,9 +331,7 @@ export default function FinalizeModal({
                 onChange={(e) => setConfirmCheckbox(!confirmCheckbox)}
               />
               <span className="text-sm text-gray-700">
-                I confirm that I have reviewed all employee salary details and
-                the information is accurate. I understand that the payroll
-                cannot be edited after finalizing.
+                {tf("info.acknownledge")}
               </span>
             </label>
           </div>
@@ -334,7 +349,7 @@ export default function FinalizeModal({
               onClick={finalizeHandler}
               className="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center gap-2 font-semibold transition-colors"
             >
-              Finalized
+               {tp("actions.finalize")}
             </Button>
             <Button
               variant="outlined"
@@ -342,7 +357,7 @@ export default function FinalizeModal({
               onClick={() => setOpen(false)}
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700"
             >
-              Cancel
+               {tf("actions.cancle")}
             </Button>
           </div>
         </section>
