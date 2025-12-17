@@ -15,6 +15,7 @@ import { deleteSalaryField } from "@/app/action/deleteSalaryField";
 import AddEditIncomeModal from "../Income/AddEditIncomeModal";
 import AddEditDeductionModal from "./AddEditDeductionModal";
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 
 export default function DeductionTab() {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function DeductionTab() {
   const { user } = useUser();
   const checkboxMethods = useCheckBox<number>("allIncomeTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
+  const t = useTranslations("deduction");
 
   const queryClient = useQueryClient();
 
@@ -30,8 +32,7 @@ export default function DeductionTab() {
     setSelectedField(null);
     setOpen(true);
   };
-  if (!shopId) return <p>loading</p>;
-  const { data, isLoading, isSuccess } = useSalaryFields(shopId);
+  const { data, isLoading, isSuccess } = useSalaryFields(shopId || -1);
 
   const handleDelete = async () => {
     try {
@@ -53,10 +54,9 @@ export default function DeductionTab() {
           setOpen={setOpen}
           field={selectedField}
         />
-        <h1 className="font-medium text-3xl">Deductions</h1>
+        <h1 className="font-medium text-3xl">{t("label")}</h1>
         <p className="opacity-70 font-normal text-xs mt-1">
-          Configure employee deduction components here. The values entered will be
-          automatically subtract in the payroll calculation.
+          {t("description")}
         </p>
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
@@ -65,7 +65,7 @@ export default function DeductionTab() {
               variant="plain"
               onClick={handleDelete}
             >
-              <p className="underline font-medium">delete</p>
+              <p className="underline font-medium"> {t("actions.delete")}</p>
             </Button>
           </div>
           <TableWithCheckBox
@@ -76,14 +76,14 @@ export default function DeductionTab() {
             setSelectedItem={setSelectedField}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Thai Label" },
-              { key: "nameEng", label: "English Label" },
-              { key: "formular", label: "Formular" },
+              { key: "name", label: t("fields.name") },
+              { key: "nameEng", label: t("fields.name_eng") },
+              { key: "formular", label: t("fields.formular") },
             ]}
           />
         </div>
         <div className="mt-2">
-          <Button onClick={addHandler}>Add New Deduction</Button>
+          <Button onClick={addHandler}>{t("actions.create")}</Button>
         </div>
       </div>
     </>

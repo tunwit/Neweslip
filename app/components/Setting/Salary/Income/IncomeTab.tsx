@@ -15,6 +15,7 @@ import AddEditIncomeModal from "./AddEditIncomeModal";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { deleteSalaryField } from "@/app/action/deleteSalaryField";
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 
 export default function IncomeTab() {
   const [open, setOpen] = useState(false);
@@ -23,15 +24,14 @@ export default function IncomeTab() {
   const checkboxMethods = useCheckBox<number>("allIncomeTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
-
+  const t = useTranslations("earning")
   const queryClient = useQueryClient();
 
   const addHandler = () => {
     setSelectedField(null);
     setOpen(true);
   };
-  if (!shopId) return <p>loading</p>;
-  const { data, isLoading, isSuccess } = useSalaryFields(shopId);
+  const { data, isLoading, isSuccess } = useSalaryFields(shopId || -1);
 
   const handleDelete = async () => {
     try {
@@ -53,10 +53,9 @@ export default function IncomeTab() {
           setOpen={setOpen}
           field={selectedField}
         />
-        <h1 className="font-medium text-3xl">Incomes</h1>
+        <h1 className="font-medium text-3xl">{t("label")}</h1>
         <p className="opacity-70 font-normal text-xs mt-1">
-          Configure employee income components here. The values entered will be
-          automatically summed up in the payroll calculation.
+          {t("description")}
         </p>
 
         <div className="-mt-6">
@@ -66,7 +65,7 @@ export default function IncomeTab() {
               variant="plain"
               onClick={handleDelete}
             >
-              <p className="underline font-medium">delete</p>
+              <p className="underline font-medium">{t("actions.delete")}</p>
             </Button>
           </div>
           <TableWithCheckBox
@@ -77,14 +76,14 @@ export default function IncomeTab() {
             setSelectedItem={setSelectedField}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Thai Label" },
-              { key: "nameEng", label: "English Label" },
-              { key: "formular", label: "Formular" },
+              { key: "name", label: t("fields.name") },
+              { key: "nameEng", label: t("fields.name_eng") },
+              { key: "formular", label: t("fields.formular") },
             ]}
           />
         </div>
         <div className="mt-2">
-          <Button onClick={addHandler}>Add New Incomes</Button>
+          <Button onClick={addHandler}>{t("actions.create")}</Button>
         </div>
       </div>
     </>

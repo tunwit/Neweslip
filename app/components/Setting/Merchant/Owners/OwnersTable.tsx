@@ -13,72 +13,97 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import ConfirmModal from "@/widget/ConfirmModal";
+import { useTranslations } from "next-intl";
+import { formatModifiedTime } from "@/utils/formmatter";
 
 export default function OwnersTable() {
-  const { id:shopId } = useCurrentShop()
-  const { user} = useUser()
-  const { data, isLoading,isSuccess } = useOwners(shopId!)
-  const [open,setOpen] = useState(false)
-  const [openConfirm,setOpenConfirm] = useState(false)
-  const checkboxMethods = useCheckBox<string>("ownerTable")
-  const {checked ,uncheckall} =checkboxMethods
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  
+  const { id: shopId } = useCurrentShop();
+  const { user } = useUser();
+  const { data, isLoading, isSuccess } = useOwners(shopId!);
+  const [open, setOpen] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const checkboxMethods = useCheckBox<string>("ownerTable");
+  const { checked, uncheckall } = checkboxMethods;
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const t = useTranslations("owners");
+  const tDate = useTranslations("date_format");
+
   const handleDelete = async () => {
-      try {
-        if (!shopId) return;
-        uncheckall()
-        await deleteShopOwner(checked, shopId, user?.id || null);
-        showSuccess("Delete owners success");
-        queryClient.invalidateQueries({ queryKey: ["owners"] });
-        
-        router.refresh()
-      } catch (err) {
-        showError(`Delete owners failed \n${err}`);
-      }
-    };
+    try {
+      if (!shopId) return;
+      uncheckall();
+      await deleteShopOwner(checked, shopId, user?.id || null);
+      showSuccess("Delete owners success");
+      queryClient.invalidateQueries({ queryKey: ["owners"] });
+
+      router.refresh();
+    } catch (err) {
+      showError(`Delete owners failed \n${err}`);
+    }
+  };
+  console.log(data?.data);
+
   return (
     <div className="-mt-4">
-    <ConfirmModal
-        title="Delete" 
-        description={`This action will cause these user not able to access this shop\nAre you sure to continue?`} 
-        open={openConfirm} 
-        setOpen={()=>setOpenConfirm(!openConfirm)} 
+      <ConfirmModal
+        title={t("delete.label")}
+        description={t("delete.description")}
+        open={openConfirm}
+        setOpen={() => setOpenConfirm(!openConfirm)}
         onConfirm={handleDelete}
-        onCancel={()=>setOpenConfirm(false)}/>
+        onCancel={() => setOpenConfirm(false)}
+      />
 
-    <InvitationModal open={open} setOpen={setOpen}/>
-    <h1 className="font-medium text-3xl">Owners</h1>
+      <InvitationModal open={open} setOpen={setOpen} />
+      <h1 className="font-medium text-3xl">{t("label")}</h1>
       <div className="-mt-6">
         <div className="flex flex-row-reverse">
           <Button
             disabled={checked ? checked.length === 0 : true}
             variant="plain"
-            onClick={()=>setOpenConfirm(true)}
+            onClick={() => setOpenConfirm(true)}
           >
-            <p className="underline font-medium">delete</p>
+            <p className="underline font-medium">{t("actions.delete")}</p>
           </Button>
         </div>
-          <TableWithCheckBox data={data?.data}
-            isLoading={isLoading}
-            isSuccess={isSuccess}
-            checkboxMethods={checkboxMethods}
-            setOpen={setOpen}
-            editColumn={false}
-            columns={[
-              { key: "firstName", label: "",width:"5%",render:(r:Owner)=>{
-                return <div className="bg-red-200   aspect-square w-7 h-7 text-center rounded-full flex items-center justify-center">
-                  <p className="text-xs">{r.firstName?.charAt(0)}</p>
-                </div>
-              } },
-              { key: "fullName", label: "Name" ,render:(r)=>{
-                return <p>{r.fullName} {user?.primaryEmailAddress?.emailAddress === r.email && "( you )"}</p>
-              }},
-              { key: "email", label: "Email" },
-            ]}/>
+        <TableWithCheckBox
+          data={data?.data}
+          isLoading={isLoading}
+          isSuccess={isSuccess}
+          checkboxMethods={checkboxMethods}
+          setOpen={setOpen}
+          editColumn={false}
+          columns={[
+            {
+              key: "fullName",
+              label: t("fields.name"),
+              render: (r) => {
+                return (
+                  <div className="flex items-center gap-2">
+                    <div className="bg-red-200   aspect-square w-7 h-7 text-center rounded-full flex items-center justify-center">
+                      <p className="text-xs">{r.firstName?.charAt(0)}</p>
+                    </div>
+                    <p>
+                      {r.fullName}{" "}
+                      {user?.primaryEmailAddress?.emailAddress === r.email &&
+                        `( ${t("info.you")} )`}
+                    </p>
+                  </div>
+                );
+              },
+            },
+            { key: "email", label: t("fields.email") },
+            {
+              key: "lastSigninAt",
+              label: t("fields.last_signin_at"),
+              render: (r) =>
+                formatModifiedTime(new Date(r.lastSignInAt || 0), tDate),
+            },
+          ]}
+        />
         <div className="mt-4 flex gap-4">
-          <Button onClick={()=>setOpen(true)}>Invite Owner</Button>
+          <Button onClick={() => setOpen(true)}>{t("actions.invite")}</Button>
           {/* <Button onClick={()=>setOpen(true)} variant="outlined" color="danger">Leave Shop</Button> */}
         </div>
       </div>

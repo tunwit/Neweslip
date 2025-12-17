@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import ChangePasswordModal from "./ChangePasswordModal";
 import z from "zod";
+import { useTranslations } from "next-intl";
 type OverviewFormValues = z.infer<typeof overviewSchema>;
 interface OverviewFormProps {
   shopData: Shop;
@@ -31,6 +32,7 @@ export default function OverviewForm({ shopData }: OverviewFormProps) {
   const { control, handleSubmit } = methods;
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
   const queryClient = useQueryClient();
+  const t = useTranslations("shops");
 
   const onSubmit = async (data: OverviewFormValues) => {
     if (!shopData.id || !user?.id) return;
@@ -44,10 +46,10 @@ export default function OverviewForm({ shopData }: OverviewFormProps) {
         shopData.id,
         user?.id,
       );
-      showSuccess("Update shop successfully");
+      showSuccess(t("modal.save.success"));
       queryClient.invalidateQueries({ queryKey: ["shop"], exact: false });
-    } catch (err) {
-      showError(`Update shop failed ${err}`);
+    } catch (err: any) {
+      showError(t("modal.save.fail", { err: err.message }));
     }
   };
 
@@ -65,29 +67,29 @@ export default function OverviewForm({ shopData }: OverviewFormProps) {
           handleSubmit(onSubmit)(e);
         }}
       >
-        <InputForm control={control} name="name" label="Title" />
-        <InputForm control={control} name="taxId" label="Tax Id" />
+        <InputForm control={control} name="name" label={t("fields.title")} />
+        <InputForm control={control} name="taxId" label={t("fields.tax_id")} />
         <InputForm
           type="number"
           control={control}
           name="work_hours_per_day"
-          label="Work Hour / Day"
+          label={t("fields.work_hour_per_day")}
         />
         <InputForm
           type="number"
           control={control}
           name="workdays_per_month"
-          label="Work Day / Month"
+          label={t("fields.work_day_per_month")}
         />
         <div className="flex gap-2 ">
           <Button type="submit" variant="outlined">
-            Save
+            {t("actions.save")}
           </Button>
           <Button
             variant="plain"
             onClick={() => setOpenChangePasswordModal(!openChangePasswordModal)}
           >
-            Change Password
+            {t("actions.change_password")}
           </Button>
         </div>
       </form>

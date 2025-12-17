@@ -16,6 +16,7 @@ import {
   Option,
   Select,
 } from "@mui/joy";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, FormProvider } from "react-hook-form";
 
@@ -30,6 +31,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
   const [verified, setVerified] = useState(false);
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
+  const t = useTranslations("shops");
 
   const methods = useZodForm(emailConfigForm, {
     defaultValues: {
@@ -112,16 +114,16 @@ export default function EmailForm({ shopData }: EmailFormProps) {
             </FormControl>
           </div>
 
-          <InputForm control={control} name="emailName" label="Email Name" />
+          <InputForm control={control} name="emailName" label={t("fields.email_name")} />
           <InputForm
             control={control}
             name="emailAddress"
-            label="Email Address"
+            label={t("fields.email_address")}
           />
 
           <FormControl required>
             <FormLabel>
-              Email Password
+              {t("fields.email_passkey")}
               {errors.emailPassword && (
                 <p className="text-xs ml-2 font-normal text-red-500 italic">
                   {errors.emailPassword.message}
@@ -161,7 +163,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
               color="primary"
               variant="outlined"
             >
-              {isSubmitting ? "Verifying" : "Save"}
+              {isSubmitting ? "Verifying" : t("actions.save")}
             </Button>
           </div>
         </form>
@@ -180,7 +182,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
                 fontSize={"20"}
               />
               <p className="text-green-700 opacity-70">
-                This email config is valid and ready to use
+                {t("info.valid_email")}
               </p>
             </span>
           </section>
@@ -193,7 +195,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
                 fontSize={"20"}
               />
               <p className="text-red-700 opacity-70">
-                Cannot verify this email config. {verifyError}
+                 {t("info.invalid_email",{err:verifyError})}
               </p>
             </span>
           </section>

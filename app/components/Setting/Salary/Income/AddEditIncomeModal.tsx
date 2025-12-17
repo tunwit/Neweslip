@@ -21,6 +21,7 @@ import {
   ModalDialog,
 } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import React, { useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 
@@ -40,6 +41,7 @@ export default function AddEditIncomeModal({
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const t = useTranslations("earning")
 
   const methods = useZodForm(salaryFieldSchema, {
     defaultValues: {
@@ -107,11 +109,11 @@ export default function AddEditIncomeModal({
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(submitHandler)}>
               <div className="grid  gap-3">
-                <InputForm control={control} name="name" label="Name" />
+                <InputForm control={control} name="name" label={t("fields.name")} />
                 <InputForm
                   control={control}
                   name="nameEng"
-                  label="Name English"
+                  label={t("fields.name_eng")}
                 />
               </div>
               <div className="mt-3">
@@ -122,7 +124,7 @@ export default function AddEditIncomeModal({
                   type="summit"
                   sx={{ width: "100%" }}
                 >
-                  {field ? "Update" : "Add"}
+                  {field ? t("actions.update") : t("actions.create")}
                 </Button>
               </div>
             </form>

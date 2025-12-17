@@ -21,16 +21,18 @@ import { useShopDetails } from "@/hooks/useShopDetails";
 import { verify } from "@/lib/emailService";
 import { NewShop } from "@/types/shop";
 import EmailForm from "./EmailForm";
+import { useTranslations } from "next-intl";
 
 export default function EmailsTab() {
     const {id} = useCurrentShop()
     const {data,isLoading} = useShopDetails(id)
+    const t = useTranslations("shops")
     if(isLoading || !data?.data) return
 
   return (
     <>
       <div className="-mt-4">
-        <h1 className="font-medium text-3xl">Emails Config</h1>
+        <h1 className="font-medium text-3xl">{t("tabs.email_config")}</h1>
         <EmailForm shopData={data?.data}/>
       </div>
     </>

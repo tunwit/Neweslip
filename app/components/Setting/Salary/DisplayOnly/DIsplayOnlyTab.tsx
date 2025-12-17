@@ -14,6 +14,7 @@ import { deletePenaltyField } from "@/app/action/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import AddEditDisplayOnlyModal from "./AddEditDisplayOnlyModal";
+import { useTranslations } from "next-intl";
 
 export default function DisplayOnlyTab() {
   const [open, setOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function DisplayOnlyTab() {
   const checkboxMethods = useCheckBox<number>("allPenaltyTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
+  const t = useTranslations("displayonly");
 
   const queryClient = useQueryClient();
 
@@ -31,8 +33,7 @@ export default function DisplayOnlyTab() {
     setOpen(true);
   };
 
-  if (!shopId) return <p>loading</p>;
-  const { data, isLoading, isSuccess } = useSalaryFields(shopId);
+  const { data, isLoading, isSuccess } = useSalaryFields(shopId || -1);
 
   const handleDelete = async () => {
     try {
@@ -55,11 +56,10 @@ export default function DisplayOnlyTab() {
           field={selectedField}
         />
         <div className="flex flex-row items-center gap-3">
-          <h1 className="font-medium text-3xl">Display only</h1>
+          <h1 className="font-medium text-3xl">{t("label")}</h1>
         </div>
         <p className="opacity-70 font-normal text-xs mt-1">
-          Configure employee Display only components here. The values entered
-          will not be calculated in the payroll calculation.
+          {t("description")}
         </p>
 
         <div className="-mt-6">
@@ -69,7 +69,7 @@ export default function DisplayOnlyTab() {
               variant="plain"
               onClick={handleDelete}
             >
-              <p className="underline font-medium">delete</p>
+              <p className="underline font-medium">{t("actions.delete")}</p>
             </Button>
           </div>
           <TableWithCheckBox
@@ -80,14 +80,13 @@ export default function DisplayOnlyTab() {
             setSelectedItem={setSelectedField}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Thai Label" },
-              { key: "nameEng", label: "English Label" },
-              { key: "formular", label: "Formular" },
+              { key: "name", label: t("fields.name") },
+              { key: "nameEng", label: t("fields.name_eng") },
             ]}
           />
         </div>
         <div className="mt-2">
-          <Button onClick={addHandler}>Add New Field</Button>
+          <Button onClick={addHandler}>{t("actions.create")}</Button>
         </div>
       </div>
     </>

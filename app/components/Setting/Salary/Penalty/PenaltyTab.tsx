@@ -25,6 +25,7 @@ import {
 import AddEditPenaltyModal from "./AddEditPenaltyModal";
 import { deletePenaltyField } from "@/app/action/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 
 export default function PenaltyTab() {
   const [open, setOpen] = useState(false);
@@ -33,7 +34,7 @@ export default function PenaltyTab() {
   const checkboxMethods = useCheckBox<number>("allPenaltyTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
-
+  const t = useTranslations("penalty");
   const queryClient = useQueryClient();
 
   const addHandler = () => {
@@ -42,8 +43,7 @@ export default function PenaltyTab() {
     setOpen(true);
   };
 
-  if (!shopId) return <p>loading</p>;
-  const { data, isLoading, isSuccess } = usePenaltyFields(shopId);
+  const { data, isLoading, isSuccess } = usePenaltyFields(shopId || -1);
 
   const handleDelete = async () => {
     try {
@@ -66,12 +66,11 @@ export default function PenaltyTab() {
           field={selectedField}
         />
         <div className="flex flex-row items-center gap-3">
-          <h1 className="font-medium text-3xl">Penalties</h1>
-          <p className="opacity-80">( absent / leave / late)</p>
+          <h1 className="font-medium text-3xl">{t("label")}</h1>
+          <p className="opacity-80">{t("details")}</p>
         </div>
         <p className="opacity-70 font-normal text-xs mt-1">
-          Configure employee penalty components here. The values entered will be
-          automatically subtract in the payroll calculation.
+          {t("description")}
         </p>
 
         <div className="-mt-6">
@@ -81,7 +80,7 @@ export default function PenaltyTab() {
               variant="plain"
               onClick={handleDelete}
             >
-              <p className="underline font-medium">delete</p>
+              <p className="underline font-medium"> {t("actions.delete")}</p>
             </Button>
           </div>
           <TableWithCheckBox
@@ -92,24 +91,24 @@ export default function PenaltyTab() {
             setSelectedItem={setSelectedField}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Thai Label" },
-              { key: "nameEng", label: "English Label" },
+              { key: "name", label: t("fields.name") },
+              { key: "nameEng", label: t("fields.name_eng") },
               {
                 key: "type",
-                label: "Type",
-                render: (row: PenaltyField) => PENALTY_TYPE_LABELS[row.type],
+                label: t("fields.type"),
+                render: (row: PenaltyField) => t(`type.${row.type.toLowerCase()}`),
               },
               {
                 key: "method",
-                label: "Method",
+                label: t("fields.method"),
                 render: (row: PenaltyField) =>
-                  PENALTY_METHOD_LABELS[row.method],
+                 t(`method.${row.method.toLowerCase()}`)
               },
             ]}
           />
         </div>
         <div className="mt-2">
-          <Button onClick={addHandler}>Add New Penalty</Button>
+          <Button onClick={addHandler}>{t("actions.create")}</Button>
         </div>
       </div>
     </>

@@ -5,9 +5,11 @@ import OTTab from "./Salary/OT/OTTab";
 import { useQueryClient } from "@tanstack/react-query";
 import DisplayOnlyTab from "./Salary/DisplayOnly/DIsplayOnlyTab";
 import PenaltyTab from "./Salary/Penalty/PenaltyTab";
+import { useTranslations } from "next-intl";
 
 export default function SalaraTabs() {
   const queryClient = useQueryClient();
+  const tr = useTranslations("record")
   queryClient.prefetchQuery({ queryKey: ["salaryFields"] });
   queryClient.prefetchQuery({ queryKey: ["OTFields"] });
   queryClient.prefetchQuery({ queryKey: ["penaltyFields"] });
@@ -29,11 +31,11 @@ export default function SalaraTabs() {
             },
           }}
         >
-          <Tab>Income</Tab>
-          <Tab>Deduction</Tab>
-          <Tab>OT</Tab>
-          <Tab>Penalty</Tab>
-          <Tab>Display Only</Tab>
+          <Tab>{tr("fields.earning")}</Tab>
+          <Tab>{tr("fields.deduction")}</Tab>
+          <Tab>{tr("fields.overtime")}</Tab>
+          <Tab>{tr("fields.penalties")}</Tab>
+          <Tab>{tr("fields.displayonly")}</Tab>
         </TabList>
         <TabPanel value={0}>
           <IncomeTab />

@@ -19,6 +19,7 @@ import AddEditOTModal from "./AddEditOTModal";
 import { OT_METHOD_LABELS, OT_TYPE_LABELS } from "@/types/enum/enumLabel";
 import { useUser } from "@clerk/nextjs";
 import { deleteOTField } from "@/app/action/deleteOTField";
+import { useTranslations } from "next-intl";
 
 export default function OTTab() {
   const [open, setOpen] = useState(false);
@@ -28,13 +29,13 @@ export default function OTTab() {
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const t = useTranslations("overtime");
 
   const addHandler = () => {
     setSelectedField(null);
     setOpen(true);
   };
-  if (!shopId || !user?.id) return <p>loading</p>;
-  const { data, isLoading, isSuccess } = useOTFields(shopId);
+  const { data, isLoading, isSuccess } = useOTFields(shopId || -1);
 
   const handleDelete = async () => {
     try {
@@ -52,10 +53,9 @@ export default function OTTab() {
     <>
       <div className="-mt-4">
         <AddEditOTModal open={open} setOpen={setOpen} field={selectedField} />
-        <h1 className="font-medium text-3xl">Overtimes</h1>
+        <h1 className="font-medium text-3xl">{t("label")}</h1>
         <p className="opacity-70 font-normal text-xs mt-1">
-          Configure employee OT components here. The values entered will be
-          automatically summed up in the payroll calculation.
+          {t("description")}
         </p>
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
@@ -64,7 +64,7 @@ export default function OTTab() {
               variant="plain"
               onClick={handleDelete}
             >
-              <p className="underline font-medium">delete</p>
+              <p className="underline font-medium">{t("actions.delete")}</p>
             </Button>
           </div>
           <TableWithCheckBox
@@ -75,24 +75,24 @@ export default function OTTab() {
             setSelectedItem={setSelectedField}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Thai Label" },
-              { key: "nameEng", label: "English Label" },
+              { key: "name", label: t("fields.name") },
+              { key: "nameEng", label: t("fields.name_eng") },
               {
                 key: "type",
-                label: "Type",
-                render: (row: OtField) => OT_TYPE_LABELS[row.type],
+                label: t("fields.type"),
+                render: (row: OtField) => t(`type.${row.type.toLowerCase()}`),
               },
               {
                 key: "method",
-                label: "Method",
-                render: (row: OtField) => OT_METHOD_LABELS[row.method],
+                label: t("fields.method"),
+                render: (row: OtField) => t(`method.${row.method.toLowerCase()}`),
               },
-              { key: "rate", label: "OT Rate" },
+              { key: "rate", label: t("fields.rate") },
             ]}
           />
         </div>
         <div className="mt-2">
-          <Button onClick={addHandler}>Add New Overtime</Button>
+          <Button onClick={addHandler}>{t("actions.create")}</Button>
         </div>
       </div>
     </>

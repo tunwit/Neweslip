@@ -16,6 +16,7 @@ import QRCode from "qrcode";
 import { showError } from "@/utils/showSnackbar";
 import { isOwner } from "@/lib/isOwner";
 import { getUserByEmail } from "@/app/action/getUserByEmail";
+import { useTranslations } from "next-intl";
 
 interface InvitationModalProps {
   open: boolean;
@@ -34,6 +35,7 @@ export default function InvitationModal({
   const [error, setError] = useState("");
   const canvas = useRef(null);
   const user = useUser();
+  const t = useTranslations("owners");
 
   const generateHandler = async () => {
     if (!shopId || !user.user) return;
@@ -46,7 +48,7 @@ export default function InvitationModal({
       const alreadyOwn = await isOwner(shopId, userByEmail[0]?.id);
 
       if (alreadyOwn) {
-        setError("This user is already own this shop");
+        setError(t("modal.invitation.user_already_own"));
         return;
       }
       const invitation = await createInvitation(
@@ -93,13 +95,13 @@ export default function InvitationModal({
       <ModalDialog sx={{ background: "#fafafa" }}>
         <ModalClose />
         <section className="border-b pb-3 border-gray-400">
-          <h1 className="font-bold text-xl">Invitation</h1>
-          <p className="opacity-60">Invite new owner to this shop</p>
+          <h1 className="font-bold text-xl">{t("invitation.label")}</h1>
+          <p className="opacity-60">{t("invitation.description")}</p>
         </section>
 
         <section>
           <FormControl>
-            <FormLabel>Email</FormLabel>
+            <FormLabel>{t("fields.email")}</FormLabel>
             <Input
               placeholder="example@gmail.com"
               onChange={(e) => {
@@ -112,7 +114,7 @@ export default function InvitationModal({
                   onClick={generateHandler}
                   size="sm"
                 >
-                  generate
+                  {t("actions.generate")}
                 </Button>
               }
             />
@@ -129,7 +131,7 @@ export default function InvitationModal({
               />
             </div>
 
-            <FormLabel>Invitaion Link</FormLabel>
+            <FormLabel>{t("info.invite_link")}</FormLabel>
             <div className="flex flex-row gap-2">
               <Input placeholder="example@gmail.com" value={invitaionUrl} />
               <Button
@@ -147,7 +149,7 @@ export default function InvitationModal({
                 onClick={copyHandler}
                 size="sm"
               >
-                copy
+                {t("info.copy")}
               </Button>
             </div>
           </FormControl>

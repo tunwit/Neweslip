@@ -55,7 +55,7 @@ export function formatModifiedTime(
     minute: "2-digit",
   });
 
-  if (isYesterday) return t("yesterdayAt", { count: time });
+  if (isYesterday) return t("yesterdayAt", { time: time });
 
   return new Intl.DateTimeFormat("th-TH", {
     year: "numeric",
