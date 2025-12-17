@@ -21,7 +21,7 @@ export default function Profilesetting() {
             H
           </Avatar>
         </div>
-        <p className="font-semibold">Haris premium buffet</p>
+        <p className="font-semibold">{name}</p>
         <div className="w-full">
           <OverviewForm shopData={data?.data} />
         </div>

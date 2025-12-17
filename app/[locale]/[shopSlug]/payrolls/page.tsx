@@ -35,6 +35,7 @@ export default function Home() {
   const { id } = useCurrentShop();
   const { user } = useUser();
   const [creatingPeriod, setCreatingPeriod] = useState(false);
+  const {name} = useCurrentShop()
 
   const pathname = usePathname();
   const { data, isLoading } = usePayrollPeriods(id || -1);
@@ -84,7 +85,7 @@ export default function Home() {
       <section className="px-10 pb-5 bg-white w-full border-b border-gray-200">
         <div className=" flex flex-row text-[#424242] text-xs pt-10 ">
           <p>
-            Haris {">"} {tb("dashboard")} {">"} &nbsp;
+            {name} {">"} {tb("dashboard")} {">"} &nbsp;
           </p>
           <p className="text-blue-800">{tb("payrolls")}</p>
         </div>

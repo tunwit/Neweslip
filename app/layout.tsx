@@ -21,16 +21,14 @@ const propmt = Prompt({
 
 export default async function RootLayout({
   children,
-  params: { locale },
 }: Readonly<{
   children: React.ReactNode;
-  params: { locale: string };
 }>) {
   return (
     <ClerkProvider>
-      <html lang={locale} className={`${propmt.variable} antialiased`}>
+      <html lang={"th"} className={`${propmt.variable} antialiased`}>
         <body className={`${propmt.className} antialiased flex`}>
-          <NextIntlClientProvider locale={locale}>
+          <NextIntlClientProvider locale={"th"}>
             <Providers>
               <Suspense>
                 <div className="flex flex-col min-h-screen">

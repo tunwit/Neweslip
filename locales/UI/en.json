@@ -125,7 +125,8 @@
     "actions": {
       "create": "Add employee",
       "delete": "Delete employee",
-      "close": "Close"
+      "close": "Close",
+      "save": "Save"
     },
     "search": {
       "label": "Search employees",
@@ -395,7 +396,7 @@
       "penalties": "Penalties",
       "earning": "Earnings",
       "displayonly": "Display only",
-      "total":"Total",
+      "total": "Total",
       "total_base_salary": "Total base salary",
       "total_earning": "Total earnings",
       "total_deduction": "Total deductions",

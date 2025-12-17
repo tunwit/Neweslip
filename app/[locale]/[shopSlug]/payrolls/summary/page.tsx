@@ -31,6 +31,7 @@ import {
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { useTranslations } from "next-intl";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
@@ -40,6 +41,8 @@ export default function Home() {
   const [debouced] = useDebounce(query, 500);
   const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
   const [showFilter, setShowFilter] = useState(false);
+  const { name } = useCurrentShop();
+
   const {
     data: periodData,
     isLoading: loadingPeriod,
@@ -147,7 +150,7 @@ export default function Home() {
           <div className=" flex flex-row text-[#424242] text-xs mt-10">
             <p>
               {" "}
-              Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+              {name} {">"} {tBreadcrumb("dashboard")} {">"}{" "}
               {tBreadcrumb("payrolls")} {">"}&nbsp;
             </p>
             <p className="text-blue-800">{tBreadcrumb("summary_payroll")}</p>

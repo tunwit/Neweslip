@@ -100,7 +100,7 @@ export default function TableWithCheckBox<T extends { id: number | string }>({
 
             {isSuccess && !data?.length && (
               <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer">
-                <td colSpan={columns.length + (editColumn ? 2 : 1)}>No Data</td>
+                <td colSpan={columns.length + (editColumn ? 2 : 1)} className="text-center">No Data</td>
               </tr>
             )}
 

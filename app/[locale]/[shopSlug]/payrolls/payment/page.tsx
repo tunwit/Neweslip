@@ -38,6 +38,7 @@ import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
 import PaymentCard from "@/app/components/Payrolls/payment/PaymentCard";
 import { useTranslations } from "next-intl";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -53,7 +54,8 @@ export default function Home() {
   const tp = useTranslations("payment_payroll");
   const tBreadcrumb = useTranslations("breadcrumb");
   const [hideHeader, setHideHeader] = useState(false);
-
+  const { name } = useCurrentShop();
+  
   const {
     data: periodData,
     isLoading: loadingPeriod,
@@ -94,7 +96,6 @@ export default function Home() {
     );
   }, [summaryData?.data?.records, debouced]);
 
-
   const isLoading = loadingPeriod || loadingSummary;
 
   let loadingMessage = "Preparing...";
@@ -131,7 +132,7 @@ export default function Home() {
               <div className="flex flex-row text-[#424242] text-xs pt-10">
                 <p>
                   {" "}
-                  Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+                  {name} {">"} {tBreadcrumb("dashboard")} {">"}{" "}
                   {tBreadcrumb("payrolls")} {">"}&nbsp;
                 </p>
                 <p className="text-blue-800">
@@ -164,7 +165,7 @@ export default function Home() {
                       </p>
                       <p className="text-xl font-bold text-blue-900 mt-1">
                         {tPeriod(
-                          `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status ?? "draft"]?.toLowerCase()}`,
+                          `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status ?? PAY_PERIOD_STATUS.DRAFT]?.toLowerCase()}`,
                         )}
                       </p>
                     </div>

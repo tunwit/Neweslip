@@ -86,8 +86,8 @@ export default function Document() {
         exact: false,
       });
       showSuccess(t("modal.delete.success"));
-    } catch (err) {
-      showError(t("modal.delete.fail"), { err: err.message });
+    } catch (err:any) {
+      showError(t("modal.delete.fail", { err: err?.message }));
     }
   };
   return (

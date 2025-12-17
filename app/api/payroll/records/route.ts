@@ -55,17 +55,15 @@ export async function GET(request: NextRequest) {
         periodId: payrollRecordsTable.payrollPeriodId,
         updatedAt: payrollRecordsTable.updatedAt,
         createdAt: payrollRecordsTable.createdAt,
-        baseSalry: payrollRecordsTable.salary,
-        employee: {
-          id: employeesTable.id,
-          firstName: employeesTable.firstName,
-          lastName: employeesTable.lastName,
-          nickName: employeesTable.nickName,
-          branch: {
-            name: branchesTable.name,
-            nameEng: branchesTable.nameEng,
-          },
-        },
+        baseSalary: payrollRecordsTable.salary,
+
+        employeeId: employeesTable.id,
+        firstName: employeesTable.firstName,
+        lastName: employeesTable.lastName,
+        nickName: employeesTable.nickName,
+
+        branchName: branchesTable.name,
+        branchNameEng: branchesTable.nameEng,
       })
       .from(payrollRecordsTable)
       .innerJoin(
@@ -74,10 +72,29 @@ export async function GET(request: NextRequest) {
       )
       .innerJoin(branchesTable, eq(branchesTable.id, employeesTable.branchId))
       .where(eq(payrollRecordsTable.payrollPeriodId, Number(periodId)));
+
+    const formatted = data.map((r) => ({
+      id: r.id,
+      periodId: r.periodId,
+      updatedAt: r.updatedAt,
+      createdAt: r.createdAt,
+      baseSalary: r.baseSalary,
+      employee: {
+        id: r.employeeId,
+        firstName: r.firstName,
+        lastName: r.lastName,
+        nickName: r.nickName,
+        branch: {
+          name: r.branchName,
+          nameEng: r.branchNameEng,
+        },
+      },
+    }));
+
     let total = 0;
 
     const dataWithNet = await Promise.all(
-      data.map(async (r) => {
+      formatted.map(async (r) => {
         const { totals } = await calculateTotalSalary(r.id);
         return {
           ...r,

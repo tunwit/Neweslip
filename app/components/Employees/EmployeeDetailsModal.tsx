@@ -162,7 +162,7 @@ export default function EmployeeDetailsModal({
                 size="sm"
                 variant="outlined"
               >
-                Save
+                {t("actions.save")}
               </Button>
             </div>
           </div>

@@ -9,15 +9,18 @@ import PendingElement from "@/app/components/Payrolls/PendingElement";
 import dayjs from "dayjs";
 import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
 
 export default function Home() {
+  const { name } = useCurrentShop();
+
   return (
     <main className="min-h-screen w-full bg-white font-medium">
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
             {" "}
-            Haris {">"} Dashboard {">"}&nbsp;
+            {name} {">"} Dashboard {">"}&nbsp;
           </p>
           <p className="text-blue-800">Records</p>
         </div>
@@ -25,9 +28,7 @@ export default function Home() {
           <p className="text-black text-4xl font-bold">Records</p>
         </div>
 
-        <div>
-            card
-        </div>
+        <div>card</div>
 
         <div className="mt-8 flex flex-row gap-2">
           <div className="w-[60%]">
@@ -71,8 +72,6 @@ export default function Home() {
             </Select>
           </div>
         </div>
-
-        
       </div>
     </main>
   );

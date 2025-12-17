@@ -9,7 +9,7 @@ import React from "react";
 
 export default function Navbar() {
   const sidebarState = useHamburger((state) => state.toggle);
-  const {session} = useSession();
+  const { session } = useSession();
   return (
     <nav className="flex justify-between items-center gap-5 bg-[#1f1f1f] h-20 w-full px-4">
       <div className="flex items-center gap-5">
@@ -19,9 +19,10 @@ export default function Navbar() {
 
         <span className="text-white text-xl font-semibold">E-slip</span>
       </div>
-
-      <UserButton/>
-      <LangaugeSelector/>
+      <div className="flex gap-5">
+        <UserButton />
+        <LangaugeSelector />
+      </div>
     </nav>
   );
 }

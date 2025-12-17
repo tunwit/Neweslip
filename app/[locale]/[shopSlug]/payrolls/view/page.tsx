@@ -42,6 +42,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UnlockModal from "@/app/components/Payrolls/view/UnlockModal";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useTranslations } from "next-intl";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -66,6 +67,7 @@ export default function Home() {
   const tBreadcrumb = useTranslations("breadcrumb");
   const pathname = usePathname();
   const router = useRouter();
+  const { name } = useCurrentShop();
 
   const { data: summaryData, isLoading: loadingSummary } =
     usePayrollPeriodSummary(Number(periodId));
@@ -216,7 +218,7 @@ export default function Home() {
                 <div className="flex flex-row text-[#424242] text-xs mt-10">
                   <p>
                     {" "}
-                    Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+                    {name} {">"} {tBreadcrumb("dashboard")} {">"}{" "}
                     {tBreadcrumb("payrolls")} {">"}&nbsp;
                   </p>
                   <p className="text-blue-800">{tBreadcrumb("view_payroll")}</p>

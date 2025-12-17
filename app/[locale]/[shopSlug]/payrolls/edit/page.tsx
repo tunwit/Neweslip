@@ -39,6 +39,7 @@ import { usePeriodFields } from "@/hooks/usePeriodFields";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { useTranslations } from "next-intl";
+import { useCurrentShop } from "@/hooks/useCurrentShop";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -48,6 +49,7 @@ export default function Home() {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const { name } = useCurrentShop();
 
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
@@ -227,7 +229,7 @@ export default function Home() {
           <div className="flex flex-row text-[#424242] text-xs mt-10">
             <p>
               {" "}
-              Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
+              {name} {">"} Dashboard {">"} Payrolls {">"}&nbsp;
             </p>
             <p className="text-blue-800">Edit Payrolls</p>
           </div>
