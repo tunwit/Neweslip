@@ -91,7 +91,7 @@ export default function PeriodEmployeeTable({
                   {t("fields.deduction")}
                 </th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
-                 {t("fields.total")}
+                 {t("fields.net")}
                 </th>
                 <th className="font-light text-sm w-[6%]"></th>
               </tr>

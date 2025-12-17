@@ -32,14 +32,7 @@ import { useDebounce } from "use-debounce";
 import { Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { type DateRange } from "react-day-picker";
-import { Calendar } from "@/components/ui/calendar";
-import { updatePayrollRecord } from "@/app/action/updatePayrollRecord";
-import { updatePayrollPeriod } from "@/app/action/updatePayrollPeriod";
-import { ClickAwayListener } from "@mui/material";
-import { usePeriodFields } from "@/hooks/usePeriodFields";
+import { motion, AnimatePresence } from "framer-motion";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
@@ -59,6 +52,7 @@ export default function Home() {
   const tPeriod = useTranslations("period");
   const tp = useTranslations("payment_payroll");
   const tBreadcrumb = useTranslations("breadcrumb");
+  const [hideHeader, setHideHeader] = useState(false);
 
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
@@ -115,117 +109,150 @@ export default function Home() {
           </div>
         </ModalDialog>
       </Modal>
-
-      <div className="flex flex-1 flex-col h-full gap-5 items-center overflow-y-scroll">
-        <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
-          <div className="flex flex-row text-[#424242] text-xs mt-10">
-            <p>
-              {" "}
-              Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
-              {tBreadcrumb("payrolls")} {">"}&nbsp;
-            </p>
-            <p className="text-blue-800">{tBreadcrumb("payment_payroll")} </p>
-          </div>
-          <div className="mt-3 flex flex-row justify-between items-center  text-black text-4xl font-bold">
-            <p>{periodData?.data?.name}</p>
-            <Button
-              sx={{ height: 40 }}
-              startDecorator={
-                <Icon icon="lets-icons:back-light" fontSize={20} />
-              }
-              color="neutral"
-              variant="outlined"
-              onClick={() => {
-                router.back();
-              }}
-            >
-              {tp("actions.back")}
-            </Button>
-          </div>
-
-          <section className="grid grid-cols-4 gap-4 mt-5">
-            <div className="bg-blue-50 from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-blue-700 font-medium">
-                    {tPeriod("fields.status")}
-                  </p>
-                  <p className="text-xl font-bold text-blue-900 mt-1">
-                    {tPeriod(
-                      `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]?.toLowerCase()}`,
-                    )}
-                  </p>
-                </div>
-                <div className="bg-blue-200 p-2 rounded-lg">
-                  <Icon
-                    icon={"mdi:clock-outline"}
-                    className="text-blue-700"
-                    fontSize={20}
-                  />
-                </div>
+      <AnimatePresence initial={false}>
+        {!hideHeader && (
+          <motion.div
+            key="header"
+            initial={{ height: 0, opacity: 0, y: -20 }}
+            animate={{ height: "auto", opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: -20 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="overflow-hidden relative"
+          >
+            <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
+              <div className="flex flex-row text-[#424242] text-xs pt-10">
+                <p>
+                  {" "}
+                  Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+                  {tBreadcrumb("payrolls")} {">"}&nbsp;
+                </p>
+                <p className="text-blue-800">
+                  {tBreadcrumb("payment_payroll")}{" "}
+                </p>
               </div>
-            </div>
-
-            <div className="bg-purple-50 from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-purple-700 font-medium">
-                    {tPeriod("fields.employees")}
-                  </p>
-                  <p className="text-xl font-bold text-purple-900 mt-1">
-                    {periodData?.data?.employeeCount}
-                  </p>
-                </div>
-                <div className="bg-purple-200 p-2 rounded-lg">
-                  <UsersIcon className="text-purple-700 text-xl" />
-                </div>
+              <div className="mt-3 flex flex-row justify-between items-center  text-black text-4xl font-bold">
+                <p>{periodData?.data?.name}</p>
+                <Button
+                  sx={{ height: 40 }}
+                  startDecorator={
+                    <Icon icon="lets-icons:back-light" fontSize={20} />
+                  }
+                  color="neutral"
+                  variant="outlined"
+                  onClick={() => {
+                    router.back();
+                  }}
+                >
+                  {tp("actions.back")}
+                </Button>
               </div>
-            </div>
 
-            <div className="bg-green-50 from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-700 font-medium">
-                    {tPeriod("fields.grand_total")}
-                  </p>
-                  <p className="text-xl font-bold text-green-900 mt-1">
-                    {moneyFormat(periodData?.data?.totalNet || 0)}
-                  </p>
+              <section className="grid grid-cols-4 gap-4 mt-5">
+                <div className="bg-blue-50 from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-blue-700 font-medium">
+                        {tPeriod("fields.status")}
+                      </p>
+                      <p className="text-xl font-bold text-blue-900 mt-1">
+                        {tPeriod(
+                          `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]?.toLowerCase()}`,
+                        )}
+                      </p>
+                    </div>
+                    <div className="bg-blue-200 p-2 rounded-lg">
+                      <Icon
+                        icon={"mdi:clock-outline"}
+                        className="text-blue-700"
+                        fontSize={20}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-green-200 p-2 rounded-lg">
-                  <Icon
-                    icon="tabler:currency-baht"
-                    className="text-green-700 text-xl"
-                    fontSize={20}
-                  />
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-orange-700 font-medium">
-                    {tPeriod("fields.period")}
-                  </p>
-                  <p className="text-xl font-bold text-orange-900 mt-1">
-                    {dateFormat(new Date(periodData?.data?.start_period || 0))}{" "}
-                    {" - "}
-                    {dateFormat(new Date(periodData?.data?.end_period || 0))}
-                  </p>
+                <div className="bg-purple-50 from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-purple-700 font-medium">
+                        {tPeriod("fields.employees")}
+                      </p>
+                      <p className="text-xl font-bold text-purple-900 mt-1">
+                        {periodData?.data?.employeeCount}
+                      </p>
+                    </div>
+                    <div className="bg-purple-200 p-2 rounded-lg">
+                      <UsersIcon className="text-purple-700 text-xl" />
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-orange-200 p-2 rounded-lg">
-                  <Icon
-                    icon="solar:calendar-outline"
-                    className="text-orange-700 text-xl"
-                    fontSize={20}
-                  />
+
+                <div className="bg-green-50 from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-green-700 font-medium">
+                        {tPeriod("fields.grand_total")}
+                      </p>
+                      <p className="text-xl font-bold text-green-900 mt-1">
+                        {moneyFormat(periodData?.data?.totalNet || 0)}
+                      </p>
+                    </div>
+                    <div className="bg-green-200 p-2 rounded-lg">
+                      <Icon
+                        icon="tabler:currency-baht"
+                        className="text-green-700 text-xl"
+                        fontSize={20}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </section>
-        </section>
-        <div className="w-fit">
+
+                <div className="bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-orange-700 font-medium">
+                        {tPeriod("fields.period")}
+                      </p>
+                      <p className="text-xl font-bold text-orange-900 mt-1">
+                        {dateFormat(
+                          new Date(periodData?.data?.start_period || 0),
+                        )}{" "}
+                        {" - "}
+                        {dateFormat(
+                          new Date(periodData?.data?.end_period || 0),
+                        )}
+                      </p>
+                    </div>
+                    <div className="bg-orange-200 p-2 rounded-lg">
+                      <Icon
+                        icon="solar:calendar-outline"
+                        className="text-orange-700 text-xl"
+                        fontSize={20}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <button
+                className="flex w-full items-center justify-center mt-4"
+                onClick={() => setHideHeader(!hideHeader)}
+              >
+                <Icon icon="icon-park-outline:up" fontSize={20} />
+              </button>
+            </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <div className="flex  flex-col h-full gap-5 items-center overflow-y-scroll">
+        <div hidden={!hideHeader} className={` py-3 sticky top-0`}>
+          <button
+            className={`flex w-full items-center justify-center rotate-180  transition-all `}
+            onClick={() => setHideHeader(!hideHeader)}
+          >
+            <Icon icon="icon-park-outline:up" fontSize={20} />
+          </button>
+        </div>
+        <div className={`w-fit ${!hideHeader && "mt-4"}`}>
           <section className="flex w-full justify-center items-center ">
             <div className="flex gap-5 flex-col lg:flex-row w-full">
               <button

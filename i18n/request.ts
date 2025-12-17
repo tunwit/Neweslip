@@ -11,6 +11,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: (await import(`@/locales/UI/th.json`)).default,
+    messages: (await import(`@/locales/UI/${locale}.json`)).default,
   };
 });

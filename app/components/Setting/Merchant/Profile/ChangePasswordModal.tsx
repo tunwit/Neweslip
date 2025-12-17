@@ -7,6 +7,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
+import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import z from "zod";
@@ -24,6 +25,7 @@ export default function ChangePasswordModal({
   const methods = useZodForm(changePasswordSchema);
   const { id } = useCurrentShop();
   const { user } = useUser();
+  const t = useTranslations("shops");
   const {
     control,
     handleSubmit,
@@ -46,17 +48,17 @@ export default function ChangePasswordModal({
         user.id,
       );
       if (result.code === 401) {
-        setError("Password Incorrect");
+        setError(t("modal.change_password.incorrect"));
         return;
       }
       if (result.code === 404) {
-        setError("Password Not Set");
+        setError(t("modal.change_password.password_not_set"));
         return;
       }
-      showSuccess("Password Changed");
+      showSuccess(t("modal.change_password.success"));
       setOpen(false);
-    } catch (err) {
-      showError(`Cannot change password ${err}`);
+    } catch (err: any) {
+      showError(t("modal.change_password.fail", { err: err.message }));
     }
   };
   return (
@@ -65,9 +67,9 @@ export default function ChangePasswordModal({
         <ModalDialog>
           <ModalClose />
           <div>
-            <h1>Change password</h1>
+            <h1>{t("change_password.label")}</h1>
             <p className="text-sm font-light text-gray-700">
-              This password is used when unlock payroll
+              {t("change_password.description")}
             </p>
 
             <FormProvider {...methods}>
@@ -80,17 +82,17 @@ export default function ChangePasswordModal({
                 <InputForm
                   control={control}
                   name="oldpassword"
-                  label="Old Password"
+                  label={t("change_password.fields.old_password")}
                 />
                 <InputForm
                   control={control}
                   name="newpassword"
-                  label="New Password"
+                  label={t("change_password.fields.new_password")}
                 />
                 <InputForm
                   control={control}
                   name="confirmpassword"
-                  label="Confirm Password"
+                  label={t("change_password.fields.confirm_password")}
                 />
                 <p hidden={!err} className="text-red-800 text-xs -mt-2">
                   {err}
@@ -101,7 +103,7 @@ export default function ChangePasswordModal({
                   type="submit"
                   sx={{ width: "100%" }}
                 >
-                  Change
+                  {t("actions.change_password")}
                 </Button>
               </form>
             </FormProvider>

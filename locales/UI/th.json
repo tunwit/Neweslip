@@ -90,16 +90,31 @@
       "work_day_per_month": "วันทำงาน / เดือน",
       "email_name": "ชื่ออีเมล",
       "email_address": "ที่อยู่อีเมล",
-      "email_passkey": "รหัสอีเมลล์ (passkey)"
+      "email_passkey": "รหัสอีเมล (passkey)"
     },
     "actions": {
       "save": "บันทึก",
       "change_password": "เปลี่ยนรหัสผ่าน"
     },
+    "change_password":{
+      "label":"เปลี่ยนรหัสผ่าน",
+      "description":"รหัสผ่านนี้ใช้ในการเปิดรอบเงินเดือน",
+      "fields":{
+        "old_password":"รหัสผ่านเดิม",
+        "new_password":"รหัสผ่านใหม่",
+        "confirm_password":"ยืนยันรหัสผ่าน"
+      }
+    },
     "modal": {
       "save": {
         "success": "บันทึกข้อมูลสำเร็จ",
         "fail": "บันทึกข้อมูลไม่สำเร็จ {err}"
+      },
+      "change_password":{
+        "incorrect":"รหัสผ่านไม่ถูกต้อง",
+        "password_not_set":"รหัสผ่านไม่ถูกต้อง",
+        "fail":"เปลี่ยนรหัสไม่สำเร็จ {err}",
+        "success":"เปลี่ยนรหัสผ่านสำเร็จ"
       }
     }
   },
