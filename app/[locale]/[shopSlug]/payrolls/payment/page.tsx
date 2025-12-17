@@ -44,6 +44,7 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
 import PaymentCard from "@/app/components/Payrolls/payment/PaymentCard";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -55,6 +56,9 @@ export default function Home() {
   const [debouced] = useDebounce(query, 500);
   const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
   const pathname = usePathname();
+  const tPeriod = useTranslations("period");
+  const tp = useTranslations("payment_payroll");
+  const tBreadcrumb = useTranslations("breadcrumb");
 
   const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
     Number(periodId),
@@ -117,9 +121,10 @@ export default function Home() {
           <div className="flex flex-row text-[#424242] text-xs mt-10">
             <p>
               {" "}
-              Haris {">"} Dashboard {">"} Payrolls {">"}&nbsp;
+              Haris {">"} {tBreadcrumb("dashboard")} {">"}{" "}
+              {tBreadcrumb("payrolls")} {">"}&nbsp;
             </p>
-            <p className="text-blue-800">Payment</p>
+            <p className="text-blue-800">{tBreadcrumb("payment_payroll")} </p>
           </div>
           <div className="mt-3 flex flex-row justify-between items-center  text-black text-4xl font-bold">
             <p>{periodData?.data?.name}</p>
@@ -134,7 +139,7 @@ export default function Home() {
                 router.back();
               }}
             >
-              Back
+              {tp("actions.back")}
             </Button>
           </div>
 
@@ -142,9 +147,13 @@ export default function Home() {
             <div className="bg-blue-50 from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-blue-700 font-medium">Status</p>
+                  <p className="text-sm text-blue-700 font-medium">
+                    {tPeriod("fields.status")}
+                  </p>
                   <p className="text-xl font-bold text-blue-900 mt-1">
-                    {PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]}
+                    {tPeriod(
+                      `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]?.toLowerCase()}`,
+                    )}
                   </p>
                 </div>
                 <div className="bg-blue-200 p-2 rounded-lg">
@@ -161,7 +170,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-700 font-medium">
-                    Employee
+                    {tPeriod("fields.employees")}
                   </p>
                   <p className="text-xl font-bold text-purple-900 mt-1">
                     {periodData?.data?.employeeCount}
@@ -177,7 +186,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-green-700 font-medium">
-                    Total Amount
+                    {tPeriod("fields.grand_total")}
                   </p>
                   <p className="text-xl font-bold text-green-900 mt-1">
                     {moneyFormat(periodData?.data?.totalNet || 0)}
@@ -193,10 +202,12 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+            <div className="bg-orange-50 from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-orange-700 font-medium">Period</p>
+                  <p className="text-sm text-orange-700 font-medium">
+                    {tPeriod("fields.period")}
+                  </p>
                   <p className="text-xl font-bold text-orange-900 mt-1">
                     {dateFormat(new Date(periodData?.data?.start_period || 0))}{" "}
                     {" - "}
@@ -219,7 +230,7 @@ export default function Home() {
             <div className="flex gap-5 flex-col lg:flex-row w-full">
               <button
                 onClick={() => setSelectedTab("manual")}
-                className={`p-6 rounded-xl border-2 transition-all ${
+                className={`p-6 rounded-xl border-2 transition-all w-[50%] ${
                   selectedTab === "manual"
                     ? "border-blue-500 bg-blue-50 shadow-md"
                     : "border-gray-200 bg-white hover:border-gray-300"
@@ -237,17 +248,17 @@ export default function Home() {
                   </div>
                   <div className="text-left flex-1">
                     <h3 className="font-semibold text-lg text-gray-900">
-                      Manual Transfer
+                      {tp("tabs.manual.label")}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      View employee bank details and PromptPay QR codes
+                      {tp("tabs.manual.description")}
                     </p>
                     <div className="flex gap-2 mt-3">
                       <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                        Bank Transfer
+                        {tp("tabs.manual.chips.bank_transfer")}
                       </span>
                       <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
-                        PromptPay
+                        {tp("tabs.manual.chips.promptpay")}
                       </span>
                     </div>
                   </div>
@@ -256,7 +267,7 @@ export default function Home() {
 
               <button
                 onClick={() => setSelectedTab("file")}
-                className={`p-6 rounded-xl border-2 transition-all ${
+                className={`p-6 rounded-xl border-2 transition-all w-[50%] ${
                   selectedTab === "file"
                     ? "border-green-500 bg-green-50 shadow-md"
                     : "border-gray-200 bg-white hover:border-gray-300"
@@ -274,17 +285,17 @@ export default function Home() {
                   </div>
                   <div className="text-left flex-1">
                     <h3 className="font-semibold text-lg text-gray-900">
-                      Manual Transfer
+                      {tp("tabs.generate.label")}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      View employee bank details and PromptPay QR codes
+                      {tp("tabs.generate.description")}
                     </p>
                     <div className="flex gap-2 mt-3">
                       <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
-                        Bank Transfer
+                        {tp("tabs.generate.chips.text_file")}
                       </span>
                       <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
-                        PromptPay
+                        {tp("tabs.generate.chips.web")}
                       </span>
                     </div>
                   </div>
@@ -304,7 +315,7 @@ export default function Home() {
                       />
                       <input
                         type="text"
-                        placeholder="Search name, branch"
+                        placeholder={tPeriod("search.placeholder")}
                         className="text-[#424242] font-light text-sm  w-full h-full  focus:outline-none "
                         onChange={(e) => setQuery(e.target.value)}
                       />
@@ -316,7 +327,9 @@ export default function Home() {
                   >
                     <span className="flex items-center gap-1">
                       <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
-                      <p className="font-light text-sm">Filters</p>
+                      <p className="font-light text-sm">
+                        {tPeriod("filters.label")}
+                      </p>
                     </span>
                   </button>
                 </div>

@@ -4,9 +4,10 @@ import Profilesetting from "./Merchant/Profile/Profilesetting";
 import OwnersTable from "./Merchant/Owners/OwnersTable";
 import BranchesTab from "./Merchant/Branches/BranchesTab";
 import EmailsTab from "./Merchant/Emails/EmailsTab";
+import { useTranslations } from "next-intl";
 
 export default function MerchantTabs() {
-  
+  const t = useTranslations("setting.tabs.merchant")
   return (
     <>
       <Tabs aria-label="Basic tabs" defaultValue={0} orientation="vertical">
@@ -24,10 +25,10 @@ export default function MerchantTabs() {
             },
           }}
         >
-          <Tab>Overview</Tab>
-          <Tab>Branches</Tab>
-          <Tab>Owners</Tab>
-          <Tab>Email Service</Tab>
+          <Tab>{t("tabs.overview.label")}</Tab>
+          <Tab>{t("tabs.branches.label")}</Tab>
+          <Tab>{t("tabs.owners.label")}</Tab>
+          <Tab>{t("tabs.email_service.label")}</Tab>
         </TabList>
         <TabPanel value={0}>
           <Profilesetting/>

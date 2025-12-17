@@ -2,6 +2,9 @@
   "common": {
     "selected": "{count} ถูกเลือก",
     "select_all": "เลือกทั้งหมด ( {count} )",
+    "load": {
+      "preparing": "กำลังเตรียมพร้อม"
+    },
     "filters": {
       "all": "ทั้งหมด"
     },
@@ -15,6 +18,12 @@
       "minute": "{count} นาที"
     }
   },
+  "confirm_modal":{
+    "actions":{
+      "cancel":"ยกเลิก",
+      "confirm":"ยืนยัน"
+    }
+  },
   "navigation": {
     "dashboard": "ภาพรวม",
     "employees": "พนักงาน",
@@ -25,10 +34,13 @@
 
   "breadcrumb": {
     "dashboard": "ภาพรวม",
+    "configure": "แก้ไข",
+    "setting": "ตั้งค่า",
     "employees": "พนักงาน",
     "documents": "เอกสาร",
     "payrolls": "เงินเดือน",
     "summary_payroll": "สรุปเงินเดือน",
+    "payment_payroll": "จ่านเงินเดือน",
     "view_payroll": "ตรวจสอบ"
   },
 
@@ -92,6 +104,23 @@
         "parttime": "พาร์ทไทม์",
         "inactive": "ลาออก"
       }
+    }
+  },
+  "branches": {
+    "label":"สาขา",
+    "actions":{
+      "delete":"ลบ",
+      "create":"เพิ่มสาขา",
+      "update":"แก้ไข"
+    },
+    "delete":{
+      "label":"ลบสาขา",
+      "description":"การลบสาขา จะลบพนักงานทุกคนที่อยู่ในสาขานี้ออกทั้งหมด ดำเนินการต่อหรือไม่"
+    },
+    "fields": {
+      "name": "ชื่อ",
+      "name_eng": "ชื่อ (อังกฤษ)",
+      "address": "ที่อยู่"
     }
   },
   "new_employees": {
@@ -209,7 +238,7 @@
   "period": {
     "load": {
       "loading_payrolls": "กำลังโหลดเงินเดือน",
-      "loading_records": "คำนวนพนักงาน"
+      "loading_records": "คำนวนเงินเดือนพนักงาน"
     },
     "fields": {
       "status": "สถานะ",
@@ -483,6 +512,66 @@
           "wrong_password": "รหัสผ่านไม่ถูกต้อง",
           "fail": "ปลดล็อกรอบเงินไม่สำเร็จ {err}"
         }
+      }
+    }
+  },
+  "payment_payroll": {
+    "label": "จ่าย",
+    "actions": {
+      "back": "กลับ",
+      "view_details": "ดูรายละเอียด"
+    },
+    "tabs": {
+      "manual": {
+        "label": "จ่ายด้วยมือ",
+        "description": "แสดงข้อมูลธนาคารของพนักงงาน รวมถึงพร้อมเพย์ และ QR code",
+        "chips": {
+          "bank_transfer": "โอนธนาคาร",
+          "promptpay": "พร้อมเพย์"
+        },
+        "sections": {
+          "bank_transfer": "ข้อมูลธนาคาร",
+          "promptpay": "พร้้อมเพย์"
+        }
+      },
+      "generate": {
+        "label": "สร้างไฟล์",
+        "description": "สร้างไฟล์ text เพื่อใช้กับเว็บไซต์ของธนาคาร",
+        "chips": {
+          "text_file": "ไฟล์ text",
+          "web": "เว็บธนาคาร"
+        }
+      }
+    },
+    "info": {
+      "qr_not_available": "QR ไม่พร้อมใช้งาน"
+    }
+  },
+  "setting": {
+    "label": "การตั้งค่า",
+    "tabs": {
+      "merchant": {
+        "label": "ร้านค้า",
+        "tabs": {
+          "overview": {
+            "label": "ภาพรวม"
+          },
+          "branches": {
+            "label": "จัดการสาขา"
+          },
+          "owners": {
+            "label": "จัดการเจ้าของร้าน"
+          },
+          "email_service": {
+            "label": "ตั้งค่าอีเมล"
+          }
+        }
+      },
+      "salary": {
+        "label": "เงินเดือน"
+      },
+      "slip": {
+        "label": "สลิป"
       }
     }
   },

@@ -12,22 +12,27 @@ import { useRouter } from "next/navigation";
 import MerchantTabs from "@/app/components/Setting/MerchantTabs";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
 import SalaraTabs from "@/app/components/Setting/SalaraTabs";
+import { useTranslations } from "next-intl";
 
 export default function Page() {
   const rounter = useRouter();
-  const {name} = useCurrentShop()
+  const { name } = useCurrentShop();
+  const tBreadcrumb = useTranslations("breadcrumb");
+  const t = useTranslations("setting");
+
+
   return (
     <main className="w-full bg-white font-medium overflow-scroll">
       <title>Setting - E Slip</title>
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
           <p>
-            {name} {">"} Configure {">"}&nbsp;
+            {name} {">"} {tBreadcrumb("configure")} {">"}&nbsp;
           </p>
-          <p className="text-blue-800">Settings</p>
+          <p className="text-blue-800">{tBreadcrumb("setting")}</p>
         </div>
         <div className="my-5 flex flex-row justify-between">
-          <p className="text-black text-4xl font-bold">Settings</p>
+          <p className="text-black text-4xl font-bold">{t("label")}</p>
         </div>
 
         <Tabs aria-label="Basic tabs" defaultValue={0}>
@@ -45,9 +50,9 @@ export default function Page() {
               },
             }}
           >
-            <Tab>Merchant</Tab>
-            <Tab>Salary</Tab>
-            <Tab>Slip</Tab>
+            <Tab>{t("tabs.merchant.label")}</Tab>
+            <Tab>{t("tabs.salary.label")}</Tab>
+            <Tab>{t("tabs.slip.label")}</Tab>
           </TabList>
           <TabPanel value={0}>
             <MerchantTabs />

@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react/dist/iconify.js"
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy"
+import { useTranslations } from "next-intl"
 import { Dispatch, SetStateAction } from "react"
 
 interface ConfirmModalProps{
@@ -13,6 +14,7 @@ interface ConfirmModalProps{
 
 
 export default function ConfirmModal({title,description,open,setOpen,onCancel,onConfirm}:ConfirmModalProps) {
+    const t = useTranslations("confirm_modal")
     const handleCancel = async () => {
         if (onCancel) await onCancel()
         setOpen(false)
@@ -34,8 +36,8 @@ export default function ConfirmModal({title,description,open,setOpen,onCancel,on
                 <p className="text-lg mt-2 opacity-50 text-center px-3">{description}</p>
             </section>
             <section className="flex gap-3 w-full justify-center mt-2">
-                <Button sx={{width:"100%"}} variant="outlined" color="neutral" onClick={handleCancel}>Cancel</Button>
-                <Button sx={{width:"100%"}} color="danger" onClick={handleConfirm}>Confirm</Button>
+                <Button sx={{width:"100%"}} variant="outlined" color="neutral" onClick={handleCancel}>{t("actions.cancel")}</Button>
+                <Button sx={{width:"100%"}} color="danger" onClick={handleConfirm}>{t("actions.confirm")}</Button>
             </section>
         </ModalDialog>
     </Modal>)

@@ -14,6 +14,7 @@ import { isValidPromptPay } from "@/lib/isValidPromtpay";
 import { banks } from "@/utils/bankList";
 import Image from "next/image";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
+import { useTranslations } from "next-intl";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
@@ -22,6 +23,9 @@ interface SummaryCardProps {
 export default function PaymentCard({ record }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const te = useTranslations("employees");
+  const tr = useTranslations("record");
+  const tp = useTranslations("payment_payroll");
 
   const [copiedId, setCopiedId] = useState("");
 
@@ -63,7 +67,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
 
           <div className="grid grid-cols-[1fr_auto] gap-5 items-center">
             <div className="text-right">
-              <p className="text-xs text-gray-500 uppercase mb-1">Net Salary</p>
+              <p className="text-xs text-gray-500 uppercase mb-1">{tr("fields.net")}</p>
               <p className="text-xl font-semibold text-gray-900">
                 ฿ {moneyFormat(record.totals.net)}
               </p>
@@ -92,14 +96,14 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                     <div className="flex items-center gap-2 mb-3">
                       <Building2 className="w-5 h-5 text-blue-600" />
                       <h4 className="font-semibold text-gray-900">
-                        Bank Transfer Details
+                        {tp("tabs.manual.sections.bank_transfer")}
                       </h4>
                     </div>
 
                     <div className="bg-white rounded-lg p-4 space-y-3">
                       <div>
                         <label className="text-xs text-gray-600 uppercase tracking-wide">
-                          Bank Name
+                          {te("fields.bank")}
                         </label>
                         <div className="flex items-center gap-2 mt-1">
                           <Image
@@ -119,7 +123,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
 
                       <div>
                         <label className="text-xs text-gray-600 uppercase tracking-wide">
-                          Account Number
+                          {te("fields.bank_account_number")}
                         </label>
                         <div className="flex items-center justify-between mt-1">
                           <p className="font-mono font-medium text-gray-900">
@@ -148,7 +152,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
 
                       <div>
                         <label className="text-xs text-gray-600 uppercase tracking-wide">
-                          Account Name
+                          {te("fields.bank_account_owner")}
                         </label>
                         <p className="font-medium text-gray-900 mt-1">
                           {record.employee.bankAccountOwner}
@@ -157,7 +161,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
 
                       <div>
                         <label className="text-xs text-gray-600 uppercase tracking-wide">
-                          Amount
+                          {tr("fields.net")}
                         </label>
                         <div className="flex items-center justify-between mt-1">
                           <p className="font-mono font-semibold text-xl text-gray-900">
@@ -187,7 +191,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-3">
                       <QrCode className="w-5 h-5 text-purple-600" />
-                      <h4 className="font-semibold text-gray-900">PromptPay</h4>
+                      <h4 className="font-semibold text-gray-900">{tp("tabs.manual.sections.promptpay")}</h4>
                     </div>
 
                     <div className="bg-white rounded-lg p-4 space-y-3 ">
@@ -206,15 +210,12 @@ export default function PaymentCard({ record }: SummaryCardProps) {
 
                           <div>
                             <label className="text-xs text-gray-600 uppercase tracking-wide">
-                              PromptPay ID
+                              {te("fields.promtpay")}
                             </label>
                             <div className="flex items-center justify-between mt-1">
                               <div>
                                 <p className="font-mono font-medium text-gray-900">
                                   {record.employee.promtpay}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-0.5">
-                                  mobile
                                 </p>
                               </div>
                               <button
@@ -242,7 +243,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                             <div className="text-center px-4">
                               <QrCode className="w-16 h-16 text-gray-400 mx-auto mb-2" />
                               <p className="text-xs text-gray-500 font-medium">
-                                QR Code Not Available
+                               {tp("info.qr_not_available")}
                               </p>
                             </div>
                           </div>
@@ -261,7 +262,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                       fontSize={20}
                       className={`${showBreakdown ? "rotate-180" : ""}`}
                     />
-                    <p>details</p>
+                    <p>{tp("actions.view_details")}</p>
                   </button>
                 </section>
                 <section hidden={!showBreakdown} className="bg-white">

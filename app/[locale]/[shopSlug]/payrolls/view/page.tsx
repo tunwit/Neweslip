@@ -24,7 +24,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRecordDetails } from "@/hooks/useRecordDetails";
 import { useUser } from "@clerk/nextjs";
-import { dateTimeFormat, moneyFormat } from "@/utils/formmatter";
+import { dateFormat, dateTimeFormat, moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
@@ -62,6 +62,7 @@ export default function Home() {
   const periodId = useSearchParams().get("id");
   const tPeriod = useTranslations("period");
   const tv = useTranslations("view_payroll");
+  const tc = useTranslations("common");
   const tBreadcrumb = useTranslations("breadcrumb");
 
   const { data: summaryData, isLoading: loadingSummary } =
@@ -141,8 +142,8 @@ export default function Home() {
 
   const isLoading = loadingPeriod || !summaryData;
 
-  let loadingMessage = "Preparing...";
-  if (loadingPeriod) loadingMessage = "Loading Period...";
+  let loadingMessage = tc("load.preparing");
+  if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
 
   return (
     <main className="w-full bg-gray-100 font-medium ">
@@ -316,13 +317,13 @@ export default function Home() {
                           {tPeriod("fields.period")}
                         </p>
                         <p className="text-xl font-bold text-orange-900 mt-1">
-                          {new Date(
-                            periodData?.data?.start_period!,
-                          ).toDateString()}{" "}
-                          -{" "}
-                          {new Date(
-                            periodData?.data?.end_period!,
-                          ).toDateString()}
+                          {dateFormat(
+                            new Date(periodData?.data?.start_period || 0),
+                          )}{" "}
+                          {" - "}
+                          {dateFormat(
+                            new Date(periodData?.data?.end_period || 0),
+                          )}
                         </p>
                       </div>
                       <div className="bg-orange-200 p-2 rounded-lg">
@@ -528,7 +529,9 @@ export default function Home() {
                   >
                     <span className="flex items-center gap-1">
                       <Icon icon={"mdi:filter-outline"} fontSize={18} />{" "}
-                      <p className="font-light text-sm">{tPeriod("filters.label")}</p>
+                      <p className="font-light text-sm">
+                        {tPeriod("filters.label")}
+                      </p>
                     </span>
                   </button>
                 </div>

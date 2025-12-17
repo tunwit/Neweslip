@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import ConfirmModal from "@/widget/ConfirmModal";
+import { useTranslations } from "next-intl";
 
 export default function BranchesTab() {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ export default function BranchesTab() {
   };
 
   const { data, isLoading, isSuccess } = useBranch();
-
+  const t = useTranslations("branches")
   const handleDelete = async () => {
     try {
       if (!shopId) return;
@@ -50,8 +51,8 @@ export default function BranchesTab() {
     <>
       <div className="-mt-4">
         <ConfirmModal
-          title="Delete"
-          description={`This action will remove all employee within this branch\nAre you sure to continue?`}
+          title={t("delete.label")}
+          description={t("delete.description")}
           open={openConfirm}
           setOpen={() => setOpenConfirm(!openConfirm)}
           onConfirm={handleDelete}
@@ -59,7 +60,7 @@ export default function BranchesTab() {
         />
 
         <AddBranchModal open={open} setOpen={setOpen} branch={selectedBranch} />
-        <h1 className="font-medium text-3xl">Branches</h1>
+        <h1 className="font-medium text-3xl">{t("label")}</h1>
         <div className="-mt-6">
           <div className="flex flex-row-reverse">
             <Button
@@ -67,7 +68,7 @@ export default function BranchesTab() {
               variant="plain"
               onClick={() => setOpenConfirm(true)}
             >
-              <p className="underline font-medium">delete</p>
+              <p className="underline font-medium">{t("actions.delete")}</p>
             </Button>
           </div>
           <TableWithCheckBox
@@ -78,15 +79,15 @@ export default function BranchesTab() {
             setSelectedItem={setSelectedBranch}
             setOpen={setOpen}
             columns={[
-              { key: "name", label: "Branch Name", width: "30%" },
-              { key: "nameEng", label: "Branch Name (English)", width: "30%" },
-              { key: "address", label: "Address" },
+              { key: "name", label: t("fields.name"), width: "30%" },
+              { key: "nameEng", label: t("fields.name_eng"), width: "30%" },
+              { key: "address", label: t("fields.address") },
             ]}
           />
         </div>
 
         <div className="mt-2">
-          <Button onClick={addHandler}>Add New Branch</Button>
+          <Button onClick={addHandler}>{t("actions.create")}</Button>
         </div>
       </div>
     </>
