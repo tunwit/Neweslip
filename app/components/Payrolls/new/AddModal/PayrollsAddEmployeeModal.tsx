@@ -23,7 +23,8 @@ import { Branch } from "@/types/branch";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
 import { Pagination } from "@mui/material";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;
@@ -50,6 +51,7 @@ export default function PayrollsAddEmployeeModal({
   });
   const [selected, setSelected] = useState<EmployeeWithShop | null>(null);
   const { user } = useUser();
+  const locale = useLocale();
   const te = useTranslations("employees");
   const tn = useTranslations("new_employees");
   const tc = useTranslations("common");
@@ -172,7 +174,7 @@ export default function PayrollsAddEmployeeModal({
                   {
                     key: "branch",
                     label: te("fields.branch"),
-                    render: (row) => `${row.branch.name}`,
+                    render: (row) => `${getLocalizedName(row.branch, locale)}`,
                   },
                 ]}
               />

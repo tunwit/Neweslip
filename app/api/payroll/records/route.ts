@@ -61,8 +61,10 @@ export async function GET(request: NextRequest) {
           firstName: employeesTable.firstName,
           lastName: employeesTable.lastName,
           nickName: employeesTable.nickName,
-          branch: branchesTable.name,
-          branchEng: branchesTable.nameEng,
+          branch: {
+            name: branchesTable.name,
+            nameEng: branchesTable.nameEng,
+          },
         },
       })
       .from(payrollRecordsTable)

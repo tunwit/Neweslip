@@ -53,7 +53,10 @@ export async function GET(
       )
       .where(eq(payrollPeriodsTable.id, Number(periodId)))
       .groupBy(payrollPeriodsTable.id);
-
+    
+      if(!period){
+        return errorResponse("Not Found",404)
+      }
     if (!(await isOwner(Number(period.shopId), userId)))
       return errorResponse("Forbidden", 403);
 

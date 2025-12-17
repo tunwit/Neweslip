@@ -1,21 +1,5 @@
-import {
-  branchesTable,
-  employeesTable,
-  otFieldsTable,
-  otFieldValueTable,
-  payrollFieldValueTable,
-  payrollPeriodsTable,
-  payrollRecordsTable,
-  penaltyFieldsTable,
-  penaltyFieldValueTable,
-  shopOwnerTable,
-  shopsTable,
-} from "@/db/schema";
-import globalDrizzle from "@/db/drizzle";
 import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { count } from "console";
-import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { isOwner } from "@/lib/isOwner";
 import { RecordDetails } from "@/types/RecordDetails";

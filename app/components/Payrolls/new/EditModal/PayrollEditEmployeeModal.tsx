@@ -30,7 +30,8 @@ import PayrollSummaryTab from "./PayrollSummaryTab";
 import { height } from "@mui/system";
 import { useQueryClient } from "@tanstack/react-query";
 import { PayrollPeriod } from "@/types/payrollPeriod";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 interface PayrollEditEmployeeModalProps {
   periodData?: PayrollPeriod;
@@ -96,6 +97,8 @@ export default function PayrollEditEmployeeModal({
   const { data, isLoading } = useRecordDetails(
     Number(selectedRecord?.id ?? undefined),
   );
+  const locale = useLocale()
+
   // reset Datafrom previous employee
   useEffect(() => {
     setIncomeAmount({});
@@ -263,7 +266,7 @@ export default function PayrollEditEmployeeModal({
                       (v) => v.type === SALARY_FIELD_DEFINATION_TYPE.INCOME,
                     ) ?? []
                   }
-                  renderName={(item) => item.name}
+                  renderName={(item) => getLocalizedName(item,locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={incomeAmount}
                   setInputValues={setIncomeAmount}
@@ -279,7 +282,7 @@ export default function PayrollEditEmployeeModal({
                       (v) => v.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION,
                     ) ?? []
                   }
-                  renderName={(item) => item.name}
+                  renderName={(item) => getLocalizedName(item,locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={deductionAmount}
                   setInputValues={setDeductionAmount}
@@ -289,7 +292,7 @@ export default function PayrollEditEmployeeModal({
               <TabPanel value={2} keepMounted={true}>
                 <PayrollTable
                   data={data?.data?.otValues ?? []}
-                  renderName={(item) => item.name}
+                  renderName={(item) => getLocalizedName(item,locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
                   autoCalculate={true}
@@ -313,7 +316,7 @@ export default function PayrollEditEmployeeModal({
               <TabPanel value={3} keepMounted={true}>
                 <PayrollTable
                   data={data?.data?.penaltyValues ?? []}
-                  renderName={(item) => item.name}
+                  renderName={(item) => getLocalizedName(item,locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
                   autoCalculate={true}
@@ -341,7 +344,7 @@ export default function PayrollEditEmployeeModal({
                         v.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED,
                     ) ?? []
                   }
-                  renderName={(item) => item.name}
+                  renderName={(item) => getLocalizedName(item,locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={displayAmount}
                   setInputValues={setDisplayAmount}

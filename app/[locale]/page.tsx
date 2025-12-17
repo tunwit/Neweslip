@@ -17,6 +17,7 @@ export default function Home() {
   queryClient.prefetchQuery({ queryKey: ["shop"] });
   const { data, isLoading, isSuccess, isError, error } = useShop();
   useEffect(() => {
+    if (!data) return;
     if (data && data.data && data.data.length > 0) {
       const shopslug = createSlug(data.data[0].name, String(data.data[0].id));
       redirect(`/${shopslug}/employees`);

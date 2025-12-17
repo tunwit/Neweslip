@@ -1,739 +1,737 @@
 {
-"common": {
-"selected": "{count} selected",
-"select_all": "Select all ({count})",
-"load": {
-"preparing": "Preparing"
-},
-"filters": {
-"all": "All"
-},
-"snackbar": {
-"dismiss": "Dismiss"
-},
-"unit": {
-"people": "{count} people",
-"day": "{count} days",
-"hour": "{count} hours",
-"minute": "{count} minutes"
-}
-},
-"confirm_modal": {
-"actions": {
-"cancel": "Cancel",
-"confirm": "Confirm"
-}
-},
-"navigation": {
-"dashboard": "Dashboard",
-"employees": "Employees",
-"documents": "Documents",
-"payrolls": "Payrolls",
-"settings": "Settings"
-},
-"breadcrumb": {
-"dashboard": "Overview",
-"configure": "Edit",
-"setting": "Settings",
-"employees": "Employees",
-"documents": "Documents",
-"payrolls": "Payrolls",
-"summary_payroll": "Payroll Summary",
-"payment_payroll": "Payroll Payment",
-"view_payroll": "Review"
-},
-"owners": {
-"label": "Manage Shop Owners",
-"delete": {
-"label": "Delete Owner",
-"description": "Deleting an owner will revoke this user's access to view, edit, or manage this shop. Do you want to continue?"
-},
-"info": {
-"you": "You",
-"invite_link": "Invitation link",
-"copy": "Copy"
-},
-"fields": {
-"name": "Name",
-"email": "Email",
-"last_signin_at": "Last sign-in"
-},
-"actions": {
-"delete": "Delete",
-"invite": "Invite",
-"generate": "Generate invitation link"
-},
-"invitation": {
-"label": "Invite User",
-"description": "Invite a new user to join the shop"
-},
-"modal": {
-"invitation": {
-"user_already_own": "This user is already an owner"
-}
-}
-},
-"shops": {
-"tabs": {
-"email_config": "Email Settings"
-},
-"info": {
-"valid_email": "This email is valid and ready to use",
-"invalid_email": "Unable to verify this email due to {err}"
-},
-"fields": {
-"title": "Shop name",
-"tax_id": "Tax identification number",
-"work_hour_per_day": "Working hours / day",
-"work_day_per_month": "Working days / month",
-"email_name": "Email display name",
-"email_address": "Email address",
-"email_passkey": "Email password (passkey)"
-},
-"actions": {
-"save": "Save",
-"change_password": "Change password"
-},
-"change_password": {
-"label": "Change password",
-"description": "This password is used to unlock payroll periods",
-"fields": {
-"old_password": "Current password",
-"new_password": "New password",
-"confirm_password": "Confirm password"
-}
-},
-"modal": {
-"save": {
-"success": "Changes saved successfully",
-"fail": "Failed to save changes: {err}"
-},
-"change_password": {
-"incorrect": "Incorrect password",
-"password_not_set": "Password not set",
-"fail": "Failed to change password: {err}",
-"success": "Password changed successfully"
-}
-}
-}
-,
-"employees": {
-"label": "Employees",
-"tabs": {
-"details": "Details",
-"documents": "Documents"
-},
-"actions": {
-"create": "Add employee",
-"delete": "Delete employee",
-"close": "Close"
-},
-"search": {
-"label": "Search employees",
-"placeholder": "Search employees by name, surname, or nickname"
-},
-"fields": {
-"name": "Name",
-"first_name": "First name",
-"last_name": "Last name",
-"nickname": "Nickname",
-"gender": "Gender",
-"date_of_birth": "Date of birth",
-"email": "Email",
-"phone_number": "Phone number",
-"status": "Status",
-"branch": "Branch",
-"address_line1": "Address line 1",
-"address_line2": "Address line 2",
-"address_line3": "Address line 3",
-"base_salary": "Base salary",
-"postion": "Position",
-"date_of_employ": "Employment date",
-"bank": "Bank",
-"bank_account_number": "Bank account number",
-"bank_account_owner": "Account holder",
-"promtpay": "PromptPay (phone number or national ID)"
-},
-"table": {
-"no_employee": "No employees found",
-"total": "Total"
-},
-"filters": {
-"branch": {
-"label": "Branch",
-"all": "All branches"
-},
-"gender": {
-"label": "Gender",
-"female": "Female",
-"male": "Male",
-"other": "Other",
-"all": "All genders"
-},
-"status": {
-"label": "Status",
-"all": "All statuses",
-"active": "Active",
-"parttime": "Part-time",
-"inactive": "Inactive"
-}
-}
-},
-"branches": {
-"label": "Branches",
-"actions": {
-"delete": "Delete",
-"create": "Add branch",
-"update": "Edit"
-},
-"delete": {
-"label": "Delete branch",
-"description": "Deleting this branch will permanently remove all employees under it. Do you want to continue?"
-},
-"fields": {
-"name": "Name",
-"name_eng": "Name (English)",
-"address": "Address"
-}
-},
-"new_employees": {
-"label": "Add new employee",
-"steps": {
-"personal_info": "Personal information",
-"address": "Address",
-"contract": "Employment contract"
-},
-"action": {
-"previous": "Back",
-"next": "Next",
-"create": "Create employee",
-"creating": "Creating..."
-},
-"modal": {
-"create": {
-"success": "Employee created successfully",
-"fail": "Failed to create employee: {err}"
-},
-"delete": {
-"success": "Employee deleted successfully",
-"fail": "Failed to delete employee: {err}"
-}
-}
-},
-"documents": {
-"label": "Documents",
-"load": {
-"loading_doc": "Loading documents"
-},
-"type": {
-"personal_doc": "Personal documents",
-"contract_doc": "Contract documents",
-"others_doc": "Other documents"
-},
-"search": {
-"label": "Search documents",
-"placeholder": "Search documents by name"
-},
-"fields": {
-"name": "Name",
-"modify_at": "Last modified",
-"upload_by": "Uploaded by",
-"size": "Size"
-},
-"actions": {
-"create": "Add document",
-"rename": "Rename",
-"download": "Download",
-"copy_url": "Copy link",
-"delete": "Delete document",
-"browse": "Browse files",
-"cancel": "Cancel",
-"confirm": "Confirm",
-"upload": "Upload"
-},
-"upload": {
-"label": "Upload documents",
-"info": {
-"support_format": "Supported formats: PNG, JPG, WEBP, PDF",
-"filesize_limit": "Maximum file size",
-"size": "Size",
-"file_limit": "File limit",
-"file_limit_description": "You can upload up to {filesLimit} files at a time"
-},
-"status": {
-"failed": "Failed",
-"ready": "Ready",
-"uploading": "Uploading",
-"uploaded": "Uploaded"
-},
-"dropzone": {
-"title": "Select files or drag them here",
-"description": "Click the button below to select files",
-"drop_here": "Drop files here"
-}
-},
-"rename": {
-"label": "Rename"
-},
-"modal": {
-"delete": {
-"success": "Deleted successfully",
-"fail": "Failed to delete document: {err}"
-},
-"rename": {
-"success": "Renamed successfully",
-"fail": "Failed to rename document: {err}"
-}
-},
-"table": {
-"no_document": "No documents found"
-}
-}
-,
-"payrolls": {
-"label": "Payrolls",
-"load": {
-"loading_payrolls": "Loading payrolls",
-"loading_records": "Calculating employees"
-},
-"actions": {
-"create": "Create new payroll",
-"edit": "Edit",
-"view": "View details"
-},
-"search": {
-"label": "Search employees",
-"placeholder": "Search payrolls"
-},
-"info": {
-"people": "people"
-}
-},
-"period": {
-"load": {
-"loading_payrolls": "Loading payrolls",
-"loading_records": "Calculating employee payrolls"
-},
-"fields": {
-"status": "Status",
-"employees": "Employees",
-"total_employees": "Total employees",
-"total_amount": "Total expense",
-"created_at": "Created at",
-"period": "Payroll period",
-"total_base_salary": "Total base salary",
-"total_earning": "Total earnings",
-"total_deduction": "Total deductions",
-"grand_total": "Net total"
-},
-"actions": {
-"export": "Export",
-"summary": "Summary",
-"add_employee": "Add employee",
-"delete": "Remove employee",
-"finalize": "Finalize",
-"unlock": "Unlock"
-},
-"search": {
-"label": "Search employees",
-"placeholder": "Search employees by name or branch"
-},
-"filters": {
-"label": "Filters",
-"title": "Advanced filters",
-"no_filter": "No filters applied. Click \"Add filter\" to create one",
-"actions": {
-"add_filter": "Add filter",
-"apply": "Apply",
-"clear_all": "Clear all"
-},
-"quick_filters": {
-"label": "Quick filters",
-"filters": {
-"has_overtime": "Has overtime",
-"has_penalty": "Has penalties",
-"no_deduction": "No deductions",
-"high_earners": "High earners (>20k)",
-"low_earners": "Low earners (<16k)"
-}
-},
-"operator": {
-"eq": "Equals",
-"neq": "Not equal",
-"gt": "Greater than",
-"gte": "Greater than or equal",
-"lt": "Less than",
-"lte": "Less than or equal"
-}
-},
-"status": {
-"draft": "Draft",
-"finalized": "Finalized",
-"paid": "Paid"
-},
-"modal": {
-"save": { "fail": "Failed to save changes: {err}" },
-"create": {
-"success": "Employee added successfully",
-"fail": "Failed to add employee: {err}"
-},
-"delete": {
-"success": "Employee removed successfully",
-"fail": "Failed to remove employee: {err}"
-},
-"export": {
-"fail": "Export failed: {err}"
-}
-}
-},
-"record": {
-"fields": {
-"title": "Item",
-"employee": "Employee",
-"branch": "Branch",
-"base_salary": "Base salary",
-"deduction": "Deductions",
-"overtime": "Overtime",
-"penalties": "Penalties",
-"earning": "Earnings",
-"displayonly": "Display only",
-"total_base_salary": "Total base salary",
-"total_earning": "Total earnings",
-"total_deduction": "Total deductions",
-"total_overtime": "Total overtime",
-"total_penalties": "Total penalties",
-"net": "Net pay"
-},
-"info": {
-"calculation": "Show calculation",
-"showing": "Showing {count} employees",
-"total_payroll": "Total payroll expense"
-},
-"edit": {
-"label": "Payroll details",
-"load": {
-"loading": "Loading data"
-},
-"fields": {
-"title": "Item",
-"value": "Quantity",
-"amount": "Amount",
-"total": "Total"
-},
-"tabs": {
-"income": "Income",
-"deduction": "Deductions",
-"overtime": "Overtime",
-"absent": "Absent / Leave / Late",
-"display_only": "Display only",
-"summary": "Summary"
-},
-"status": {
-"changed": "Modified",
-"uploading": "Saving",
-"saved": "Saved"
-},
-"actions": {
-"done": "Done"
-}
-}
-}
-,
-"summary_period": {
-"label": "Review payroll summary",
-"info": {
-"summary": "Payroll summary"
-},
-"critical_issue": {
-"label": "Critical issues found ({count})",
-"description": "Payroll cannot be finalized while critical issues exist. All issues must be resolved first."
-},
-"issues": {
-"label": "Issues to review ({count})",
-"description": "Payroll can still be finalized, but please proceed with caution.",
-"code": {
-"NO_EMPLOYEE": "No employees selected. Please select at least one employee.",
-"BASE_SALARY_ZERO": "Base salary is less than or equal to zero ({salary}). Please review.",
-"NET_NEGATIVE": "Net pay is negative ({net}). Please review.",
-"NET_ZERO": "Net pay is zero ({net}). Please review.",
-"DEDUCTION_EXCEED_EARNING": "Deductions ({deduction}) exceed earnings ({earning}). Please review.",
-"NET_MISMATCH": "Net pay ({net}) does not match earnings ({earning}) minus deductions ({deduction}). Please contact support.",
-"OT_HOURS_EXCEED_LIMIT": "Overtime hours ({hours}) exceed the monthly limit ({limit}). Please review.",
-"OT_AMOUNT_MISMATCH": "Overtime amount ({actual}) does not match the expected value ({expected}). Please contact support.",
-"OT_NEGATIVE": "Overtime quantity ({value}) and amount ({amount}) cannot be negative. Please correct.",
-"PENALTY_EXCEED_GROSS": "Penalties ({penalty}) exceed earnings ({earning}). Please review.",
-"PENALTY_EXCEED_30_PERCENT": "Penalties ({penalty}) exceed {percent}% of base salary, which is unusually high. Please review.",
-"PENALTY_NEGATIVE": "Penalty quantity ({value}) and amount ({amount}) cannot be negative. Please correct.",
-"PENALTY_MISMATCH": "Penalty amount ({actual}) does not match the expected value ({expected}). Please contact support."
-}
-},
-"no_issue": {
-"label": "Payroll has been reviewed",
-"description": "No issues found. Please review once more before finalizing."
-},
-"actions": {
-"back_to_edit": "Back to editing"
-}
-},
-"finalized_period": {
-"label": "Finalize payroll",
-"description": "Please review carefully before finalizing this payroll period",
-"sections": {
-"information": "Payroll information",
-"financial": "Financial summary"
-},
-"info": {
-"label": "What happens after finalization",
-"lock_payroll": "The payroll period will be locked and can no longer be edited",
-"to_finalized": "Status will be updated to \"Finalized\"",
-"generate_payslip": "Payslips can be generated and sent to employees",
-"acknownledge": "I confirm that I have reviewed all payroll details and acknowledge that changes will not be possible after finalization."
-},
-"actions": {
-"cancle": "Cancel"
-}
-},
-"view_payroll": {
-"label": "This payroll period is finalized and cannot be edited",
-"section": {
-"label": "Payroll finalized",
-"description": "Finalized by {name} on {date}"
-},
-"info": {
-"read_only": "Read-only"
-},
-"actions": {
-"generate": {
-"label": "Generate payslips",
-"description": "Generate payslips for employees",
-"btn": "Generate"
-},
-"send_mail": {
-"label": "Send email",
-"description": "Send payslips to employees",
-"btn": "Send"
-},
-"export": {
-"label": "Export report",
-"description": "Export payroll summary as an Excel file",
-"btn": "Excel"
-},
-"payment": {
-"label": "Make payment",
-"description": "Go to the payroll payment page",
-"btn": "Open"
-}
-},
-"generate": {
-"label": "Generate payslips",
-"note": "Note",
-"note_content": "You can view, download individual files, or download all payslips at once.",
-"action": {
-"download_all": "Download all as ZIP",
-"downloading": "Downloading",
-"close": "Close"
-},
-"modal": {
-"download": {
-"label": "Generating payslips...",
-"description": "This may take a few moments",
-"fail": "Failed to generate payslips: {err}"
-}
-}
-},
-"send_mail": {
-"label": "Send via email",
-"tip": "Tip",
-"tip_content": "Click the edit icon to temporarily override the recipient email. The original email will not be changed in the system.",
-"action": {
-"reset_all": "Reset all",
-"reset": "Reset",
-"send": "Send",
-"sending": "Sending...",
-"close": "Close"
-},
-"info": {
-"override": "Overridden",
-"override_warn": "{count} email addresses temporarily overridden",
-"override_warn_content": "Original email addresses will remain unchanged"
-},
-"modal": {
-"download": {
-"label": "Generating payslips...",
-"description": "This may take a few moments",
-"fail": "Failed to generate payslips: {err}"
-}
-}
-},
-"unlock": {
-"label": "Unlock payroll",
-"description": "Change status back to editable",
-"password": {
-"label": "Enter password",
-"placeholder": "Password"
-},
-"action": {
-"unlock": "Confirm unlock",
-"close": "Close"
-},
-"info": {
-"label": "What happens after unlocking",
-"unlock_payroll": "The payroll period will be unlocked and editable again",
-"to_draft": "Status will be changed to \"Draft\"",
-"marked": "This payroll period will be marked as modified"
-},
-"modal": {
-"unlock": {
-"wrong_password": "Incorrect password",
-"fail": "Failed to unlock payroll: {err}"
-}
-}
-}
-},
-"payment_payroll": {
-"label": "Payment",
-"actions": {
-"back": "Back",
-"view_details": "View details"
-},
-"tabs": {
-"manual": {
-"label": "Manual payment",
-"description": "Displays employee bank details, PromptPay, and QR codes",
-"chips": {
-"bank_transfer": "Bank transfer",
-"promptpay": "PromptPay"
-},
-"sections": {
-"bank_transfer": "Bank details",
-"promptpay": "PromptPay"
-}
-},
-"generate": {
-"label": "Generate file",
-"description": "Generate a text file for bank upload",
-"chips": {
-"text_file": "Text file",
-"web": "Bank website"
-}
-}
-},
-"info": {
-"qr_not_available": "QR code not available"
-}
-},
-"setting": {
-"label": "Settings",
-"tabs": {
-"merchant": {
-"label": "Merchant",
-"tabs": {
-"overview": { "label": "Overview" },
-"branches": { "label": "Manage branches" },
-"owners": { "label": "Manage owners" },
-"email_service": { "label": "Email settings" }
-}
-},
-"salary": { "label": "Payroll" },
-"slip": { "label": "Payslip" }
-}
-},
-"earning": {
-"label": "Manage earnings",
-"description": "Configure employee earnings. Once set, they will be automatically added to payroll.",
-"fields": {
-"name": "Name",
-"name_eng": "Name (English)",
-"formular": "Formula"
-},
-"actions": {
-"delete": "Delete",
-"create": "Add earning",
-"update": "Edit"
-}
-},
-"deduction": {
-"label": "Manage deductions",
-"description": "Configure employee deductions. Once set, they will be automatically deducted from payroll.",
-"fields": {
-"name": "Name",
-"name_eng": "Name (English)",
-"formular": "Formula"
-},
-"actions": {
-"delete": "Delete",
-"create": "Add deduction",
-"update": "Edit"
-}
-},
-"displayonly": {
-"label": "Manage display-only items",
-"description": "These values are displayed on payslips but are not included in payroll calculations.",
-"fields": {
-"name": "Name",
-"name_eng": "Name (English)"
-},
-"actions": {
-"delete": "Delete",
-"create": "Add display-only item",
-"update": "Edit"
-}
-},
-"overtime": {
-"label": "Manage overtime",
-"description": "Configure overtime rules. Values will be calculated and added to payroll automatically.",
-"fields": {
-"name": "Name",
-"name_eng": "Name (English)",
-"type": "Type",
-"method": "Method",
-"rate": "Overtime rate",
-"rate_of_pay": "Pay rate"
-},
-"type": {
-"constant": "Fixed",
-"basedonsalary": "Based on salary"
-},
-"method": {
-"hourly": "Hourly",
-"daily": "Daily"
-},
-"actions": {
-"delete": "Delete",
-"create": "Add overtime",
-"update": "Edit"
-}
-},
-"penalty": {
-"label": "Manage penalties",
-"description": "Configure employee penalties. Values will be calculated and deducted automatically.",
-"details": "(Absent / Leave / Late)",
-"fields": {
-"name": "Name",
-"name_eng": "Name (English)",
-"type": "Type",
-"method": "Method",
-"rate_of_pay": "Penalty rate"
-},
-"type": {
-"constant": "Fixed",
-"basedonsalary": "Based on salary"
-},
-"method": {
-"perminute": "Per minute",
-"hourly": "Hourly",
-"daily": "Daily"
-},
-"actions": {
-"delete": "Delete",
-"create": "Add penalty",
-"update": "Edit"
-}
-},
-"date_format": {
-"justNow": "Just now",
-"minutesAgo": "{count} minutes ago",
-"hoursAgo": "{count} hours ago",
-"yesterdayAt": "Yesterday at {time}"
-}
+  "common": {
+    "selected": "{count} selected",
+    "select_all": "Select all ({count})",
+    "load": {
+      "preparing": "Preparing"
+    },
+    "filters": {
+      "all": "All"
+    },
+    "snackbar": {
+      "dismiss": "Dismiss"
+    },
+    "unit": {
+      "people": "{count} people",
+      "day": "{count} days",
+      "hour": "{count} hours",
+      "minute": "{count} minutes"
+    }
+  },
+  "confirm_modal": {
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "documents": "Documents",
+    "payrolls": "Payrolls",
+    "settings": "Settings"
+  },
+  "breadcrumb": {
+    "dashboard": "Overview",
+    "configure": "Edit",
+    "setting": "Settings",
+    "employees": "Employees",
+    "documents": "Documents",
+    "payrolls": "Payrolls",
+    "summary_payroll": "Payroll Summary",
+    "payment_payroll": "Payroll Payment",
+    "view_payroll": "Review"
+  },
+  "owners": {
+    "label": "Manage Shop Owners",
+    "delete": {
+      "label": "Delete Owner",
+      "description": "Deleting an owner will revoke this user's access to view, edit, or manage this shop. Do you want to continue?"
+    },
+    "info": {
+      "you": "You",
+      "invite_link": "Invitation link",
+      "copy": "Copy"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "last_signin_at": "Last sign-in"
+    },
+    "actions": {
+      "delete": "Delete",
+      "invite": "Invite",
+      "generate": "Generate invitation link"
+    },
+    "invitation": {
+      "label": "Invite User",
+      "description": "Invite a new user to join the shop"
+    },
+    "modal": {
+      "invitation": {
+        "user_already_own": "This user is already an owner"
+      }
+    }
+  },
+  "shops": {
+    "tabs": {
+      "email_config": "Email Settings"
+    },
+    "info": {
+      "valid_email": "This email is valid and ready to use",
+      "invalid_email": "Unable to verify this email due to {err}"
+    },
+    "fields": {
+      "title": "Shop name",
+      "tax_id": "Tax identification number",
+      "work_hour_per_day": "Working hours / day",
+      "work_day_per_month": "Working days / month",
+      "email_name": "Email display name",
+      "email_address": "Email address",
+      "email_passkey": "Email password (passkey)"
+    },
+    "actions": {
+      "save": "Save",
+      "change_password": "Change password"
+    },
+    "change_password": {
+      "label": "Change password",
+      "description": "This password is used to unlock payroll periods",
+      "fields": {
+        "old_password": "Current password",
+        "new_password": "New password",
+        "confirm_password": "Confirm password"
+      }
+    },
+    "modal": {
+      "save": {
+        "success": "Changes saved successfully",
+        "fail": "Failed to save changes: {err}"
+      },
+      "change_password": {
+        "incorrect": "Incorrect password",
+        "password_not_set": "Password not set",
+        "fail": "Failed to change password: {err}",
+        "success": "Password changed successfully"
+      }
+    }
+  },
+  "employees": {
+    "label": "Employees",
+    "tabs": {
+      "details": "Details",
+      "documents": "Documents"
+    },
+    "actions": {
+      "create": "Add employee",
+      "delete": "Delete employee",
+      "close": "Close"
+    },
+    "search": {
+      "label": "Search employees",
+      "placeholder": "Search employees by name, surname, or nickname"
+    },
+    "fields": {
+      "name": "Name",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "nickname": "Nickname",
+      "gender": "Gender",
+      "date_of_birth": "Date of birth",
+      "email": "Email",
+      "phone_number": "Phone number",
+      "status": "Status",
+      "branch": "Branch",
+      "address_line1": "Address line 1",
+      "address_line2": "Address line 2",
+      "address_line3": "Address line 3",
+      "base_salary": "Base salary",
+      "postion": "Position",
+      "date_of_employ": "Employment date",
+      "bank": "Bank",
+      "bank_account_number": "Bank account number",
+      "bank_account_owner": "Account holder",
+      "promtpay": "PromptPay (phone number or national ID)"
+    },
+    "table": {
+      "no_employee": "No employees found",
+      "total": "Total"
+    },
+    "filters": {
+      "branch": {
+        "label": "Branch",
+        "all": "All branches"
+      },
+      "gender": {
+        "label": "Gender",
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "all": "All genders"
+      },
+      "status": {
+        "label": "Status",
+        "all": "All statuses",
+        "active": "Active",
+        "parttime": "Part-time",
+        "inactive": "Inactive"
+      }
+    }
+  },
+  "branches": {
+    "label": "Branches",
+    "actions": {
+      "delete": "Delete",
+      "create": "Add branch",
+      "update": "Edit"
+    },
+    "delete": {
+      "label": "Delete branch",
+      "description": "Deleting this branch will permanently remove all employees under it. Do you want to continue?"
+    },
+    "fields": {
+      "name": "Name",
+      "name_eng": "Name (English)",
+      "address": "Address"
+    }
+  },
+  "new_employees": {
+    "label": "Add new employee",
+    "steps": {
+      "personal_info": "Personal information",
+      "address": "Address",
+      "contract": "Employment contract"
+    },
+    "action": {
+      "previous": "Back",
+      "next": "Next",
+      "create": "Create employee",
+      "creating": "Creating..."
+    },
+    "modal": {
+      "create": {
+        "success": "Employee created successfully",
+        "fail": "Failed to create employee: {err}"
+      },
+      "delete": {
+        "success": "Employee deleted successfully",
+        "fail": "Failed to delete employee: {err}"
+      }
+    }
+  },
+  "documents": {
+    "label": "Documents",
+    "load": {
+      "loading_doc": "Loading documents"
+    },
+    "type": {
+      "personal_doc": "Personal documents",
+      "contract_doc": "Contract documents",
+      "others_doc": "Other documents"
+    },
+    "search": {
+      "label": "Search documents",
+      "placeholder": "Search documents by name"
+    },
+    "fields": {
+      "name": "Name",
+      "modify_at": "Last modified",
+      "upload_by": "Uploaded by",
+      "size": "Size"
+    },
+    "actions": {
+      "create": "Add document",
+      "rename": "Rename",
+      "download": "Download",
+      "copy_url": "Copy link",
+      "delete": "Delete document",
+      "browse": "Browse files",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "upload": "Upload"
+    },
+    "upload": {
+      "label": "Upload documents",
+      "info": {
+        "support_format": "Supported formats: PNG, JPG, WEBP, PDF",
+        "filesize_limit": "Maximum file size",
+        "size": "Size",
+        "file_limit": "File limit",
+        "file_limit_description": "You can upload up to {filesLimit} files at a time"
+      },
+      "status": {
+        "failed": "Failed",
+        "ready": "Ready",
+        "uploading": "Uploading",
+        "uploaded": "Uploaded"
+      },
+      "dropzone": {
+        "title": "Select files or drag them here",
+        "description": "Click the button below to select files",
+        "drop_here": "Drop files here"
+      }
+    },
+    "rename": {
+      "label": "Rename"
+    },
+    "modal": {
+      "delete": {
+        "success": "Deleted successfully",
+        "fail": "Failed to delete document: {err}"
+      },
+      "rename": {
+        "success": "Renamed successfully",
+        "fail": "Failed to rename document: {err}"
+      }
+    },
+    "table": {
+      "no_document": "No documents found"
+    }
+  },
+  "payrolls": {
+    "label": "Payrolls",
+    "load": {
+      "loading_payrolls": "Loading payrolls",
+      "loading_records": "Calculating employees"
+    },
+    "actions": {
+      "create": "Create new payroll",
+      "edit": "Edit",
+      "view": "View details"
+    },
+    "search": {
+      "label": "Search employees",
+      "placeholder": "Search payrolls"
+    },
+    "info": {
+      "people": "people"
+    }
+  },
+  "period": {
+    "load": {
+      "loading_payrolls": "Loading payrolls",
+      "loading_records": "Calculating employee payrolls"
+    },
+    "fields": {
+      "status": "Status",
+      "employees": "Employees",
+      "total_employees": "Total employees",
+      "total_amount": "Total expense",
+      "created_at": "Created at",
+      "period": "Payroll period",
+      "total_base_salary": "Total base salary",
+      "total_earning": "Total earnings",
+      "total_deduction": "Total deductions",
+      "grand_total": "Net total"
+    },
+    "actions": {
+      "export": "Export",
+      "summary": "Summary",
+      "add_employee": "Add employee",
+      "delete": "Remove employee",
+      "finalize": "Finalize",
+      "unlock": "Unlock"
+    },
+    "search": {
+      "label": "Search employees",
+      "placeholder": "Search employees by name or branch"
+    },
+    "filters": {
+      "label": "Filters",
+      "title": "Advanced filters",
+      "no_filter": "No filters applied. Click \"Add filter\" to create one",
+      "actions": {
+        "add_filter": "Add filter",
+        "apply": "Apply",
+        "clear_all": "Clear all"
+      },
+      "quick_filters": {
+        "label": "Quick filters",
+        "filters": {
+          "has_overtime": "Has overtime",
+          "has_penalty": "Has penalties",
+          "no_deduction": "No deductions",
+          "high_earners": "High earners (>20k)",
+          "low_earners": "Low earners (<16k)"
+        }
+      },
+      "operator": {
+        "eq": "Equals",
+        "neq": "Not equal",
+        "gt": "Greater than",
+        "gte": "Greater than or equal",
+        "lt": "Less than",
+        "lte": "Less than or equal"
+      }
+    },
+    "status": {
+      "draft": "Draft",
+      "finalized": "Finalized",
+      "paid": "Paid"
+    },
+    "modal": {
+      "save": { "fail": "Failed to save changes: {err}" },
+      "create": {
+        "success": "Employee added successfully",
+        "fail": "Failed to add employee: {err}"
+      },
+      "delete": {
+        "success": "Employee removed successfully",
+        "fail": "Failed to remove employee: {err}"
+      },
+      "export": {
+        "fail": "Export failed: {err}"
+      }
+    }
+  },
+  "record": {
+    "fields": {
+      "title": "Item",
+      "employee": "Employee",
+      "branch": "Branch",
+      "base_salary": "Base salary",
+      "deduction": "Deductions",
+      "overtime": "Overtime",
+      "penalties": "Penalties",
+      "earning": "Earnings",
+      "displayonly": "Display only",
+      "total":"Total",
+      "total_base_salary": "Total base salary",
+      "total_earning": "Total earnings",
+      "total_deduction": "Total deductions",
+      "total_overtime": "Total overtime",
+      "total_penalties": "Total penalties",
+      "net": "Net pay"
+    },
+    "info": {
+      "calculation": "Show calculation",
+      "showing": "Showing {count} employees",
+      "total_payroll": "Total payroll expense"
+    },
+    "edit": {
+      "label": "Payroll details",
+      "load": {
+        "loading": "Loading data"
+      },
+      "fields": {
+        "title": "Item",
+        "value": "Quantity",
+        "amount": "Amount",
+        "total": "Total"
+      },
+      "tabs": {
+        "income": "Income",
+        "deduction": "Deductions",
+        "overtime": "Overtime",
+        "absent": "Absent / Leave / Late",
+        "display_only": "Display only",
+        "summary": "Summary"
+      },
+      "status": {
+        "changed": "Modified",
+        "uploading": "Saving",
+        "saved": "Saved"
+      },
+      "actions": {
+        "done": "Done"
+      }
+    }
+  },
+  "summary_period": {
+    "label": "Review payroll summary",
+    "info": {
+      "summary": "Payroll summary"
+    },
+    "critical_issue": {
+      "label": "Critical issues found ({count})",
+      "description": "Payroll cannot be finalized while critical issues exist. All issues must be resolved first."
+    },
+    "issues": {
+      "label": "Issues to review ({count})",
+      "description": "Payroll can still be finalized, but please proceed with caution.",
+      "code": {
+        "NO_EMPLOYEE": "No employees selected. Please select at least one employee.",
+        "BASE_SALARY_ZERO": "Base salary is less than or equal to zero ({salary}). Please review.",
+        "NET_NEGATIVE": "Net pay is negative ({net}). Please review.",
+        "NET_ZERO": "Net pay is zero ({net}). Please review.",
+        "DEDUCTION_EXCEED_EARNING": "Deductions ({deduction}) exceed earnings ({earning}). Please review.",
+        "NET_MISMATCH": "Net pay ({net}) does not match earnings ({earning}) minus deductions ({deduction}). Please contact support.",
+        "OT_HOURS_EXCEED_LIMIT": "Overtime hours ({hours}) exceed the monthly limit ({limit}). Please review.",
+        "OT_AMOUNT_MISMATCH": "Overtime amount ({actual}) does not match the expected value ({expected}). Please contact support.",
+        "OT_NEGATIVE": "Overtime quantity ({value}) and amount ({amount}) cannot be negative. Please correct.",
+        "PENALTY_EXCEED_GROSS": "Penalties ({penalty}) exceed earnings ({earning}). Please review.",
+        "PENALTY_EXCEED_30_PERCENT": "Penalties ({penalty}) exceed {percent}% of base salary, which is unusually high. Please review.",
+        "PENALTY_NEGATIVE": "Penalty quantity ({value}) and amount ({amount}) cannot be negative. Please correct.",
+        "PENALTY_MISMATCH": "Penalty amount ({actual}) does not match the expected value ({expected}). Please contact support."
+      }
+    },
+    "no_issue": {
+      "label": "Payroll has been reviewed",
+      "description": "No issues found. Please review once more before finalizing."
+    },
+    "actions": {
+      "back_to_edit": "Back to editing"
+    }
+  },
+  "finalized_period": {
+    "label": "Finalize payroll",
+    "description": "Please review carefully before finalizing this payroll period",
+    "sections": {
+      "information": "Payroll information",
+      "financial": "Financial summary"
+    },
+    "info": {
+      "label": "What happens after finalization",
+      "lock_payroll": "The payroll period will be locked and can no longer be edited",
+      "to_finalized": "Status will be updated to \"Finalized\"",
+      "generate_payslip": "Payslips can be generated and sent to employees",
+      "acknownledge": "I confirm that I have reviewed all payroll details and acknowledge that changes will not be possible after finalization."
+    },
+    "actions": {
+      "cancle": "Cancel"
+    }
+  },
+  "view_payroll": {
+    "label": "This payroll period is finalized and cannot be edited",
+    "section": {
+      "label": "Payroll finalized",
+      "description": "Finalized by {name} on {date}"
+    },
+    "info": {
+      "read_only": "Read-only"
+    },
+    "actions": {
+      "generate": {
+        "label": "Generate payslips",
+        "description": "Generate payslips for employees",
+        "btn": "Generate"
+      },
+      "send_mail": {
+        "label": "Send email",
+        "description": "Send payslips to employees",
+        "btn": "Send"
+      },
+      "export": {
+        "label": "Export report",
+        "description": "Export payroll summary as an Excel file",
+        "btn": "Excel"
+      },
+      "payment": {
+        "label": "Make payment",
+        "description": "Go to the payroll payment page",
+        "btn": "Open"
+      }
+    },
+    "generate": {
+      "label": "Generate payslips",
+      "note": "Note",
+      "note_content": "You can view, download individual files, or download all payslips at once.",
+      "action": {
+        "download_all": "Download all as ZIP",
+        "downloading": "Downloading",
+        "close": "Close"
+      },
+      "modal": {
+        "download": {
+          "label": "Generating payslips...",
+          "description": "This may take a few moments",
+          "fail": "Failed to generate payslips: {err}"
+        }
+      }
+    },
+    "send_mail": {
+      "label": "Send via email",
+      "tip": "Tip",
+      "tip_content": "Click the edit icon to temporarily override the recipient email. The original email will not be changed in the system.",
+      "action": {
+        "reset_all": "Reset all",
+        "reset": "Reset",
+        "send": "Send",
+        "sending": "Sending...",
+        "close": "Close"
+      },
+      "info": {
+        "override": "Overridden",
+        "override_warn": "{count} email addresses temporarily overridden",
+        "override_warn_content": "Original email addresses will remain unchanged"
+      },
+      "modal": {
+        "download": {
+          "label": "Generating payslips...",
+          "description": "This may take a few moments",
+          "fail": "Failed to generate payslips: {err}"
+        }
+      }
+    },
+    "unlock": {
+      "label": "Unlock payroll",
+      "description": "Change status back to editable",
+      "password": {
+        "label": "Enter password",
+        "placeholder": "Password"
+      },
+      "action": {
+        "unlock": "Confirm unlock",
+        "close": "Close"
+      },
+      "info": {
+        "label": "What happens after unlocking",
+        "unlock_payroll": "The payroll period will be unlocked and editable again",
+        "to_draft": "Status will be changed to \"Draft\"",
+        "marked": "This payroll period will be marked as modified"
+      },
+      "modal": {
+        "unlock": {
+          "wrong_password": "Incorrect password",
+          "fail": "Failed to unlock payroll: {err}"
+        }
+      }
+    }
+  },
+  "payment_payroll": {
+    "label": "Payment",
+    "actions": {
+      "back": "Back",
+      "view_details": "View details"
+    },
+    "tabs": {
+      "manual": {
+        "label": "Manual payment",
+        "description": "Displays employee bank details, PromptPay, and QR codes",
+        "chips": {
+          "bank_transfer": "Bank transfer",
+          "promptpay": "PromptPay"
+        },
+        "sections": {
+          "bank_transfer": "Bank details",
+          "promptpay": "PromptPay"
+        }
+      },
+      "generate": {
+        "label": "Generate file",
+        "description": "Generate a text file for bank upload",
+        "chips": {
+          "text_file": "Text file",
+          "web": "Bank website"
+        }
+      }
+    },
+    "info": {
+      "qr_not_available": "QR code not available"
+    }
+  },
+  "setting": {
+    "label": "Settings",
+    "tabs": {
+      "merchant": {
+        "label": "Merchant",
+        "tabs": {
+          "overview": { "label": "Overview" },
+          "branches": { "label": "Manage branches" },
+          "owners": { "label": "Manage owners" },
+          "email_service": { "label": "Email settings" }
+        }
+      },
+      "salary": { "label": "Payroll" },
+      "slip": { "label": "Payslip" }
+    }
+  },
+  "earning": {
+    "label": "Manage earnings",
+    "description": "Configure employee earnings. Once set, they will be automatically added to payroll.",
+    "fields": {
+      "name": "Name",
+      "name_eng": "Name (English)",
+      "formular": "Formula"
+    },
+    "actions": {
+      "delete": "Delete",
+      "create": "Add earning",
+      "update": "Edit"
+    }
+  },
+  "deduction": {
+    "label": "Manage deductions",
+    "description": "Configure employee deductions. Once set, they will be automatically deducted from payroll.",
+    "fields": {
+      "name": "Name",
+      "name_eng": "Name (English)",
+      "formular": "Formula"
+    },
+    "actions": {
+      "delete": "Delete",
+      "create": "Add deduction",
+      "update": "Edit"
+    }
+  },
+  "displayonly": {
+    "label": "Manage display-only items",
+    "description": "These values are displayed on payslips but are not included in payroll calculations.",
+    "fields": {
+      "name": "Name",
+      "name_eng": "Name (English)"
+    },
+    "actions": {
+      "delete": "Delete",
+      "create": "Add display-only item",
+      "update": "Edit"
+    }
+  },
+  "overtime": {
+    "label": "Manage overtime",
+    "description": "Configure overtime rules. Values will be calculated and added to payroll automatically.",
+    "fields": {
+      "name": "Name",
+      "name_eng": "Name (English)",
+      "type": "Type",
+      "method": "Method",
+      "rate": "Overtime rate",
+      "rate_of_pay": "Pay rate"
+    },
+    "type": {
+      "constant": "Fixed",
+      "basedonsalary": "Based on salary"
+    },
+    "method": {
+      "hourly": "Hourly",
+      "daily": "Daily"
+    },
+    "actions": {
+      "delete": "Delete",
+      "create": "Add overtime",
+      "update": "Edit"
+    }
+  },
+  "penalty": {
+    "label": "Manage penalties",
+    "description": "Configure employee penalties. Values will be calculated and deducted automatically.",
+    "details": "(Absent / Leave / Late)",
+    "fields": {
+      "name": "Name",
+      "name_eng": "Name (English)",
+      "type": "Type",
+      "method": "Method",
+      "rate_of_pay": "Penalty rate"
+    },
+    "type": {
+      "constant": "Fixed",
+      "basedonsalary": "Based on salary"
+    },
+    "method": {
+      "perminute": "Per minute",
+      "hourly": "Hourly",
+      "daily": "Daily"
+    },
+    "actions": {
+      "delete": "Delete",
+      "create": "Add penalty",
+      "update": "Edit"
+    }
+  },
+  "date_format": {
+    "justNow": "Just now",
+    "minutesAgo": "{count} minutes ago",
+    "hoursAgo": "{count} hours ago",
+    "yesterdayAt": "Yesterday at {time}"
+  }
 }

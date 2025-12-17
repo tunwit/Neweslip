@@ -7,6 +7,8 @@ import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { EmployeeWithShop } from "@/types/employee";
 import { moneyFormat } from "@/utils/formmatter";
 import { useCheckBox } from "@/hooks/useCheckBox";
+import { useLocale } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 function getRandomPastelColor() {
   const r = Math.floor(Math.random() * 128) + 127; // Random red value (127-255)
@@ -24,7 +26,7 @@ export default function EmployeesElement({
   const { toggle, isChecked } = useCheckBox<number>("allEmployeeTable");
 
   const [open, setOpen] = useState<boolean>(false);
-
+  const locale = useLocale();
   const randomColor = useMemo(() => getRandomPastelColor(), []);
   return (
     <>
@@ -62,7 +64,7 @@ export default function EmployeesElement({
           {moneyFormat(employee.salary)} ฿
         </td>
         <td onClick={() => setOpen(true)} className="border-b">
-          {employee.branch.name}
+          {getLocalizedName(employee.branch, locale)}
         </td>
         <td onClick={() => setOpen(true)} className="border-b">
           <EmployeeStatusBadge status={employee.status} />

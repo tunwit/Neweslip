@@ -40,9 +40,11 @@ export default function Home() {
   const [debouced] = useDebounce(query, 500);
   const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
   const [showFilter, setShowFilter] = useState(false);
-  const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
-    Number(periodId),
-  );
+  const {
+    data: periodData,
+    isLoading: loadingPeriod,
+    error,
+  } = usePayrollPeriod(Number(periodId));
   const tBreadcrumb = useTranslations("breadcrumb");
   const t = useTranslations("summary_period");
   const tPeriod = useTranslations("period");
@@ -54,6 +56,11 @@ export default function Home() {
   const { data: verify, isLoading: loadingVerify } = usePayrollPeriodVerify(
     Number(periodId),
   );
+
+  if (error || !periodId) {
+    const basePath = pathname.replace(/\/summary$/, "");
+    router.replace(basePath);
+  }
   useEffect(() => {
     if (!summaryData?.data) return;
     if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {

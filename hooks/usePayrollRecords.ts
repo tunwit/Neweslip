@@ -21,6 +21,11 @@ export const usePayrollRecords = (periodId: number) => {
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
+    retry: (failureCount, error: any) => {
+      if (error?.status === 404 || error?.response?.status === 404)
+        return false;
+      return failureCount < 3;
+    },
   });
 
   return query;

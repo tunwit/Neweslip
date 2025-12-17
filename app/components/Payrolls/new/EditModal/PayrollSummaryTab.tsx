@@ -69,7 +69,7 @@ export default function PayrollSummaryTab({
             </td>
           </tr>
           <tr className="bg-gray-50">
-            <td className="py-3 px-4 font-bold text-lg text-gray-700">{t("fields.total")}</td>
+            <td className="py-3 px-4 font-bold text-lg text-gray-700">{t("fields.net")}</td>
             <td
               colSpan={2}
               className="py-3 px-4 font-bold text-lg text-gray-900"

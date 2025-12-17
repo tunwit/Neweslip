@@ -54,11 +54,18 @@ export default function Home() {
   const tBreadcrumb = useTranslations("breadcrumb");
   const [hideHeader, setHideHeader] = useState(false);
 
-  const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
-    Number(periodId),
-  );
+  const {
+    data: periodData,
+    isLoading: loadingPeriod,
+    error,
+  } = usePayrollPeriod(Number(periodId));
   const { data: summaryData, isLoading: loadingSummary } =
     usePayrollPeriodSummary(Number(periodId));
+
+  if (error || !periodId) {
+    const basePath = pathname.replace(/\/payment$/, "");
+    router.replace(basePath);
+  }
 
   useEffect(() => {
     if (!summaryData?.data) return;
@@ -86,6 +93,7 @@ export default function Home() {
       }),
     );
   }, [summaryData?.data?.records, debouced]);
+
 
   const isLoading = loadingPeriod || loadingSummary;
 
@@ -156,7 +164,7 @@ export default function Home() {
                       </p>
                       <p className="text-xl font-bold text-blue-900 mt-1">
                         {tPeriod(
-                          `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]?.toLowerCase()}`,
+                          `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status ?? "draft"]?.toLowerCase()}`,
                         )}
                       </p>
                     </div>
@@ -242,7 +250,7 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <div className="flex  flex-col h-full gap-5 items-center overflow-y-scroll">
         <div hidden={!hideHeader} className={` py-3 sticky top-0`}>
           <button

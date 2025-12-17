@@ -1,6 +1,7 @@
 "use client";
 import HambergerIcon from "@/assets/icons/HambergerIcon";
 import useHamburger from "@/hooks/useHamburger";
+import LangaugeSelector from "@/widget/LangaugeSelector";
 import { UserButton, useSession } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Avatar } from "@mui/joy";
@@ -20,6 +21,7 @@ export default function Navbar() {
       </div>
 
       <UserButton/>
+      <LangaugeSelector/>
     </nav>
   );
 }

@@ -13,8 +13,10 @@ export interface PayrollRecord {
     firstName: string;
     lastName: string;
     nickName: string;
-    branch: string;
-    branchEng: string;
+    branch: {
+      name:string
+      nameEng: string;
+    }    
   };
   totals: TotalSalary;
 }

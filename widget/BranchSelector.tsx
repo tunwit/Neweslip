@@ -3,7 +3,8 @@ import { Autocomplete, Option, Select } from "@mui/joy";
 import React, { useEffect } from "react";
 import { useBranch } from "../hooks/useBranch";
 import { Branch } from "@/types/branch";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 interface BranchSelectorProps {
   branchId: number;
@@ -20,7 +21,7 @@ export default function BranchSelector({
 }: BranchSelectorProps) {
   const { data, isLoading } = useBranch();
   const t = useTranslations("employees.filters");
-
+  const locale = useLocale()
   return (
     <>
       <Select
@@ -34,7 +35,7 @@ export default function BranchSelector({
         {data?.data?.map((v: Branch) => {
           return (
             <Option key={v.id} value={v.id}>
-              {v.name}
+              {getLocalizedName(v,locale)}
             </Option>
           );
         })}

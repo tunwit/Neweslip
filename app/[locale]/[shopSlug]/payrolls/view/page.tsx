@@ -64,14 +64,22 @@ export default function Home() {
   const tv = useTranslations("view_payroll");
   const tc = useTranslations("common");
   const tBreadcrumb = useTranslations("breadcrumb");
+  const pathname = usePathname();
+  const router = useRouter();
 
   const { data: summaryData, isLoading: loadingSummary } =
     usePayrollPeriodSummary(Number(periodId));
 
-  const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
-    Number(periodId),
-  );
+  const {
+    data: periodData,
+    isLoading: loadingPeriod,
+    error,
+  } = usePayrollPeriod(Number(periodId));
 
+  if (error || !periodId) {
+    const basePath = pathname.replace(/\/view$/, "");
+    router.replace(basePath);
+  }
   const onExportAsExcel = async () => {
     const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
       method: "POST",
@@ -88,9 +96,6 @@ export default function Home() {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
   };
-
-  const router = useRouter();
-  const pathname = usePathname();
 
   const onPayment = () => {
     const newPath = pathname.replace("/view", "/payment");

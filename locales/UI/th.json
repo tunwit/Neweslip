@@ -31,7 +31,6 @@
     "payrolls": "เงินเดือน",
     "settings": "ตั้งค่า"
   },
-
   "breadcrumb": {
     "dashboard": "ภาพรวม",
     "configure": "แก้ไข",
@@ -43,7 +42,6 @@
     "payment_payroll": "จ่านเงินเดือน",
     "view_payroll": "ตรวจสอบ"
   },
-
   "owners": {
     "label": "จัดการเจ้าของร้าน",
     "delete": {
@@ -397,6 +395,7 @@
       "penalties": "ค่าหักลงโทษ",
       "earning": "รายได้",
       "displayonly": "แสดงเท่านั้น",
+      "total":"รวม",
       "total_base_salary": "รวมฐานเงินเดือน",
       "total_earning": "รวมรายได้",
       "total_deduction": "รวมรายหัก",

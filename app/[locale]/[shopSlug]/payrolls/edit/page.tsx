@@ -14,15 +14,11 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { getRandomPastelColor } from "@/utils/generatePastelColor";
-import BranchSelector from "@/widget/BranchSelector";
 import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
-import { Employee } from "@/types/employee";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { deletePayrollRecords } from "@/app/action/deletePayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRecordDetails } from "@/hooks/useRecordDetails";
 import { useUser } from "@clerk/nextjs";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
@@ -66,9 +62,15 @@ export default function Home() {
 
   const periodId = useSearchParams().get("id");
 
-  const { data: periodData, isLoading: loadingPeriod } = usePayrollPeriod(
-    Number(periodId),
-  );
+  const {
+    data: periodData,
+    isLoading: loadingPeriod,
+    error,
+  } = usePayrollPeriod(Number(periodId));
+  if (error || !periodId) {
+    const basePath = pathname.replace(/\/edit$/, "");
+    router.replace(basePath);
+  }
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: periodData?.data?.start_period,
@@ -84,6 +86,7 @@ export default function Home() {
   const [baseRecords, setBaseRecords] = useState<PayrollRecord[]>([]);
   const [filterdRecord, setFilterdRecord] = useState<PayrollRecord[]>([]);
   const tPeriod = useTranslations("period");
+
   const deleteHandler = async () => {
     if (!user?.id) return;
     try {

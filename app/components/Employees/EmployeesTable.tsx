@@ -62,10 +62,10 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
               {t("fields.base_salary")}
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              {t("fields.status")}
+              {t("fields.branch")}
             </th>
             <th className="font-light text-sm whitespace-nowrap border-b">
-              {t("fields.branch")}
+              {t("fields.status")}
             </th>
           </tr>
         </thead>

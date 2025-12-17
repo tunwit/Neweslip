@@ -1,11 +1,12 @@
 import { UseCheckBoxResult } from "@/hooks/useCheckBox";
 import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox } from "@mui/joy";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, {
   Dispatch,
   SetStateAction,
@@ -31,8 +32,8 @@ export default function PeriodEmployeeTable({
   setOpenEdit,
 }: PeriodEmployeeTableProps) {
   const [filterd, setFilterd] = useState(records);
-  const t = useTranslations("record")
-
+  const t = useTranslations("record");
+  const locale = useLocale();
   useEffect(() => {
     const q = searchQuery.toLowerCase();
 
@@ -79,8 +80,12 @@ export default function PeriodEmployeeTable({
                     onChange={handleAllCheckbox}
                   />
                 </th>
-                <th className="font-light text-sm w-[20%]">{t("fields.employee")}</th>
-                <th className="font-light text-sm w-[5%]">{t("fields.branch")}</th>
+                <th className="font-light text-sm w-[20%]">
+                  {t("fields.employee")}
+                </th>
+                <th className="font-light text-sm w-[5%]">
+                  {t("fields.branch")}
+                </th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
                   {t("fields.base_salary")}
                 </th>
@@ -91,7 +96,7 @@ export default function PeriodEmployeeTable({
                   {t("fields.deduction")}
                 </th>
                 <th className="font-light text-sm text-right whitespace-nowrap">
-                 {t("fields.net")}
+                  {t("fields.net")}
                 </th>
                 <th className="font-light text-sm w-[6%]"></th>
               </tr>
@@ -137,7 +142,7 @@ export default function PeriodEmployeeTable({
                       }}
                     >
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
-                        {r.employee.branch}
+                        {getLocalizedName(r.employee.branch, locale)}
                       </span>
                     </td>
                     <td
@@ -200,12 +205,12 @@ export default function PeriodEmployeeTable({
                   colSpan={6}
                   className="text-left pl-6 text-sm font-normal text-gray-700 whitespace-nowrap"
                 >
-                  {t("info.showing",{count:filterd.length})}
+                  {t("info.showing", { count: filterd.length })}
                 </th>
                 <th colSpan={2}>
                   <div className="text-right pr-6">
                     <p className="text-xs text-gray-500 uppercase whitespace-nowrap">
-                       {t("info.total_payroll")}
+                      {t("info.total_payroll")}
                     </p>
                     <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">
                       ฿ {moneyFormat(filteredTotalNet || 0)}
