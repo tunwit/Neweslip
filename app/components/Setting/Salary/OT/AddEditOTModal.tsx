@@ -55,8 +55,8 @@ export default function AddEditOTModal({
     defaultValues: {
       name: field?.name || "",
       nameEng: field?.nameEng || "",
-      type: field?.type,
-      method: field?.method,
+      type: field?.type || OT_TYPE.BASEDONSALARY,
+      method: field?.method || OT_METHOD.DAILY,
       rate: field?.rate || "1",
       rateOfPay: field?.rateOfPay || "0",
     },
@@ -148,8 +148,10 @@ export default function AddEditOTModal({
                           </p>
                         )}
                       </FormLabel>
+                      
                       <ToggleButtonGroup
-                        value={OT_METHOD[field.value as keyof typeof OT_METHOD]}
+                      
+                        value={field.value}
                         // size="sm"
                         onChange={(e, v) => {
                           field.onChange(

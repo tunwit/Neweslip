@@ -2,7 +2,7 @@ import { Pagination } from "@mui/material";
 import EmployeesTable from "./EmployeesTable";
 import { useEmployees } from "@/hooks/useEmployees";
 import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
-import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { Button } from "@mui/joy";
 import { deleteEmployee } from "@/app/action/deleteEmployee";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
@@ -15,12 +15,14 @@ import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 
 interface EmployeeTableWrapperProps {
+  orderBy?: EMPLOYEE_ORDERBY;
   search_query?: string;
   branchId?: number;
   status?: EMPLOYEE_STATUS | null;
 }
 
 export function EmployeeTableWrapper({
+  orderBy,
   search_query,
   branchId,
   status,
@@ -29,6 +31,7 @@ export function EmployeeTableWrapper({
   const [limit, setLimit] = useState(15);
 
   const { data, isError, isSuccess, isLoading } = useEmployees({
+    orderBy,
     search_query,
     branchId,
     status,

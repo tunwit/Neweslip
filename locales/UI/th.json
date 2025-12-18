@@ -26,6 +26,7 @@
   },
   "navigation": {
     "dashboard": "ภาพรวม",
+    "configure": "แก้ไข",
     "employees": "พนักงาน",
     "documents": "เอกสาร",
     "payrolls": "เงินเดือน",
@@ -94,13 +95,13 @@
       "save": "บันทึก",
       "change_password": "เปลี่ยนรหัสผ่าน"
     },
-    "change_password":{
-      "label":"เปลี่ยนรหัสผ่าน",
-      "description":"รหัสผ่านนี้ใช้ในการเปิดรอบเงินเดือน",
-      "fields":{
-        "old_password":"รหัสผ่านเดิม",
-        "new_password":"รหัสผ่านใหม่",
-        "confirm_password":"ยืนยันรหัสผ่าน"
+    "change_password": {
+      "label": "เปลี่ยนรหัสผ่าน",
+      "description": "รหัสผ่านนี้ใช้ในการเปิดรอบเงินเดือน",
+      "fields": {
+        "old_password": "รหัสผ่านเดิม",
+        "new_password": "รหัสผ่านใหม่",
+        "confirm_password": "ยืนยันรหัสผ่าน"
       }
     },
     "modal": {
@@ -108,11 +109,11 @@
         "success": "บันทึกข้อมูลสำเร็จ",
         "fail": "บันทึกข้อมูลไม่สำเร็จ {err}"
       },
-      "change_password":{
-        "incorrect":"รหัสผ่านไม่ถูกต้อง",
-        "password_not_set":"รหัสผ่านไม่ถูกต้อง",
-        "fail":"เปลี่ยนรหัสไม่สำเร็จ {err}",
-        "success":"เปลี่ยนรหัสผ่านสำเร็จ"
+      "change_password": {
+        "incorrect": "รหัสผ่านไม่ถูกต้อง",
+        "password_not_set": "รหัสผ่านไม่ถูกต้อง",
+        "fail": "เปลี่ยนรหัสไม่สำเร็จ {err}",
+        "success": "เปลี่ยนรหัสผ่านสำเร็จ"
       }
     }
   },
@@ -126,7 +127,7 @@
       "create": "เพิ่มพนักงาน",
       "delete": "ลบพนักงาน",
       "close": "ปิด",
-      "save":"บันทึก"
+      "save": "บันทึก"
     },
     "search": {
       "label": "ค้นหาพนักงาน",
@@ -176,6 +177,12 @@
         "active": "ทำงานอยู่",
         "parttime": "พาร์ทไทม์",
         "inactive": "ลาออก"
+      },
+      "order_by": {
+        "label": "เรียงโดย",
+        "name": "ชื่อ",
+        "salary": "เงินเดือน",
+        "createdat": "เวลาที่สร้าง"
       }
     }
   },
@@ -396,7 +403,7 @@
       "penalties": "ค่าหักลงโทษ",
       "earning": "รายได้",
       "displayonly": "แสดงเท่านั้น",
-      "total":"รวม",
+      "total": "รวม",
       "total_base_salary": "รวมฐานเงินเดือน",
       "total_earning": "รวมรายได้",
       "total_deduction": "รวมรายหัก",
@@ -746,5 +753,13 @@
     "minutesAgo": "{count} นาทีที่แล้ว",
     "hoursAgo": "{count} ชั่วโมงที่แล้ว",
     "yesterdayAt": "เมื่อวาน เวลา {time}"
+  },
+  "not_found": {
+    "label": "โอ๊ะ เเย่จัง",
+    "description": "เราได้ตรวจสอบทั่วทั้งกาแล็กซี่ ใต้ดาวหาง และเเม้เเต่ใต้เตียงแล้ว ขอโทษด้วยเราไม่พบหน้าที่คุณหา",
+    "disclaimer": "กรุณาตรวจสอบลิ้งก์ และทำให้เเน่ใจว่าถูกต้อง",
+    "actions": {
+      "back": "กลับสู่หน้าหลัก"
+    }
   }
 }

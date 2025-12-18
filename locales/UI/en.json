@@ -176,6 +176,12 @@
         "active": "Active",
         "parttime": "Part-time",
         "inactive": "Inactive"
+      },
+      "order_by": {
+        "label": "Order By",
+        "name": "Name",
+        "salary": "Salary",
+        "createdat": "Created Time"
       }
     }
   },
@@ -734,5 +740,13 @@
     "minutesAgo": "{count} minutes ago",
     "hoursAgo": "{count} hours ago",
     "yesterdayAt": "Yesterday at {time}"
+  },
+  "not_found": {
+    "label": "Oopsie !",
+    "description": "We have search all overs the galaxy behind astroids and even under the bed, We cannot find this page.",
+    "disclaimer": "Please check the url and make sure it correct",
+    "actions": {
+      "back": "back to home"
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Employee, EmployeeWithShop } from "@/types/employee";
-import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { PaginatedResponse } from "@/types/response";
 import { extractSlug } from "@/utils/extractSlug";
 import { fetchwithauth } from "@/utils/fetcher";
@@ -11,13 +11,15 @@ import {
 import { usePathname } from "next/navigation";
 
 interface useEmployeesProps {
+  orderBy?: EMPLOYEE_ORDERBY;
   search_query?: string;
-  page?: Number;
-  limit?: Number;
+  page?: number;
+  limit?: number;
   status?: EMPLOYEE_STATUS | null;
-  branchId?: Number;
+  branchId?: number;
 }
 export const useEmployees = ({
+  orderBy,
   search_query,
   status,
   page,
@@ -35,10 +37,19 @@ export const useEmployees = ({
     ...(status && status !== null && { status: status }),
     ...(page && { page: page.toString() }),
     ...(limit && { limit: limit.toString() }),
+    ...(orderBy && { orderBy: orderBy.toString().toLocaleLowerCase() }),
   });
 
   return useQuery<PaginatedResponse<EmployeeWithShop[]>>({
-    queryKey: ["employees", slug, search_query, page, branchId, status],
+    queryKey: [
+      "employees",
+      slug,
+      search_query,
+      page,
+      branchId,
+      status,
+      orderBy,
+    ],
     queryFn: () => {
       return fetchwithauth({
         endpoint: `/employees?${queryParams}`,

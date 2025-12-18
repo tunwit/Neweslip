@@ -13,13 +13,14 @@ import { useDebounce } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
 import BranchSelector from "@/widget/BranchSelector";
 import StatusSelector from "@/widget/StatusSelector";
-import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { Pagination } from "@mui/material";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { useEmployeeStats } from "@/hooks/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
+import OrderByFilter from "@/widget/OrderByFilter";
 
 export default function Home() {
   const rounter = useRouter();
@@ -27,10 +28,13 @@ export default function Home() {
   const [debounced] = useDebounce(search, 500);
   const [branchId, setBranchId] = useState(-1);
   const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
+  const [orderBy, setOrderBy] = useState<EMPLOYEE_ORDERBY>(
+    EMPLOYEE_ORDERBY.NAME,
+  );
+
   const { name } = useCurrentShop();
   const tb = useTranslations("breadcrumb");
   const t = useTranslations("employees");
-  const t2 = useTranslations();
   return (
     <>
       <title>Employee - E Slip</title>
@@ -76,7 +80,9 @@ export default function Home() {
             </div>
 
             <div className="w-[20%]">
-              <p className="text-black text-xs mb-1">{t("filters.status.label")}</p>
+              <p className="text-black text-xs mb-1">
+                {t("filters.status.label")}
+              </p>
               <StatusSelector
                 isEnableAll={true}
                 status={status}
@@ -85,7 +91,9 @@ export default function Home() {
             </div>
 
             <div className="w-[20%]">
-              <p className="text-black text-xs mb-1">{t("filters.branch.label")}</p>
+              <p className="text-black text-xs mb-1">
+                {t("filters.branch.label")}
+              </p>
               <BranchSelector
                 branchId={branchId}
                 onChange={(n) => {
@@ -94,9 +102,21 @@ export default function Home() {
                 isEnableAll={true}
               />
             </div>
+            <div className="w-[20%]">
+              <p className="text-black text-xs mb-1">
+                {t("filters.order_by.label")}
+              </p>
+              <OrderByFilter
+                onChange={(n) => {
+                  setOrderBy(n);
+                }}
+                choices={EMPLOYEE_ORDERBY}
+              />
+            </div>
           </div>
           <div className="flex justify-center mt-5">
             <EmployeeTableWrapper
+              orderBy={orderBy}
               search_query={debounced}
               branchId={branchId}
               status={status}

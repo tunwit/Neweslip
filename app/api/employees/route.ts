@@ -10,11 +10,24 @@ import {
   successPaginationResponse,
 } from "@/utils/respounses/respounses";
 import { auth } from "@clerk/nextjs/server";
-import { and, eq, getTableColumns, like, or, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, like, or, sql } from "drizzle-orm";
 import { NextRequest } from "next/server";
-import { EMPLOYEE_STATUS } from "@/types/enum/enum";
+import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { EmployeeWithShop } from "@/types/employee";
 import { isOwner } from "@/lib/isOwner";
+
+export function buildOrderBy<T extends Record<string, string>>(sortBy: string) {
+  switch (sortBy) {
+    case "name":
+      return desc(employeesTable.firstName);
+    case "salary":
+      return desc(employeesTable.salary);
+    case "createdat":
+      return desc(employeesTable.createdAt);
+    default:
+      return desc(employeesTable.firstName);
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,7 +42,7 @@ export async function GET(request: NextRequest) {
     if (!shopIdQ) {
       return errorResponse("Illegal Argument", 400);
     }
-    
+
     if (!(await isOwner(Number(shopIdQ), userId))) {
       return errorResponse("Forbidden", 403);
     }
@@ -49,6 +62,10 @@ export async function GET(request: NextRequest) {
     const search = request.nextUrl.searchParams.get("search_query");
     const page = Number(request.nextUrl.searchParams.get("page") || 1);
     const limit = Number(request.nextUrl.searchParams.get("limit") || 15);
+    const orderBy = String(
+      request.nextUrl.searchParams.get("orderBy") || "name",
+    );
+
     const offset = (page - 1) * limit;
 
     const trimmedSearch = search?.trim();
@@ -74,7 +91,6 @@ export async function GET(request: NextRequest) {
     );
 
     const { shopId, branchId, ...rest } = getTableColumns(employeesTable);
-
     // Single query with window function to get count
     const results = await globalDrizzle
       .select({
@@ -110,7 +126,7 @@ export async function GET(request: NextRequest) {
       .where(whereConditions)
       .offset(offset)
       .limit(limit)
-      .orderBy(employeesTable.createdAt);
+      .orderBy(buildOrderBy(orderBy));
 
     // Extract total count from first row (all rows have same count due to window function)
     const total = results.length > 0 ? Number(results[0].totalCount) : 0;

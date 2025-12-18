@@ -105,7 +105,7 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
               {t("table.total")}
             </th>
             <td className="border-t">
-              <div className="flex flex-row gap-1 items-center ">
+              <div className="flex flex-row gap-1 items-center pl-1">
                 <p>{employeeStat?.data?.totalEmployees || 0}</p>
                 <Icon icon={"mdi:users"} />
               </div>
