@@ -60,9 +60,6 @@ export default function PendingElement({
   const moneyFormat = new Intl.NumberFormat("th-TH").format(amount || 0);
   const pathname = usePathname();
 
-  const editHandler = () => {
-
-  };
   return (
     <>
       <div className="flex flex-row gap-5 items-center w-full bg-[#f4f6f8] min-h-16 rounded-sm border border-[#d4d4d4] pl-5 pr-10 opacity-80 shadow-sm">

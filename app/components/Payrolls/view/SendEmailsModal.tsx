@@ -13,7 +13,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 interface ProgressItem {
   email: string;
@@ -61,6 +62,7 @@ export default function SendEmailsModal({
   const t = useTranslations("view_payroll.send_mail");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
+  const locale = useLocale();
 
   const {
     checked,
@@ -486,7 +488,7 @@ export default function SendEmailsModal({
                         {/* Branch */}
                         <div className="mt-1">
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            {record.employee.branch}
+                            {getLocalizedName(record.employee.branch, locale)}
                           </span>
                         </div>
                       </div>

@@ -90,7 +90,8 @@ export default function Home() {
             .toLowerCase()
             .includes(q) ||
           r.employee.nickName.toLowerCase().includes(q) ||
-          r.employee.branch.toLowerCase().includes(q)
+          r.employee.branch.name.toLowerCase().includes(q) ||
+          r.employee.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );

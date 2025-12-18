@@ -55,7 +55,7 @@ export default function Home() {
   const tBreadcrumb = useTranslations("breadcrumb");
   const [hideHeader, setHideHeader] = useState(false);
   const { name } = useCurrentShop();
-  
+
   const {
     data: periodData,
     isLoading: loadingPeriod,
@@ -90,7 +90,8 @@ export default function Home() {
             .toLowerCase()
             .includes(q) ||
           r.employee.nickName.toLowerCase().includes(q) ||
-          r.employee.branch.toLowerCase().includes(q)
+          r.employee.branch.name.toLowerCase().includes(q) ||
+          r.employee.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );

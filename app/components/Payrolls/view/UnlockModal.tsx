@@ -42,7 +42,7 @@ export default function UnlockModal({
     setError("");
     setIsSubmitting(true);
     try {
-      await unlockPayroll(periodId, password, user?.id);
+      const result = await unlockPayroll(periodId, password, user?.id);
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodId}`);
       queryClient.invalidateQueries({
@@ -57,13 +57,16 @@ export default function UnlockModal({
         queryKey: ["payrollPeriod", "summary"],
         exact: false,
       });
-      setOpen(false);
-    } catch (err: any) {
-      if (err.message === "wrong password") {
+
+      if (result.code === 401) {
         setError(t("modal.unlock.wrong_password"));
+        return;
       } else {
-        showError(t("modal.unlock.fail", { err: err.message }));
+        showError(t("modal.unlock.fail", { err: "" }));
       }
+      if (result.code === 200) setOpen(false);
+    } catch (err: any) {
+      showError(t("modal.unlock.fail", { err: err.message }));
     } finally {
       setIsSubmitting(false);
     }

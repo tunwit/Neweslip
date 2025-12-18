@@ -43,8 +43,10 @@ export interface PayrollRecordSummary {
     firstName: string;
     lastName: string;
     nickName: string;
-    branch: string;
-    branchEng: string;
+    branch: {
+      name: string;
+      nameEng: string;
+    };
     email: string;
     bankAccountNumber: string;
     bankAccountOwner: string;

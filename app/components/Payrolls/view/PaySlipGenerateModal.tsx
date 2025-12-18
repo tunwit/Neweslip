@@ -14,7 +14,8 @@ import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError } from "@/utils/showSnackbar";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 interface PaySlipGenerateModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -32,7 +33,7 @@ export default function PaySlipGenerateModal({
   const t = useTranslations("view_payroll.generate");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
-
+  const locale = useLocale();
   const getBlob = async (recordId: number) => {
     const response = await fetch(`/api/payroll/records/${recordId}/payslip`, {
       method: "POST",
@@ -164,7 +165,7 @@ export default function PaySlipGenerateModal({
                         {record.employee.nickName}
                       </p>
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {record.employee.branch}
+                        {getLocalizedName(record.employee.branch, locale)}
                       </span>
                     </div>
                   </div>

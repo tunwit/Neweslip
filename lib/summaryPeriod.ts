@@ -134,8 +134,10 @@ export async function summaryPeriod(
         firstName: r.employee.firstName ?? "",
         lastName: r.employee.lastName ?? "",
         nickName: r.employee.nickName ?? "",
-        branch: r.employee.branch,
-        branchEng: r.employee.branchEng,
+        branch: {
+          name: r.employee.branch,
+          nameEng: r.employee.branchEng,
+        },
         email: r.employee.email ?? "",
         bankAccountNumber: r.employee.bankAccountNumber ?? "",
         bankAccountOwner: r.employee.bankAccountOwner ?? "",

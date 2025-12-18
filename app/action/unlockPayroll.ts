@@ -49,12 +49,12 @@ export async function unlockPayroll(
     throw new Error("Shop Not found");
   }
 
-  if (!shop.password) throw new Error("password not set");
+  if (!shop.password) return { code: 404, message: "password not set" };
 
   if (!(await verifyPassword(password, shop.password))) {
-    throw new Error("wrong password");
+    return { code: 401, message: "wrong password" };
   }
-  
+
   try {
     await globalDrizzle
       .update(payrollPeriodsTable)
@@ -63,6 +63,10 @@ export async function unlockPayroll(
         edited: true,
       })
       .where(and(eq(payrollPeriodsTable.id, periodId)));
+    return {
+      code: 200,
+      message: "success",
+    };
   } catch (err) {
     throw err;
   }

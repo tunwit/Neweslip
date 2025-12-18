@@ -9,7 +9,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
@@ -18,6 +19,7 @@ interface SummaryCardProps {
 export default function SummaryCard({ record }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations("record");
+  const locale = useLocale()
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -39,7 +41,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                   {record.employee.nickName}
                 </p>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {record.employee.branch}
+                  {getLocalizedName(record.employee.branch,locale)}
                 </span>
               </div>
             </div>

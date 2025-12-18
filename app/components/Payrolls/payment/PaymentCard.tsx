@@ -14,7 +14,8 @@ import { isValidPromptPay } from "@/lib/isValidPromtpay";
 import { banks } from "@/utils/bankList";
 import Image from "next/image";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
@@ -26,7 +27,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
   const te = useTranslations("employees");
   const tr = useTranslations("record");
   const tp = useTranslations("payment_payroll");
-
+  const locale = useLocale();
   const [copiedId, setCopiedId] = useState("");
 
   const handleCopy = (text: string, id: string) => {
@@ -59,7 +60,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                   {formatBankAccountNumber(record.employee.bankAccountNumber)}
                 </p>
                 <p className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {record.employee.branch}
+                  {getLocalizedName(record.employee.branch, locale)}
                 </p>
               </span>
             </div>
@@ -67,7 +68,9 @@ export default function PaymentCard({ record }: SummaryCardProps) {
 
           <div className="grid grid-cols-[1fr_auto] gap-5 items-center">
             <div className="text-right">
-              <p className="text-xs text-gray-500 uppercase mb-1">{tr("fields.net")}</p>
+              <p className="text-xs text-gray-500 uppercase mb-1">
+                {tr("fields.net")}
+              </p>
               <p className="text-xl font-semibold text-gray-900">
                 ฿ {moneyFormat(record.totals.net)}
               </p>
@@ -191,7 +194,9 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-3">
                       <QrCode className="w-5 h-5 text-purple-600" />
-                      <h4 className="font-semibold text-gray-900">{tp("tabs.manual.sections.promptpay")}</h4>
+                      <h4 className="font-semibold text-gray-900">
+                        {tp("tabs.manual.sections.promptpay")}
+                      </h4>
                     </div>
 
                     <div className="bg-white rounded-lg p-4 space-y-3 ">
@@ -243,7 +248,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                             <div className="text-center px-4">
                               <QrCode className="w-16 h-16 text-gray-400 mx-auto mb-2" />
                               <p className="text-xs text-gray-500 font-medium">
-                               {tp("info.qr_not_available")}
+                                {tp("info.qr_not_available")}
                               </p>
                             </div>
                           </div>
