@@ -11,11 +11,10 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronRight } from "@mui/icons-material";
 import { Checkbox } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { _Translator, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { IntlShape } from "next-intl";
 
 interface PeriodsTableProps {
   periods: PayrollPeriod[];
@@ -26,7 +25,7 @@ interface PeriodsTableProps {
 
 const getStatusBadge = (
   status: keyof typeof PAY_PERIOD_STATUS,
-  t: IntlShape["formatMessage"],
+  t: _Translator<Record<string, any>, string>,
 ) => {
   const styles = {
     [PAY_PERIOD_STATUS.DRAFT]: "bg-gray-100 text-gray-800",
@@ -171,7 +170,7 @@ export default function PeriodsTable({
                   </div>
 
                   <div className="flex items-center justify-end gap-3">
-                    {getStatusBadge(payroll.status,tPeriod)}
+                    {getStatusBadge(payroll.status, tPeriod)}
                     <Link
                       href={`${pathname}/${payroll.status === PAY_PERIOD_STATUS.DRAFT ? "edit" : "view"}?id=${payroll.id}`}
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"

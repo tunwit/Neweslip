@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { IntlShape } from "next-intl";
+import { _Translator } from "next-intl";
 
 export function moneyFormat(value: number | string | Decimal): string {
   const decimals = 2;
@@ -35,7 +35,7 @@ export function dateTimeFormat(date: Date) {
 
 export function formatModifiedTime(
   date: Date,
-  t: IntlShape["formatMessage"],
+  t: _Translator<Record<string, any>, string>,
 ): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();

@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
-import "./globals.css";
-import DashboardSidebar from "./components/DashboardSidebar/DashboardSidebar";
-import Providers from "./providers";
 import { redirect } from "next/navigation";
-import Navbar from "./components/Navbar/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
-import SnackBar from "../widget/SnackBar";
 import ClientWrapper from "@/widget/ClientWrapper";
 import { ClerkProvider } from "@clerk/nextjs";
-import "./globals.css";
+import "../globals.css";
 import { NextIntlClientProvider } from "next-intl";
+import Providers from "../providers";
+import Navbar from "../components/Navbar/Navbar";
 
 const propmt = Prompt({
   subsets: ["thai", "latin"],
@@ -21,16 +18,25 @@ const propmt = Prompt({
 
 export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const locale = (await params).locale;
   return (
-    <ClerkProvider>
-      <html className={`${propmt.variable} antialiased`}>
-        <body className={`${propmt.className} antialiased flex`}>
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <NextIntlClientProvider locale={locale}>
+      <Providers>
+        <Suspense>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+
+            <div className="flex flex-row h-full max-h-[calc(100vh-80px)] w-screen overflow-hidden">
+              <ClientWrapper>{children}</ClientWrapper>
+            </div>
+          </div>
+        </Suspense>
+      </Providers>
+    </NextIntlClientProvider>
   );
 }

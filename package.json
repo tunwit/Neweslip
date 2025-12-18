@@ -62,10 +62,10 @@
     "use-debounce": "^10.0.4",
     "xlsx-js-style": "^1.2.0",
     "zod": "^3.25.23",
-    "zustand": "^5.0.4"
+    "zustand": "^5.0.4",
+    "@tailwindcss/postcss": "^4.1.18"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^20",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",

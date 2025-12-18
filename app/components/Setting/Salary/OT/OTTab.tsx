@@ -39,7 +39,7 @@ export default function OTTab() {
 
   const handleDelete = async () => {
     try {
-      if (!shopId) return;
+      if (!shopId || !user?.id) return;
       uncheckall();
       await deleteOTField(checked, shopId, user?.id);
       showSuccess("Delete field success");
@@ -85,7 +85,8 @@ export default function OTTab() {
               {
                 key: "method",
                 label: t("fields.method"),
-                render: (row: OtField) => t(`method.${row.method.toLowerCase()}`),
+                render: (row: OtField) =>
+                  t(`method.${row.method.toLowerCase()}`),
               },
               { key: "rate", label: t("fields.rate") },
             ]}
