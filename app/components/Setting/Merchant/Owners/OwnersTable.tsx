@@ -1,5 +1,5 @@
-import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { useOwners } from "@/hooks/useOwners";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { useOwners } from "@/hooks/shop/useOwners";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
@@ -8,7 +8,7 @@ import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { Owner } from "@/types/owner";
 import { useUser } from "@clerk/nextjs";
-import { deleteShopOwner } from "@/app/action/deleteShopOwner";
+import { deleteShopOwner } from "@/app/action/shop/deleteShopOwner";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";

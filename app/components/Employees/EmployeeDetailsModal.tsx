@@ -21,7 +21,7 @@ import { Edit, Save } from "@mui/icons-material";
 import BranchSelector from "../../../widget/BranchSelector";
 import { Employee, EmployeeWithShop, NewEmployee } from "@/types/employee";
 import StatusSelector from "@/widget/StatusSelector";
-import { changeEmployeeStatus } from "@/app/action/changeEmployeeStatus";
+import { changeEmployeeStatus } from "@/app/action/employee/changeEmployeeStatus";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -33,7 +33,7 @@ import EmployeeDetailsForm from "./detailsTab/EmployeeDetailsForm";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { useZodForm } from "@/lib/useZodForm";
 import normalizeNull from "@/utils/normallizeNull";
-import { updateEmployee } from "@/app/action/updateEmployee";
+import { updateEmployee } from "@/app/action/employee/updateEmployee";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
@@ -54,7 +54,7 @@ export default function EmployeeDetailsModal({
   const [status, setStatus] = useState(employee.status);
   const queryClient = useQueryClient();
   const user = useUser();
-  const t = useTranslations("employees")
+  const t = useTranslations("employees");
 
   const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
     setStatus(newValue);

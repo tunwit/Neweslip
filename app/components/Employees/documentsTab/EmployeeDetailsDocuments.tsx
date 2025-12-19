@@ -1,16 +1,16 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Table } from "@mui/joy";
 import React from "react";
-import { useEmployeeDocuments } from "@/hooks/useEmployeeDocuments";
+import { useEmployeeDocuments } from "@/hooks/employee/useEmployeeDocuments";
 import DocumentTable from "@/widget/Documents/DocumentTable";
-import { renameEmployeeDocument } from "@/app/action/renameEmployeeDocument";
+import { renameEmployeeDocument } from "@/app/action/employee/renameEmployeeDocument";
 import { EmployeeDocumentWithUploader } from "@/types/employeeDocument";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useUser } from "@clerk/nextjs";
 import { useQueryClient } from "@tanstack/react-query";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { uploadEmployeeDocuments } from "@/app/action/uploadEmployeeDocument";
-import deleteEmployeeDocument from "@/app/action/deleteEmployeeDocument";
+import { uploadEmployeeDocuments } from "@/app/action/employee/uploadEmployeeDocument";
+import deleteEmployeeDocument from "@/app/action/employee/deleteEmployeeDocument";
 import { useTranslations } from "next-intl";
 interface EmployeeDetailsDocumentsProps {
   title: string;
@@ -23,7 +23,7 @@ export default function EmployeeDetailsDocuments({
   employeeId,
 }: EmployeeDetailsDocumentsProps) {
   const { data } = useEmployeeDocuments({ employeeId: employeeId });
-  const t = useTranslations("documents")
+  const t = useTranslations("documents");
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
   const personalDocs = data?.data?.filter((doc) => doc.tag === "personal");
@@ -39,7 +39,7 @@ export default function EmployeeDetailsDocuments({
   ) => {
     if (!shopId || !user?.id) return;
     const prefix = doc.key.substring(0, doc.key.lastIndexOf("/"));
-    
+
     try {
       await renameEmployeeDocument(
         doc.id,

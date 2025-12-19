@@ -11,7 +11,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { Button, CircularProgress } from "@mui/joy";
 import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
-import { createBranch } from "@/app/action/createBranch";
+import { createBranch } from "@/app/action/branch/createBranch";
 import Link from "next/link";
 
 export default function SetupBranchPage() {

@@ -1,7 +1,7 @@
-import { deletePayrollPeriod } from "@/app/action/deletePayrollPeriod";
+import { deletePayrollPeriod } from "@/app/action/payroll/period/deletePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
@@ -92,8 +92,9 @@ export default function PeriodsTable({
     } finally {
       uncheckall();
     }
-  };console.log(periods);
-  
+  };
+  console.log(periods);
+
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">

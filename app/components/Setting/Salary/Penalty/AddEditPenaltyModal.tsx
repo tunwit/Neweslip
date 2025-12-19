@@ -1,8 +1,8 @@
-import { createOTField } from "@/app/action/createOTField";
-import { createSalaryField } from "@/app/action/createSalaryField";
-import { updateOTField } from "@/app/action/updateOTFIeld";
-import { updateSalaryFIeld } from "@/app/action/updateSalaryFIeld";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { createOTField } from "@/app/action/payroll/OTField/createOTField";
+import { createSalaryField } from "@/app/action/payroll/salaryfield/createSalaryField";
+import { updateOTField } from "@/app/action/payroll/OTField/updateOTFIeld";
+import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { OTFieldSchema } from "@/schemas/setting/OTFieldForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
@@ -36,8 +36,8 @@ import { Controller, FormProvider } from "react-hook-form";
 import { Decimal } from "decimal.js";
 import { NewPenaltyField, PenaltyField } from "@/types/penaltyField";
 import { PenaltyFieldSchema } from "@/schemas/setting/PenaltyFieldForm";
-import { createPenaltyField } from "@/app/action/createPenaltyField";
-import { updatePenaltyField } from "@/app/action/updatePenaltyFIeld";
+import { createPenaltyField } from "@/app/action/payroll/penaltyField/createPenaltyField";
+import { updatePenaltyField } from "@/app/action/payroll/penaltyField/updatePenaltyFIeld";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 

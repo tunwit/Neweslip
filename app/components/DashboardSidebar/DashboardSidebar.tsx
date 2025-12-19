@@ -6,7 +6,7 @@ import ShopSidebarElement from "./ShopSidebarElement";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "@mui/joy";
 import useHamburger from "@/hooks/useHamburger";
-import { useShop } from "@/hooks/useShop";
+import { useShop } from "@/hooks/shop/useShop";
 import { createSlug } from "@/utils/createSlug";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import MoneyIcon from "@/assets/icons/MoneyIcon";

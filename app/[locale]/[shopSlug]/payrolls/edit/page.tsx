@@ -6,7 +6,7 @@ import Option from "@mui/joy/Option";
 import { Add } from "@mui/icons-material";
 import { useEffect, useMemo, useRef, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePayrollRecords } from "@/hooks/usePayrollRecords";
+import { usePayrollRecords } from "@/hooks/payroll/record/usePayrollRecords";
 import {
   useParams,
   usePathname,
@@ -16,12 +16,12 @@ import {
 import { useCheckBox } from "@/hooks/useCheckBox";
 import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
 import { PayrollRecord } from "@/types/payrollRecord";
-import { deletePayrollRecords } from "@/app/action/deletePayrollRecord";
+import { deletePayrollRecords } from "@/app/action/payroll/record/deletePayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/nextjs";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
-import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
+import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
@@ -32,14 +32,14 @@ import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { type DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
-import { updatePayrollRecord } from "@/app/action/updatePayrollRecord";
-import { updatePayrollPeriod } from "@/app/action/updatePayrollPeriod";
+import { updatePayrollRecord } from "@/app/action/payroll/record/updatePayrollRecord";
+import { updatePayrollPeriod } from "@/app/action/payroll/period/updatePayrollPeriod";
 import { ClickAwayListener } from "@mui/material";
-import { usePeriodFields } from "@/hooks/usePeriodFields";
+import { usePeriodFields } from "@/hooks/payroll/fields/usePeriodFields";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { useTranslations } from "next-intl";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");

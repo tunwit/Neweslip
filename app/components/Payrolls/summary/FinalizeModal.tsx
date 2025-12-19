@@ -1,5 +1,5 @@
 "use client";
-import { finalizePayroll } from "@/app/action/finalizePayroll";
+import { finalizePayroll } from "@/app/action/payroll/period/finalizePayroll";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import { PAYROLL_PROBLEM } from "@/types/enum/enum";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";

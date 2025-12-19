@@ -3,9 +3,9 @@ import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
 import AddBranchModal from "./AddEditBranchModal";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/useBranch";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { deleteBranch } from "@/app/action/deleteBranch";
+import { useBranch } from "@/hooks/branch/useBranch";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
@@ -32,7 +32,7 @@ export default function BranchesTab() {
   };
 
   const { data, isLoading, isSuccess } = useBranch();
-  const t = useTranslations("branches")
+  const t = useTranslations("branches");
   const handleDelete = async () => {
     try {
       if (!shopId) return;

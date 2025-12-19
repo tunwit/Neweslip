@@ -7,7 +7,7 @@ import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
-import { useShop } from "@/hooks/useShop";
+import { useShop } from "@/hooks/shop/useShop";
 import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import SnackBar from "../widget/SnackBar";

@@ -1,11 +1,15 @@
 import { Pagination } from "@mui/material";
 import EmployeesTable from "./EmployeesTable";
-import { useEmployees } from "@/hooks/useEmployees";
+import { useEmployees } from "@/hooks/employee/useEmployees";
 import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
-import { EMPLOYEE_ORDERBY, EMPLOYEE_SORTBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
+import {
+  EMPLOYEE_ORDERBY,
+  EMPLOYEE_SORTBY,
+  EMPLOYEE_STATUS,
+} from "@/types/enum/enum";
 import { Button } from "@mui/joy";
-import { deleteEmployee } from "@/app/action/deleteEmployee";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { deleteEmployee } from "@/app/action/employee/deleteEmployee";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { useCheckBox } from "@/hooks/useCheckBox";
@@ -16,7 +20,7 @@ import { useTranslations } from "next-intl";
 
 interface EmployeeTableWrapperProps {
   sortBy?: EMPLOYEE_SORTBY;
-  orderBy?:EMPLOYEE_ORDERBY
+  orderBy?: EMPLOYEE_ORDERBY;
   search_query?: string;
   branchId?: number;
   status?: EMPLOYEE_STATUS | null;

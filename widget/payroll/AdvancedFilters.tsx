@@ -1,5 +1,5 @@
-import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
-import { usePeriodFields } from "@/hooks/usePeriodFields";
+import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
+import { usePeriodFields } from "@/hooks/payroll/fields/usePeriodFields";
 import {
   PayrollPeriodSummary,
   PayrollRecordSummary,

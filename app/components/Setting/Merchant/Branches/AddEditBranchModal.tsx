@@ -1,6 +1,6 @@
-import { createBranch } from "@/app/action/createBranch";
-import { updateBranch } from "@/app/action/updateBranch";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { createBranch } from "@/app/action/branch/createBranch";
+import { updateBranch } from "@/app/action/branch/updateBranch";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { useZodForm } from "@/lib/useZodForm";
 import { branchSchema } from "@/schemas/setting/branchForm";
@@ -48,7 +48,7 @@ export default function AddEditBranchModal({
   const { id } = useCurrentShop();
   const user = useUser();
   const queryClient = useQueryClient();
-  const t = useTranslations("branches")
+  const t = useTranslations("branches");
 
   const closeHandler = () => {
     setOpen(false);
@@ -93,17 +93,25 @@ export default function AddEditBranchModal({
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(submitHandler)}>
               <div className="grid  gap-3">
-                <InputForm control={control} name="name" label={t("fields.name")} />
+                <InputForm
+                  control={control}
+                  name="name"
+                  label={t("fields.name")}
+                />
                 <InputForm
                   control={control}
                   name="nameEng"
                   label={t("fields.name_eng")}
                 />
-                <InputForm control={control} name="address" label={t("fields.address")} />
+                <InputForm
+                  control={control}
+                  name="address"
+                  label={t("fields.address")}
+                />
               </div>
               <div className="mt-3">
                 <Button type="summit" sx={{ width: "100%" }}>
-                  {branch ? t("actions.update") : t("actions.create") }
+                  {branch ? t("actions.update") : t("actions.create")}
                 </Button>
               </div>
             </form>

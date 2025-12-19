@@ -2,18 +2,18 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/useBranch";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { deleteBranch } from "@/app/action/deleteBranch";
+import { useBranch } from "@/hooks/branch/useBranch";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Branch } from "@/types/branch";
 import AddIncomeModal from "./AddEditIncomeModal";
-import { useSalaryFields } from "@/hooks/useSalaryFields";
+import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
 import { SalaryField } from "@/types/salaryFields";
 import AddEditIncomeModal from "./AddEditIncomeModal";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/deleteSalaryField";
+import { deleteSalaryField } from "@/app/action/payroll/salaryfield/deleteSalaryField";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 
@@ -24,7 +24,7 @@ export default function IncomeTab() {
   const checkboxMethods = useCheckBox<number>("allIncomeTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
-  const t = useTranslations("earning")
+  const t = useTranslations("earning");
   const queryClient = useQueryClient();
 
   const addHandler = () => {

@@ -1,5 +1,5 @@
-import { createInvitation } from "@/app/action/createInvitation";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { createInvitation } from "@/app/action/invitation/createInvitation";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {

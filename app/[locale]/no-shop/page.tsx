@@ -1,5 +1,5 @@
 "use client";
-import { useShop } from "@/hooks/useShop";
+import { useShop } from "@/hooks/shop/useShop";
 import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";

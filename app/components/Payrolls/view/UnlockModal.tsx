@@ -1,6 +1,6 @@
-import { changeShopPassword } from "@/app/action/changeShopPassword";
-import { unlockPayroll } from "@/app/action/unlockPayroll";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { changeShopPassword } from "@/app/action/shop/changeShopPassword";
+import { unlockPayroll } from "@/app/action/payroll/period/unlockPayroll";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { hashPassword } from "@/lib/password";
 import { useZodForm } from "@/lib/useZodForm";
 import { changePasswordSchema } from "@/schemas/setting/changePasswordForm";

@@ -1,4 +1,4 @@
-import { useRecordDetails } from "@/hooks/useRecordDetails";
+import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { moneyFormat } from "@/utils/formmatter";
 import { Table } from "@mui/joy";
@@ -11,10 +11,10 @@ export default function PayrollSummaryTab({
   recordId,
 }: PayrollSummaryTabProps) {
   const { data } = useRecordDetails(recordId);
-  const t = useTranslations("record")
+  const t = useTranslations("record");
   return (
     <>
-      <Table borderAxis="both" >
+      <Table borderAxis="both">
         <thead>
           <tr>
             <th className="w-[45%]">{t("fields.title")}</th>
@@ -46,7 +46,9 @@ export default function PayrollSummaryTab({
           {data?.data?.otValues.map((ot) => (
             <tr key={ot.id}>
               <td className="font-medium">{ot.name}</td>
-              <td>{ot.amount} ({ot.value})</td>
+              <td>
+                {ot.amount} ({ot.value})
+              </td>
               <td></td>
             </tr>
           ))}
@@ -54,7 +56,9 @@ export default function PayrollSummaryTab({
             <tr key={penalty.id}>
               <td className="font-medium">{penalty.name}</td>
               <td></td>
-              <td>{penalty.amount} ({penalty.value})</td>
+              <td>
+                {penalty.amount} ({penalty.value})
+              </td>
             </tr>
           ))}
         </tbody>
@@ -69,7 +73,9 @@ export default function PayrollSummaryTab({
             </td>
           </tr>
           <tr className="bg-gray-50">
-            <td className="py-3 px-4 font-bold text-lg text-gray-700">{t("fields.net")}</td>
+            <td className="py-3 px-4 font-bold text-lg text-gray-700">
+              {t("fields.net")}
+            </td>
             <td
               colSpan={2}
               className="py-3 px-4 font-bold text-lg text-gray-900"

@@ -11,7 +11,7 @@ import Image from "next/image";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
-import { setMarkRecordAsPaid } from "@/app/action/markRecordAsPaid";
+import { setMarkRecordAsPaid } from "@/app/action/payroll/record/markRecordAsPaid";
 import { useUser } from "@clerk/nextjs";
 import { showError } from "@/utils/showSnackbar";
 

@@ -9,7 +9,7 @@ import PendingElement from "@/app/components/Payrolls/PendingElement";
 import dayjs from "dayjs";
 import { Checkbox } from "@mui/joy";
 import PendingSection from "@/app/components/Payrolls/PendingSection";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function Home() {
   const { name } = useCurrentShop();

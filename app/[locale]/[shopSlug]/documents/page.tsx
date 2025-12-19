@@ -15,19 +15,19 @@ import BranchSelector from "@/widget/BranchSelector";
 import StatusSelector from "@/widget/StatusSelector";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { Pagination } from "@mui/material";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { useEmployeeStats } from "@/hooks/useEmployeeStats";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
 import Head from "next/head";
 import DocumentTable from "@/widget/Documents/DocumentTable";
-import { useShopDocuments } from "@/hooks/useShopDocuments";
+import { useShopDocuments } from "@/hooks/shop/useShopDocuments";
 import { ShopDocumentWithUploader } from "@/types/shopDocument";
 import { useUser } from "@clerk/nextjs";
-import { renameEmployeeDocument } from "@/app/action/renameEmployeeDocument";
-import { uploadShopDocument } from "@/app/action/uploadShopDocument";
-import deleteShopDocument from "@/app/action/deleteShopDocument";
+import { renameEmployeeDocument } from "@/app/action/employee/renameEmployeeDocument";
+import { uploadShopDocument } from "@/app/action/shop/uploadShopDocument";
+import deleteShopDocument from "@/app/action/shop/deleteShopDocument";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { renameShopDocument } from "@/app/action/renameShopDocument";
+import { renameShopDocument } from "@/app/action/shop/renameShopDocument";
 import { Modal, ModalDialog } from "@mui/joy";
 import { useTranslations } from "next-intl";
 
@@ -86,7 +86,7 @@ export default function Document() {
         exact: false,
       });
       showSuccess(t("modal.delete.success"));
-    } catch (err:any) {
+    } catch (err: any) {
       showError(t("modal.delete.fail", { err: err?.message }));
     }
   };

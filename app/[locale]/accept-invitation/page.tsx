@@ -11,16 +11,16 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { redirect, usePathname, useSearchParams } from "next/navigation";
-import { createShopOwner } from "../../action/createShopOwner";
+import { createShopOwner } from "../../action/shop/createShopOwner";
 import { Button, FormControl, FormLabel, Input } from "@mui/joy";
-import { useShopDetails } from "@/hooks/useShopDetails";
+import { useShopDetails } from "@/hooks/shop/useShopDetails";
 import { useEffect, useState } from "react";
 import { FormSubmitHandler } from "react-hook-form";
 import { isOwner } from "@/lib/isOwner";
 import { clerkClient } from "@clerk/nextjs/server";
 import { useInvitation } from "@/hooks/useInvitation";
 import { getUserByEmail } from "../../action/getUserByEmail";
-import { acceptInvitation } from "../../action/acceptInvitation";
+import { acceptInvitation } from "../../action/invitation/acceptInvitation";
 import { showError } from "@/utils/showSnackbar";
 import Link from "next/link";
 

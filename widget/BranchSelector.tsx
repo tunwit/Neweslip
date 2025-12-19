@@ -1,7 +1,7 @@
 "use client";
 import { Autocomplete, Option, Select } from "@mui/joy";
 import React, { useEffect } from "react";
-import { useBranch } from "../hooks/useBranch";
+import { useBranch } from "../hooks/branch/useBranch";
 import { Branch } from "@/types/branch";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
@@ -21,7 +21,7 @@ export default function BranchSelector({
 }: BranchSelectorProps) {
   const { data, isLoading } = useBranch();
   const t = useTranslations("employees.filters");
-  const locale = useLocale()
+  const locale = useLocale();
   return (
     <>
       <Select
@@ -35,7 +35,7 @@ export default function BranchSelector({
         {data?.data?.map((v: Branch) => {
           return (
             <Option key={v.id} value={v.id}>
-              {getLocalizedName(v,locale)}
+              {getLocalizedName(v, locale)}
             </Option>
           );
         })}

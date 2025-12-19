@@ -10,7 +10,7 @@ import { Checkbox, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import { Add } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import MerchantTabs from "@/app/components/Setting/MerchantTabs";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import SalaraTabs from "@/app/components/Setting/SalaraTabs";
 import { useTranslations } from "next-intl";
 
@@ -19,7 +19,6 @@ export default function Page() {
   const { name } = useCurrentShop();
   const tBreadcrumb = useTranslations("breadcrumb");
   const t = useTranslations("setting");
-
 
   return (
     <main className="w-full bg-white font-medium overflow-scroll">

@@ -1,4 +1,4 @@
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import getFileIcon from "@/lib/getFileIcon";
 import { formatBytes } from "@/lib/unitConverter";
 import uploadDocmentValidator from "@/lib/uploadDocmentValidator";
@@ -286,20 +286,17 @@ export default function UploadDocumentModal({
 
           {files.map((f, index) => {
             const item = progressList[index];
-            
+
             let status = statusSpan.ready;
-            if(!item){
-              status = statusSpan.ready
-            }
-            else if (item?.success === false) {
+            if (!item) {
+              status = statusSpan.ready;
+            } else if (item?.success === false) {
               status = statusSpan.failed;
-            }
-            else if (item?.success === true) {
+            } else if (item?.success === true) {
               status = statusSpan.uploaded;
-            } 
-            else if (item?.progress) {
+            } else if (item?.progress) {
               status = statusSpan.uploading;
-            } 
+            }
             return (
               <div
                 className="relative bg-gray-200 p-3 w-full rounded-lg"

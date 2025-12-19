@@ -1,8 +1,8 @@
-import { createOTField } from "@/app/action/createOTField";
-import { createSalaryField } from "@/app/action/createSalaryField";
-import { updateOTField } from "@/app/action/updateOTFIeld";
-import { updateSalaryFIeld } from "@/app/action/updateSalaryFIeld";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { createOTField } from "@/app/action/payroll/OTField/createOTField";
+import { createSalaryField } from "@/app/action/payroll/salaryfield/createSalaryField";
+import { updateOTField } from "@/app/action/payroll/OTField/updateOTFIeld";
+import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { OTFieldSchema } from "@/schemas/setting/OTFieldForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
@@ -148,9 +148,8 @@ export default function AddEditOTModal({
                           </p>
                         )}
                       </FormLabel>
-                      
+
                       <ToggleButtonGroup
-                      
                         value={field.value}
                         // size="sm"
                         onChange={(e, v) => {

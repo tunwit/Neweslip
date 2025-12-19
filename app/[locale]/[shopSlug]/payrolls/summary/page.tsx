@@ -8,17 +8,17 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { moneyFormat } from "@/utils/formmatter";
-import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
+import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
-import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
+import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import {
   PAY_PERIOD_STATUS,
   SALARY_FIELD_DEFINATION_TYPE,
 } from "@/types/enum/enum";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
-import { usePayrollPeriodVerify } from "@/hooks/usePayrollPeriodVerify";
+import { usePayrollPeriodVerify } from "@/hooks/payroll/period/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
 import { Modal, ModalDialog } from "@mui/joy";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -31,7 +31,7 @@ import {
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { useTranslations } from "next-intl";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");

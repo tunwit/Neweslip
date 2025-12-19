@@ -19,8 +19,8 @@ import {
   EMPLOYEE_STATUS,
 } from "@/types/enum/enum";
 import { Pagination } from "@mui/material";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { useEmployeeStats } from "@/hooks/useEmployeeStats";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
 import Head from "next/head";
 import { useTranslations } from "next-intl";

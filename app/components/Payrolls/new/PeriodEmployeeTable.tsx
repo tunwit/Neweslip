@@ -1,5 +1,5 @@
 import { UseCheckBoxResult } from "@/hooks/useCheckBox";
-import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
+import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { PayrollRecord } from "@/types/payrollRecord";

@@ -10,10 +10,10 @@ import React, {
 } from "react";
 import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
-import { useEmployees } from "../../../hooks/useEmployees";
+import { useEmployees } from "../../../hooks/employee/useEmployees";
 import { EmployeeWithShop } from "@/types/employee";
-import { useEmployeeStats } from "@/hooks/useEmployeeStats";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { moneyFormat } from "@/utils/formmatter";
 import { PaginatedResponse } from "@/types/response";
 import { useCheckBox } from "@/hooks/useCheckBox";

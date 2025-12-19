@@ -1,6 +1,6 @@
-import { createSalaryField } from "@/app/action/createSalaryField";
-import { updateSalaryFIeld } from "@/app/action/updateSalaryFIeld";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { createSalaryField } from "@/app/action/payroll/salaryfield/createSalaryField";
+import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
 import {

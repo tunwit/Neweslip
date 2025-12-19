@@ -12,13 +12,13 @@ import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add, ChevronRight } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useShop } from "@/hooks/useShop";
-import { createPayrollPeriod } from "@/app/action/createPayrollPeriod";
+import { useShop } from "@/hooks/shop/useShop";
+import { createPayrollPeriod } from "@/app/action/payroll/period/createPayrollPeriod";
 import { NewPayrollPeriod } from "@/types/payrollPeriod";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { number } from "zod";
 import { useUser } from "@clerk/nextjs";
-import { usePayrollPeriods } from "@/hooks/usePayrollPeriods";
+import { usePayrollPeriods } from "@/hooks/payroll/period/usePayrollPeriods";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import UsersIcon from "@/assets/icons/UsersIcon";
@@ -35,7 +35,7 @@ export default function Home() {
   const { id } = useCurrentShop();
   const { user } = useUser();
   const [creatingPeriod, setCreatingPeriod] = useState(false);
-  const {name} = useCurrentShop()
+  const { name } = useCurrentShop();
 
   const pathname = usePathname();
   const { data, isLoading } = usePayrollPeriods(id || -1);

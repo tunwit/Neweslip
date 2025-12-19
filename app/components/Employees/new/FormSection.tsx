@@ -12,7 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { fetchwithauth } from "@/utils/fetcher";
 import { extractSlug } from "@/utils/extractSlug";
 import { useSnackbar } from "@/hooks/useSnackBar";
-import { createEmployee } from "@/app/action/createEmployee";
+import { createEmployee } from "@/app/action/employee/createEmployee";
 import { NewEmployee } from "@/types/employee";
 import { useZodForm } from "@/lib/useZodForm";
 import { useQueryClient } from "@tanstack/react-query";

@@ -6,7 +6,7 @@ import Option from "@mui/joy/Option";
 import { Add } from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePayrollRecords } from "@/hooks/usePayrollRecords";
+import { usePayrollRecords } from "@/hooks/payroll/record/usePayrollRecords";
 import {
   useParams,
   usePathname,
@@ -19,20 +19,20 @@ import BranchSelector from "@/widget/BranchSelector";
 import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
 import { Employee } from "@/types/employee";
 import { PayrollRecord } from "@/types/payrollRecord";
-import { deletePayrollRecords } from "@/app/action/deletePayrollRecord";
+import { deletePayrollRecords } from "@/app/action/payroll/record/deletePayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRecordDetails } from "@/hooks/useRecordDetails";
+import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
 import { useUser } from "@clerk/nextjs";
 import { dateFormat, dateTimeFormat, moneyFormat } from "@/utils/formmatter";
-import { usePayrollPeriod } from "@/hooks/usePayrollPeriod";
+import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
 import { Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
-import { usePayrollPeriodSummary } from "@/hooks/usePayrollPeriodSummary";
+import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
 import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
 import SendEmailsModal from "@/app/components/Payrolls/view/SendEmailsModal";
@@ -42,7 +42,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import UnlockModal from "@/app/components/Payrolls/view/UnlockModal";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useTranslations } from "next-intl";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");

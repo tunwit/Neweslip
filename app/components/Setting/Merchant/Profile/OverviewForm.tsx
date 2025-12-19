@@ -1,6 +1,6 @@
-import { updateShop } from "@/app/action/updateShop";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
-import { useShopDetails } from "@/hooks/useShopDetails";
+import { updateShop } from "@/app/action/shop/updateShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { useShopDetails } from "@/hooks/shop/useShopDetails";
 import { useZodForm } from "@/lib/useZodForm";
 import { overviewSchema } from "@/schemas/setting/overviewForm";
 import { NewShop, Shop } from "@/types/shop";

@@ -13,14 +13,14 @@ import {
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { PayrollRecord } from "@/types/payrollRecord";
-import { useRecordDetails } from "@/hooks/useRecordDetails";
+import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import PayrollTable from "./PayrollTable";
 import { calculateOT } from "@/lib/otCalculater";
 import { calculatePenalty } from "@/lib/penaltyCalculater";
 import { it } from "node:test";
-import { updatePayrollRecord } from "@/app/action/updatePayrollRecord";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { updatePayrollRecord } from "@/app/action/payroll/record/updatePayrollRecord";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useRouter } from "next/navigation";
 import { showError } from "@/utils/showSnackbar";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -97,7 +97,7 @@ export default function PayrollEditEmployeeModal({
   const { data, isLoading } = useRecordDetails(
     Number(selectedRecord?.id ?? undefined),
   );
-  const locale = useLocale()
+  const locale = useLocale();
 
   // reset Datafrom previous employee
   useEffect(() => {
@@ -266,7 +266,7 @@ export default function PayrollEditEmployeeModal({
                       (v) => v.type === SALARY_FIELD_DEFINATION_TYPE.INCOME,
                     ) ?? []
                   }
-                  renderName={(item) => getLocalizedName(item,locale)}
+                  renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={incomeAmount}
                   setInputValues={setIncomeAmount}
@@ -282,7 +282,7 @@ export default function PayrollEditEmployeeModal({
                       (v) => v.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION,
                     ) ?? []
                   }
-                  renderName={(item) => getLocalizedName(item,locale)}
+                  renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={deductionAmount}
                   setInputValues={setDeductionAmount}
@@ -292,7 +292,7 @@ export default function PayrollEditEmployeeModal({
               <TabPanel value={2} keepMounted={true}>
                 <PayrollTable
                   data={data?.data?.otValues ?? []}
-                  renderName={(item) => getLocalizedName(item,locale)}
+                  renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
                   autoCalculate={true}
@@ -316,7 +316,7 @@ export default function PayrollEditEmployeeModal({
               <TabPanel value={3} keepMounted={true}>
                 <PayrollTable
                   data={data?.data?.penaltyValues ?? []}
-                  renderName={(item) => getLocalizedName(item,locale)}
+                  renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
                   autoCalculate={true}
@@ -344,7 +344,7 @@ export default function PayrollEditEmployeeModal({
                         v.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED,
                     ) ?? []
                   }
-                  renderName={(item) => getLocalizedName(item,locale)}
+                  renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={displayAmount}
                   setInputValues={setDisplayAmount}

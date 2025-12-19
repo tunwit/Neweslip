@@ -1,5 +1,5 @@
-import { updateShop } from "@/app/action/updateShop";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { updateShop } from "@/app/action/shop/updateShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { verify } from "@/lib/emailService";
 import { useZodForm } from "@/lib/useZodForm";
 import { emailConfigForm } from "@/schemas/email/emailConfigForm";
@@ -114,7 +114,11 @@ export default function EmailForm({ shopData }: EmailFormProps) {
             </FormControl>
           </div>
 
-          <InputForm control={control} name="emailName" label={t("fields.email_name")} />
+          <InputForm
+            control={control}
+            name="emailName"
+            label={t("fields.email_name")}
+          />
           <InputForm
             control={control}
             name="emailAddress"
@@ -195,7 +199,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
                 fontSize={"20"}
               />
               <p className="text-red-700 opacity-70">
-                 {t("info.invalid_email",{err:verifyError})}
+                {t("info.invalid_email", { err: verifyError })}
               </p>
             </span>
           </section>

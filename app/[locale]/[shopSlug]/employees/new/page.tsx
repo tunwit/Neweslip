@@ -3,14 +3,14 @@ import CreateStepper from "@/app/components/Employees/new/CreateStepper";
 import { useState } from "react";
 import FormSection from "@/app/components/Employees/new/FormSection";
 import { useTranslations } from "next-intl";
-import { useCurrentShop } from "@/hooks/useCurrentShop";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
   const tb = useTranslations("breadcrumb");
   const tn = useTranslations("new_employees");
   const t = useTranslations("employees");
-  const {name} = useCurrentShop()
+  const { name } = useCurrentShop();
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">
