@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
         employeeCount: countDistinct(payrollRecordsTable.employeeId),
         work_hours_per_day: payrollPeriodsTable.work_hours_per_day,
         workdays_per_month: payrollPeriodsTable.workdays_per_month,
+        createdAt: payrollPeriodsTable.createdAt,
       })
       .from(payrollPeriodsTable)
       .leftJoin(

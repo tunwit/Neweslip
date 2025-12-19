@@ -92,7 +92,8 @@ export default function PeriodsTable({
     } finally {
       uncheckall();
     }
-  };
+  };console.log(periods);
+  
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -156,7 +157,7 @@ export default function PeriodsTable({
                       {tPeriod("fields.created_at")}
                     </p>
                     <p className="text-sm font-bold text-gray-900">
-                      {dateFormat(payroll.createdAt)}
+                      {dateFormat(new Date(payroll.createdAt))}
                     </p>
                   </div>
 
