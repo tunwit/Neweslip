@@ -11,7 +11,7 @@ import { Branch } from "@/types/branch";
 import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
 import { SalaryField } from "@/types/salaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryfield/deleteSalaryField";
+import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
 import AddEditIncomeModal from "../Income/AddEditIncomeModal";
 import AddEditDeductionModal from "./AddEditDeductionModal";
 import { useUser } from "@clerk/nextjs";

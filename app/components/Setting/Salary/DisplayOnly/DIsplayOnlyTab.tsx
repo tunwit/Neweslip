@@ -9,7 +9,7 @@ import { Branch } from "@/types/branch";
 import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
 import { SalaryField } from "@/types/salaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryfield/deleteSalaryField";
+import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
 import { deletePenaltyField } from "@/app/action/payroll/penaltyField/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";

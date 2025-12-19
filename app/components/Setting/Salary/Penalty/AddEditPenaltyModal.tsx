@@ -1,5 +1,5 @@
 import { createOTField } from "@/app/action/payroll/OTField/createOTField";
-import { createSalaryField } from "@/app/action/payroll/salaryfield/createSalaryField";
+import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
 import { updateOTField } from "@/app/action/payroll/OTField/updateOTFIeld";
 import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";

@@ -1,4 +1,4 @@
-import { createSalaryField } from "@/app/action/payroll/salaryfield/createSalaryField";
+import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
 import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";

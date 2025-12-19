@@ -101,14 +101,6 @@ export default function AdvancedFilters<T extends { id: number }>({
     setActiveFilters((prev) => prev.filter((f) => f.id !== id));
   };
 
-  /**
-   * applyFilterLogic
-   * - summary: PayrollPeriodSummary (source of totals/fields/ot/penalties)
-   * - records: the list of records to filter (generic T[])
-   * - filterRules: the active filter rules
-   *
-   * Returns filtered array of the same generic T[] type.
-   */
   const applyFilterLogic = (
     summary: PayrollPeriodSummary,
     records: T[],
@@ -159,37 +151,38 @@ export default function AdvancedFilters<T extends { id: number }>({
         if (recordValue === undefined) {
           const customField = summaryRecord.fields.find(
             (f) =>
-              f.name === filter.field || (f as any).nameEng === filter.field,
+              f.name === filter.field || (f).nameEng === filter.field,
           );
-          if (customField) recordValue = (customField as any).amount;
+          if (customField) recordValue = (customField).amount;
         }
 
         // 3) OT fields
         if (recordValue === undefined) {
           const otField = summaryRecord.ot.find(
             (f) =>
-              f.name === filter.field || (f as any).nameEng === filter.field,
+              f.name === filter.field || (f).nameEng === filter.field,
           );
-          if (otField) recordValue = (otField as any).amount;
+          if (otField) recordValue = (otField).amount;
         }
 
         // 4) Penalty fields
         if (recordValue === undefined) {
           const penField = summaryRecord.penalties.find(
             (f) =>
-              f.name === filter.field || (f as any).nameEng === filter.field,
+              f.name === filter.field || (f).nameEng === filter.field,
           );
-          if (penField) recordValue = (penField as any).amount;
+          if (penField) recordValue = (penField).amount;
         }
 
         // If we still don't have a value for this field, treat as "pass" (do not filter out)
         if (recordValue === undefined) return true;
 
         // Compare numeric values
+        if(typeof filter.value !== "string") return
         const filterValue = parseFloat(filter.value);
         const numericValue = parseFloat(String(recordValue));
 
-        if (isNaN(filterValue) || isNaN(numericValue)) return true;
+        if (isNaN(filterValue) || isNaN(numericValue)) return false;
 
         switch (filter.operator) {
           case "eq":

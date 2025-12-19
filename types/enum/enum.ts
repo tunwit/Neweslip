@@ -17,8 +17,8 @@ export enum EMPLOYEE_SORTBY {
 }
 
 export enum EMPLOYEE_ORDERBY {
+  ASC = "ASC",
   DES = "DES",
-  ASC = "ASC"
 }
 
 export enum PAY_PERIOD_STATUS {

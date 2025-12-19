@@ -13,7 +13,7 @@ import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
 import { SalaryField } from "@/types/salaryFields";
 import AddEditIncomeModal from "./AddEditIncomeModal";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryfield/deleteSalaryField";
+import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 
