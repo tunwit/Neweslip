@@ -112,7 +112,7 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
 
     row["ID"] = rec.employee.id;
     row["Employee"] = `${rec.employee.firstName} ${rec.employee.lastName}`;
-    row["Branch"] = rec.employee.branch;
+    row["Branch"] = rec.employee.branch.name;
     row["Base Salary"] = rec.baseSalary;
     row["Gross"] = rec.totals.totalEarning;
     row["Deduction"] = rec.totals.totalDeduction;
