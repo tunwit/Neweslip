@@ -21,10 +21,11 @@ const isApiRoute = (req: NextRequest) => {
 };
 
 export default clerkMiddleware(async (auth, req) => {
-  
   if (isApiRoute(req)) {
     if (!isPublicRoute(req)) {
-      await auth.protect();
+      await auth.protect({
+        unauthenticatedUrl: undefined,
+      });
     }
     return NextResponse.next();
   }
