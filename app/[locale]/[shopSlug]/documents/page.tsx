@@ -92,7 +92,7 @@ export default function Document() {
   };
   return (
     <>
-      <title>Documents - E Slip</title>
+      <title>Documents - Mitr</title>
       <Modal open={isLoading}>
         <ModalDialog>
           <div className="flex flex-col items-center justify-center">

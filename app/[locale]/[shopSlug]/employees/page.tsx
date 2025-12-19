@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <>
-      <title>Employee - E Slip</title>
+      <title>Employee - Mitr</title>
       <main className="min-h-screen w-full bg-white font-medium">
         <div className="mx-10">
           <div className="flex flex-row text-[#424242] text-xs mt-10">
