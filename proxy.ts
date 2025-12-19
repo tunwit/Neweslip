@@ -5,10 +5,14 @@ import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-const isProtectedRoute = createRouteMatcher(["/:locale/:shopSlug(.*)"]);
+const isProtectedRoute = createRouteMatcher([
+  "/:locale/:shopSlug(.*)",
+  "/:locale",
+]);
 
 const isPublicRoute = createRouteMatcher([
   "/:locale/accept-invitation",
+  "/accept-invitation",
   "/api/shop/:shopId",
   "/api/invitations/:token",
 ]);
@@ -23,9 +27,7 @@ const isApiRoute = (req: NextRequest) => {
 export default clerkMiddleware(async (auth, req) => {
   if (isApiRoute(req)) {
     if (!isPublicRoute(req)) {
-      await auth.protect({
-        unauthenticatedUrl: undefined,
-      });
+      await auth.protect();
     }
     return NextResponse.next();
   }
