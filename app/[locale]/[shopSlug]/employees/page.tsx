@@ -34,7 +34,7 @@ export default function Home() {
   const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
   const [sortBy, setSortBy] = useState<EMPLOYEE_SORTBY>(EMPLOYEE_SORTBY.NAME);
   const [orderBy, setOrderBy] = useState<EMPLOYEE_ORDERBY>(
-    EMPLOYEE_ORDERBY.DES,
+    EMPLOYEE_ORDERBY.ASC,
   );
   const { name } = useCurrentShop();
   const tb = useTranslations("breadcrumb");
