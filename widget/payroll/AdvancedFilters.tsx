@@ -6,6 +6,7 @@ import {
 } from "@/types/payrollPeriodSummary";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Option, Select } from "@mui/joy";
 import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
@@ -13,7 +14,7 @@ interface FilterRule {
   id: string;
   field: string;
   operator: string;
-  value: string;
+  value: string | boolean;
 }
 
 // Operators for number fields
@@ -56,6 +57,10 @@ const quickFilters = [
     label: "low_earners",
     filter: { field: "net", operator: "lt", value: "16000" },
   },
+  {
+    label: "paid",
+    filter: { field: "paid", operator: "eq", value: true },
+  },
 ];
 
 /**
@@ -81,7 +86,7 @@ export default function AdvancedFilters<T extends { id: number }>({
 }: AdvancedFiltersProps<T>) {
   const { data } = usePayrollPeriodSummary(periodId);
   const { data: periodFields } = usePeriodFields(Number(periodId));
-  
+
   const [filters, setFilters] = useState<FilterRule[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterRule[]>([]);
   const t = useTranslations("period");
@@ -124,6 +129,21 @@ export default function AdvancedFilters<T extends { id: number }>({
       // Every filter must pass
       return filterRules.every((filter) => {
         let recordValue: number | string | undefined = undefined;
+
+        if (filter.field === "paid") {
+          const isPaid = summaryRecord.paid; // boolean
+          const fPaid = filter.value === "true";
+
+          if (filter.operator === "eq") {
+            return isPaid === fPaid;
+          }
+
+          if (filter.operator === "neq") {
+            return isPaid !== fPaid;
+          }
+
+          return true;
+        }
 
         // 1) totals (net, totalEarning, totalDeduction, totalPenalty, totalOT, etc)
         if (
@@ -274,7 +294,7 @@ export default function AdvancedFilters<T extends { id: number }>({
                 addQuickFilter(
                   q.filter.field,
                   q.filter.operator,
-                  q.filter.value,
+                  String(q.filter.value),
                 )
               }
               className="flex items-center justify-center text-xs text-gray-700 bg-gray-200 w-fit h-fit px-3 py-1 pt-2 rounded-sm"
@@ -321,21 +341,35 @@ export default function AdvancedFilters<T extends { id: number }>({
                   >
                     {numberOperators.map((op) => (
                       <option key={op.value} value={op.value}>
-                       {numberOperatorsSymbol[op.value]} ({t(`filters.operator.${op.value}`)})
+                        {numberOperatorsSymbol[op.value]} (
+                        {t(`filters.operator.${op.value}`)})
                       </option>
                     ))}
                   </select>
 
                   {/* Value Input */}
-                  <input
-                    type={"number"}
-                    value={filter.value}
-                    onChange={(e) =>
-                      updateFilter(filter.id, "value", e.target.value)
-                    }
-                    placeholder="Enter value"
-                    className="text-sm flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                  {filter.field === "paid" ? (
+                    <select
+                      className="text-sm w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={String(filter.value)}
+                      onChange={(e) =>
+                        updateFilter(filter.id, "value", e.target.value)
+                      }
+                    >
+                      <option value={"true"}>true</option>
+                      <option value={"false"}>false</option>
+                    </select>
+                  ) : (
+                    <input
+                      type={"number"}
+                      value={filter.value as unknown as number}
+                      onChange={(e) =>
+                        updateFilter(filter.id, "value", e.target.value)
+                      }
+                      placeholder="Enter value"
+                      className="text-sm flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  )}
 
                   {/* Remove Button */}
                   <button

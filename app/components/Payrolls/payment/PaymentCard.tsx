@@ -211,7 +211,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                       onClick={() => {
                         handleMarkedAsPaid(true);
                       }}
-                      className="  bg-blue-600 text-white p-2 rounded-lg"
+                      className="  bg-blue-600 text-white py-2 px-3 text-sm rounded-lg"
                     >
                       {tr("actions.mark_as_paid")}
                     </button>
@@ -220,7 +220,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                         handleMarkedAsPaid(false);
                       }}
                       hidden={!paid}
-                      className="  bg-green-600 text-white p-2 rounded-lg"
+                      className="  bg-green-600 text-white py-2 px-3 text-sm rounded-lg"
                     >
                       {tr("actions.unmarked")}
                     </button>

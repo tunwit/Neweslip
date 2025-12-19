@@ -40,7 +40,7 @@
     "documents": "เอกสาร",
     "payrolls": "เงินเดือน",
     "summary_payroll": "สรุปเงินเดือน",
-    "payment_payroll": "จ่านเงินเดือน",
+    "payment_payroll": "จ่ายเงินเดือน",
     "view_payroll": "ตรวจสอบ"
   },
   "owners": {
@@ -365,7 +365,8 @@
           "has_penalty": "มีบทลงโทษ",
           "no_deduction": "ไม่มีรายหัก",
           "high_earners": "รายได้สูง (>20k)",
-          "low_earners": "รายได้ต่ำ (<16k)"
+          "low_earners": "รายได้ต่ำ (<16k)",
+          "paid": "จ่ายแล้ว"
         }
       },
       "operator": {

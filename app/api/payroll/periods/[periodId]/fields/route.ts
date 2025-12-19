@@ -59,6 +59,7 @@ export async function GET(
         ...payrollFields.map((f) => f.name),
         ...penaltyFields.map((f) => f.name),
         ...otFields.map((f) => f.name),
+        "paid",
         "totalSalaryIncome",
         "totalSalaryDeduction",
         "totalOT",
