@@ -10,10 +10,15 @@ export enum EMPLOYEE_STATUS {
   PARTTIME = "PARTTIME",
 }
 
-export enum EMPLOYEE_ORDERBY {
-  NAME="NAME",
-  SALARY="SALARY",
+export enum EMPLOYEE_SORTBY {
+  NAME = "NAME",
+  SALARY = "SALARY",
   CREATEDAT = "CREATEDAT",
+}
+
+export enum EMPLOYEE_ORDERBY {
+  DES = "DES",
+  ASC = "ASC"
 }
 
 export enum PAY_PERIOD_STATUS {

@@ -1,8 +1,3 @@
-import {
-  OT_METHOD,
-  PENALTY_METHOD,
-  SALARY_FIELD_DEFINATION_TYPE,
-} from "@/types/enum/enum";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { formatBankAccountNumber, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -16,14 +11,19 @@ import Image from "next/image";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import { setMarkRecordAsPaid } from "@/app/action/markRecordAsPaid";
+import { useUser } from "@clerk/nextjs";
+import { showError } from "@/utils/showSnackbar";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
 }
 
 export default function PaymentCard({ record }: SummaryCardProps) {
+  const [paid, setPaid] = useState(record.paid);
   const [expanded, setExpanded] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const { user } = useUser();
   const te = useTranslations("employees");
   const tr = useTranslations("record");
   const tp = useTranslations("payment_payroll");
@@ -34,6 +34,17 @@ export default function PaymentCard({ record }: SummaryCardProps) {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(""), 2000);
+  };
+  const handleMarkedAsPaid = async (setTo: boolean) => {
+    if (!user) return;
+
+    try {
+      await setMarkRecordAsPaid(record.id, setTo, user.id);
+      setPaid(setTo);
+    } catch (err) {
+      showError(`fail to mark as paid ${err}`);
+      setPaid(!setTo);
+    }
   };
 
   const bank = banks.find((b) => b.label === record.employee.bankName);
@@ -66,7 +77,13 @@ export default function PaymentCard({ record }: SummaryCardProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-5 items-center">
+          <div className="flex gap-5 items-center">
+            <span
+              hidden={!paid}
+              className="flex text-green-600 text-xs gap-1 items-center self-baseline-last bg-green-100 px-2 py-1 rounded-lg border border-green-600"
+            >
+              <Icon icon="ic:outline-paid" /> {tr("fields.paid")}
+            </span>
             <div className="text-right">
               <p className="text-xs text-gray-500 uppercase mb-1">
                 {tr("fields.net")}
@@ -189,6 +206,24 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                         </div>
                       </div>
                     </div>
+                    <button
+                      hidden={paid}
+                      onClick={() => {
+                        handleMarkedAsPaid(true);
+                      }}
+                      className="  bg-blue-600 text-white p-2 rounded-lg"
+                    >
+                      {tr("actions.mark_as_paid")}
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleMarkedAsPaid(false);
+                      }}
+                      hidden={!paid}
+                      className="  bg-green-600 text-white p-2 rounded-lg"
+                    >
+                      {tr("actions.unmarked")}
+                    </button>
                   </div>
 
                   <div className="space-y-4">

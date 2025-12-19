@@ -69,6 +69,7 @@ export async function summaryPeriod(
       id: payrollRecordsTable.id,
       baseSalary: payrollRecordsTable.salary,
       sentMail: payrollRecordsTable.sentMail,
+      paid: payrollRecordsTable.paid,
       employee: {
         id: employeesTable.id,
         firstName: employeesTable.firstName,
@@ -128,6 +129,7 @@ export async function summaryPeriod(
     recordsSummary.push({
       id: r.id,
       sentMail: r.sentMail || false,
+      paid: r.paid || false,
       baseSalary: Number(r.baseSalary),
       employee: {
         id: r.employee.id ?? 0,

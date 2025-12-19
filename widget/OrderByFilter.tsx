@@ -7,14 +7,16 @@ interface OrderByFilterProps<E extends Record<string, string>> {
   choices: E;
   onChange: (newvalue: E[keyof E]) => void;
   disable?: boolean;
+  tPrefix: string;
 }
 
 export default function OrderByFilter<E extends Record<string, string>>({
   choices,
   onChange,
   disable = false,
+  tPrefix,
 }: OrderByFilterProps<E>) {
-  const t = useTranslations("employees.filters.order_by");
+  const t = useTranslations(`employees.filters.${tPrefix}`);
   const values = useMemo(
     () => Object.values(choices) as Array<E[keyof E]>,
     [choices],

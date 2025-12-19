@@ -17,7 +17,7 @@ export default function Navbar() {
           <HambergerIcon className="text-white text-2xl" />
         </button>
 
-        <span className="text-white text-xl font-semibold">E-slip</span>
+        <span className="text-white text-xl font-semibold">E Slip</span>
       </div>
       <div className="flex gap-5">
         <UserButton />

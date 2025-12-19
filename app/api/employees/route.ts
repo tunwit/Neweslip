@@ -10,22 +10,38 @@ import {
   successPaginationResponse,
 } from "@/utils/respounses/respounses";
 import { auth } from "@clerk/nextjs/server";
-import { and, desc, eq, getTableColumns, like, or, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  like,
+  or,
+  sql,
+} from "drizzle-orm";
 import { NextRequest } from "next/server";
 import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { EmployeeWithShop } from "@/types/employee";
 import { isOwner } from "@/lib/isOwner";
 
-export function buildOrderBy<T extends Record<string, string>>(sortBy: string) {
+export function buildOrderBy<T extends Record<string, string>>(
+  sortBy: string,
+  orderBy: string,
+) {
+  let fn = desc;
+  if (orderBy === "asc") {
+    fn = asc;
+  }
   switch (sortBy) {
     case "name":
-      return desc(employeesTable.firstName);
+      return fn(employeesTable.firstName);
     case "salary":
-      return desc(employeesTable.salary);
+      return fn(employeesTable.salary);
     case "createdat":
-      return desc(employeesTable.createdAt);
+      return fn(employeesTable.createdAt);
     default:
-      return desc(employeesTable.firstName);
+      return fn(employeesTable.firstName);
   }
 }
 
@@ -62,8 +78,9 @@ export async function GET(request: NextRequest) {
     const search = request.nextUrl.searchParams.get("search_query");
     const page = Number(request.nextUrl.searchParams.get("page") || 1);
     const limit = Number(request.nextUrl.searchParams.get("limit") || 15);
+    const sortBy = String(request.nextUrl.searchParams.get("sortBy") || "name");
     const orderBy = String(
-      request.nextUrl.searchParams.get("orderBy") || "name",
+      request.nextUrl.searchParams.get("orderBy") || "des",
     );
 
     const offset = (page - 1) * limit;
@@ -126,7 +143,7 @@ export async function GET(request: NextRequest) {
       .where(whereConditions)
       .offset(offset)
       .limit(limit)
-      .orderBy(buildOrderBy(orderBy));
+      .orderBy(buildOrderBy(sortBy, orderBy));
 
     // Extract total count from first row (all rows have same count due to window function)
     const total = results.length > 0 ? Number(results[0].totalCount) : 0;

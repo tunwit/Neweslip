@@ -253,7 +253,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <div className="flex  flex-col h-full gap-5 items-center overflow-y-scroll">
+      <div className="flex flex-1 flex-col h-full gap-5 items-center overflow-y-scroll">
         <div hidden={!hideHeader} className={` py-3 sticky top-0`}>
           <button
             className={`flex w-full items-center justify-center rotate-180  transition-all `}

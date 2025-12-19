@@ -13,7 +13,11 @@ import { useDebounce } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
 import BranchSelector from "@/widget/BranchSelector";
 import StatusSelector from "@/widget/StatusSelector";
-import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
+import {
+  EMPLOYEE_ORDERBY,
+  EMPLOYEE_SORTBY,
+  EMPLOYEE_STATUS,
+} from "@/types/enum/enum";
 import { Pagination } from "@mui/material";
 import { useCurrentShop } from "@/hooks/useCurrentShop";
 import { useEmployeeStats } from "@/hooks/useEmployeeStats";
@@ -28,13 +32,14 @@ export default function Home() {
   const [debounced] = useDebounce(search, 500);
   const [branchId, setBranchId] = useState(-1);
   const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
+  const [sortBy, setSortBy] = useState<EMPLOYEE_SORTBY>(EMPLOYEE_SORTBY.NAME);
   const [orderBy, setOrderBy] = useState<EMPLOYEE_ORDERBY>(
-    EMPLOYEE_ORDERBY.NAME,
+    EMPLOYEE_ORDERBY.DES,
   );
-
   const { name } = useCurrentShop();
   const tb = useTranslations("breadcrumb");
   const t = useTranslations("employees");
+
   return (
     <>
       <title>Employee - E Slip</title>
@@ -102,7 +107,19 @@ export default function Home() {
                 isEnableAll={true}
               />
             </div>
-            <div className="w-[20%]">
+            <div className="w-[15%]">
+              <p className="text-black text-xs mb-1">
+                {t("filters.sort_by.label")}
+              </p>
+              <OrderByFilter
+                onChange={(n) => {
+                  setSortBy(n);
+                }}
+                choices={EMPLOYEE_SORTBY}
+                tPrefix="sort_by"
+              />
+            </div>
+            <div className="w-[15%]">
               <p className="text-black text-xs mb-1">
                 {t("filters.order_by.label")}
               </p>
@@ -111,11 +128,13 @@ export default function Home() {
                   setOrderBy(n);
                 }}
                 choices={EMPLOYEE_ORDERBY}
+                tPrefix="order_by"
               />
             </div>
           </div>
           <div className="flex justify-center mt-5">
             <EmployeeTableWrapper
+              sortBy={sortBy}
               orderBy={orderBy}
               search_query={debounced}
               branchId={branchId}

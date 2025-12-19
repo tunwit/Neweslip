@@ -7,7 +7,8 @@ export default async function NotFound() {
   const t = await getTranslations("not_found");
 
   return (
-    <div className="min-h-screen bg-gray-100 flex w-full justify-center items-center">
+    <main className="min-h-screen bg-gray-100 flex w-full justify-center items-center">
+      <title>{t("label")}</title>
       <div className="bg-white px-10 w-[50%] h-[50%] rounded-2xl flex items-center">
         <Image alt="not-found" src="/not-found.png" height={500} width={500} />
         <div>
@@ -23,6 +24,6 @@ export default async function NotFound() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

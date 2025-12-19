@@ -26,6 +26,7 @@
   },
   "navigation": {
     "dashboard": "Dashboard",
+    "configure": "Configure",
     "employees": "Employees",
     "documents": "Documents",
     "payrolls": "Payrolls",
@@ -177,11 +178,16 @@
         "parttime": "Part-time",
         "inactive": "Inactive"
       },
-      "order_by": {
-        "label": "Order By",
+      "sort_by": {
+        "label": "Sort By",
         "name": "Name",
         "salary": "Salary",
         "createdat": "Created Time"
+      },
+      "order_by": {
+        "label": "Order By",
+        "asc": "Ascending",
+        "des": "Descend"
       }
     }
   },
@@ -392,6 +398,10 @@
     }
   },
   "record": {
+    "actions": {
+      "mark_as_paid": "Mark as paid",
+      "unmarked": "Unmarked"
+    },
     "fields": {
       "title": "Item",
       "employee": "Employee",
@@ -401,6 +411,7 @@
       "overtime": "Overtime",
       "penalties": "Penalties",
       "earning": "Earnings",
+      "paid": "Paid",
       "displayonly": "Display only",
       "total": "Total",
       "total_base_salary": "Total base salary",
@@ -524,7 +535,7 @@
         "btn": "Excel"
       },
       "payment": {
-        "label": "Make payment",
+        "label": "Payment",
         "description": "Go to the payroll payment page",
         "btn": "Open"
       }
@@ -747,6 +758,12 @@
     "disclaimer": "Please check the url and make sure it correct",
     "actions": {
       "back": "back to home"
+    }
+  },
+  "error": {
+    "label": "Some thing went wrong !",
+    "actions": {
+      "try_again": "Try again"
     }
   }
 }

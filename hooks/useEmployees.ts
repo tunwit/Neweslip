@@ -1,5 +1,9 @@
 import { Employee, EmployeeWithShop } from "@/types/employee";
-import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
+import {
+  EMPLOYEE_ORDERBY,
+  EMPLOYEE_SORTBY,
+  EMPLOYEE_STATUS,
+} from "@/types/enum/enum";
 import { PaginatedResponse } from "@/types/response";
 import { extractSlug } from "@/utils/extractSlug";
 import { fetchwithauth } from "@/utils/fetcher";
@@ -11,6 +15,7 @@ import {
 import { usePathname } from "next/navigation";
 
 interface useEmployeesProps {
+  sortBy?: EMPLOYEE_SORTBY;
   orderBy?: EMPLOYEE_ORDERBY;
   search_query?: string;
   page?: number;
@@ -19,6 +24,7 @@ interface useEmployeesProps {
   branchId?: number;
 }
 export const useEmployees = ({
+  sortBy,
   orderBy,
   search_query,
   status,
@@ -37,6 +43,7 @@ export const useEmployees = ({
     ...(status && status !== null && { status: status }),
     ...(page && { page: page.toString() }),
     ...(limit && { limit: limit.toString() }),
+    ...(sortBy && { sortBy: sortBy.toString().toLocaleLowerCase() }),
     ...(orderBy && { orderBy: orderBy.toString().toLocaleLowerCase() }),
   });
 
@@ -48,6 +55,7 @@ export const useEmployees = ({
       page,
       branchId,
       status,
+      sortBy,
       orderBy,
     ],
     queryFn: () => {

@@ -19,7 +19,7 @@ interface SummaryCardProps {
 export default function SummaryCard({ record }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations("record");
-  const locale = useLocale()
+  const locale = useLocale();
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -41,13 +41,19 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                   {record.employee.nickName}
                 </p>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {getLocalizedName(record.employee.branch,locale)}
+                  {getLocalizedName(record.employee.branch, locale)}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-5 items-center">
+          <div className="flex gap-5 items-center">
+            <span
+              hidden={!record.paid}
+              className="flex text-green-600 text-xs gap-1 items-center self-baseline-last bg-green-100 px-2 py-1 rounded-lg border border-green-600"
+            >
+              <Icon icon="ic:outline-paid" /> {t("fields.paid")}
+            </span>
             <div className="text-right">
               <p className="text-sm text-gray-500 uppercase mb-1">
                 {t("fields.net")}

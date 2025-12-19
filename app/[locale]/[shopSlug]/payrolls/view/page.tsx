@@ -268,7 +268,7 @@ export default function Home() {
                         </p>
                         <p className="text-xl font-bold text-blue-900 mt-1">
                           {tPeriod(
-                            `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status!]?.toLowerCase()}`,
+                            `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status ?? PAY_PERIOD_STATUS.DRAFT]?.toLowerCase()}`,
                           )}
                         </p>
                       </div>
