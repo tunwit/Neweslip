@@ -34,7 +34,7 @@ export default function Home() {
   const [status, setStatus] = useState<EMPLOYEE_STATUS | null>(null);
   const [sortBy, setSortBy] = useState<EMPLOYEE_SORTBY>(EMPLOYEE_SORTBY.NAME);
   const [orderBy, setOrderBy] = useState<EMPLOYEE_ORDERBY>(
-    EMPLOYEE_ORDERBY.DES,
+    EMPLOYEE_ORDERBY.ASC,
   );
   const { name } = useCurrentShop();
   const tb = useTranslations("breadcrumb");
@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <>
-      <title>Employee - E Slip</title>
+      <title>Employee - Mitr</title>
       <main className="min-h-screen w-full bg-white font-medium">
         <div className="mx-10">
           <div className="flex flex-row text-[#424242] text-xs mt-10">

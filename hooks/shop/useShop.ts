@@ -11,7 +11,7 @@ import {
 import { Session } from "inspector/promises";
 
 export const useShop = () => {
-  const { session } = useSession();
+  const { session, isLoaded, isSignedIn } = useSession();
   const query = useQuery<ApiResponse<Shop[]>>({
     queryKey: ["shop", session?.user?.emailAddresses],
     queryFn: () =>
@@ -19,7 +19,7 @@ export const useShop = () => {
         endpoint: "/shop",
         method: "GET",
       }),
-
+    enabled: isLoaded && isSignedIn,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,

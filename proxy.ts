@@ -9,6 +9,7 @@ const isProtectedRoute = createRouteMatcher(["/:locale/:shopSlug(.*)","/:locale"
 
 const isPublicRoute = createRouteMatcher([
   "/:locale/accept-invitation",
+  "/accept-invitation",
   "/api/shop/:shopId",
   "/api/invitations/:token",
   "/:locale/sign-in",
@@ -23,7 +24,6 @@ const isApiRoute = (req: NextRequest) => {
 };
 
 export default clerkMiddleware(async (auth, req) => {
-  
   if (isApiRoute(req)) {
     if (!isPublicRoute(req)) {
       await auth.protect();
