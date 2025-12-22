@@ -130,8 +130,8 @@
       "close": "Close",
       "save": "Save"
     },
-    "info":{
-      "qr_not_available":"QR code not available"
+    "info": {
+      "qr_not_available": "QR code not available"
     },
     "search": {
       "label": "Search employees",
@@ -768,6 +768,17 @@
     "label": "Some thing went wrong !",
     "actions": {
       "try_again": "Try again"
+    }
+  },
+  "sign-in": {
+    "label": "Employee & Payroll Management System",
+    "welcome": "Welcome Back",
+    "signin_to_continue": "Sign in to continue to your account",
+    "actions": {
+      "google": "continue with google"
+    },
+    "info": {
+      "secure": "Secure authentication"
     }
   }
 }

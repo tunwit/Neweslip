@@ -22,7 +22,12 @@ const AVAILABLE_LANG = {
 
 type LangKey = keyof typeof AVAILABLE_LANG;
 
-export default function LanguageSelector() {
+interface LanguageSelectorProps {
+  theme?: "white" | "dark";
+}
+export default function LanguageSelector({
+  theme = "dark",
+}: LanguageSelectorProps) {
   const locale = useLocale() as LangKey;
   const [value, setValue] = useState<LangKey>(locale ?? "th");
 
@@ -38,11 +43,11 @@ export default function LanguageSelector() {
         if (newValue) setValue(newValue);
       }}
       sx={{
-        backgroundColor: "#1f1f1f",
-        color: "white",
+        backgroundColor: theme === "dark" ? "#1f1f1f" : "#f7f7f7",
+        color: theme === "dark" ? "white" : "black",
         border: 0,
         ":hover": {
-          backgroundColor: "#2a2a2a",
+          backgroundColor: theme === "dark" ? "#2a2a2a" : "#f2f2f2",
         },
       }}
       startDecorator={
@@ -51,6 +56,7 @@ export default function LanguageSelector() {
           src={currentLang.flag}
           width={20}
           height={20}
+          loading="eager"
         />
       }
     >
