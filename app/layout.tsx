@@ -25,7 +25,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider signInUrl="/th/sign-in">
       <html className={`${propmt.variable} antialiased`}>
         <body className={`${propmt.className} antialiased flex`}>
           {children}

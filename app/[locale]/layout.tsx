@@ -29,9 +29,7 @@ export default async function RootLayout({
       <Providers>
         <Suspense>
           <div className="flex flex-col min-h-screen">
-            <Navbar />
-
-            <div className="flex flex-row h-full max-h-[calc(100vh-80px)] w-screen overflow-hidden">
+            <div className="flex flex-row h-full  w-screen overflow-hidden">
               <ClientWrapper>{children}</ClientWrapper>
             </div>
           </div>

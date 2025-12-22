@@ -5,12 +5,14 @@ import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
-const isProtectedRoute = createRouteMatcher(["/:locale/:shopSlug(.*)"]);
+const isProtectedRoute = createRouteMatcher(["/:locale/:shopSlug(.*)","/:locale"]);
 
 const isPublicRoute = createRouteMatcher([
   "/:locale/accept-invitation",
   "/api/shop/:shopId",
   "/api/invitations/:token",
+  "/:locale/sign-in",
+  "/sign-in"
 ]);
 
 const isApiRoute = (req: NextRequest) => {

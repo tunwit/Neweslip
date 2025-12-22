@@ -8,6 +8,7 @@ import globalDrizzle from "@/db/drizzle";
 import { branchesTable, shopOwnerTable, shopsTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import DashboardSidebar from "@/app/components/DashboardSidebar/DashboardSidebar";
+import Navbar from "@/app/components/Navbar/Navbar";
 
 async function fetchData(token: string, origin: string, path: string) {
   const res = await fetch(`${origin}${path}`, {
@@ -85,9 +86,14 @@ export default async function ShoppLayout({
   }
 
   return (
-    <div className="flex w-screen">
-      <DashboardSidebar />
-      {children}
+    <div className="flex w-screen bg-yellow-300">
+      <div className="flex flex-col min-h-screen w-full bg-red-500 ">
+        <Navbar />
+        <div className="flex flex-row w-full max-h-[calc(100vh-80px)] overflow-hidden">
+          <DashboardSidebar />
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
