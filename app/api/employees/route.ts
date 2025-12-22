@@ -88,6 +88,10 @@ export async function GET(request: NextRequest) {
     const trimmedSearch = search?.trim();
     const searchFilter = trimmedSearch
       ? or(
+          like(
+            sql<string>`concat(${employeesTable.firstName}, ' ', ${employeesTable.lastName})`,
+            `%${trimmedSearch}%`,
+          ),
           like(employeesTable.firstName, `%${trimmedSearch}%`),
           like(employeesTable.lastName, `%${trimmedSearch}%`),
           like(employeesTable.nickName, `%${trimmedSearch}%`),

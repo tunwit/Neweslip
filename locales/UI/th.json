@@ -126,8 +126,12 @@
     "actions": {
       "create": "เพิ่มพนักงาน",
       "delete": "ลบพนักงาน",
+      "showQR": "แสดง QR",
       "close": "ปิด",
       "save": "บันทึก"
+    },
+    "info": {
+      "qr_not_available": "QR ไม่พร้อมใช้งาน"
     },
     "search": {
       "label": "ค้นหาพนักงาน",
@@ -412,7 +416,7 @@
       "overtime": "ค่าล่วงเวลา",
       "penalties": "ค่าหักลงโทษ",
       "earning": "รายได้",
-      "paid":"จ่ายแล้ว",
+      "paid": "จ่ายแล้ว",
       "displayonly": "แสดงเท่านั้น",
       "total": "รวม",
       "total_base_salary": "รวมฐานเงินเดือน",

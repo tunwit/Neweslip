@@ -1,6 +1,6 @@
 "use client";
-import { FormControl, FormLabel } from "@mui/joy";
-import React, { Suspense } from "react";
+import { Button, FormControl, FormLabel, Input } from "@mui/joy";
+import React, { Suspense, useState } from "react";
 import BranchSelector from "../../../../widget/BranchSelector";
 import { EmployeeWithShop } from "@/types/employee";
 import {
@@ -24,6 +24,7 @@ import { useZodForm, ZodForm } from "@/lib/useZodForm";
 import { InputForm } from "@/widget/InputForm";
 import { z } from "zod";
 import { useTranslations } from "next-intl";
+import QRPromptpayModal from "./QRPromptpayModal";
 
 export default function EmployeeDetailsForm({
   employee,
@@ -37,12 +38,13 @@ export default function EmployeeDetailsForm({
   } = useFormContext<z.infer<typeof createEmployeeFormSchema>>() as ZodForm<
     typeof createEmployeeFormSchema
   >;
-
+  const [showQR, setShowQR] = useState(false);
   const tn = useTranslations("new_employees");
   const t = useTranslations("employees");
 
   return (
     <>
+      <QRPromptpayModal open={showQR} setOpen={setShowQR} promptpay={employee.promtpay} />
       <form>
         <div className="flex flex-col gap-3 ">
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">
@@ -230,11 +232,34 @@ export default function EmployeeDetailsForm({
                 name="bankAccountOwner"
                 label={t("fields.bank_account_owner")}
               />
-              <InputForm
-                control={control}
-                name="promtpay"
-                label={t("fields.promtpay")}
-              />
+              <FormControl required>
+                <FormLabel>
+                  {t("fields.promtpay")}
+                  {errors.bankName && (
+                    <p className="text-xs ml-2 font-normal text-red-500 italic">
+                      {errors.bankName.message}
+                    </p>
+                  )}
+                </FormLabel>
+                <Controller
+                  control={control}
+                  name="promtpay"
+                  render={({ field }) => (
+                    <Input
+                      endDecorator={
+                        <Button
+                          variant="outlined"
+                          onClick={() => setShowQR(!showQR)}
+                        >
+                          show QR
+                        </Button>
+                      }
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </FormControl>
             </div>
           </div>
         </div>

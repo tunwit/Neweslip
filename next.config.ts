@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "60mb",
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "promptpay.io",
+      },
+    ],
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
