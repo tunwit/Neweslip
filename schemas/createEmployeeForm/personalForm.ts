@@ -1,9 +1,8 @@
-
 import { GENDER } from "@/types/enum/enum";
 import { z } from "zod";
 
 export const personalSchema = z.object({
-  avatar:z.string().optional(),
+  avatar: z.instanceof(File).optional(),
   firstName: z.string(),
   lastName: z.string().min(1, "Last name is required"),
   nickName: z.string().min(1, "Nick name is required"),

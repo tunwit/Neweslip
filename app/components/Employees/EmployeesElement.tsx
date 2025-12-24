@@ -9,6 +9,8 @@ import { moneyFormat } from "@/utils/formmatter";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useLocale } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import ChangableAvatar from "@/widget/ChangableAvatar";
+import { useQueryClient } from "@tanstack/react-query";
 
 function getRandomPastelColor() {
   const r = Math.floor(Math.random() * 128) + 127; // Random red value (127-255)
@@ -28,6 +30,10 @@ export default function EmployeesElement({
   const [open, setOpen] = useState<boolean>(false);
   const locale = useLocale();
   const randomColor = useMemo(() => getRandomPastelColor(), []);
+
+  const url = `${process.env.NEXT_PUBLIC_CDN_URL}/${employee.avatar}`;
+  const queryClient = useQueryClient();
+
   return (
     <>
       <EmployeeDetailsModal employee={employee} open={open} setOpen={setOpen} />
@@ -44,13 +50,11 @@ export default function EmployeesElement({
         </td>
         <td onClick={() => setOpen(true)} className="border-b">
           <div className="flex flex-row gap-3">
-            <div
-              className="w-9 aspect-square h-9 text-center rounded-full flex items-center justify-center"
-              style={{ backgroundColor: randomColor }}
-              onClick={() => setOpen(true)}
-            >
-              {employee.firstName.charAt(0)}
-            </div>
+            <ChangableAvatar
+              src={url}
+              fallbackTitle={employee.firstName.charAt(0)}
+              editable={false}
+            />
             <div className="flex flex-col gap-[0.5px]">
               <p>{employee.firstName + " " + employee.lastName}</p>
               <p className="text-xs opacity-65">{employee.email}</p>

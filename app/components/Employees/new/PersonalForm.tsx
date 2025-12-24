@@ -1,28 +1,19 @@
 "use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Option,
-  Select,
-} from "@mui/joy";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import React, { useEffect, useRef, useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import { Button, FormControl, FormLabel } from "@mui/joy";
+import React, { useRef, useState } from "react";
+import dayjs from "dayjs";
 import { Controller, useFormContext } from "react-hook-form";
-import { personalSchema } from "@/schemas/createEmployeeForm/personalForm";
 import { z } from "zod";
 import DatePickerLocalize from "@/widget/DatePickerLocalize";
 import { InputForm } from "@/widget/InputForm";
-import { ZodControl, ZodForm } from "@/lib/useZodForm";
+import { ZodForm } from "@/lib/useZodForm";
 import { createEmployeeFormSchema } from "@/types/formField";
 import GenderSelector from "@/widget/GenderSelector";
 import { GENDER } from "@/types/enum/enum";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 interface PersonalFormProps {
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -36,8 +27,6 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
   } = useFormContext<z.infer<typeof createEmployeeFormSchema>>() as ZodForm<
     typeof createEmployeeFormSchema
   >;
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | undefined>();
   const router = useRouter();
   const t = useTranslations("employees");
   const tn = useTranslations("new_employees");
@@ -61,40 +50,23 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
     router.back();
   };
 
-  const handleClick = () => {
-    fileRef.current?.click();
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <>
       <FormControl>
-        <input type="file" ref={fileRef} accept="image/*" />
         <div className="flex flex-col justify-center  items-center gap-2">
-          <div onClick={() => handleClick()} className="cursor-pointer">
-            {preview ? (
-              <img
-                src={preview}
-                alt="Profile"
-                className="w-20 h-20 rounded-full object-cover shadow"
+          <Controller
+            control={control}
+            name="avatar"
+            render={({ field }) => (
+              <ChangableAvatar
+                editable
+                size={100}
+                src={field.value ? URL.createObjectURL(field.value) : undefined}
+                onChange={(file) => field.onChange(file)}
+                onRemove={() => field.onChange(undefined)}
               />
-            ) : (
-              <div className="w-20 h-20 aspect-square bg-gray-100 rounded-full border border-2 border-dashed flex items-center justify-center">
-                <Icon icon={"solar:user-bold"} className="text-3xl" />
-              </div>
             )}
-          </div>
-
+          />
           <p>Upload Photo</p>
         </div>
       </FormControl>

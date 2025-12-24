@@ -68,6 +68,7 @@ export default function FormSection({
       salary: String(data.salary),
       shopId: id,
     };
+    
     try {
       await createEmployee(employeePayload, user.user?.id || null);
       queryClient.invalidateQueries({ queryKey: ["employees"] });

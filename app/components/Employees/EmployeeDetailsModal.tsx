@@ -40,6 +40,10 @@ import { useUser } from "@clerk/nextjs";
 import EmployeeDetailsFiles from "./documentsTab/EmployeeDetailsDocuments";
 import EmployeeDetailsDocuments from "./documentsTab/EmployeeDetailsDocuments";
 import { useTranslations } from "next-intl";
+import ChangableAvatar from "@/widget/ChangableAvatar";
+import { changeEmployeeAvatar } from "@/app/action/employee/changeEmployeeAvatar";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { deleteEmployeeAvatar } from "@/app/action/employee/deleteEmployeeAvatar";
 
 interface EmployeeDetailsModalProps {
   employee: EmployeeWithShop;
@@ -53,7 +57,9 @@ export default function EmployeeDetailsModal({
 }: EmployeeDetailsModalProps) {
   const [status, setStatus] = useState(employee.status);
   const queryClient = useQueryClient();
-  const user = useUser();
+  const { user } = useUser();
+  const { id: shopId } = useCurrentShop();
+
   const t = useTranslations("employees");
 
   const handlerChangeStatus = async (newValue: EMPLOYEE_STATUS) => {
@@ -62,7 +68,7 @@ export default function EmployeeDetailsModal({
       await changeEmployeeStatus({
         employeeId: employee.id,
         status: newValue,
-        userId: user.user?.id || null,
+        userId: user?.id || null,
       });
       showSuccess(`Change Status to ${newValue} successful`);
     } catch (err) {
@@ -108,11 +114,7 @@ export default function EmployeeDetailsModal({
 
   const onSave = async (data: createEmployeeFormField) => {
     try {
-      await updateEmployee(
-        employee.id,
-        normalizeNull(data),
-        user.user?.id || null,
-      );
+      await updateEmployee(employee.id, normalizeNull(data), user?.id || null);
       reset(data);
       setOpen(false);
       showSuccess(`update employee successful`);
@@ -121,6 +123,42 @@ export default function EmployeeDetailsModal({
       showError(`Update employee failed failed\n${err}`);
     }
   };
+
+  const handleSelectFile = async (file?: File) => {
+    if (!file || !shopId || !user) return;
+    try {
+      await changeEmployeeAvatar(
+        file,
+        employee.id,
+        shopId,
+        user.id,
+        employee.avatar,
+      );
+      queryClient.invalidateQueries({
+        queryKey: ["employees"],
+        exact: false,
+      });
+      showSuccess("Change avatar sucessful");
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    } catch (err) {
+      showError(`Change avatar failed ${err}`);
+    }
+  };
+  const handleRemove = async () => {
+    if (!employee?.avatar || !shopId || !user) return;
+    try {
+      await deleteEmployeeAvatar(employee.avatar, employee.id, shopId, user.id);
+      queryClient.invalidateQueries({
+        queryKey: ["employees"],
+        exact: false,
+      });
+      showSuccess("Remove avatar sucessful");
+    } catch (err) {
+      showError(`Remove avatar failed ${err}`);
+    }
+  };
+
+  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${employee.avatar}`;
 
   return (
     <>
@@ -132,9 +170,14 @@ export default function EmployeeDetailsModal({
           <div className="flex flex-row justify-between items-center ">
             <div className="flex flex-row gap-10 items-center p-2">
               <div className="flex gap-4  items-center">
-                <div className="bg-teal-400 w-20 h-20 text-center rounded-full flex items-center justify-center">
-                  <p className="text-xl">{employee.firstName.charAt(0)}</p>
-                </div>
+                <ChangableAvatar
+                  src={avatar}
+                  editable={true}
+                  size={80}
+                  fallbackTitle={employee.firstName.charAt(0)}
+                  onChange={handleSelectFile}
+                  onRemove={handleRemove}
+                />
               </div>
 
               <div className="flex flex-col gap-0 ">

@@ -87,6 +87,7 @@ export default function DashboardSidebar() {
                   key={shop.id}
                   id={shop.id}
                   title={shop.name}
+                  avatar={shop.avatar || ""}
                   selected={shopSlug == slug}
                 />
               );
