@@ -10,9 +10,7 @@ import { RecordDetails } from "@/types/RecordDetails";
 import Decimal from "decimal.js";
 import { eq } from "drizzle-orm";
 
-export default async function calculateTotalSalary(
-  recordId: number,
-) {
+export default async function calculateTotalSalary(recordId: number) {
   const record = await globalDrizzle
     .select()
     .from(payrollRecordsTable)
@@ -72,6 +70,7 @@ export default async function calculateTotalSalary(
     salaryValues,
     otValues,
     penaltyValues,
+    note: record[0].note,
     totals: {
       totalSalaryIncome: totalSalaryIncome.toNumber(),
       totalSalaryDeduction: totalSalaryDeduction.toNumber(),

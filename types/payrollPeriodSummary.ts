@@ -39,6 +39,7 @@ export interface PayrollRecordSummary {
   baseSalary: number;
   sentMail: boolean;
   paid: boolean;
+  note?: string;
   employee: {
     id: number;
     firstName: string;

@@ -101,11 +101,10 @@ export default function Home() {
     loadingPeriod || loadingSummary || loadingVerify || finalizing;
 
   let loadingMessage = "";
-  if (finalizing)
-    loadingMessage = "Finalizing payroll this might take a while...";
-  if (loadingPeriod) loadingMessage = "Loading Period...";
-  if (loadingSummary) loadingMessage = "Calculating Payroll...";
-  if (loadingVerify) loadingMessage = "Verifying Payroll...";
+  if (finalizing) loadingMessage = t("load.finalizing");
+  if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
+  if (loadingSummary) loadingMessage = tPeriod("load.loading_records");
+  if (loadingVerify) loadingMessage = t("load.verifying");
 
   const filteredTotalNet = useMemo(() => {
     return filtered.reduce((sum, r) => sum + (r.totals.net || 0), 0);
@@ -125,7 +124,7 @@ export default function Home() {
   }, [filtered]);
 
   return (
-    <main className="w-full bg-gray-100 font-medium ">
+    <main className="h-full w-full bg-gray-100 font-medium ">
       <Modal open={isLoading}>
         <ModalDialog>
           <div className="flex flex-col items-center justify-center">
@@ -146,7 +145,7 @@ export default function Home() {
         problems={verify?.data || []}
       />
       <title>{periodData?.data?.name}</title>
-      <div className="flex flex-col h-full overflow-y-auto flex-1">
+      <div className="flex flex-col h-full overflow-y-auto">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
           <div className=" flex flex-row text-[#424242] text-xs mt-10">
             <p>

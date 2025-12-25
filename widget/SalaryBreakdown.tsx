@@ -215,9 +215,12 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
           </table>
         </div>
       </div>
-
+      <div className="bg-blue-50 flex items-center gap-2 border border-blue-200 p-2 rounded-md my-1">
+        <p className="text-blue-900 font-bold">{t("fields.note")}:</p>
+        <p className="text-sm text-blue-800"> {record.note ? record.note :  "-"}</p>
+      </div>
       {/* Net Calculation */}
-      <div className="mt-6 pt-6 border-t-2 border-gray-300">
+      <div className="mt-2 pt-6 border-t-2 border-gray-300">
         <div className="grid grid-cols-[1fr_auto] gap-8 items-end">
           <div>
             <p className="text-sm text-gray-500 uppercase mb-2">

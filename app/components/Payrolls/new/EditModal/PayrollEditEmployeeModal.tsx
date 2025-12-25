@@ -1,5 +1,6 @@
 import {
   Button,
+  Input,
   Modal,
   ModalClose,
   ModalDialog,
@@ -10,6 +11,7 @@ import {
   TabList,
   TabPanel,
   Tabs,
+  Textarea,
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { PayrollRecord } from "@/types/payrollRecord";
@@ -32,6 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import { useDebounce } from "use-debounce";
 
 interface PayrollEditEmployeeModalProps {
   periodData?: PayrollPeriod;
@@ -83,6 +86,7 @@ export default function PayrollEditEmployeeModal({
   const [displayAmount, setDisplayAmount] = useState<
     Record<number, { amount: number }>
   >({});
+  const [note, setNote] = useState("");
   const [baseSalary, setBaseSalary] = useState<Decimal>(new Decimal(0));
   const [isDirty, setIsDirty] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -106,6 +110,7 @@ export default function PayrollEditEmployeeModal({
     setOtAmount({});
     setPenaltyAmount({});
     setBaseSalary(new Decimal(data?.data?.salary || 0));
+    setNote(data?.data?.note || "");
   }, [data]);
 
   useEffect(() => {
@@ -129,6 +134,7 @@ export default function PayrollEditEmployeeModal({
     penaltyAmount,
     displayAmount,
     baseSalary,
+    note,
   ]);
 
   if (!id || data === null) router.back();
@@ -162,6 +168,7 @@ export default function PayrollEditEmployeeModal({
         amount: data.amount,
         value: data.value ?? 0,
       })),
+      note: note,
     };
     try {
       await updatePayrollRecord(result, selectedRecord.id, id!, user?.id);
@@ -210,7 +217,7 @@ export default function PayrollEditEmployeeModal({
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog sx={{ background: "#fafafa", maxHeight: "70%" }}>
+        <ModalDialog sx={{ background: "#fafafa", maxHeight: "75%" }}>
           <div className="flex flex-row justify-between items-center">
             <p>{t("edit.label")}</p>
 
@@ -360,6 +367,22 @@ export default function PayrollEditEmployeeModal({
             </Tabs>
           </div>
 
+          <div
+            hidden={isLoading}
+            className="gap-5 h-fit bg-white p-3 rounded-sm shadow-sm w-full"
+          >
+            <span className="flex flex-row items-center gap-2 ">
+              <h1 className="font-bold text-lg">{t("fields.note")}</h1>
+              <p className="text-xs text-gray-500">
+                {t("info.note")}
+              </p>
+            </span>
+            <Textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              sx={{ height: "60px", padding: 1 }}
+            />
+          </div>
           <Button
             loading={isSubmitting}
             disabled={isLoading || isSubmitting}

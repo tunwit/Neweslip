@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
         updatedAt: payrollRecordsTable.updatedAt,
         createdAt: payrollRecordsTable.createdAt,
         baseSalary: payrollRecordsTable.salary,
+        note: payrollRecordsTable.note,
 
         employeeId: employeesTable.id,
         firstName: employeesTable.firstName,
@@ -79,6 +80,7 @@ export async function GET(request: NextRequest) {
       updatedAt: r.updatedAt,
       createdAt: r.createdAt,
       baseSalary: r.baseSalary,
+      note: r.note,
       employee: {
         id: r.employeeId,
         firstName: r.firstName,
@@ -90,8 +92,6 @@ export async function GET(request: NextRequest) {
         },
       },
     }));
-
-    let total = 0;
 
     const dataWithNet = await Promise.all(
       formatted.map(async (r) => {

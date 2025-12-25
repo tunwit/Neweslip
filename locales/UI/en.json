@@ -410,6 +410,7 @@
       "title": "Item",
       "employee": "Employee",
       "branch": "Branch",
+      "note":"Note",
       "base_salary": "Base salary",
       "deduction": "Deductions",
       "overtime": "Overtime",
@@ -426,6 +427,7 @@
       "net": "Net pay"
     },
     "info": {
+      "note":"This note will not appear to employee",
       "calculation": "Calculation",
       "showing": "Showing {count} employees",
       "total_payroll": "Total payroll expense"
@@ -463,6 +465,10 @@
     "label": "Review payroll summary",
     "info": {
       "summary": "Payroll summary"
+    },
+    "load":{
+      "finalizing":"Finalizing payroll this might take a while",
+      "verifying":"Verifying Payroll"
     },
     "critical_issue": {
       "label": "Critical issues found ({count})",

@@ -31,6 +31,7 @@ export default function ChangableAvatar({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlRef = useRef<string | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setUrl(src);
@@ -45,8 +46,8 @@ export default function ChangableAvatar({
   }, []);
 
   function colorFromText(text?: string) {
-    if (!text) return "neutral";
-    const colors = ["primary", "success", "warning", "danger"] as const;
+    if (!text) return "#CDD7E1";
+    const colors = ["#97C3F0", "#A1E8A1", "#F3C896", "#F09898"] as const;
     return colors[text.charCodeAt(0) % colors.length];
   }
 
@@ -65,6 +66,7 @@ export default function ChangableAvatar({
       URL.revokeObjectURL(objectUrlRef.current);
     }
     objectUrlRef.current = objectUrl;
+    setHasError(false);
     setUrl(objectUrl);
     if (onChange) onChange(file);
   };
@@ -109,7 +111,7 @@ export default function ChangableAvatar({
               />
             </div>
           </div>
-          {url && !hasError ? (
+          {url && !hasError && !isLoading ? (
             <div
               style={{ width: size, height: size }}
               className="relative overflow-hidden rounded-full"
@@ -121,11 +123,21 @@ export default function ChangableAvatar({
                 sizes={`${size}px`}
                 unoptimized
                 className="object-cover"
-                onError={() => setHasError(true)}
+                onError={() => {
+                  setIsLoading(false);
+                  setHasError(true);
+                }}
+                onLoadStart={() => setIsLoading(true)}
+                onLoadingComplete={() => setIsLoading(false)}
               />
             </div>
           ) : (
-            <div className="flex items-center justify-center w-full h-full bg-gray-300 text-gray-700 text-sm font-medium rounded-full">
+            <div
+              style={{
+                backgroundColor: colorFromText(fallbackTitle),
+              }}
+              className={`flex items-center justify-center w-full h-full text-gray-700 text-sm font-medium rounded-full`}
+            >
               {fallbackTitle ? (
                 fallbackTitle?.[0]?.toUpperCase()
               ) : (

@@ -89,7 +89,7 @@ export default async function ShoppLayout({
     <div className="flex w-screen bg-yellow-300">
       <div className="flex flex-col min-h-screen w-full bg-red-500 ">
         <Navbar />
-        <div className="flex flex-row w-full max-h-[calc(100vh-80px)] overflow-hidden">
+        <div className="flex flex-row w-full max-h-[calc(100vh-80px)] h-screen overflow-hidden">
           <DashboardSidebar />
           {children}
         </div>

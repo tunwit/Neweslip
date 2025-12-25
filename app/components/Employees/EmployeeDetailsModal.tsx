@@ -71,11 +71,10 @@ export default function EmployeeDetailsModal({
         userId: user?.id || null,
       });
       showSuccess(`Change Status to ${newValue} successful`);
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
     } catch (err) {
       showError(`Change Status failed\n${err}`);
     }
-
-    queryClient.invalidateQueries({ queryKey: ["employees"] });
   };
 
   const methods = useZodForm(createEmployeeFormSchema, {
@@ -134,10 +133,6 @@ export default function EmployeeDetailsModal({
         user.id,
         employee.avatar,
       );
-      queryClient.invalidateQueries({
-        queryKey: ["employees"],
-        exact: false,
-      });
       showSuccess("Change avatar sucessful");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     } catch (err) {

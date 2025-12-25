@@ -195,7 +195,7 @@ export default function Home() {
   else if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
 
   return (
-    <main className="w-full bg-gray-100 font-medium ">
+    <main className="min-h-screen w-full bg-gray-100 font-medium ">
       <PayrollsAddEmployeeModal
         open={openAdd}
         setOpen={setOpenAdd}

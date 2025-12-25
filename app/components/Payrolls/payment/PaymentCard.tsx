@@ -27,6 +27,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
   const te = useTranslations("employees");
   const tr = useTranslations("record");
   const tp = useTranslations("payment_payroll");
+
   const locale = useLocale();
   const [copiedId, setCopiedId] = useState("");
 
@@ -305,6 +306,15 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                     <p>{tp("actions.view_details")}</p>
                   </button>
                 </section>
+                <div className="bg-blue-50 flex items-center gap-2 border border-blue-200 p-2 m-2 rounded-md my-1 mb-3">
+                  <p className="text-blue-900 font-bold">
+                    {tr("fields.note")}:
+                  </p>
+                  <p className="text-sm text-blue-800">
+                    {" "}
+                    {record.note ? record.note : "-"}
+                  </p>
+                </div>
                 <section hidden={!showBreakdown} className="bg-white">
                   <SalaryBreakdown record={record} />
                 </section>

@@ -1,14 +1,4 @@
-import {
-  otFieldsTable,
-  payrollFieldValueTable,
-  payrollPeriodsTable,
-  payrollRecordsTable,
-  penaltyFieldsTable,
-  employeesTable,
-  otFieldValueTable,
-  penaltyFieldValueTable,
-  branchesTable,
-} from "@/db/schema";
+
 import globalDrizzle from "@/db/drizzle";
 import { errorResponse, successResponse } from "@/utils/respounses/respounses";
 import { auth } from "@clerk/nextjs/server";

@@ -14,10 +14,11 @@ export interface PayrollRecord {
     lastName: string;
     nickName: string;
     branch: {
-      name:string
+      name: string;
       nameEng: string;
-    }    
+    };
   };
+  note?: string;
   totals: TotalSalary;
 }
 

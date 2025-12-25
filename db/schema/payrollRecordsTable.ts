@@ -32,6 +32,7 @@ export const payrollRecordsTable = mysqlTable(
     sentMail: boolean("sent_mail").default(false),
     paid: boolean().default(false),
     paidAt: timestamp("paid_at"),
+    note: varchar({ length: 500 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
   },
