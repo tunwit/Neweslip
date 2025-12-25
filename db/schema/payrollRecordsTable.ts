@@ -26,7 +26,7 @@ export const payrollRecordsTable = mysqlTable(
       .references(() => payrollPeriodsTable.id, { onDelete: "cascade" })
       .notNull(),
     employeeId: int()
-      .references(() => employeesTable.id, { onDelete: "cascade" })
+      .references(() => employeesTable.id, { onDelete: "restrict" })
       .notNull(),
     salary: decimal("salary", { precision: 10, scale: 2 }).notNull(),
     sentMail: boolean("sent_mail").default(false),
