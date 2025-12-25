@@ -136,12 +136,14 @@ export default function ChangableAvatar({
               style={{
                 backgroundColor: colorFromText(fallbackTitle),
               }}
-              className={`flex items-center justify-center w-full h-full text-gray-700 text-sm font-medium rounded-full`}
+              className={`flex items-center  justify-center w-full h-full text-gray-700 text-sm font-medium rounded-full`}
             >
               {fallbackTitle ? (
-                fallbackTitle?.[0]?.toUpperCase()
+                <p style={{ fontSize: size - 25 }} className="font-medium">
+                  {fallbackTitle?.[0]?.toUpperCase()}
+                </p>
               ) : (
-                <Icon icon="mdi:user" fontSize={40} />
+                <Icon icon="mdi:user" fontSize={size - 15} />
               )}
             </div>
           )}

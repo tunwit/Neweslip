@@ -102,7 +102,7 @@ export default function SignInPage() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-400 text-xs">
-          V 2.0.0 @beta
+          V 1.3.0 @beta
         </div>
       </div>
 
