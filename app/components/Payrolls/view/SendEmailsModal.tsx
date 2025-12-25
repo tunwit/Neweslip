@@ -15,6 +15,7 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 
 interface ProgressItem {
   email: string;
@@ -387,6 +388,7 @@ export default function SendEmailsModal({
               {data.records.map((record) => {
                 const isEditing = editingEmail === record.id;
                 const isOverridden = isEmailOverridden(record.id);
+                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
                 return (
                   <div
                     key={record.employee.id}
@@ -402,8 +404,13 @@ export default function SendEmailsModal({
                     />
 
                     {/* Employee Avatar */}
-                    <div className="relative w-10 h-10 rounded-full bg-orange-300 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                      {record.employee.firstName.charAt(0)}
+                    <div className="relative text-white">
+                      <ChangableAvatar
+                        src={avatar}
+                        size={40}
+                        fallbackTitle={record.employee.firstName.charAt(0)}
+                        editable={false}
+                      />
                       <div
                         className={`absolute -bottom-1 -right-1  ${record.sentMail ? "bg-green-700" : "bg-red-700"} rounded-full p-1`}
                       >

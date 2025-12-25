@@ -25,6 +25,7 @@ import { useUser } from "@clerk/nextjs";
 import { Pagination } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;
@@ -149,15 +150,15 @@ export default function PayrollsAddEmployeeModal({
                     label: te("fields.name"),
                     width: "45%",
                     render: (row, i) => {
+                      const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${row.avatar}`;
+
                       return (
                         <span className="flex flex-row items-center gap-2">
-                          <div
-                            className="w-9 aspect-square min-w-8 text-center rounded-full flex items-center justify-center text-white"
-                            style={{ backgroundColor: avatarColors[i] }}
-                            onClick={() => setOpen(true)}
-                          >
-                            {row.firstName.charAt(0)}
-                          </div>
+                          <ChangableAvatar
+                            src={avatar}
+                            fallbackTitle={row.firstName.charAt(0)}
+                            editable={false}
+                          />
                           <p>
                             {row.firstName} &nbsp;
                             {row.lastName}

@@ -14,6 +14,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 
 interface PeriodEmployeeTableProps {
   searchQuery: string;
@@ -104,6 +105,8 @@ export default function PeriodEmployeeTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filterd.map((r) => {
+                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${r.employee.avatar}`;
+
                 return (
                   <tr
                     key={r.id}
@@ -122,9 +125,11 @@ export default function PeriodEmployeeTable({
                       }}
                     >
                       <div className="flex flex-row items-center gap-3">
-                        <div className="bg-orange-300 w-9 h-9 aspect-square min-w-9 text-center rounded-full flex items-center justify-center text-white">
-                          {r.employee.firstName.charAt(0)}
-                        </div>
+                        <ChangableAvatar
+                          src={avatar}
+                          fallbackTitle={r.employee.firstName.charAt(0)}
+                          editable={false}
+                        />
                         <div className="min-w-max">
                           <p className="font-semibold whitespace-nowrap">
                             {r.employee.firstName}&nbsp;

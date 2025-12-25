@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SalaryBreakdown from "@/widget/SalaryBreakdown";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
@@ -20,6 +21,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations("record");
   const locale = useLocale();
+  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -29,9 +31,11 @@ export default function SummaryCard({ record }: SummaryCardProps) {
           onClick={() => setExpanded(!expanded)}
         >
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
-            <div className="w-12 h-12 rounded-full bg-orange-300 flex items-center justify-center text-white font-bold text-lg">
-              {record.employee.firstName.charAt(0)}
-            </div>
+            <ChangableAvatar
+              src={avatar}
+              fallbackTitle={record.employee.firstName.charAt(0)}
+              editable={false}
+            />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
                 {record.employee.firstName} {record.employee.lastName}

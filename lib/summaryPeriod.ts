@@ -73,6 +73,7 @@ export async function summaryPeriod(
       note: payrollRecordsTable.note,
       employee: {
         id: employeesTable.id,
+        avatar: employeesTable.avatar,
         firstName: employeesTable.firstName,
         lastName: employeesTable.lastName,
         nickName: employeesTable.nickName,
@@ -135,6 +136,7 @@ export async function summaryPeriod(
       note: r.note || "",
       employee: {
         id: r.employee.id ?? 0,
+        avatar: r.employee.avatar ?? "",
         firstName: r.employee.firstName ?? "",
         lastName: r.employee.lastName ?? "",
         nickName: r.employee.nickName ?? "",

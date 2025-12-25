@@ -14,6 +14,7 @@ import { getLocalizedName } from "@/lib/getLocalizedName";
 import { setMarkRecordAsPaid } from "@/app/action/payroll/record/markRecordAsPaid";
 import { useUser } from "@clerk/nextjs";
 import { showError } from "@/utils/showSnackbar";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 
 interface SummaryCardProps {
   record: PayrollRecordSummary;
@@ -49,6 +50,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
   };
 
   const bank = banks.find((b) => b.label === record.employee.bankName);
+  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
 
   return (
     <div className="space-y-4">
@@ -59,9 +61,11 @@ export default function PaymentCard({ record }: SummaryCardProps) {
           onClick={() => setExpanded(!expanded)}
         >
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
-            <div className="w-12 h-12 rounded-full bg-orange-300 flex items-center justify-center text-white font-bold text-lg">
-              {record.employee.firstName.charAt(0)}
-            </div>
+            <ChangableAvatar
+              src={avatar}
+              fallbackTitle={record.employee.firstName.charAt(0)}
+              editable={false}
+            />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
                 {record.employee.firstName} {record.employee.lastName}

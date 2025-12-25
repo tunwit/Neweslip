@@ -34,7 +34,7 @@ export async function GET(
       salaryValues: data.salaryValues,
       otValues: data.otValues,
       penaltyValues: data.penaltyValues,
-      note: data.note,
+      note: data.note || "",
       totals: data.totals,
     };
     return successResponse(result);

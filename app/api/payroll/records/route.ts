@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
         firstName: employeesTable.firstName,
         lastName: employeesTable.lastName,
         nickName: employeesTable.nickName,
+        avatar: employeesTable.avatar,
 
         branchName: branchesTable.name,
         branchNameEng: branchesTable.nameEng,
@@ -86,6 +87,7 @@ export async function GET(request: NextRequest) {
         firstName: r.firstName,
         lastName: r.lastName,
         nickName: r.nickName,
+        avatar: r.avatar,
         branch: {
           name: r.branchName,
           nameEng: r.branchNameEng,

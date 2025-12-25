@@ -16,6 +16,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError } from "@/utils/showSnackbar";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 interface PaySlipGenerateModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -147,15 +148,19 @@ export default function PaySlipGenerateModal({
           {/* Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-240px)]">
             <div className="space-y-3">
-              {summaryData.records.map((record) => (
-                <div
+              {summaryData.records.map((record) => {
+                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
+                return <div
                   key={record.employee.id}
                   className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   {/* Employee Info */}
-                  <div className="w-10 h-10 rounded-full bg-orange-300 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                    {record.employee.firstName.charAt(0)}
-                  </div>
+                  <ChangableAvatar
+                    src={avatar}
+                    size={40}
+                    fallbackTitle={record.employee.firstName.charAt(0)}
+                    editable={false}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 truncate">
                       {record.employee.firstName} {record.employee.lastName}
@@ -207,7 +212,7 @@ export default function PaySlipGenerateModal({
                     </button>
                   </div>
                 </div>
-              ))}
+              })}
             </div>
           </div>
 

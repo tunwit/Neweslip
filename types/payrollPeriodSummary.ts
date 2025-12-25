@@ -42,6 +42,7 @@ export interface PayrollRecordSummary {
   note?: string;
   employee: {
     id: number;
+    avatar?: string;
     firstName: string;
     lastName: string;
     nickName: string;

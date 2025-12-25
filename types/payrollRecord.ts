@@ -13,6 +13,7 @@ export interface PayrollRecord {
     firstName: string;
     lastName: string;
     nickName: string;
+    avatar?: string;
     branch: {
       name: string;
       nameEng: string;
