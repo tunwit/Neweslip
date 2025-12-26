@@ -9,6 +9,7 @@ import { branchesTable, shopOwnerTable, shopsTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import DashboardSidebar from "@/app/components/DashboardSidebar/DashboardSidebar";
 import Navbar from "@/app/components/Navbar/Navbar";
+import GlobalJobSnackbars from "@/widget/GlobalJobSnackbars";
 
 async function fetchData(token: string, origin: string, path: string) {
   const res = await fetch(`${origin}${path}`, {
@@ -91,6 +92,7 @@ export default async function ShoppLayout({
         <Navbar />
         <div className="flex flex-row w-full max-h-[calc(100vh-80px)] h-screen overflow-hidden">
           <DashboardSidebar />
+          <GlobalJobSnackbars />
           {children}
         </div>
       </div>

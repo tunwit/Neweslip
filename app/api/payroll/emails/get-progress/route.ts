@@ -25,18 +25,31 @@ import calculateTotalSalary from "@/lib/calculateTotalSalary";
 import { RecordDetails } from "@/types/RecordDetails";
 import { enqueuePayrollEmails } from "@/src/lib/enqueuePayrollEmails";
 import { EmailPayload } from "@/types/mailPayload";
+import { connection } from "@/src/queues/email.queue";
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return errorResponse("Unauthorized", 401);
     }
 
-    const body: EmailPayload[] = await request.json();
-    const batchId = await enqueuePayrollEmails(body);
+    const batchId = request.nextUrl.searchParams.get("batchId");
 
-    return successResponse(batchId);
+    const total = Number(await connection.get(`email:batch:${batchId}:total`));
+    const completed = Number(
+      (await connection.get(`email:batch:${batchId}:completed`)) || 0,
+    );
+    const failed = Number(
+      (await connection.get(`email:batch:${batchId}:failed`)) || 0,
+    );
+    return successResponse({
+      total,
+      completed,
+      failed,
+      pending: total - completed - failed,
+      percent: Math.round((completed / total) * 100),
+    });
   } catch (err) {
     console.error(err);
     return new Response("Internal server error", { status: 500 });

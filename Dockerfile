@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy package files and install deps
 COPY package.json package-lock.json ./
+RUN npx playwright install --with-deps chromium
 RUN npm ci --omit=dev
 
 # Copy all app files

@@ -4,6 +4,7 @@ import {
   Checkbox,
   CircularProgress,
   Input,
+  LinearProgress,
   Modal,
   ModalDialog,
 } from "@mui/joy";
@@ -16,6 +17,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
+import { EmailPayload } from "@/types/mailPayload";
+import { useUser } from "@clerk/nextjs";
+import { useJobStore } from "@/hooks/useJobStore";
 
 interface ProgressItem {
   email: string;
@@ -42,7 +46,17 @@ export default function SendEmailsModal({
   open,
   setOpen,
 }: SendEmailsModalProps) {
+  const [batchId, setBatchId] = useState(-1);
   const [data, setData] = useState(summaryData);
+  const { addJob, updateJob } = useJobStore();
+  const [progress, setProgress] = useState({
+    completed: 0,
+    failed: 0,
+    pending: 0,
+    percent: 0,
+    total: 0,
+  });
+
   const [originalEmails, setOriginalEmails] = useState(() => {
     const emails: Record<number, string> = {};
     summaryData.records.forEach((record) => {
@@ -51,15 +65,10 @@ export default function SendEmailsModal({
     return emails;
   });
   const queryClient = useQueryClient();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEmail, setEditingEmail] = useState(-1);
   const [tempEmail, setTempEmail] = useState("");
-  const [progress, setProgress] = useState<ProgressState>({
-    current: 0,
-    total: 0,
-    message: "",
-    items: [],
-  });
   const t = useTranslations("view_payroll.send_mail");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
@@ -165,13 +174,19 @@ export default function SendEmailsModal({
   };
 
   const onSend = async () => {
-    const payload = data.records
+    if (!user?.id) return;
+    const payload: EmailPayload[] = data.records
       .filter((r) => checked.includes(r.id))
       .map((r) => {
-        return { id: r.id, email: r.employee.email };
+        return {
+          id: r.id,
+          email: r.employee.email,
+          metaData: {
+            userId: user.id,
+          },
+        };
       });
     setIsSubmitting(true);
-    setProgress({ current: 0, total: 0, message: "", items: [] });
 
     try {
       const response = await fetch("/api/payroll/emails", {
@@ -180,106 +195,32 @@ export default function SendEmailsModal({
         body: JSON.stringify(payload),
       });
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      if (!reader) return;
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = JSON.parse(line.slice(6));
-
-            switch (data.type) {
-              case "init":
-                setProgress((prev) => ({
-                  ...prev,
-                  total: data.total,
-                  message: "Starting...",
-                }));
-                break;
-
-              case "progress":
-                setProgress((prev) => ({
-                  ...prev,
-                  message: data.message,
-                }));
-                break;
-
-              case "item_success":
-                setProgress((prev) => ({
-                  ...prev,
-                  current: data.current,
-                  items: [
-                    ...prev.items,
-                    {
-                      email: data.email,
-                      name: data.employeeName,
-                      status: "success",
-                    },
-                  ],
-                }));
-                break;
-
-              case "item_failed":
-                setProgress((prev) => ({
-                  ...prev,
-                  current: data.current,
-                  items: [
-                    ...prev.items,
-                    {
-                      email: data.email,
-                      status: "failed",
-                      error: data.error,
-                    },
-                  ],
-                }));
-                break;
-
-              case "complete":
-                setProgress((prev) => ({
-                  ...prev,
-                  message: `Complete! Sent: ${data.completed}, Failed: ${data.failed}`,
-                }));
-                setIsSubmitting(false);
-                break;
-
-              case "error":
-                setProgress((prev) => ({
-                  ...prev,
-                  message: `Error: ${data.message}`,
-                }));
-                setIsSubmitting(false);
-                break;
-            }
-          }
-        }
-      }
+      const { data: batchId } = await response.json();
+      setBatchId(batchId);
+      addJob({
+        batchId,
+        title: t("modal.download.label"),
+      });
       queryClient.invalidateQueries({
         queryKey: ["payrollPeriod", "summary", summaryData.id],
         exact: false,
       });
-      showSuccess(`Successfully send email to ${progress.total} employee(s)`);
+      // setOpen(false)
     } catch (error) {
       console.error("Error:", error);
-      setProgress((prev) => ({
-        ...prev,
-        message: "Connection error",
-      }));
+    } finally {
       setIsSubmitting(false);
     }
   };
+
+
   const overrideCount = getOverrideCount();
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog sx={{ padding: 0 }}>
         <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-          {isSubmitting && (
+          {/* {isSubmitting && (
             <Modal open={true}>
               <ModalDialog>
                 <div className="flex flex-col gap-2 items-center justify-center">
@@ -300,7 +241,7 @@ export default function SendEmailsModal({
                 </div>
               </ModalDialog>
             </Modal>
-          )}
+          )} */}
 
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-50 to-purple-100">
