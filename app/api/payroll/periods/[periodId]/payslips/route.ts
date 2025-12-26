@@ -14,7 +14,7 @@ import nunjucks from "nunjucks";
 import JSZip from "jszip";
 
 import calculateTotalSalary from "@/lib/calculateTotalSalary";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, not } from "drizzle-orm";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import {
   PAY_PERIOD_STATUS,
@@ -30,6 +30,7 @@ export async function POST(
 ) {
   try {
     const periodId = (await params).periodId;
+    const recordIds: number[] = await request.json();
 
     const { userId } = await auth();
     if (!userId) return errorResponse("Unauthorized", 401);
@@ -40,7 +41,12 @@ export async function POST(
     const records = await globalDrizzle
       .select()
       .from(payrollRecordsTable)
-      .where(eq(payrollRecordsTable.payrollPeriodId, Number(periodId)));
+      .where(
+        and(
+          eq(payrollRecordsTable.payrollPeriodId, Number(periodId)),
+          inArray(payrollRecordsTable.id, recordIds),
+        ),
+      );
 
     if (records.length === 0)
       return errorResponse("No records in this period", 404);
@@ -88,88 +94,41 @@ export async function POST(
     );
 
     const zip = new JSZip();
-
+    let html;
     for (const record of records) {
       const employee = employeeMap.get(record.employeeId)!;
       const branch = branchMap.get(employee.branchId)!;
       const data = salaryDataMap.get(record.id)!;
 
-      const render = {
-        company: { name: shop.name, taxId: shop.taxId },
-        employee: {
-          position: employee.position,
-          branch: { name: branch.name, address: branch.address },
-          name: `${employee.firstName} ${employee.lastName}`,
-          id: employee.id,
-        },
-        payPeriod: `${dateFormat(new Date(period.start_period))} - ${dateFormat(
-          new Date(period.end_period),
-        )}`,
-        earnings: [
-          {
-            description: "ค่าจ้าง",
-            amount: moneyFormat(record.salary),
-          },
-          ...data.salaryValues
-            .filter((s) => s.type === SALARY_FIELD_DEFINATION_TYPE.INCOME)
-            .map((s) => ({
-              description: s.name,
-              amount: moneyFormat(s.amount),
-            })),
-        ],
-        overtime: data.otValues.map((s) => ({
-          description: s.name,
-          value: s.value,
-          amount: moneyFormat(s.amount),
-        })),
-        deductions: data.salaryValues
-          .filter((s) => s.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION)
-          .map((s) => ({
-            description: s.name,
-            amount: moneyFormat(s.amount),
-          })),
-        penalties: data.penaltyValues.map((s) => ({
-          description: s.name,
-          value: s.value,
-          amount: moneyFormat(s.amount),
-        })),
-        details: data.salaryValues
-          .filter((s) => s.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED)
-          .map((s) => ({
-            description: s.name,
-            amount: moneyFormat(s.amount),
-          })),
-        summary: {
-          grossEarnings: moneyFormat(data.totals.totalSalaryIncome),
-          totalOvertime: moneyFormat(data.totals.totalOT),
-          totalEarnings: moneyFormat(data.totals.totalEarning),
-          totalDeductions: moneyFormat(data.totals.totalSalaryDeduction),
-          totalPenalties: moneyFormat(data.totals.totalPenalty),
-          totalDeducted: moneyFormat(data.totals.totalDeduction),
-          netPay: moneyFormat(data.totals.net),
-        },
-      };
+      html = generateHTMLPayslip(shop, employee, branch, period, record, {
+        ...data,
+        note: data.note || "",
+      });
 
-      const html = generateHTMLPayslip(
-        shop,
-        employee,
-        branch,
-        period,
-        record,
-        data,
-      );
       const branchFolderName = branch.name.replace(/[/\\?%*:|"<>]/g, "-"); // Sanitize folder name
-      zip.file(`${branchFolderName}/payslip_${employee.id}.html`, html);
+      if (records.length > 1)
+        zip.file(
+          `${branchFolderName}/payslip_${employee.id}_${employee.firstName}.html`,
+          html,
+        );
     }
 
-    // 4️⃣ Generate zip output
-    const zipData = await zip.generateAsync({ type: "blob" });
-    return new NextResponse(zipData, {
-      headers: {
-        "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="payslips_period_${periodId}.zip"`,
-      },
-    });
+    if (records.length > 1) {
+      const zipData = await zip.generateAsync({ type: "blob" });
+      return new NextResponse(zipData, {
+        headers: {
+          "Content-Type": "application/zip",
+          "Content-Disposition": `attachment; filename="payslips_period_${periodId}.zip"`,
+        },
+      });
+    } else {
+      return new NextResponse(html, {
+        headers: {
+          "Content-Type": "text/html",
+          "Content-Disposition": `attachment; filename="payslip_${records[0].id}.html"`,
+        },
+      });
+    }
   } catch (err) {
     console.error(err);
     return errorResponse("Internal server error", 500);

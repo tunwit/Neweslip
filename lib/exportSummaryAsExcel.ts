@@ -102,6 +102,7 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     "Gross",
     "Deduction",
     "Net",
+    "Note"
   ];
 
   /* ----------------------------------
@@ -117,6 +118,8 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     row["Gross"] = rec.totals.totalEarning;
     row["Deduction"] = rec.totals.totalDeduction;
     row["Net"] = rec.totals.net;
+    row["Note"] = rec.note || "";
+
 
     /* PRE-INITALIZE ALL DYNAMIC FIELDS WITH 0 */
     [
@@ -244,14 +247,14 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
   const totalRow = dataEndRow + 1;
 
   setCell(
-    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 4 }),
+    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 5 }),
     "Total",
     18,
     true,
     true,
   );
   setCell(
-    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 3 }),
+    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 4 }),
     data.totalEarning,
     18,
     true,
@@ -259,7 +262,7 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     "n",
   );
   setCell(
-    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 2 }),
+    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 3 }),
     data.totalDeduction,
     18,
     true,
@@ -267,7 +270,7 @@ export function exportSummaryAsExcel(data: PayrollPeriodSummary) {
     "n",
   );
   setCell(
-    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 1 }),
+    XLSX.utils.encode_cell({ r: totalRow, c: columns.length - 2 }),
     data.totalNet,
     18,
     true,

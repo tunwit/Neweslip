@@ -555,7 +555,7 @@
       "note": "Note",
       "note_content": "You can view, download individual files, or download all payslips at once.",
       "action": {
-        "download_all": "Download all as ZIP",
+        "download_all": "Download all",
         "downloading": "Downloading",
         "close": "Close"
       },

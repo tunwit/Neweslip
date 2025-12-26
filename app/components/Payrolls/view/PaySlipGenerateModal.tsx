@@ -9,7 +9,7 @@ import {
   Loader2,
   Package,
 } from "lucide-react";
-import { Modal, ModalDialog } from "@mui/joy";
+import { Checkbox, Modal, ModalDialog } from "@mui/joy";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -17,6 +17,7 @@ import { showError } from "@/utils/showSnackbar";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
+import { useCheckBox } from "@/hooks/useCheckBox";
 interface PaySlipGenerateModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -31,45 +32,47 @@ export default function PaySlipGenerateModal({
     {},
   );
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const {
+    isChecked,
+    toggle,
+    checked,
+    isAllChecked,
+    isSomeChecked,
+    checkall,
+    uncheckall,
+  } = useCheckBox<number>("generate_payslip");
   const t = useTranslations("view_payroll.generate");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
   const locale = useLocale();
-  const getBlob = async (recordId: number) => {
-    const response = await fetch(`/api/payroll/records/${recordId}/payslip`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
 
-    const blob = await response.blob();
-    return blob;
-  };
-
-  const getAllBlob = async (periodId: number) => {
+  const getBlob = async (periodId: number, recordIds: number[]) => {
     const response = await fetch(`/api/payroll/periods/${periodId}/payslips`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(recordIds),
     });
 
     const blob = await response.blob();
     return blob;
   };
 
-  const onPreview = async (recordId: number) => {
-    const blob = await getBlob(recordId);
+  const onPreview = async (recordIds: number[]) => {
+    const blob = await getBlob(summaryData.id, recordIds);
     const url = window.URL.createObjectURL(blob);
     window.open(url, "_blank");
     window.URL.revokeObjectURL(url);
   };
 
-  const onDownloadIndividule = async (recordId: number) => {
-    setLoadingStates((prev) => ({ ...prev, [recordId]: true }));
+  const onDownloadIndividule = async (recordIds: number[]) => {
+    setLoadingStates((prev) => ({ ...prev, [recordIds[0]]: true }));
     try {
-      const blob = await getBlob(recordId);
+      const blob = await getBlob(summaryData.id, recordIds);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `payslip${Date.now()}.html`;
+      const ext = blob.type.split("/")[1] || "";
+      a.download = `payslip${Date.now()}.${ext}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -77,14 +80,14 @@ export default function PaySlipGenerateModal({
     } catch (err: any) {
       showError(t("modal.download.fail", { err: err.message }));
     } finally {
-      setLoadingStates((prev) => ({ ...prev, [recordId]: false }));
+      setLoadingStates((prev) => ({ ...prev, [recordIds[0]]: false }));
     }
   };
 
   const handleDownloadAll = async (periodId: number) => {
     setDownloadingAll(true);
     try {
-      const blob = await getAllBlob(periodId);
+      const blob = await getBlob(periodId, checked);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -94,7 +97,8 @@ export default function PaySlipGenerateModal({
 
       const end = new Date(summaryData.end_period).toISOString().split("T")[0];
 
-      a.download = `payslip_${start}_to_${end}.zip`;
+      const ext = blob.type.split("/")[1] || "";
+      a.download = `payslip_${start}_to_${end}.${ext}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -103,6 +107,14 @@ export default function PaySlipGenerateModal({
       showError(t("modal.download.fail", { err: err.message }));
     } finally {
       setDownloadingAll(false);
+    }
+  };
+
+  const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.checked) {
+      checkall(summaryData.records.map((r) => r.id));
+    } else {
+      uncheckall();
     }
   };
 
@@ -147,71 +159,93 @@ export default function PaySlipGenerateModal({
 
           {/* Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-240px)]">
+            <div className="pb-3 border-b border-gray-200">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox
+                  checked={isAllChecked(summaryData.employeeCount)}
+                  indeterminate={isSomeChecked(summaryData.employeeCount)}
+                  onChange={handleCheckAll}
+                />
+                <p className="font-medium text-gray-700">
+                  {tc("select_all", { count: summaryData.employeeCount })}
+                </p>
+              </label>
+            </div>
             <div className="space-y-3">
               {summaryData.records.map((record) => {
                 const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
-                return <div
-                  key={record.employee.id}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  {/* Employee Info */}
-                  <ChangableAvatar
-                    src={avatar}
-                    size={40}
-                    fallbackTitle={record.employee.firstName.charAt(0)}
-                    editable={false}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">
-                      {record.employee.firstName} {record.employee.lastName}
-                    </p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <p className="text-sm text-gray-600">
-                        {record.employee.nickName}
+                return (
+                  <div
+                    key={record.employee.id}
+                    className={`flex items-center gap-4 p-4 border rounded-lg transition-colors ${
+                      isChecked(record.id)
+                        ? "border-blue-300 bg-blue-50"
+                        : "border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <Checkbox
+                      checked={isChecked(record.id)}
+                      onChange={() => toggle(record.id)}
+                    />
+                    {/* Employee Info */}
+                    <ChangableAvatar
+                      src={avatar}
+                      size={40}
+                      fallbackTitle={record.employee.firstName.charAt(0)}
+                      editable={false}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 truncate">
+                        {record.employee.firstName} {record.employee.lastName}
                       </p>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {getLocalizedName(record.employee.branch, locale)}
-                      </span>
+                      <div className="flex items-center gap-3 mt-1">
+                        <p className="text-sm text-gray-600">
+                          {record.employee.nickName}
+                        </p>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {getLocalizedName(record.employee.branch, locale)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-medium text-gray-900">
+                        ฿{moneyFormat(record.totals.net)}
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 flex-shrink-0">
+                      {/* Preview */}
+                      <button
+                        onClick={() => onPreview([record.id])}
+                        className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Preview"
+                      >
+                        <Icon
+                          icon="mdi:eye"
+                          fontSize={18}
+                          className="text-gray-600"
+                        />
+                      </button>
+
+                      {/* Download */}
+                      <button
+                        onClick={() => onDownloadIndividule([record.id])}
+                        className="p-2 border border-blue-300 bg-blue-50 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Download"
+                      >
+                        {loadingStates[record.id] ? (
+                          <Loader2
+                            size={18}
+                            className="animate-spin text-blue-600"
+                          />
+                        ) : (
+                          <Download size={18} className="text-blue-600" />
+                        )}
+                      </button>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-medium text-gray-900">
-                      ฿{moneyFormat(record.totals.net)}
-                    </p>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 flex-shrink-0">
-                    {/* Preview */}
-                    <button
-                      onClick={() => onPreview(record.id)}
-                      className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      title="Preview"
-                    >
-                      <Icon
-                        icon="mdi:eye"
-                        fontSize={18}
-                        className="text-gray-600"
-                      />
-                    </button>
-
-                    {/* Download */}
-                    <button
-                      onClick={() => onDownloadIndividule(record.id)}
-                      className="p-2 border border-blue-300 bg-blue-50 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      title="Download"
-                    >
-                      {loadingStates[record.id] ? (
-                        <Loader2
-                          size={18}
-                          className="animate-spin text-blue-600"
-                        />
-                      ) : (
-                        <Download size={18} className="text-blue-600" />
-                      )}
-                    </button>
-                  </div>
-                </div>
+                );
               })}
             </div>
           </div>
@@ -219,7 +253,12 @@ export default function PaySlipGenerateModal({
           {/* Footer */}
           <div className="px-6 pb-4 border-t border-gray-200 bg-gray-50 justify-between items-center">
             <div className="flex justify-between items-center text-sm text-gray-600 py-4 ">
-              <p> {tc("unit.people", { count: summaryData.employeeCount })}</p>
+              <p>
+                {" "}
+                {tc("selected", {
+                  count: `${checked.length} of ${summaryData.employeeCount}`,
+                })}
+              </p>
               <p>
                 {tPeriod("fields.grand_total")}: ฿
                 {moneyFormat(summaryData.totalNet)}
