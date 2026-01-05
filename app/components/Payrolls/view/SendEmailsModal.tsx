@@ -20,6 +20,8 @@ import ChangableAvatar from "@/widget/ChangableAvatar";
 import { EmailPayload } from "@/types/mailPayload";
 import { useUser } from "@clerk/nextjs";
 import { useJobStore } from "@/hooks/useJobStore";
+import { PayslipAndSendQueue } from "@/src/features/payslip/payslip.model";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 interface ProgressItem {
   email: string;
@@ -68,6 +70,7 @@ export default function SendEmailsModal({
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEmail, setEditingEmail] = useState(-1);
+  const { id: shopId } = useCurrentShop();
   const [tempEmail, setTempEmail] = useState("");
   const t = useTranslations("view_payroll.send_mail");
   const tPeriod = useTranslations("period");
@@ -174,12 +177,13 @@ export default function SendEmailsModal({
   };
 
   const onSend = async () => {
-    if (!user?.id) return;
-    const payload: EmailPayload[] = data.records
+    if (!user?.id || !shopId) return;
+    const payload: PayslipAndSendQueue[] = data.records
       .filter((r) => checked.includes(r.id))
       .map((r) => {
         return {
-          id: r.id,
+          recordId: r.id,
+          shopId: shopId,
           email: r.employee.email,
           metaData: {
             userId: user.id,
@@ -212,7 +216,6 @@ export default function SendEmailsModal({
       setIsSubmitting(false);
     }
   };
-
 
   const overrideCount = getOverrideCount();
 

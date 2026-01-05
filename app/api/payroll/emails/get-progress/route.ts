@@ -22,10 +22,8 @@ import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { sendMail } from "@/lib/emailService";
 import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 import calculateTotalSalary from "@/lib/calculateTotalSalary";
-import { RecordDetails } from "@/types/RecordDetails";
-import { enqueuePayrollEmails } from "@/src/lib/enqueuePayrollEmails";
 import { EmailPayload } from "@/types/mailPayload";
-import { connection } from "@/src/queues/email.queue";
+import { connection } from "@/src/infra/bullmq/connection";
 
 export async function GET(request: NextRequest) {
   try {

@@ -23,8 +23,11 @@ import { sendMail } from "@/lib/emailService";
 import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
 import calculateTotalSalary from "@/lib/calculateTotalSalary";
 import { RecordDetails } from "@/types/RecordDetails";
-import { enqueuePayrollEmails } from "@/src/lib/enqueuePayrollEmails";
 import { EmailPayload } from "@/types/mailPayload";
+import { PayslipController } from "@/src/features/payslip/payslip.controller";
+import { PayslipAndSendQueue, PayslipQueue } from "@/src/features/payslip/payslip.model";
+
+const controller = new PayslipController();
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,8 +36,8 @@ export async function POST(request: NextRequest) {
       return errorResponse("Unauthorized", 401);
     }
 
-    const body: EmailPayload[] = await request.json();
-    const batchId = await enqueuePayrollEmails(body);
+    const body: PayslipAndSendQueue[] = await request.json();
+    const batchId = await controller.enqueueGenerateAndSend(body);
 
     return successResponse(batchId);
   } catch (err) {
