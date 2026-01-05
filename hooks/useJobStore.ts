@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 type Job = {
   batchId: number;
+  batchName: number;
   title: string;
   progress: number;
   completed: number;

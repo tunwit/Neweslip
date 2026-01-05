@@ -19,4 +19,6 @@ export interface Email {
 export interface EmailQueue {
   shopId: number;
   email: Email;
+  batchId?: string;
+  batchName?: string;
 }

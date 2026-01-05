@@ -18,6 +18,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCheckBox } from "@/hooks/useCheckBox";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useParams } from "next/navigation";
 interface PaySlipGenerateModalProps {
   summaryData: PayrollPeriodSummary;
   open: boolean;
@@ -44,7 +46,10 @@ export default function PaySlipGenerateModal({
   const t = useTranslations("view_payroll.generate");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
+  const router = useRouter();
+  const pathname = usePathname();
   const locale = useLocale();
+  const params = useParams();
 
   const getBlob = async (periodId: number, recordIds: number[]) => {
     const response = await fetch(`/api/payroll/periods/${periodId}/payslips`, {
@@ -57,11 +62,22 @@ export default function PaySlipGenerateModal({
     return blob;
   };
 
-  const onPreview = async (recordIds: number[]) => {
-    const blob = await getBlob(summaryData.id, recordIds);
-    const url = window.URL.createObjectURL(blob);
-    window.open(url, "_blank");
-    window.URL.revokeObjectURL(url);
+  const onPreview = async (recordId: number) => {
+    const response = await fetch(`/api/payroll/records/preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        shopId: summaryData.shopId,
+        recordId: recordId,
+      }),
+    });
+    const data = await response.json();
+
+    window.open(
+      `/${params.shopSlug}/payrolls/preview?jid=${data.data.jobId}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   const onDownloadIndividule = async (recordIds: number[]) => {
@@ -122,7 +138,7 @@ export default function PaySlipGenerateModal({
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
-      <ModalDialog sx={{ padding: 0, width: "30%" }}>
+      <ModalDialog sx={{ padding: 0, width: "40%" }}>
         <div className="bg-white rounded-lg min-w-xl w-full max-h-[90vh] overflow-hidden">
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
@@ -217,7 +233,7 @@ export default function PaySlipGenerateModal({
                     <div className="flex gap-2 flex-shrink-0">
                       {/* Preview */}
                       <button
-                        onClick={() => onPreview([record.id])}
+                        onClick={() => onPreview(record.id)}
                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         title="Preview"
                       >

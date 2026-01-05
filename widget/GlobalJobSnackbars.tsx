@@ -12,11 +12,11 @@ export default function GlobalJobSnackbars() {
     const timers = jobs.map((job) =>
       setInterval(async () => {
         const res = await fetch(
-          `/api/payroll/emails/get-progress?batchId=${job.batchId}`,
+          `/api/payroll/emails/get-progress?batchId=${job.batchId}&batchName=${job.batchName}`,
         );
         const { data } = await res.json();
         console.log(data);
-        
+
         updateJob(job.batchId, {
           completed: data.completed,
           failed: data.failed,
@@ -24,8 +24,8 @@ export default function GlobalJobSnackbars() {
           progress: data.percent,
         });
 
-        if (data.completed + data.failed === data.total) {
-          setTimeout(() => removeJob(job.batchId), 2000);
+        if (data.completed + data.failed >= data.total) {
+          setTimeout(() => removeJob(job.batchId), 5000);
         }
       }, 1000),
     );
@@ -52,7 +52,8 @@ export default function GlobalJobSnackbars() {
             <LinearProgress determinate value={job.progress} />
             <div className="flex items-center gap-2 text-xs">
               <span className="flex items-center gap-1">
-                completed: <p className="text-green-700">{job.completed || 0}</p>
+                completed:{" "}
+                <p className="text-green-700">{job.completed || 0}</p>
               </span>
               <span className="flex items-center gap-1">
                 failed: <p className="text-red-700">{job.failed || 0}</p>

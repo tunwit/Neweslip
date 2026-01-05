@@ -82,18 +82,10 @@ export class PayslipService {
       data.record,
       data.salary,
     );
-    const { dir, file } = await this.getTempPayslipPath(
-      jobId,
-      "payslipHTML.html",
-    );
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(file, html);
-    return file;
+    return html;
   }
 
-  async generatePDF(htmlFilename: string, jobId: string) {
-    const html = await fs.readFile(htmlFilename, "utf-8");
-
+  async generatePDF(html: string, jobId: string) {
     const browser = await puppeteer.launch({
       headless: true,
     });
@@ -115,6 +107,6 @@ export class PayslipService {
     );
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(file, pdf);
-    return file
+    return file;
   }
 }

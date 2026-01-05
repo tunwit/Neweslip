@@ -1,28 +1,6 @@
-import {
-  branchesTable,
-  employeesTable,
-  otFieldsTable,
-  payrollPeriodsTable,
-  payrollRecordsTable,
-  penaltyFieldsTable,
-  shopOwnerTable,
-  shopsTable,
-} from "@/db/schema";
-import globalDrizzle from "@/db/drizzle";
 import { errorResponse, successResponse } from "@/utils/respounses/respounses";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { count } from "console";
-import { and, eq, inArray } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
-import { isOwner } from "@/lib/isOwner";
-import { Owner } from "@/types/owner";
-import { OtField } from "@/types/otField";
-import { PenaltyField } from "@/types/penaltyField";
-import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
-import { sendMail } from "@/lib/emailService";
-import generateHTMLPayslip from "@/lib/generateHTMLPayslip";
-import calculateTotalSalary from "@/lib/calculateTotalSalary";
-import { EmailPayload } from "@/types/mailPayload";
+import { auth } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
 import { connection } from "@/src/infra/bullmq/connection";
 
 export async function GET(request: NextRequest) {
@@ -33,13 +11,17 @@ export async function GET(request: NextRequest) {
     }
 
     const batchId = request.nextUrl.searchParams.get("batchId");
+    const batchName = request.nextUrl.searchParams.get("batchName");
 
-    const total = Number(await connection.get(`email:batch:${batchId}:total`));
+    const total = Number(
+      await connection.get(`flow:${batchName}:${batchId}:total`),
+    );
+
     const completed = Number(
-      (await connection.get(`email:batch:${batchId}:completed`)) || 0,
+      (await connection.get(`flow:${batchName}:${batchId}:completed`)) || 0,
     );
     const failed = Number(
-      (await connection.get(`email:batch:${batchId}:failed`)) || 0,
+      (await connection.get(`flow:${batchName}:${batchId}:failed`)) || 0,
     );
     return successResponse({
       total,

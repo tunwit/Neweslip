@@ -7,34 +7,20 @@ const payslipWorker = new Worker(
   "payslip.generate",
   async (job) => {
     const jobId = job.id || new Date().toISOString();
-    const { shopId, recordId } = job.data;
-    const htmlPath = await service.generateHTML(shopId, recordId, jobId);
-    const pdfPath = await service.generatePDF(htmlPath, jobId);
-    console.log({ htmlPath, pdfPath });
+    const { shopId, recordId, withPdf } = job.data;
+    const html = await service.generateHTML(shopId, recordId, jobId);
+    const pdfPath = withPdf ? await service.generatePDF(html, jobId) : null;
 
-    return { htmlPath, pdfPath };
+    if (!withPdf) {
+      await connection.set(`payslip:preview:${jobId}`, html, "EX", 60 * 10);
+    }
+    return { html, pdfPath };
   },
   {
     connection,
-    concurrency: 5, 
-    lockDuration: 60000, 
+    concurrency: 5,
+    lockDuration: 60000,
     removeOnComplete: { count: 100 },
     removeOnFail: { age: 24 * 3600 },
   },
 );
-
-payslipWorker.on("completed", (job, result) => {
-  console.log("✅ Payslip generated", {
-    jobId: job.id,
-    htmlPath: result.htmlPath,
-    pdfPath: result.pdfPath,
-  });
-});
-
-payslipWorker.on("failed", (job, err) => {
-  console.error("❌ Payslip generation failed", {
-    jobId: job?.id,
-    error: err.message,
-    stack: err.stack,
-  });
-});

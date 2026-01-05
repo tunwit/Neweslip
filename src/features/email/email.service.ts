@@ -11,11 +11,9 @@ export class EmailService {
 
   private async _sendMail(payload: Email, transporter: Transporter) {
     const { to, subject, html, attachments } = payload;
-
     await transporter.sendMail({
       from: `"Payroll System" <${process.env.SMTP_FROM}>`,
-      // to: Array.isArray(to) ? to.join(",") : to,
-      to:"tunwit2458@gmail.com",
+      to: to,
       subject,
       html,
       attachments,

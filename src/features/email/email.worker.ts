@@ -16,9 +16,8 @@ const emailWorker = new Worker(
 
     const childResult = Object.values(childrenValues)[0];
     if (childResult) {
-      if (childResult.htmlPath) {
-        const htmlContent = await fs.readFile(childResult.htmlPath, "utf-8");
-        email.html = htmlContent;
+      if (childResult.html) {
+        email.html = childResult.html;
       }
 
       if (childResult.pdfPath) {
@@ -32,14 +31,14 @@ const emailWorker = new Worker(
 
     await service.sendEmail(shopId, email);
 
-    // for (const att of email.attachments ?? []) {
-    //   if ("path" in att) {
-    //     await fs.rm(path.dirname(att.path), {
-    //       recursive: true,
-    //       force: true,
-    //     });
-    //   }
-    // }
+    for (const att of email.attachments ?? []) {
+      if ("path" in att) {
+        await fs.rm(path.dirname(att.path), {
+          recursive: true,
+          force: true,
+        });
+      }
+    }
   },
   {
     connection,
@@ -51,15 +50,3 @@ const emailWorker = new Worker(
     maxStalledCount: 3,
   },
 );
-
-emailWorker.on("completed", (job, result) => {
-  console.log("✅ Email sended");
-});
-
-emailWorker.on("failed", (job, err) => {
-  console.error("❌ Email send failed", {
-    jobId: job?.id,
-    error: err.message,
-    stack: err.stack,
-  });
-});

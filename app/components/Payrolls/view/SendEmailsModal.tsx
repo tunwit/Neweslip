@@ -48,9 +48,12 @@ export default function SendEmailsModal({
   open,
   setOpen,
 }: SendEmailsModalProps) {
-  const [batchId, setBatchId] = useState(-1);
+  const [batchData, setBatchData] = useState({
+    batchId: -1,
+    batchName: null,
+  });
   const [data, setData] = useState(summaryData);
-  const { addJob, updateJob } = useJobStore();
+  const { addJob } = useJobStore();
   const [progress, setProgress] = useState({
     completed: 0,
     failed: 0,
@@ -199,10 +202,13 @@ export default function SendEmailsModal({
         body: JSON.stringify(payload),
       });
 
-      const { data: batchId } = await response.json();
-      setBatchId(batchId);
+      const {
+        data: { batchId, batchName },
+      } = await response.json();
+      setBatchData({ batchId, batchName });
       addJob({
         batchId,
+        batchName,
         title: t("modal.download.label"),
       });
       queryClient.invalidateQueries({
