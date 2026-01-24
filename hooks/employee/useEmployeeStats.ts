@@ -18,7 +18,7 @@ export const useEmployeeStats = ({ shopId }: useEmployeeStats) => {
     queryKey: ["employees", "stats", shopId],
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/employees/stats/?shopId=${shopId}`,
+        endpoint: `/shops/${shopId}/employees/stats`,
         method: "GET",
       }),
     enabled: shopId > 0,

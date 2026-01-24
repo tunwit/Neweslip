@@ -43,8 +43,8 @@ export const useEmployees = ({
     ...(status && status !== null && { status: status }),
     ...(page && { page: page.toString() }),
     ...(limit && { limit: limit.toString() }),
-    ...(sortBy && { sortBy: sortBy.toString().toLocaleLowerCase() }),
-    ...(orderBy && { orderBy: orderBy.toString().toLocaleLowerCase() }),
+    ...(sortBy && { sortBy: sortBy.toString().toLocaleUpperCase() }),
+    ...(orderBy && { orderBy: orderBy.toString().toLocaleUpperCase() }),
   });
 
   return useQuery<PaginatedResponse<EmployeeWithShop[]>>({
@@ -60,7 +60,7 @@ export const useEmployees = ({
     ],
     queryFn: () => {
       return fetchwithauth({
-        endpoint: `/employees?${queryParams}`,
+        endpoint: `/shops/${id}/employees?${queryParams}`,
         method: "GET",
       });
     },

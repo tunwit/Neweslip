@@ -16,7 +16,7 @@ export const useShop = () => {
     queryKey: ["shop", session?.user?.emailAddresses],
     queryFn: () =>
       fetchwithauth({
-        endpoint: "/shop",
+        endpoint: "/shops",
         method: "GET",
       }),
     enabled: isLoaded && isSignedIn,

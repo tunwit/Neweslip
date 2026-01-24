@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     const shopId = request.nextUrl.searchParams.get("shopId");
-    if (!(await isOwner(Number(shopId),userId)))
+    if (!(await isOwner(Number(shopId), userId)))
       return errorResponse("Forbidden", 403);
 
     if (!shopId) return errorResponse("Bad request", 400);

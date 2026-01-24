@@ -13,12 +13,12 @@ export const useBranch = () => {
   const pathname = usePathname().split("/");
   const slug = pathname[2];
   const data = extractSlug(slug);
-  
+
   const query = useQuery<ApiResponse<Branch[]>>({
     queryKey: ["branch", slug],
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/shop/branch?shopId=${data.id}`,
+        endpoint: `/shops/${data.id}/branches`,
         method: "GET",
       }),
     enabled: data.id > 0,

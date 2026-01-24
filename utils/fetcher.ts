@@ -17,8 +17,11 @@ export const fetchwithauth = async ({ endpoint, method, body }: fetchProps) => {
   if (body && method !== "GET") {
     options.body = JSON.stringify(body);
   }
-  
-  const res = await fetch(`${window.origin}/api${endpoint}`, options);
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`,
+    options,
+  );
   if (!res.ok) {
     const msg = await res.text();
     const error = new Error(msg || "Request failed");

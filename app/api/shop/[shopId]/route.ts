@@ -7,9 +7,12 @@ import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { NextApiRequest } from "next";
 
-export async function GET(req:NextRequest,{ params }: { params: Promise<{ shopId: string }> }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ shopId: string }> },
+) {
   try {
-    const shopId = (await params).shopId
+    const shopId = (await params).shopId;
 
     if (!shopId) {
       return errorResponse("Bad request", 403);
@@ -18,9 +21,8 @@ export async function GET(req:NextRequest,{ params }: { params: Promise<{ shopId
     const data = await globalDrizzle
       .select()
       .from(shopsTable)
-      .where(
-        eq(shopsTable.id, Number(shopId))
-      ).limit(1);
+      .where(eq(shopsTable.id, Number(shopId)))
+      .limit(1);
 
     return successResponse(data[0]);
   } catch (err) {

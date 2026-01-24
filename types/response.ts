@@ -7,11 +7,13 @@ export interface ApiResponse<T = any> {
 
 export interface PaginationInfo {
   page: number;
-  totalPages: number;
+  limit: number;
   totalItems: number;
-  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
-export interface PaginatedResponse <T> extends ApiResponse<T> {
-    pagination: PaginationInfo;
+export interface PaginatedResponse<T> extends ApiResponse<T> {
+  pagination: PaginationInfo;
 }
