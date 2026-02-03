@@ -1,10 +1,9 @@
-interface fetchProps {
+interface FetchProps<TBody = any> {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  body?: Record<string, any>;
+  body?: TBody;
 }
-
-export const fetchwithauth = async ({ endpoint, method, body }: fetchProps) => {
+export const fetchwithauth = async ({ endpoint, method, body }: FetchProps) => {
   const options: RequestInit = {
     method,
     credentials: "include",
@@ -33,7 +32,7 @@ export const fetchwithauth = async ({ endpoint, method, body }: fetchProps) => {
   return data;
 };
 
-export const fetchNoAuth = async ({ endpoint, method, body }: fetchProps) => {
+export const fetchNoAuth = async ({ endpoint, method, body }: FetchProps) => {
   const options: RequestInit = {
     method,
     headers: {

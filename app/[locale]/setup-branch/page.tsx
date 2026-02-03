@@ -6,13 +6,12 @@ import { useZodForm } from "@/lib/useZodForm";
 import { branchSchema } from "@/schemas/setting/branchForm";
 import { InputForm } from "@/widget/InputForm";
 import { FormProvider } from "react-hook-form";
-import { NewBranch } from "@/types/branch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { Button, CircularProgress } from "@mui/joy";
-import { auth } from "@clerk/nextjs/server";
+import { Button } from "@mui/joy";
 import { useUser } from "@clerk/nextjs";
-import { createBranch } from "@/app/action/branch/createBranch";
 import Link from "next/link";
+import { useCreateBranch } from "@/hooks/hook.branch";
+import { NewBranchDTO } from "@/types/branch";
 
 export default function SetupBranchPage() {
   const router = useRouter();
@@ -20,17 +19,25 @@ export default function SetupBranchPage() {
   const shopId = searchParams.get("shopId");
   const user = useUser();
   const method = useZodForm(branchSchema);
+  const { mutateAsync } = useCreateBranch();
   const {
     control,
     handleSubmit,
     formState: { isSubmitting, isSubmitSuccessful },
   } = method;
 
-  const onSubmit = async (data: Omit<NewBranch, "shopId">) => {
+  const onSubmit = async (data: Omit<NewBranchDTO, "shopId">) => {
     if (!shopId) return;
 
     try {
-      await createBranch(data, Number(shopId), user.user?.id || null);
+      await mutateAsync({
+        shopId: Number(shopId),
+        payload: {
+          name: data.name,
+          nameEng: data.nameEng,
+          address: data.address,
+        },
+      });
       // Redirect back to shop page after successful creation
       showSuccess("Create branch successful");
       router.push(`/`);

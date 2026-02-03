@@ -1,10 +1,10 @@
 "use client";
 import { Autocomplete, Option, Select } from "@mui/joy";
 import React, { useEffect } from "react";
-import { useBranch } from "../hooks/branch/useBranch";
-import { Branch } from "@/types/branch";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
+import { useBranches } from "@/hooks/hook.branch";
+import { BranchPublicDTO } from "@/types/branch";
 
 interface BranchSelectorProps {
   branchId: number;
@@ -19,7 +19,7 @@ export default function BranchSelector({
   disable = false,
   isEnableAll = false,
 }: BranchSelectorProps) {
-  const { data, isLoading } = useBranch();
+  const { data, isLoading } = useBranches();
   const t = useTranslations("employees.filters");
   const locale = useLocale();
   return (
@@ -32,7 +32,7 @@ export default function BranchSelector({
         sx={{ fontSize: "14px" }}
       >
         {isEnableAll && <Option value={-1}>{t("branch.all")}</Option>}
-        {data?.data?.map((v: Branch) => {
+        {data?.data?.map((v: BranchPublicDTO) => {
           return (
             <Option key={v.id} value={v.id}>
               {getLocalizedName(v, locale)}

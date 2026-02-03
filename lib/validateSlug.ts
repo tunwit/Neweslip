@@ -9,7 +9,7 @@ import slugify from "slugify";
 
 export const validateSlug = async (shopSlug: string) => {
   try {
-    const { userId } = await auth();
+    const { userId, getToken } = await auth();
 
     if (!userId) {
       return null;
@@ -23,29 +23,23 @@ export const validateSlug = async (shopSlug: string) => {
     if (!id) {
       return null;
     }
+    const token = await getToken();
+    const res = await fetch(`http://localhost:3001/shops/resolve/${shopSlug}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    const shop = await globalDrizzle
-      .select({
-        id: shopsTable.id,
-        name: shopsTable.name,
-        avatar: shopsTable.avatar,
-      })
-      .from(shopOwnerTable)
-      .innerJoin(shopsTable, eq(shopOwnerTable.shopId, shopsTable.id))
-      .where(
-        and(eq(shopOwnerTable.ownerId, userId), eq(shopOwnerTable.shopId, id)),
-      );
-
-    if (shop.length === 0) {
-      return null;
+    if (!res.ok) {
+      throw new Error(`API returned ${res.status}`);
     }
 
-    const expectedSlug = slugify(`${shop[0].name}-${shop[0].id}`);
-    if (shopSlug !== expectedSlug) {
-      return null;
-    }
+    const json = await res.json();
+    const shop = json.data;
+    if (json.success === false) return false;
 
-    return shop[0];
+    return shop;
   } catch (err) {
     console.error(err);
     return null;

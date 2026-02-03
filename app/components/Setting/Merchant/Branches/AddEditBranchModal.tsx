@@ -1,10 +1,11 @@
 import { createBranch } from "@/app/action/branch/createBranch";
 import { updateBranch } from "@/app/action/branch/updateBranch";
+import { useCreateBranch, useUpdateBranch } from "@/hooks/hook.branch";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { useZodForm } from "@/lib/useZodForm";
 import { branchSchema } from "@/schemas/setting/branchForm";
-import { Branch, NewBranch } from "@/types/branch";
+import { BranchPublicDTO, NewBranchDTO } from "@/types/branch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
@@ -29,7 +30,7 @@ import { FormProvider } from "react-hook-form";
 interface AddAbsentModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  branch: Branch | null;
+  branch: BranchPublicDTO | null;
 }
 
 export default function AddEditBranchModal({
@@ -48,6 +49,9 @@ export default function AddEditBranchModal({
   const { id } = useCurrentShop();
   const user = useUser();
   const queryClient = useQueryClient();
+  const { mutateAsync: createMutateAsync } = useCreateBranch();
+  const { mutateAsync: updateMutateAsync } = useUpdateBranch();
+
   const t = useTranslations("branches");
 
   const closeHandler = () => {
@@ -62,19 +66,33 @@ export default function AddEditBranchModal({
     });
   }, [branch, methods.reset]);
 
-  const submitHandler = async (data: Omit<NewBranch, "shopId">) => {
+  const submitHandler = async (data: Omit<NewBranchDTO, "shopId">) => {
     if (!id) return;
     try {
       if (branch) {
         // edit mode
-        await updateBranch(branch.id, data, user.user?.id || null);
+        await updateMutateAsync({
+          shopId: id,
+          branchId: branch.id,
+          payload: {
+            name: data.name,
+            nameEng: data.nameEng,
+            address: data.address,
+          },
+        });
         showSuccess("Branch updated successfully");
       } else {
         // add mode
-        await createBranch(data, id, user.user?.id || null);
+        await createMutateAsync({
+          shopId: id,
+          payload: {
+            name: data.name,
+            nameEng: data.nameEng,
+            address: data.address,
+          },
+        });
         showSuccess("Branch added successfully");
       }
-      queryClient.invalidateQueries({ queryKey: ["branch"] });
     } catch (err: any) {
       let msg = err;
       if (err.message == "ER_DUP_ENTRY")

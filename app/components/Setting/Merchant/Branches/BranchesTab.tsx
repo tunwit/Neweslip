@@ -3,44 +3,45 @@ import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
 import AddBranchModal from "./AddEditBranchModal";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/branch/useBranch";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/branch";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { useRouter } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import ConfirmModal from "@/widget/ConfirmModal";
 import { useTranslations } from "next-intl";
+import { BranchPublicDTO } from "@/types/branch";
+import { useBranches, useDeleteBranch } from "@/hooks/hook.branch";
 
 export default function BranchesTab() {
   const [open, setOpen] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<BranchPublicDTO | null>(
+    null,
+  );
   const { id: shopId } = useCurrentShop();
   const checkboxMethods = useCheckBox<number>("allBranchTable");
-  const { checked, checkall, uncheckall } = checkboxMethods;
+  const { checked, uncheckall } = checkboxMethods;
   const queryClient = useQueryClient();
   const router = useRouter();
   const user = useUser();
+  const { mutateAsync } = useDeleteBranch();
   const addHandler = () => {
     setSelectedBranch(null);
     setOpen(true);
   };
 
-  const { data, isLoading, isSuccess } = useBranch();
+  const { data, isLoading, isSuccess } = useBranches();
   const t = useTranslations("branches");
   const handleDelete = async () => {
     try {
       if (!shopId) return;
       uncheckall();
-      await deleteBranch(checked, shopId, user.user?.id || null);
+      await mutateAsync({ ids: checked, shopId });
       showSuccess("Delete branch success");
-      queryClient.invalidateQueries({ queryKey: ["branch"] });
-
       router.refresh();
     } catch {
       showError("Delete branch failed");
