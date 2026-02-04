@@ -1,5 +1,4 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { useShopDetails } from "@/hooks/shop/useShopDetails";
 import { Avatar } from "@mui/joy";
 import { ChangeEvent, useRef } from "react";
 import OverviewForm from "./OverviewForm";
@@ -10,11 +9,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { deleteShopAvatar } from "@/app/action/shop/deleteShopAvatar";
+import { useShopConfigs, useShopData } from "@/hooks/hook.shop";
 
 export default function Profilesetting() {
   const { id, name } = useCurrentShop();
-  const { data, isLoading } = useShopDetails(id);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data, isLoading } = useShopData();
   const { user } = useUser();
   const queryClient = useQueryClient();
 
@@ -23,7 +22,7 @@ export default function Profilesetting() {
   const handleSelectFile = async (file?: File) => {
     if (!file || !id || !user) return;
     console.log(file);
-    
+
     try {
       await changeShopAvatar(file, id, user.id, data.data?.avatar);
       queryClient.invalidateQueries({

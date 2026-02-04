@@ -1,12 +1,13 @@
 "use client";
-import { useShop } from "@/hooks/shop/useShop";
+
+import { useOwnShop } from "@/hooks/hook.shop";
 import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SetupShopPage() {
-  const { data, isSuccess } = useShop();
+  const { data, isSuccess } = useOwnShop();
   useEffect(() => {
     if (!isSuccess) return;
     if (!data || !data?.data) return;

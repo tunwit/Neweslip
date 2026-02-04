@@ -1,5 +1,4 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { useOwners } from "@/hooks/shop/useOwners";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
@@ -15,11 +14,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import ConfirmModal from "@/widget/ConfirmModal";
 import { useTranslations } from "next-intl";
 import { formatModifiedTime } from "@/utils/formmatter";
+import { useOwners } from "@/hooks/hook.owner";
 
 export default function OwnersTable() {
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
-  const { data, isLoading, isSuccess } = useOwners(shopId!);
+  const { data, isLoading, isSuccess } = useOwners();
   const [open, setOpen] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const checkboxMethods = useCheckBox<string>("ownerTable");

@@ -6,7 +6,6 @@ import ShopSidebarElement from "./ShopSidebarElement";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "@mui/joy";
 import useHamburger from "@/hooks/useHamburger";
-import { useShop } from "@/hooks/shop/useShop";
 import { createSlug } from "@/utils/createSlug";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import MoneyIcon from "@/assets/icons/MoneyIcon";
@@ -16,6 +15,7 @@ import DocumentIcon from "@/assets/icons/DocumentIcon";
 import SettingIcon from "@/assets/icons/SettingIcon";
 import { useSession } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
+import { useOwnShop } from "@/hooks/hook.shop";
 
 interface Shop {
   id: number;
@@ -69,7 +69,7 @@ export default function DashboardSidebar() {
   const shopSlug = pathname[2];
   const page = pathname[3];
   const sidebarState = useHamburger((state) => state.open);
-  const { data, isPending } = useShop();
+  const { data, isPending } = useOwnShop();
   const t = useTranslations("navigation");
 
   return (

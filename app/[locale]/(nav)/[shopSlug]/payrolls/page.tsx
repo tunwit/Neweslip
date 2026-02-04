@@ -12,7 +12,6 @@ import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { Add, ChevronRight } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useShop } from "@/hooks/shop/useShop";
 import { createPayrollPeriod } from "@/app/action/payroll/period/createPayrollPeriod";
 import { NewPayrollPeriod } from "@/types/payrollPeriod";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";

@@ -6,16 +6,16 @@ import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
-import { useShop } from "@/hooks/shop/useShop";
 import slugify from "slugify";
 import { createSlug } from "@/utils/createSlug";
 import { useQueryClient } from "@tanstack/react-query";
 import { Modal, ModalDialog } from "@mui/joy";
+import { useOwnShop } from "@/hooks/hook.shop";
 
 export default function Home() {
   const queryClient = useQueryClient();
   queryClient.prefetchQuery({ queryKey: ["shop"] });
-  const { data, isLoading, isSuccess, isError, error } = useShop();
+  const { data, isLoading, isSuccess, isError, error } = useOwnShop();
   useEffect(() => {
     if (!data) return;
     if (data && data.data && data.data.length > 0) {
