@@ -1,19 +1,31 @@
 import { ApiResponse } from "@/types/response";
-import { Shop } from "@/types/shop";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import {
   keepPreviousData,
+  useMutation,
   useQuery,
+  useQueryClient,
   UseQueryResult,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { Session } from "inspector/promises";
 import { useCurrentShop } from "./shop/useCurrentShop";
+import {
+  ShopConfigDTO,
+  ShopPublicDTO,
+  UpdateShopDataDTO,
+  VerifyEmailDTO,
+} from "@/types/shop";
+
+type UpdateShopDataVars = {
+  shopId: number;
+  payload: UpdateShopDataDTO;
+};
 
 export const useOwnShop = () => {
   const { session, isLoaded, isSignedIn } = useSession();
-  const query = useQuery<ApiResponse<Shop[]>>({
+  const query = useQuery<ApiResponse<ShopPublicDTO[]>>({
     queryKey: ["shop", session?.user?.emailAddresses],
     queryFn: () =>
       fetchwithauth({
@@ -31,8 +43,8 @@ export const useOwnShop = () => {
 
 export const useShopData = () => {
   const { id: shopId } = useCurrentShop();
-  const query = useQuery<ApiResponse<Shop>>({
-    queryKey: ["shop", "data"],
+  const query = useQuery<ApiResponse<ShopPublicDTO>>({
+    queryKey: ["shop", "data", shopId],
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}`,
@@ -49,7 +61,7 @@ export const useShopData = () => {
 
 export const useShopConfigs = () => {
   const { id: shopId } = useCurrentShop();
-  const query = useQuery<ApiResponse<Shop>>({
+  const query = useQuery<ApiResponse<ShopConfigDTO>>({
     queryKey: ["shop", "config"],
     queryFn: () =>
       fetchwithauth({
@@ -64,3 +76,33 @@ export const useShopConfigs = () => {
 
   return query;
 };
+
+export function useUpdateShop() {
+  const { id: shopId } = useCurrentShop();
+  const queryClient = useQueryClient();
+
+  return useMutation<ShopPublicDTO, Error, UpdateShopDataVars>({
+    mutationFn: ({ shopId, payload }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}`,
+        method: "PATCH",
+        body: payload,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["shop", "data", shopId] });
+    },
+  });
+}
+
+export function useVerifyEmailConfig() {
+  const { id: shopId } = useCurrentShop();
+  return useMutation({
+    mutationFn: (payload: VerifyEmailDTO) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/email/verify`,
+        method: "POST",
+        body: payload,
+      }),
+  });
+}

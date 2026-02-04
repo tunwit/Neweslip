@@ -7,10 +7,12 @@ export const overviewSchema = z.object({
     .length(13, "Tax Id must be 13 digit")
     .optional()
     .or(z.literal("")),
-  work_hours_per_day: z
+  default_work_hours_per_day: z
     .number({ required_error: "Work hour / day is Required" })
-    .gte(0, "Work hour must >= 0"),
-  workdays_per_month: z
+    .gte(0, "Work hour must >= 0")
+    .lte(24, "Work hour must <= 24"),
+  default_workdays_per_month: z
     .number({ required_error: "Work day / month is Required" })
-    .gte(0, "Work day must >= 0"),
+    .gte(0, "Work day must >= 0")
+    .lte(31, "Work day must <= 31"),
 });

@@ -13,7 +13,7 @@ import { useShopConfigs, useShopData } from "@/hooks/hook.shop";
 
 export default function Profilesetting() {
   const { id, name } = useCurrentShop();
-  const { data, isLoading } = useShopData();
+  const { data, isLoading } = useShopConfigs();
   const { user } = useUser();
   const queryClient = useQueryClient();
 
@@ -66,7 +66,7 @@ export default function Profilesetting() {
           onRemove={handleRemove}
           editable={true}
         />
-        <p className="font-semibold">{name}</p>
+        <p className="font-semibold">{data.data.name}</p>
         <div className="w-full">
           <OverviewForm shopData={data?.data} />
         </div>

@@ -1,9 +1,6 @@
 import { updateShop } from "@/app/action/shop/updateShop";
-import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { useShopDetails } from "@/hooks/shop/useShopDetails";
 import { useZodForm } from "@/lib/useZodForm";
 import { overviewSchema } from "@/schemas/setting/overviewForm";
-import { NewShop, Shop } from "@/types/shop";
 import normalizeNull from "@/utils/normallizeNull";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
@@ -15,9 +12,11 @@ import { FormProvider } from "react-hook-form";
 import ChangePasswordModal from "./ChangePasswordModal";
 import z from "zod";
 import { useTranslations } from "next-intl";
+import { useUpdateShop } from "@/hooks/hook.shop";
+import { ShopConfigDTO } from "@/types/shop";
 type OverviewFormValues = z.infer<typeof overviewSchema>;
 interface OverviewFormProps {
-  shopData: Shop;
+  shopData: ShopConfigDTO;
 }
 export default function OverviewForm({ shopData }: OverviewFormProps) {
   const { user } = useUser();
@@ -25,27 +24,20 @@ export default function OverviewForm({ shopData }: OverviewFormProps) {
     defaultValues: normalizeNull({
       name: shopData?.name,
       taxId: shopData?.taxId,
-      work_hours_per_day: Number(shopData?.work_hours_per_day),
-      workdays_per_month: Number(shopData?.workdays_per_month),
+      default_work_hours_per_day: Number(shopData?.default_work_hours_per_day),
+      default_workdays_per_month: Number(shopData?.default_workdays_per_month),
     }),
   });
   const { control, handleSubmit } = methods;
   const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
   const queryClient = useQueryClient();
+  const { mutateAsync } = useUpdateShop();
   const t = useTranslations("shops");
 
   const onSubmit = async (data: OverviewFormValues) => {
     if (!shopData.id || !user?.id) return;
     try {
-      await updateShop(
-        {
-          ...data,
-          work_hours_per_day: String(data.work_hours_per_day),
-          workdays_per_month: String(data.workdays_per_month),
-        },
-        shopData.id,
-        user?.id,
-      );
+      await mutateAsync({ shopId: shopData.id, payload: data });
       showSuccess(t("modal.save.success"));
       queryClient.invalidateQueries({ queryKey: ["shop"], exact: false });
     } catch (err: any) {
@@ -72,13 +64,13 @@ export default function OverviewForm({ shopData }: OverviewFormProps) {
         <InputForm
           type="number"
           control={control}
-          name="work_hours_per_day"
+          name="default_work_hours_per_day"
           label={t("fields.work_hour_per_day")}
         />
         <InputForm
           type="number"
           control={control}
-          name="workdays_per_month"
+          name="default_workdays_per_month"
           label={t("fields.work_day_per_month")}
         />
         <div className="flex gap-2 ">

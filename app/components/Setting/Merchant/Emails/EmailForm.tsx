@@ -1,9 +1,9 @@
-import { updateShop } from "@/app/action/shop/updateShop";
+import { useUpdateShop, useVerifyEmailConfig } from "@/hooks/hook.shop";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { verify } from "@/lib/emailService";
 import { useZodForm } from "@/lib/useZodForm";
 import { emailConfigForm } from "@/schemas/email/emailConfigForm";
-import { NewShop, Shop } from "@/types/shop";
+import { ShopConfigDTO, VerifyEmailDTO } from "@/types/shop";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
@@ -21,7 +21,7 @@ import { useState } from "react";
 import { Controller, FormProvider } from "react-hook-form";
 
 interface EmailFormProps {
-  shopData: Shop;
+  shopData: ShopConfigDTO;
 }
 export default function EmailForm({ shopData }: EmailFormProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +32,8 @@ export default function EmailForm({ shopData }: EmailFormProps) {
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
   const t = useTranslations("shops");
+  const { mutateAsync: verify } = useVerifyEmailConfig();
+  const { mutateAsync: updateShop } = useUpdateShop();
 
   const methods = useZodForm(emailConfigForm, {
     defaultValues: {
@@ -49,30 +51,27 @@ export default function EmailForm({ shopData }: EmailFormProps) {
     formState: { errors, isSubmitting, isDirty },
   } = methods;
 
-  const onSubmit = async (data: Omit<NewShop, "name">) => {
+  const onSubmit = async (data: Omit<VerifyEmailDTO, "name">) => {
     if (!shopId || !user?.id) return;
 
-    const emailVerify = await verify(
-      data.SMTPHost || "",
-      data.SMTPPort || 0,
-      data.SMTPSecure || false,
-      data.emailAddress || "",
-      data.emailPassword || "",
-    );
-    setVerifyStatus(emailVerify.success);
-    setVerifyError(emailVerify?.message);
+    try {
+      await verify(data);
+      setVerifyStatus(true);
+    } catch {
+      setVerifyStatus(false);
+      setVerifyError("Invalid Email config");
+      return;
+    }
     setVerified(true);
-    if (emailVerify.success) {
-      try {
-        await updateShop({ ...data }, shopId, user?.id);
-        showSuccess("Save email successfully");
-      } catch (err) {
-        showError(`Cannot save email ${err}`);
-      }
+    try {
+      await updateShop({ shopId: shopId, payload: data });
+      showSuccess("Save email successfully");
+    } catch (err) {
+      showError(`Cannot save email ${err}`);
     }
   };
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col h-full ">
       <FormProvider {...methods}>
         <form
           onSubmit={(e) => {

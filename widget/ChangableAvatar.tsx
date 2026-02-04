@@ -139,7 +139,7 @@ export default function ChangableAvatar({
               className={`flex items-center  justify-center w-full h-full text-gray-700 text-sm font-medium rounded-full`}
             >
               {fallbackTitle ? (
-                <p style={{ fontSize: size - 25 }} className="font-medium">
+                <p style={{ fontSize: size / 2 }} className="font-medium">
                   {fallbackTitle?.[0]?.toUpperCase()}
                 </p>
               ) : (
