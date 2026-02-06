@@ -2,29 +2,33 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, IconButton, Table } from "@mui/joy";
 import React, { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/branch/useBranch";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/branch";
 import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
-import { SalaryField } from "@/types/salaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
 import AddEditIncomeModal from "../Income/AddEditIncomeModal";
 import AddEditDeductionModal from "./AddEditDeductionModal";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
-
+import { CompensationFieldPublicDTO } from "@/types/payroll/type.compensation";
+import {
+  useCompensationField,
+  useDeleteCompensationField,
+} from "@/hooks/payroll/fields/compensation/hook.compensation";
+import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
 export default function DeductionTab() {
   const [open, setOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<SalaryField | null>(null);
+  const [selectedField, setSelectedField] =
+    useState<CompensationFieldPublicDTO | null>(null);
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
   const checkboxMethods = useCheckBox<number>("allIncomeTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const t = useTranslations("deduction");
+  const { mutateAsync: deleteMutate } = useDeleteCompensationField();
 
   const queryClient = useQueryClient();
 
@@ -32,13 +36,15 @@ export default function DeductionTab() {
     setSelectedField(null);
     setOpen(true);
   };
-  const { data, isLoading, isSuccess } = useSalaryFields(shopId || -1);
+  const { data, isLoading, isSuccess } = useCompensationField(
+    COMPEN_FIELD_DEFINATION_TYPE.DEDUCTION,
+  );
 
   const handleDelete = async () => {
     try {
       if (!shopId || !user?.id) return;
       uncheckall();
-      await deleteSalaryField(checked, shopId, user?.id);
+      await deleteMutate({ shopId: shopId, ids: checked });
       showSuccess("Delete field success");
       queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
     } catch {
@@ -69,7 +75,7 @@ export default function DeductionTab() {
             </Button>
           </div>
           <TableWithCheckBox
-            data={data?.data?.DEDUCTION}
+            data={data?.data}
             isLoading={isLoading}
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}

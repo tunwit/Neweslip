@@ -3,10 +3,14 @@ import { branchesTable, employeesTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
 import { inArray } from "drizzle-orm";
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 
-export async function deleteBranch(toDelete: Branch["id"][], shopId: number,userId:string|null) {
-  const ownerCheck = await isOwner(shopId,userId);
+export async function deleteBranch(
+  toDelete: Branch["id"][],
+  shopId: number,
+  userId: string | null,
+) {
+  const ownerCheck = await isOwner(shopId, userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }

@@ -1,5 +1,5 @@
 import { payrollRecordsTable } from "@/db/schema";
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 import { Employee } from "@/types/employee";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { PayrollPeriod } from "@/types/payrollPeriod";
@@ -9,7 +9,7 @@ import {
 } from "@/types/payrollPeriodSummary";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { RecordDetails } from "@/types/RecordDetails";
-import { Shop } from "@/types/shop";
+import { Shop } from "@/types/type.shop";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { InferSelectModel } from "drizzle-orm";
 import nunjucks from "nunjucks";

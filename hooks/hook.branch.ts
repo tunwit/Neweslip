@@ -1,4 +1,4 @@
-import { BranchPublicDTO, NewBranchDTO } from "@/types/branch";
+import { BranchPublicDTO, NewBranchDTO } from "@/types/type.branch";
 import { ApiResponse } from "@/types/response";
 import { extractSlug } from "@/utils/extractSlug";
 import { fetchwithauth } from "@/utils/fetcher";
@@ -10,6 +10,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
+import { useCurrentShop } from "./shop/useCurrentShop";
 
 type CreateBranchVars = {
   shopId: number;
@@ -28,18 +29,16 @@ type DeleteBranchVars = {
 };
 
 export const useBranches = () => {
-  const pathname = usePathname().split("/");
-  const slug = pathname[2];
-  const data = extractSlug(slug);
+  const { id: shopId } = useCurrentShop();
 
   const query = useQuery<ApiResponse<BranchPublicDTO[]>>({
-    queryKey: ["branch", slug],
+    queryKey: ["branch", shopId],
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/shops/${data.id}/branches`,
+        endpoint: `/shops/${shopId}/branches`,
         method: "GET",
       }),
-    enabled: data.id > 0,
+    enabled: shopId != null,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });
@@ -85,8 +84,7 @@ export function useUpdateBranch() {
 
 export function useDeleteBranch() {
   const queryClient = useQueryClient();
-  const pathname = usePathname().split("/");
-  const slug = pathname[2];
+  const { id: shopId } = useCurrentShop();
   return useMutation<BranchPublicDTO, Error, DeleteBranchVars>({
     mutationFn: ({ shopId, ids }) =>
       fetchwithauth({
@@ -96,7 +94,7 @@ export function useDeleteBranch() {
       }),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["branch", slug] });
+      queryClient.invalidateQueries({ queryKey: ["branch", shopId] });
     },
   });
 }

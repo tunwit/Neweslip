@@ -4,11 +4,15 @@ import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
 import { Employee } from "@/types/employee";
 import { auth } from "@clerk/nextjs/server";
-import { NewBranch } from "@/types/branch";
-import { NewSalaryField } from "@/types/salaryFields";
+import { NewBranch } from "@/types/type.branch";
+import { NewSalaryField } from "@/types/payroll/type.compensation";
 
-export async function createSalaryField(data: Omit<NewSalaryField,"shopId">,shopId:number,userId:string|null) {
-  const ownerCheck = await isOwner(shopId,userId);
+export async function createSalaryField(
+  data: Omit<NewSalaryField, "shopId">,
+  shopId: number,
+  userId: string | null,
+) {
+  const ownerCheck = await isOwner(shopId, userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }
@@ -20,9 +24,9 @@ export async function createSalaryField(data: Omit<NewSalaryField,"shopId">,shop
 
   try {
     await globalDrizzle.insert(salaryFieldsTable).values(payload);
-  } catch (err:any) {
-    if(err.cause.code === "ER_DUP_ENTRY") err.message = err.cause.code
-    
+  } catch (err: any) {
+    if (err.cause.code === "ER_DUP_ENTRY") err.message = err.cause.code;
+
     throw err;
   }
 }

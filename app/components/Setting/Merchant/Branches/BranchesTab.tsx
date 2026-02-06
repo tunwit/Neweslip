@@ -13,7 +13,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import ConfirmModal from "@/widget/ConfirmModal";
 import { useTranslations } from "next-intl";
-import { BranchPublicDTO } from "@/types/branch";
+import { BranchPublicDTO } from "@/types/type.branch";
 import { useBranches, useDeleteBranch } from "@/hooks/hook.branch";
 
 export default function BranchesTab() {

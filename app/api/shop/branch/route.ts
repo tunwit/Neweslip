@@ -6,7 +6,7 @@ import { count } from "console";
 import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { isOwner } from "@/lib/isOwner";
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 
 export async function GET(request: NextRequest) {
   try {

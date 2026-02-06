@@ -6,9 +6,9 @@ import { count } from "console";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { isOwner } from "@/lib/isOwner";
-import { SalaryFieldGrouped } from "@/types/salaryFields";
+import { SalaryFieldGrouped } from "@/types/payroll/type.compensation";
 
-export async function GET(request:NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
     const shopId = request.nextUrl.searchParams.get("shopId");
@@ -18,20 +18,24 @@ export async function GET(request:NextRequest) {
     }
 
     if (!shopId) {
-        return errorResponse("Illegel Arguments", 400);
+      return errorResponse("Illegel Arguments", 400);
     }
-    
-    if(!await isOwner(Number(shopId),userId)) return errorResponse("Forbidden", 403);
+
+    if (!(await isOwner(Number(shopId), userId)))
+      return errorResponse("Forbidden", 403);
 
     const data = await globalDrizzle
       .select()
       .from(salaryFieldsTable)
       .where(eq(salaryFieldsTable.shopId, Number(shopId)));
 
-    const grouped = data.reduce((acc, field) => {
-    (acc[field.type] ??= []).push(field);
-    return acc;
-    }, {} as Record<string, typeof data>);
+    const grouped = data.reduce(
+      (acc, field) => {
+        (acc[field.type] ??= []).push(field);
+        return acc;
+      },
+      {} as Record<string, typeof data>,
+    );
 
     return successResponse(grouped);
   } catch (err) {

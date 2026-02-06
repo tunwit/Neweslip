@@ -13,7 +13,7 @@ import ChangePasswordModal from "./ChangePasswordModal";
 import z from "zod";
 import { useTranslations } from "next-intl";
 import { useUpdateShop } from "@/hooks/hook.shop";
-import { ShopConfigDTO } from "@/types/shop";
+import { ShopConfigDTO } from "@/types/type.shop";
 type OverviewFormValues = z.infer<typeof overviewSchema>;
 interface OverviewFormProps {
   shopData: ShopConfigDTO;

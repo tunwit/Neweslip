@@ -5,7 +5,7 @@ import { isOwner } from "@/lib/isOwner";
 import { Employee } from "@/types/employee";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
-import { Branch, NewBranch } from "@/types/branch";
+import { Branch, NewBranch } from "@/types/type.branch";
 
 export async function updateBranch(
   id: Branch["id"],

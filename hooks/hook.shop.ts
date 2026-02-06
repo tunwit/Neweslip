@@ -16,7 +16,7 @@ import {
   ShopPublicDTO,
   UpdateShopDataDTO,
   VerifyEmailDTO,
-} from "@/types/shop";
+} from "@/types/type.shop";
 
 type UpdateShopDataVars = {
   shopId: number;

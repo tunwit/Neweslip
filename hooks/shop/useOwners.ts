@@ -1,6 +1,6 @@
 import { Owner } from "@/types/owner";
 import { ApiResponse } from "@/types/response";
-import { Shop } from "@/types/shop";
+import { Shop } from "@/types/type.shop";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import {

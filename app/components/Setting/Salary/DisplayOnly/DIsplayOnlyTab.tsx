@@ -5,9 +5,7 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/branch";
 import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
-import { SalaryField } from "@/types/salaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
 import { deletePenaltyField } from "@/app/action/payroll/penaltyField/deletePenaltyField";
@@ -15,15 +13,23 @@ import { useUser } from "@clerk/nextjs";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import AddEditDisplayOnlyModal from "./AddEditDisplayOnlyModal";
 import { useTranslations } from "next-intl";
+import { CompensationFieldPublicDTO } from "@/types/payroll/type.compensation";
+import {
+  useCompensationField,
+  useDeleteCompensationField,
+} from "@/hooks/payroll/fields/compensation/hook.compensation";
+import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
 
 export default function DisplayOnlyTab() {
   const [open, setOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<SalaryField | null>(null);
+  const [selectedField, setSelectedField] =
+    useState<CompensationFieldPublicDTO | null>(null);
   const { id: shopId } = useCurrentShop();
   const checkboxMethods = useCheckBox<number>("allPenaltyTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
   const t = useTranslations("displayonly");
+  const { mutateAsync: deleteMutate } = useDeleteCompensationField();
 
   const queryClient = useQueryClient();
 
@@ -33,13 +39,15 @@ export default function DisplayOnlyTab() {
     setOpen(true);
   };
 
-  const { data, isLoading, isSuccess } = useSalaryFields(shopId || -1);
+  const { data, isLoading, isSuccess } = useCompensationField(
+    COMPEN_FIELD_DEFINATION_TYPE.NON_CALCULATED,
+  );
 
   const handleDelete = async () => {
     try {
       if (!shopId || !user?.id) return;
       uncheckall();
-      await deleteSalaryField(checked, shopId, user?.id);
+      await deleteMutate({ shopId: shopId, ids: checked });
       showSuccess("Delete field success");
       queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
     } catch {
@@ -73,7 +81,7 @@ export default function DisplayOnlyTab() {
             </Button>
           </div>
           <TableWithCheckBox
-            data={data?.data?.NON_CALCULATED}
+            data={data?.data}
             isLoading={isLoading}
             isSuccess={isSuccess}
             checkboxMethods={checkboxMethods}

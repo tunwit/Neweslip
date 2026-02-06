@@ -3,7 +3,7 @@ import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { verify } from "@/lib/emailService";
 import { useZodForm } from "@/lib/useZodForm";
 import { emailConfigForm } from "@/schemas/email/emailConfigForm";
-import { ShopConfigDTO, VerifyEmailDTO } from "@/types/shop";
+import { ShopConfigDTO, VerifyEmailDTO } from "@/types/type.shop";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
@@ -51,7 +51,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
     formState: { errors, isSubmitting, isDirty },
   } = methods;
 
-  const onSubmit = async (data: Omit<VerifyEmailDTO, "name">) => {
+  const onSubmit = async (data: Omit<VerifyEmailDTO, "emailName">) => {
     if (!shopId || !user?.id) return;
 
     try {

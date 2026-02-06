@@ -11,7 +11,7 @@ import { Button } from "@mui/joy";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useCreateBranch } from "@/hooks/hook.branch";
-import { NewBranchDTO } from "@/types/branch";
+import { NewBranchDTO } from "@/types/type.branch";
 
 export default function SetupBranchPage() {
   const router = useRouter();

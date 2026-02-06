@@ -2,7 +2,7 @@ import globleDrizzle from "@/db/drizzle";
 import { branchesTable, shopOwnerTable, shopsTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { isOwner } from "./isOwner";
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 
 export default async function getBranches(userId: string, shopId: number) {
   try {

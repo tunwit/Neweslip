@@ -14,8 +14,11 @@ import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
 import { eq, inArray, InferInsertModel } from "drizzle-orm";
 import { NewPayrollRecord } from "@/types/payrollRecord";
-import { PAY_PERIOD_STATUS, SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
-import { NewSalaryField } from "@/types/salaryFields";
+import {
+  PAY_PERIOD_STATUS,
+  SALARY_FIELD_DEFINATION_TYPE,
+} from "@/types/enum/enum";
+import { NewSalaryField } from "@/types/payroll/type.compensation";
 import { NewOtField } from "@/types/otField";
 import { NewPenaltyField } from "@/types/penaltyField";
 

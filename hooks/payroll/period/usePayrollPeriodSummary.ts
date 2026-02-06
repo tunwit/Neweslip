@@ -1,4 +1,4 @@
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 import { EmployeeStats } from "@/types/employeeStats";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { ApiResponse } from "@/types/response";
@@ -23,7 +23,8 @@ export const usePayrollPeriodSummary = (periodId: number) => {
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
     retry: (failureCount, error: any) => {
-      if (error?.status === 404 || error?.response?.status === 404) return false;
+      if (error?.status === 404 || error?.response?.status === 404)
+        return false;
       return failureCount < 3;
     },
   });

@@ -5,7 +5,7 @@ import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { useZodForm } from "@/lib/useZodForm";
 import { branchSchema } from "@/schemas/setting/branchForm";
-import { BranchPublicDTO, NewBranchDTO } from "@/types/branch";
+import { BranchPublicDTO, NewBranchDTO } from "@/types/type.branch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";

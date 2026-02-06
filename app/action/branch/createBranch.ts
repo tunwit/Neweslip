@@ -4,10 +4,14 @@ import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
 import { Employee } from "@/types/employee";
 import { auth } from "@clerk/nextjs/server";
-import { NewBranch } from "@/types/branch";
+import { NewBranch } from "@/types/type.branch";
 
-export async function createBranch(data: Omit<NewBranch,"shopId">,shopId:number,userId:string|null) {
-  const ownerCheck = await isOwner(shopId,userId);
+export async function createBranch(
+  data: Omit<NewBranch, "shopId">,
+  shopId: number,
+  userId: string | null,
+) {
+  const ownerCheck = await isOwner(shopId, userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }
@@ -19,9 +23,9 @@ export async function createBranch(data: Omit<NewBranch,"shopId">,shopId:number,
 
   try {
     await globalDrizzle.insert(branchesTable).values(payload);
-  } catch (err:any) {
-    if(err.cause.code === "ER_DUP_ENTRY") err.message = err.cause.code
-    
+  } catch (err: any) {
+    if (err.cause.code === "ER_DUP_ENTRY") err.message = err.cause.code;
+
     throw err;
   }
 }

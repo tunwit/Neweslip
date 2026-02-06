@@ -5,7 +5,7 @@ import { isOwner } from "@/lib/isOwner";
 import { Employee, NewEmployee } from "@/types/employee";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
-import { NewShop } from "@/types/shop";
+import { NewShop } from "@/types/type.shop";
 import { hashPassword, verifyPassword } from "@/lib/password";
 
 export async function changeShopPassword(

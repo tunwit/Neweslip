@@ -1,5 +1,9 @@
 import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
 import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
+import {
+  useCreateCompensationField,
+  useUpdateCompensationField,
+} from "@/hooks/payroll/fields/compensation/hook.compensation";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
@@ -7,15 +11,16 @@ import {
   SALARY_FIELD_DEFINATION_TYPE,
   SALARY_FIELD_STATUS,
 } from "@/types/enum/enum";
-import { NewSalaryField, SalaryField } from "@/types/salaryFields";
+import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
+import {
+  CompensationFieldPublicDTO,
+  NewCompensationFieldDTO,
+} from "@/types/payroll/type.compensation";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
 import {
   Button,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,
@@ -28,10 +33,10 @@ import { FormProvider } from "react-hook-form";
 interface AddIncomeModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  field: SalaryField | null;
+  field: CompensationFieldPublicDTO | null;
 }
 
-const defaultType = SALARY_FIELD_DEFINATION_TYPE.INCOME;
+const defaultType = COMPEN_FIELD_DEFINATION_TYPE.INCOME;
 
 export default function AddEditIncomeModal({
   open,
@@ -42,6 +47,8 @@ export default function AddEditIncomeModal({
   const { user } = useUser();
   const queryClient = useQueryClient();
   const t = useTranslations("earning");
+  const { mutateAsync: createMutate } = useCreateCompensationField();
+  const { mutateAsync: updateMutate } = useUpdateCompensationField();
 
   const methods = useZodForm(salaryFieldSchema, {
     defaultValues: {
@@ -55,30 +62,27 @@ export default function AddEditIncomeModal({
   const {
     control,
     handleSubmit,
-    formState: { isSubmitSuccessful, isSubmitting },
+    formState: { isSubmitting },
   } = methods;
   const closeHandler = () => {
     methods.reset();
     setOpen(false);
   };
 
-  const submitHandler = async (data: Omit<NewSalaryField, "shopId">) => {
+  const submitHandler = async (data: NewCompensationFieldDTO) => {
     if (!shopId || !user?.id) return;
     try {
       if (field) {
         // edit mode
-        const payload: Omit<SalaryField, "id" | "shopId"> = {
-          ...data,
-          type: defaultType,
-          formular: data.formular ?? null,
-          isActive: SALARY_FIELD_STATUS.ACTIVE,
-        };
-
-        await updateSalaryFIeld(field.id, payload, user?.id);
+        await updateMutate({
+          shopId: shopId,
+          fieldId: field.id,
+          payload: data,
+        });
         showSuccess("Income updated successfully");
       } else {
         // add mode
-        await createSalaryField(data, shopId, user?.id);
+        await createMutate({ shopId: shopId, payload: data });
         showSuccess("Income added successfully");
       }
       queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
@@ -122,7 +126,7 @@ export default function AddEditIncomeModal({
               </div>
               <div className="mt-3">
                 <Button
-                  disabled={isSubmitting || isSubmitSuccessful}
+                  disabled={isSubmitting}
                   loadingPosition="start"
                   loading={isSubmitting}
                   type="summit"

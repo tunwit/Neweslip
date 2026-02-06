@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import { useBranches } from "@/hooks/hook.branch";
-import { BranchPublicDTO } from "@/types/branch";
+import { BranchPublicDTO } from "@/types/type.branch";
 
 interface BranchSelectorProps {
   branchId: number;

@@ -12,7 +12,7 @@ import {
   SALARY_FIELD_DEFINATION_TYPE,
 } from "@/types/enum/enum";
 import { NewOtField, OtField } from "@/types/otField";
-import { NewSalaryField, SalaryField } from "@/types/salaryFields";
+import { NewSalaryField, SalaryField } from "@/types/payroll/type.compensation";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import {

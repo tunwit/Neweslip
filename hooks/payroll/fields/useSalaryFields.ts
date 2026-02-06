@@ -1,6 +1,9 @@
 import { ApiResponse } from "@/types/response";
-import { SalaryField, SalaryFieldGrouped } from "@/types/salaryFields";
-import { Shop } from "@/types/shop";
+import {
+  SalaryField,
+  SalaryFieldGrouped,
+} from "@/types/payroll/type.compensation";
+import { Shop } from "@/types/type.shop";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 import { EmployeeStats } from "@/types/employeeStats";
 import { ApiResponse } from "@/types/response";
 import { extractSlug } from "@/utils/extractSlug";

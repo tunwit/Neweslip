@@ -19,7 +19,7 @@ import { getRandomPastelColor } from "@/utils/generatePastelColor";
 import { createPayrollRecords } from "@/app/action/payroll/record/createPayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/branch";
+import { Branch } from "@/types/type.branch";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
 import { Pagination } from "@mui/material";

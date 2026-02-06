@@ -1,5 +1,5 @@
 import { employeesTable } from "@/db/schema";
-import { Shop } from "./shop";
+import { Shop } from "./type.shop";
 
 import {
   InferColumnsDataTypes,
@@ -7,7 +7,7 @@ import {
   InferModel,
   InferSelectModel,
 } from "drizzle-orm";
-import { Branch } from "./branch";
+import { Branch } from "./type.branch";
 
 //Full schema from DB
 export type Employee = InferSelectModel<typeof employeesTable>;

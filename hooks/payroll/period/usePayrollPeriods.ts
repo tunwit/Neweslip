@@ -1,7 +1,7 @@
 import { Owner } from "@/types/owner";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { ApiResponse } from "@/types/response";
-import { Shop } from "@/types/shop";
+import { Shop } from "@/types/type.shop";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useSession } from "@clerk/nextjs";
 import {
@@ -25,7 +25,8 @@ export const usePayrollPeriods = (shopId: number) => {
     enabled: shopId > 0,
     staleTime: 1000 * 60 * 5,
     retry: (failureCount, error: any) => {
-      if (error?.status === 404 || error?.response?.status === 404) return false;
+      if (error?.status === 404 || error?.response?.status === 404)
+        return false;
       return failureCount < 3;
     },
   });

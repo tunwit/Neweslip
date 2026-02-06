@@ -2,7 +2,7 @@ import { InferSelectModel } from "drizzle-orm";
 import { Employee } from "./employee";
 import { OtField } from "./otField";
 import { PenaltyField } from "./penaltyField";
-import { SalaryField } from "./salaryFields";
+import { SalaryField } from "./payroll/type.compensation";
 import { TotalSalary } from "./totalSalary";
 import {
   otFieldValueTable,
