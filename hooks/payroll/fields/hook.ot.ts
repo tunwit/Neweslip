@@ -1,0 +1,98 @@
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
+import { CompensationFieldPublicDTO } from "@/types/payroll/type.compensation";
+import { NewOTFieldDTO, OTFieldPublicDTO } from "@/types/payroll/type.ot";
+import { ApiResponse } from "@/types/response";
+import { fetchwithauth } from "@/utils/fetcher";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+type CreateFieldVars = {
+  shopId: number;
+  payload: NewOTFieldDTO;
+};
+
+type UpdateFieldVars = {
+  shopId: number;
+  fieldId: number;
+  payload: NewOTFieldDTO;
+};
+
+type DeleteFieldVars = {
+  shopId: number;
+  ids: number[];
+};
+
+export const useOTFields = () => {
+  const { id: shopId } = useCurrentShop();
+
+  const query = useQuery<ApiResponse<OTFieldPublicDTO[]>>({
+    queryKey: ["ot", shopId],
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/ot-fields`,
+        method: "GET",
+      }),
+    enabled: shopId != null,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return query;
+};
+
+export function useCreateOTField() {
+  const queryClient = useQueryClient();
+  return useMutation<OTFieldPublicDTO, Error, CreateFieldVars>({
+    mutationFn: ({ shopId, payload }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/ot-fields`,
+        method: "POST",
+        body: payload,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["ot"],
+        exact: false,
+      });
+    },
+  });
+}
+
+export function useUpdateOTField() {
+  const queryClient = useQueryClient();
+  return useMutation<OTFieldPublicDTO, Error, UpdateFieldVars>({
+    mutationFn: ({ shopId, fieldId, payload }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/ot-fields/${fieldId}`,
+        method: "PUT",
+        body: payload,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["ot"],
+        exact: false,
+      });
+    },
+  });
+}
+
+export function useDeleteOTField() {
+  const queryClient = useQueryClient();
+  return useMutation<OTFieldPublicDTO, Error, DeleteFieldVars>({
+    mutationFn: ({ shopId, ids }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/ot-fields/`,
+        method: "DELETE",
+        body: { ids: ids },
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["ot"],
+        exact: false,
+      });
+    },
+  });
+}

@@ -3,7 +3,7 @@ import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalary
 import {
   useCreateCompensationField,
   useUpdateCompensationField,
-} from "@/hooks/payroll/fields/compensation/hook.compensation";
+} from "@/hooks/payroll/fields/hook.compensation";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
@@ -19,12 +19,7 @@ import {
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
-import {
-  Button,
-  Modal,
-  ModalClose,
-  ModalDialog,
-} from "@mui/joy";
+import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import React, { useEffect } from "react";

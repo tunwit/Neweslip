@@ -12,7 +12,6 @@ import {
   SALARY_FIELD_DEFINATION_TYPE,
 } from "@/types/enum/enum";
 import { NewOtField, OtField } from "@/types/otField";
-import { NewSalaryField, SalaryField } from "@/types/payroll/type.compensation";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import {
@@ -34,11 +33,16 @@ import { Controller, FormProvider } from "react-hook-form";
 import { Decimal } from "decimal.js";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
+import { NewOTFieldDTO, OTFieldPublicDTO } from "@/types/payroll/type.ot";
+import {
+  useCreateOTField,
+  useUpdateOTField,
+} from "@/hooks/payroll/fields/hook.ot";
 
 interface AddOTModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  field: OtField | null;
+  field: OTFieldPublicDTO | null;
 }
 
 export default function AddEditOTModal({
@@ -50,6 +54,8 @@ export default function AddEditOTModal({
   const queryClient = useQueryClient();
   const { user } = useUser();
   const t = useTranslations("overtime");
+  const { mutateAsync: createMutate } = useCreateOTField();
+  const { mutateAsync: updateMutate } = useUpdateOTField();
 
   const methods = useZodForm(OTFieldSchema, {
     defaultValues: {
@@ -57,8 +63,8 @@ export default function AddEditOTModal({
       nameEng: field?.nameEng || "",
       type: field?.type || OT_TYPE.BASEDONSALARY,
       method: field?.method || OT_METHOD.DAILY,
-      rate: field?.rate || "1",
-      rateOfPay: field?.rateOfPay || "0",
+      multiplier: field?.multiplier || "1.5",
+      fixedAmount: field?.fixedAmount || "0",
     },
   });
 
@@ -66,26 +72,31 @@ export default function AddEditOTModal({
     control,
     handleSubmit,
     setValue,
-    formState: { isSubmitSuccessful, isSubmitting },
+    formState: { isSubmitting },
   } = methods;
   const closeHandler = () => {
     methods.reset();
     setOpen(false);
   };
 
-  const submitHandler = async (data: Omit<NewOtField, "shopId">) => {
+  const submitHandler = async (data: NewOTFieldDTO) => {
     if (!shopId || !user?.id) return;
     try {
       if (field) {
         // edit mode
-        await updateOTField(field.id, data, user.id);
+        await updateMutate({
+          shopId: shopId,
+          fieldId: field.id,
+          payload: data,
+        });
         showSuccess("OT updated successfully");
       } else {
         // add mode
-        await createOTField(data, shopId, user?.id);
+        console.log(data);
+
+        await createMutate({ shopId: shopId, payload: data });
         showSuccess("OT added successfully");
       }
-      queryClient.invalidateQueries({ queryKey: ["OTFields"] });
     } catch (err: any) {
       let msg = err;
       if (err.message == "ER_DUP_ENTRY") msg = "OT cannot have duplicate name";
@@ -100,20 +111,21 @@ export default function AddEditOTModal({
   useEffect(() => {
     if (typeValue !== OT_TYPE.CONSTANT) {
       // clear the field when not constant
-      setValue("rateOfPay", undefined);
+      setValue("fixedAmount", null);
     }
   }, [typeValue, setValue]);
 
   useEffect(() => {
+    if (!open) return;
     methods.reset({
       name: field?.name || "",
       nameEng: field?.nameEng || "",
-      type: field?.type,
-      method: field?.method,
-      rate: field?.rate || "1",
-      rateOfPay: field?.rateOfPay || "0",
+      type: field?.type || OT_TYPE.BASEDONSALARY,
+      method: field?.method || OT_METHOD.DAILY,
+      multiplier: field?.multiplier || "1.5",
+      fixedAmount: field?.fixedAmount || "0",
     });
-  }, [field, methods.reset]);
+  }, [field, open]);
 
   return (
     <>
@@ -122,7 +134,7 @@ export default function AddEditOTModal({
           <ModalClose></ModalClose>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(submitHandler)}>
-              <div className="grid  gap-3">
+              <div className="grid gap-3">
                 <InputForm
                   control={control}
                   name="name"
@@ -170,7 +182,7 @@ export default function AddEditOTModal({
                 />
 
                 <Controller
-                  name="rate"
+                  name="multiplier"
                   control={control}
                   render={({ field, fieldState }) => (
                     <FormControl>
@@ -238,7 +250,7 @@ export default function AddEditOTModal({
                 {typeValue == OT_TYPE.CONSTANT && (
                   <InputForm
                     control={control}
-                    name="rateOfPay"
+                    name="fixedAmount"
                     required={true}
                     label={t("fields.rate_of_pay")}
                   />
@@ -246,10 +258,10 @@ export default function AddEditOTModal({
               </div>
               <div className="mt-3">
                 <Button
-                  disabled={isSubmitting || isSubmitSuccessful}
+                  disabled={isSubmitting}
                   loadingPosition="start"
                   loading={isSubmitting}
-                  type="summit"
+                  type="submit"
                   sx={{ width: "100%" }}
                 >
                   {field ? t("actions.update") : t("actions.create")}

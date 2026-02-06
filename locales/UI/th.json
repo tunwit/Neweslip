@@ -759,7 +759,7 @@
       "basedonsalary": "อ้างอิงจากเงินเดือน"
     },
     "method": {
-      "perminute": "รายนาที",
+      "per_minute": "รายนาที",
       "hourly": "รายชั่วโมง",
       "daily": "รายวัน"
     },

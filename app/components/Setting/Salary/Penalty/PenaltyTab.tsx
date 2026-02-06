@@ -1,57 +1,47 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, IconButton, Table } from "@mui/joy";
-import React, { useState } from "react";
+import { Button } from "@mui/joy";
+import { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/branch/useBranch";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/type.branch";
-import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
-import { SalaryField } from "@/types/payroll/type.compensation";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
-import AddEditIncomeModal from "../Income/AddEditIncomeModal";
-import { useOTFields } from "@/hooks/payroll/fields/useOTFields";
-import { OtField } from "@/types/otField";
 
 import { PenaltyField } from "@/types/penaltyField";
-import { usePenaltyFields } from "@/hooks/payroll/fields/usePenaltyFields";
-import {
-  PENALTY_METHOD_LABELS,
-  PENALTY_TYPE_LABELS,
-} from "@/types/enum/enumLabel";
 import AddEditPenaltyModal from "./AddEditPenaltyModal";
 import { deletePenaltyField } from "@/app/action/payroll/penaltyField/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
+import {
+  useDeletePenaltyField,
+  usePenaltyFields,
+} from "@/hooks/payroll/fields/hook.penalty";
+import { PenaltyFieldPublicDTO } from "@/types/payroll/type.penalty";
 
 export default function PenaltyTab() {
   const [open, setOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<PenaltyField | null>(null);
+  const [selectedField, setSelectedField] =
+    useState<PenaltyFieldPublicDTO | null>(null);
   const { id: shopId } = useCurrentShop();
   const checkboxMethods = useCheckBox<number>("allPenaltyTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
   const { user } = useUser();
   const t = useTranslations("penalty");
   const queryClient = useQueryClient();
-
   const addHandler = () => {
     setSelectedField(null);
 
     setOpen(true);
   };
 
-  const { data, isLoading, isSuccess } = usePenaltyFields(shopId || -1);
+  const { data, isLoading, isSuccess } = usePenaltyFields();
+  const { mutateAsync: deleteMutate } = useDeletePenaltyField();
 
   const handleDelete = async () => {
     try {
       if (!shopId || !user?.id) return;
       uncheckall();
-      await deletePenaltyField(checked, shopId, user?.id);
+      await deleteMutate({ shopId: shopId, ids: checked });
       showSuccess("Delete field success");
-      queryClient.invalidateQueries({ queryKey: ["penaltyFields"] });
     } catch {
       showError("Delete field failed");
     }
@@ -96,13 +86,13 @@ export default function PenaltyTab() {
               {
                 key: "type",
                 label: t("fields.type"),
-                render: (row: PenaltyField) =>
+                render: (row: PenaltyFieldPublicDTO) =>
                   t(`type.${row.type.toLowerCase()}`),
               },
               {
                 key: "method",
                 label: t("fields.method"),
-                render: (row: PenaltyField) =>
+                render: (row: PenaltyFieldPublicDTO) =>
                   t(`method.${row.method.toLowerCase()}`),
               },
             ]}

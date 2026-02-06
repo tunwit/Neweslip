@@ -1,20 +1,5 @@
-import { createOTField } from "@/app/action/payroll/OTField/createOTField";
-import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
-import { updateOTField } from "@/app/action/payroll/OTField/updateOTFIeld";
-import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
-import { OTFieldSchema } from "@/schemas/setting/OTFieldForm";
-import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
-import {
-  OT_METHOD,
-  OT_TYPE,
-  PENALTY_METHOD,
-  PENALTY_TYPE,
-  SALARY_FIELD_DEFINATION_TYPE,
-} from "@/types/enum/enum";
-import { NewOtField, OtField } from "@/types/otField";
-import { NewSalaryField, SalaryField } from "@/types/payroll/type.compensation";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import {
@@ -33,18 +18,25 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { Controller, FormProvider } from "react-hook-form";
-import { Decimal } from "decimal.js";
-import { NewPenaltyField, PenaltyField } from "@/types/penaltyField";
 import { PenaltyFieldSchema } from "@/schemas/setting/PenaltyFieldForm";
 import { createPenaltyField } from "@/app/action/payroll/penaltyField/createPenaltyField";
 import { updatePenaltyField } from "@/app/action/payroll/penaltyField/updatePenaltyFIeld";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
+import {
+  NewPenaltyFieldDTO,
+  PenaltyFieldPublicDTO,
+} from "@/types/payroll/type.penalty";
+import { PENALTY_METHOD, PENALTY_TYPE } from "@/types/enum/enum.penalty";
+import {
+  useCreatePenaltyField,
+  useUpdatePenaltyField,
+} from "@/hooks/payroll/fields/hook.penalty";
 
 interface AddEditPenaltyModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  field: PenaltyField | null;
+  field: PenaltyFieldPublicDTO | null;
 }
 
 export default function AddEditPenaltyModal({
@@ -56,14 +48,16 @@ export default function AddEditPenaltyModal({
   const queryClient = useQueryClient();
   const { user } = useUser();
   const t = useTranslations("penalty");
+  const { mutateAsync: createMutate } = useCreatePenaltyField();
+  const { mutateAsync: updateMutate } = useUpdatePenaltyField();
 
   const methods = useZodForm(PenaltyFieldSchema, {
     defaultValues: {
       name: field?.name || "",
       nameEng: field?.nameEng || "",
       type: field?.type || PENALTY_TYPE.BASEDONSALARY,
-      method: field?.method || PENALTY_METHOD.PERMINUTE,
-      rateOfPay: field?.rateOfPay || "0",
+      method: field?.method || PENALTY_METHOD.PER_MINUTE,
+      fixedAmount: field?.fixedAmount || "0",
     },
   });
 
@@ -71,7 +65,7 @@ export default function AddEditPenaltyModal({
     control,
     handleSubmit,
     setValue,
-    formState: { isSubmitSuccessful, isSubmitting },
+    formState: { isSubmitting },
   } = methods;
 
   const closeHandler = () => {
@@ -79,19 +73,22 @@ export default function AddEditPenaltyModal({
     setOpen(false);
   };
 
-  const submitHandler = async (data: Omit<NewPenaltyField, "shopId">) => {
+  const submitHandler = async (data: NewPenaltyFieldDTO) => {
     if (!shopId || !user?.id) return;
     try {
       if (field) {
         // edit mode
-        await updatePenaltyField(field.id, data, user?.id);
+        await updateMutate({
+          shopId: shopId,
+          fieldId: field.id,
+          payload: data,
+        });
         showSuccess("OT updated successfully");
       } else {
         // add mode
-        await createPenaltyField(data, shopId, user?.id);
+        await createMutate({ shopId: shopId, payload: data });
         showSuccess("OT added successfully");
       }
-      queryClient.invalidateQueries({ queryKey: ["penaltyFields"] });
     } catch (err: any) {
       let msg = err;
       if (err.message == "ER_DUP_ENTRY")
@@ -107,7 +104,7 @@ export default function AddEditPenaltyModal({
   useEffect(() => {
     if (typeValue !== PENALTY_TYPE.CONSTANT) {
       // clear the field when not constant
-      setValue("rateOfPay", undefined);
+      setValue("fixedAmount", null);
     }
   }, [typeValue, setValue]);
 
@@ -115,9 +112,9 @@ export default function AddEditPenaltyModal({
     methods.reset({
       name: field?.name || "",
       nameEng: field?.nameEng || "",
-      type: field?.type,
-      method: field?.method,
-      rateOfPay: field?.rateOfPay || "0",
+      type: field?.type || PENALTY_TYPE.BASEDONSALARY,
+      method: field?.method || PENALTY_METHOD.PER_MINUTE,
+      fixedAmount: field?.fixedAmount || "0",
     });
   }, [field, methods.reset]);
 
@@ -167,8 +164,8 @@ export default function AddEditPenaltyModal({
                           );
                         }}
                       >
-                        <Button value={PENALTY_METHOD.PERMINUTE}>
-                          {t("method.perminute")}
+                        <Button value={PENALTY_METHOD.PER_MINUTE}>
+                          {t("method.per_minute")}
                         </Button>
                         <Button value={PENALTY_METHOD.HOURLY}>
                           {t("method.hourly")}
@@ -219,7 +216,7 @@ export default function AddEditPenaltyModal({
                 {typeValue == PENALTY_TYPE.CONSTANT && (
                   <InputForm
                     control={control}
-                    name="rateOfPay"
+                    name="fixedAmount"
                     required={true}
                     label="Rate of Pay"
                   />
@@ -227,10 +224,10 @@ export default function AddEditPenaltyModal({
               </div>
               <div className="mt-3">
                 <Button
-                  disabled={isSubmitting || isSubmitSuccessful}
+                  disabled={isSubmitting}
                   loadingPosition="start"
                   loading={isSubmitting}
-                  type="summit"
+                  type="submit"
                   sx={{ width: "100%" }}
                 >
                   {field ? t("actions.update") : t("actions.create")}

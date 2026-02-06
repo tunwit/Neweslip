@@ -17,7 +17,7 @@ import { CompensationFieldPublicDTO } from "@/types/payroll/type.compensation";
 import {
   useCompensationField,
   useDeleteCompensationField,
-} from "@/hooks/payroll/fields/compensation/hook.compensation";
+} from "@/hooks/payroll/fields/hook.compensation";
 import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
 export default function IncomeTab() {
   const [open, setOpen] = useState(false);
@@ -45,7 +45,6 @@ export default function IncomeTab() {
       uncheckall();
       await deleteMutate({ shopId: shopId, ids: checked });
       showSuccess("Delete field success");
-      queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
     } catch {
       showError("Delete field failed");
     }

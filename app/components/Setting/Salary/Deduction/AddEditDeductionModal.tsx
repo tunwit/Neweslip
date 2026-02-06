@@ -3,7 +3,7 @@ import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalary
 import {
   useCreateCompensationField,
   useUpdateCompensationField,
-} from "@/hooks/payroll/fields/compensation/hook.compensation";
+} from "@/hooks/payroll/fields/hook.compensation";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
@@ -99,7 +99,6 @@ export default function AddEditDeductionModal({
         });
         showSuccess("Deduction added successfully");
       }
-      queryClient.invalidateQueries({ queryKey: ["salaryFields"] });
     } catch (err: any) {
       let msg = err;
       if (err.message == "ER_DUP_ENTRY")

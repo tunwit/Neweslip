@@ -1,0 +1,9 @@
+export enum OT_TYPE {
+  CONSTANT = "CONSTANT",
+  BASEDONSALARY = "BASEDONSALARY",
+}
+
+export enum OT_METHOD {
+  DAILY = "DAILY",
+  HOURLY = "HOURLY",
+}

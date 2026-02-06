@@ -1,29 +1,22 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, IconButton, Table } from "@mui/joy";
-import React, { useState } from "react";
+import { Button } from "@mui/joy";
+import { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useBranch } from "@/hooks/branch/useBranch";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/type.branch";
-import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
-import { SalaryField } from "@/types/payroll/type.compensation";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
-import AddEditIncomeModal from "../Income/AddEditIncomeModal";
-import { useOTFields } from "@/hooks/payroll/fields/useOTFields";
-import { OtField } from "@/types/otField";
 import AddEditOTModal from "./AddEditOTModal";
-import { OT_METHOD_LABELS, OT_TYPE_LABELS } from "@/types/enum/enumLabel";
 import { useUser } from "@clerk/nextjs";
 import { deleteOTField } from "@/app/action/payroll/OTField/deleteOTField";
 import { useTranslations } from "next-intl";
+import { useDeleteOTField, useOTFields } from "@/hooks/payroll/fields/hook.ot";
+import { OTFieldPublicDTO } from "@/types/payroll/type.ot";
 
 export default function OTTab() {
   const [open, setOpen] = useState(false);
-  const [selectedField, setSelectedField] = useState<OtField | null>(null);
+  const [selectedField, setSelectedField] = useState<OTFieldPublicDTO | null>(
+    null,
+  );
   const { id: shopId } = useCurrentShop();
   const checkboxMethods = useCheckBox<number>("allOTTable");
   const { checked, checkall, uncheckall } = checkboxMethods;
@@ -35,15 +28,15 @@ export default function OTTab() {
     setSelectedField(null);
     setOpen(true);
   };
-  const { data, isLoading, isSuccess } = useOTFields(shopId || -1);
+  const { data, isLoading, isSuccess } = useOTFields();
+  const { mutateAsync: deleteMutate } = useDeleteOTField();
 
   const handleDelete = async () => {
     try {
       if (!shopId || !user?.id) return;
       uncheckall();
-      await deleteOTField(checked, shopId, user?.id);
+      await deleteMutate({ shopId: shopId, ids: checked });
       showSuccess("Delete field success");
-      queryClient.invalidateQueries({ queryKey: ["OTFields"], exact: false });
     } catch {
       showError("Delete field failed");
     }
@@ -80,12 +73,13 @@ export default function OTTab() {
               {
                 key: "type",
                 label: t("fields.type"),
-                render: (row: OtField) => t(`type.${row.type.toLowerCase()}`),
+                render: (row: OTFieldPublicDTO) =>
+                  t(`type.${row.type.toLowerCase()}`),
               },
               {
                 key: "method",
                 label: t("fields.method"),
-                render: (row: OtField) =>
+                render: (row: OTFieldPublicDTO) =>
                   t(`method.${row.method.toLowerCase()}`),
               },
               { key: "rate", label: t("fields.rate") },
