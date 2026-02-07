@@ -1,4 +1,5 @@
 import { changeShopPassword } from "@/app/action/shop/changeShopPassword";
+import { useChangeShopPassword } from "@/hooks/hook.shop";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { hashPassword } from "@/lib/password";
 import { useZodForm } from "@/lib/useZodForm";
@@ -32,7 +33,7 @@ export default function ChangePasswordModal({
     formState: { isSubmitting },
   } = methods;
   const [err, setError] = useState("");
-
+  const { mutateAsync } = useChangeShopPassword();
   const onSubmit = async (data: ChangePasswordForm) => {
     if (!id || !user) return;
     setError("");
@@ -41,17 +42,15 @@ export default function ChangePasswordModal({
       return;
     }
     try {
-      const result = await changeShopPassword(
-        data.oldpassword,
-        data.confirmpassword,
-        id,
-        user.id,
-      );
+      const result = await mutateAsync({
+        oldPassword: data.oldpassword,
+        newPassword: data.confirmpassword,
+      });
       if (result.code === 401) {
         setError(t("modal.change_password.incorrect"));
         return;
       }
-      if (result.code === 404) {
+      if (result.code === 403) {
         setError(t("modal.change_password.password_not_set"));
         return;
       }
@@ -81,16 +80,19 @@ export default function ChangePasswordModal({
               >
                 <InputForm
                   control={control}
+                  type="password"
                   name="oldpassword"
                   label={t("change_password.fields.old_password")}
                 />
                 <InputForm
                   control={control}
+                  type="password"
                   name="newpassword"
                   label={t("change_password.fields.new_password")}
                 />
                 <InputForm
                   control={control}
+                  type="password"
                   name="confirmpassword"
                   label={t("change_password.fields.confirm_password")}
                 />

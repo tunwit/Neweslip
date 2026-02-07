@@ -12,6 +12,7 @@ import {
 import { Session } from "inspector/promises";
 import { useCurrentShop } from "./shop/useCurrentShop";
 import {
+  ChangePasswordDTO,
   ShopConfigDTO,
   ShopPublicDTO,
   UpdateShopDataDTO,
@@ -21,6 +22,11 @@ import {
 type UpdateShopDataVars = {
   shopId: number;
   payload: UpdateShopDataDTO;
+};
+
+type UpdateShopPasswordVars = {
+  shopId: number;
+  payload: ChangePasswordDTO;
 };
 
 export const useOwnShop = () => {
@@ -101,6 +107,18 @@ export function useVerifyEmailConfig() {
     mutationFn: (payload: VerifyEmailDTO) =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/email/verify`,
+        method: "POST",
+        body: payload,
+      }),
+  });
+}
+
+export function useChangeShopPassword() {
+  const { id: shopId } = useCurrentShop();
+  return useMutation({
+    mutationFn: (payload: ChangePasswordDTO) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/change-password`,
         method: "POST",
         body: payload,
       }),

@@ -61,8 +61,10 @@ export default function EmailForm({ shopData }: EmailFormProps) {
       setVerifyStatus(false);
       setVerifyError("Invalid Email config");
       return;
+    } finally {
+      setVerified(true);
     }
-    setVerified(true);
+
     try {
       await updateShop({ shopId: shopId, payload: data });
       showSuccess("Save email successfully");

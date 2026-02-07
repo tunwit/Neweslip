@@ -58,3 +58,8 @@ export type VerifyEmailDTO = {
   emailAddress: string;
   emailPassword: string;
 };
+
+export type ChangePasswordDTO = {
+  oldPassword: string;
+  newPassword: string;
+};
