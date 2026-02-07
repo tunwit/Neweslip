@@ -22,7 +22,7 @@ import {
 } from "drizzle-orm";
 import { NextRequest } from "next/server";
 import { EMPLOYEE_ORDERBY, EMPLOYEE_STATUS } from "@/types/enum/enum";
-import { EmployeeWithShop } from "@/types/employee";
+import { EmployeeWithShop } from "@/types/type.employee";
 import { isOwner } from "@/lib/isOwner";
 
 export function buildOrderBy<T extends Record<string, string>>(

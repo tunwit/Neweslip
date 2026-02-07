@@ -1,6 +1,5 @@
 import { Pagination } from "@mui/material";
 import EmployeesTable from "./EmployeesTable";
-import { useEmployees } from "@/hooks/employee/useEmployees";
 import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
 import {
   EMPLOYEE_ORDERBY,
@@ -17,6 +16,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
+import { useDeleteEmployee, useEmployees } from "@/hooks/hook.employee";
 
 interface EmployeeTableWrapperProps {
   sortBy?: EMPLOYEE_SORTBY;
@@ -47,10 +47,11 @@ export function EmployeeTableWrapper({
   });
 
   const { checked, uncheckall } = useCheckBox<number>("allEmployeeTable");
-  const { id } = useCurrentShop();
+  const { id: shopId } = useCurrentShop();
   const queryClient = useQueryClient();
   const t = useTranslations("employees");
   const tnm = useTranslations("new_employees.modal.delete");
+  const { mutateAsync: deleteMutate } = useDeleteEmployee();
 
   const user = useUser();
 
@@ -60,11 +61,10 @@ export function EmployeeTableWrapper({
 
   const onDeleteEmployee = async () => {
     try {
-      if (!id) return;
+      if (!shopId) return;
       uncheckall();
-      await deleteEmployee(checked, id, user.user?.id || null);
+      await deleteMutate({ shopId: shopId, ids: checked });
       showSuccess(tnm("success"));
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
     } catch (err: any) {
       showError(tnm("fail", { err: err.message }));
     }

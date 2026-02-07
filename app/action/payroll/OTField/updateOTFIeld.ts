@@ -1,8 +1,8 @@
 "use server";
-import { branchesTable, otFieldsTable, salaryFieldsTable} from "@/db/schema";
+import { branchesTable, otFieldsTable, salaryFieldsTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { NewOtField, OtField } from "@/types/otField";
@@ -10,7 +10,7 @@ import { NewOtField, OtField } from "@/types/otField";
 export async function updateOTField(
   id: OtField["id"],
   data: Omit<NewOtField, "shopId" | "id">,
-  userId:string|null
+  userId: string | null,
 ) {
   const field = await globalDrizzle
     .select()
@@ -22,7 +22,7 @@ export async function updateOTField(
     throw new Error("Branch not found");
   }
 
-  const ownerCheck = await isOwner(field[0].shopId,userId);
+  const ownerCheck = await isOwner(field[0].shopId, userId);
   if (!ownerCheck) {
     throw new Error("Forbidden");
   }
@@ -31,9 +31,7 @@ export async function updateOTField(
     await globalDrizzle
       .update(otFieldsTable)
       .set(data)
-      .where(and(
-          eq(otFieldsTable.id, id),
-       ))
+      .where(and(eq(otFieldsTable.id, id)));
   } catch (err) {
     throw err;
   }

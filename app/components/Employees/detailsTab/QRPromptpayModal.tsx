@@ -39,6 +39,8 @@ export default function QRPromptpayModal({
                           alt="qr"
                           fill
                           className="rounded-md"
+                          quality={0}
+                          unoptimized
                           src={`https://promptpay.io/${promptpay.trim()}.png`}
                         />
                       </div>

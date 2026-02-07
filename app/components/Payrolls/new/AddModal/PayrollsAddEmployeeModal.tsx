@@ -10,7 +10,7 @@ import {
 } from "@mui/joy";
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { EmployeeWithShop } from "@/types/employee";
+import { EmployeeWithShop } from "@/types/type.employee";
 import BranchSelector from "@/widget/BranchSelector";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";

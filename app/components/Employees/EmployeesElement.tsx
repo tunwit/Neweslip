@@ -4,7 +4,7 @@ import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
 import React, { useMemo, useState } from "react";
 import EmployeeDetailsModal from "./EmployeeDetailsModal";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
-import { EmployeeWithShop } from "@/types/employee";
+import { EmployeeWithBranchDTO } from "@/types/type.employee";
 import { moneyFormat } from "@/utils/formmatter";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useLocale } from "next-intl";
@@ -23,7 +23,7 @@ function getRandomPastelColor() {
 export default function EmployeesElement({
   employee,
 }: {
-  employee: EmployeeWithShop;
+  employee: EmployeeWithBranchDTO;
 }) {
   const { toggle, isChecked } = useCheckBox<number>("allEmployeeTable");
 
@@ -36,7 +36,11 @@ export default function EmployeesElement({
 
   return (
     <>
-      <EmployeeDetailsModal employee={employee} open={open} setOpen={setOpen} />
+      <EmployeeDetailsModal
+        employeeId={employee.id}
+        open={open}
+        setOpen={setOpen}
+      />
       <tr className="h-15 hover:bg-gray-50 transition-colors cursor-pointer">
         <td className="pl-6 border-b">
           <div className="flex gap-4 items-center">

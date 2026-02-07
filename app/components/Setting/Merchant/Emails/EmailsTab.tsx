@@ -7,7 +7,6 @@ export default function EmailsTab() {
   const { data, isLoading } = useShopConfigs();
   const t = useTranslations("shops");
   if (isLoading || !data?.data) return;
-
   return (
     <>
       <div className="-mt-4">

@@ -2,12 +2,16 @@
 import { Button, FormControl, FormLabel, Input } from "@mui/joy";
 import React, { Suspense, useState } from "react";
 import BranchSelector from "../../../../widget/BranchSelector";
-import { EmployeeWithShop } from "@/types/employee";
+import {
+  EmployeeDetailedDTO,
+  EmployeeWithBranchDTO,
+} from "@/types/type.employee";
 import {
   Controller,
   FormProvider,
   useForm,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,7 +33,7 @@ import QRPromptpayModal from "./QRPromptpayModal";
 export default function EmployeeDetailsForm({
   employee,
 }: {
-  employee: EmployeeWithShop;
+  employee: EmployeeDetailedDTO;
 }) {
   const {
     control,
@@ -41,10 +45,17 @@ export default function EmployeeDetailsForm({
   const [showQR, setShowQR] = useState(false);
   const tn = useTranslations("new_employees");
   const t = useTranslations("employees");
-
+  const currentText = useWatch({
+    control,
+    name: "promtpay",
+  });
   return (
     <>
-      <QRPromptpayModal open={showQR} setOpen={setShowQR} promptpay={employee.promtpay} />
+      <QRPromptpayModal
+        open={showQR}
+        setOpen={setShowQR}
+        promptpay={currentText || null}
+      />
       <form>
         <div className="flex flex-col gap-3 ">
           <div className="bg-white rounded-md border border-gray-300 py-4 px-4">

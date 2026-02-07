@@ -9,5 +9,10 @@ export const personalSchema = z.object({
   gender: z.nativeEnum(GENDER),
   dateOfBirth: z.date({ required_error: "Birth date is required" }),
   email: z.string().email("Invalid email"),
-  phoneNumber: z.string().min(1, "Phone number is required"),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(9, "Phone number is too short")
+    .max(15, "Phone number is too long")
+    .regex(/^[0-9]+$/, "Phone number must contain only digits"),
 });

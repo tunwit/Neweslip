@@ -1,6 +1,6 @@
 import { payrollRecordsTable } from "@/db/schema";
 import { Branch } from "@/types/type.branch";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import {

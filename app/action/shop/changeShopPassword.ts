@@ -2,7 +2,7 @@
 import { employeesTable, shopsTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee, NewEmployee } from "@/types/employee";
+import { Employee, NewEmployee } from "@/types/type.employee";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { NewShop } from "@/types/type.shop";

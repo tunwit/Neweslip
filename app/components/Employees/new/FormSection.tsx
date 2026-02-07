@@ -13,13 +13,13 @@ import { fetchwithauth } from "@/utils/fetcher";
 import { extractSlug } from "@/utils/extractSlug";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { createEmployee } from "@/app/action/employee/createEmployee";
-import { NewEmployee } from "@/types/employee";
+import { NewEmployeeDTO } from "@/types/type.employee";
 import { useZodForm } from "@/lib/useZodForm";
 import { useQueryClient } from "@tanstack/react-query";
-import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { showError, showSuccess } from "@/utils/showSnackbar";
+import { useCreateEmployee } from "@/hooks/hook.employee";
 
 interface FormSectionProps {
   currentPage: number;
@@ -54,6 +54,7 @@ export default function FormSection({
   const user = useUser();
   const tn = useTranslations("new_employees");
   const tnm = useTranslations("new_employees.modal.create");
+  const { mutateAsync: createMutate } = useCreateEmployee();
 
   // FIX: Change the input type of onSubmit from NewEmployee to FormField
   const onSubmit = async (data: FormField) => {
@@ -63,15 +64,16 @@ export default function FormSection({
     const slug = pathname[2];
     const { id } = extractSlug(slug);
     // Construct the final data object, merging the form data with the required shopId
-    const employeePayload: NewEmployee = {
+    const employeePayload: NewEmployeeDTO = {
       ...data,
+      dateEmploy: data.dateEmploy?.toISOString(),
+      dateOfBirth: data.dateOfBirth?.toISOString(),
+      avatar: undefined,
       salary: String(data.salary),
-      shopId: id,
     };
-    
+
     try {
-      await createEmployee(employeePayload, user.user?.id || null);
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      await createMutate({ shopId: id, payload: employeePayload });
       showSuccess(tnm("success"));
       rounter.push("/");
     } catch (err: any) {

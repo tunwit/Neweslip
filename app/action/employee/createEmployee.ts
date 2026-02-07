@@ -2,7 +2,7 @@
 import { employeesTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee, NewEmployee } from "@/types/employee";
+import { Employee, NewEmployee } from "@/types/type.employee";
 import { auth } from "@clerk/nextjs/server";
 import { changeEmployeeAvatar } from "./changeEmployeeAvatar";
 
@@ -22,7 +22,6 @@ export async function createEmployee(data: NewEmployee, userId: string | null) {
     if (avatar) {
       await changeEmployeeAvatar(avatar, employeeId, data.shopId, userId);
     }
-
   } catch (err) {
     throw err;
   }

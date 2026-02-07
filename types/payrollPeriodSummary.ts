@@ -1,5 +1,5 @@
 import { InferSelectModel } from "drizzle-orm";
-import { Employee } from "./employee";
+import { Employee } from "./type.employee";
 import { OtField } from "./otField";
 import { PenaltyField } from "./penaltyField";
 import { SalaryField } from "./payroll/type.compensation";

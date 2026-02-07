@@ -11,16 +11,16 @@ import React, {
 import EmployeesElement from "./EmployeesElement";
 import { Checkbox, Table } from "@mui/joy";
 import { useEmployees } from "../../../hooks/employee/useEmployees";
-import { EmployeeWithShop } from "@/types/employee";
 import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { moneyFormat } from "@/utils/formmatter";
 import { PaginatedResponse } from "@/types/response";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useTranslations } from "next-intl";
+import { EmployeeWithBranchDTO } from "@/types/type.employee";
 
 interface EmployeesTableProps {
-  data: PaginatedResponse<EmployeeWithShop[]> | undefined;
+  data: PaginatedResponse<EmployeeWithBranchDTO[]> | undefined;
   isLoading: boolean;
   isSuccess: boolean;
 }
@@ -95,7 +95,7 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
           )}
 
           {isSuccess &&
-            data?.data?.map((emp: EmployeeWithShop, i: number) => {
+            data?.data?.map((emp: EmployeeWithBranchDTO, i: number) => {
               return <EmployeesElement key={emp.id} employee={emp} />;
             })}
         </tbody>

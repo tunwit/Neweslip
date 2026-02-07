@@ -1,30 +1,28 @@
 "use server";
-import { employeesTable, invitationsTable} from "@/db/schema";
+import { employeesTable, invitationsTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee, NewEmployee } from "@/types/employee";
+import { Employee, NewEmployee } from "@/types/type.employee";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { INVITATION_STATUS } from "@/types/enum/enum";
 
-export async function acceptInvitation(
- token:string
-) {
+export async function acceptInvitation(token: string) {
   try {
     const [invitation] = await globalDrizzle
-      .select({expiredAt:invitationsTable.expiresAt})
+      .select({ expiredAt: invitationsTable.expiresAt })
       .from(invitationsTable)
-      .where(eq(invitationsTable.token, token))
+      .where(eq(invitationsTable.token, token));
 
-    if(new Date(invitation.expiredAt) < new Date()) throw new Error("Expired")
-      
+    if (new Date(invitation.expiredAt) < new Date()) throw new Error("Expired");
+
     await globalDrizzle
       .update(invitationsTable)
       .set({
-        status:INVITATION_STATUS.ACCEPTED,
-        acceptedAt: new Date()
+        status: INVITATION_STATUS.ACCEPTED,
+        acceptedAt: new Date(),
       })
-      .where(eq(invitationsTable.token, token))
+      .where(eq(invitationsTable.token, token));
   } catch (err) {
     throw err;
   }

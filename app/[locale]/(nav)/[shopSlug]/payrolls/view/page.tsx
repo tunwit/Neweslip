@@ -17,7 +17,7 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { getRandomPastelColor } from "@/utils/generatePastelColor";
 import BranchSelector from "@/widget/BranchSelector";
 import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { deletePayrollRecords } from "@/app/action/payroll/record/deletePayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";

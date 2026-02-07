@@ -6,7 +6,7 @@ import {
 } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { and, eq, inArray } from "drizzle-orm";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { PayrollRecord } from "@/types/payrollRecord";

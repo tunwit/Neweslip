@@ -1,4 +1,4 @@
-import { Employee, EmployeeWithShop } from "@/types/employee";
+import { Employee, EmployeeWithShop } from "@/types/type.employee";
 import {
   EMPLOYEE_ORDERBY,
   EMPLOYEE_SORTBY,

@@ -8,7 +8,7 @@ import {
 } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq, isNull } from "drizzle-orm";
 import { NewOtField, OtField } from "@/types/otField";

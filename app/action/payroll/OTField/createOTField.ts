@@ -7,7 +7,7 @@ import {
 } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { auth } from "@clerk/nextjs/server";
 import { NewBranch } from "@/types/type.branch";
 import { NewSalaryField } from "@/types/payroll/type.compensation";

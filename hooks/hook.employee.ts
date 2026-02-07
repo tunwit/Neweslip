@@ -1,0 +1,158 @@
+import {
+  EMPLOYEE_ORDERBY,
+  EMPLOYEE_SORTBY,
+  EMPLOYEE_STATUS,
+} from "@/types/enum/enum.employee";
+import { useCurrentShop } from "./shop/useCurrentShop";
+import { ApiResponse, PaginatedResponse } from "@/types/response";
+import {
+  EmployeeDetailedDTO,
+  EmployeePublicDTO,
+  EmployeeWithBranchDTO,
+  NewEmployeeDTO,
+  UpdateEmployeeDTO,
+} from "@/types/type.employee";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { fetchwithauth } from "@/utils/fetcher";
+
+type CreateEmployeeVars = {
+  shopId: number;
+  payload: NewEmployeeDTO;
+};
+
+type UpdateEmployeeVars = {
+  shopId: number;
+  employeeId: number;
+  payload: UpdateEmployeeDTO;
+};
+
+type DeleteEmployeeVars = {
+  shopId: number;
+  ids: number[];
+};
+
+interface useEmployeesProps {
+  sortBy?: EMPLOYEE_SORTBY;
+  orderBy?: EMPLOYEE_ORDERBY;
+  search_query?: string;
+  page?: number;
+  limit?: number;
+  status?: EMPLOYEE_STATUS | null;
+  branchId?: number;
+}
+
+export const useEmployees = ({
+  sortBy,
+  orderBy,
+  search_query,
+  status,
+  page,
+  limit,
+  branchId,
+}: useEmployeesProps) => {
+  const { id } = useCurrentShop();
+
+  const queryParams = new URLSearchParams({
+    shopId: id.toString(),
+    ...(search_query && { search: search_query }),
+    ...(branchId && branchId !== -1 && { branchId: branchId.toString() }),
+    ...(status && status !== null && { status: status }),
+    ...(page && { page: page.toString() }),
+    ...(limit && { limit: limit.toString() }),
+    ...(sortBy && { sortBy: sortBy.toString().toLocaleUpperCase() }),
+    ...(orderBy && { orderBy: orderBy.toString().toLocaleUpperCase() }),
+  });
+
+  return useQuery<PaginatedResponse<EmployeeWithBranchDTO[]>>({
+    queryKey: [
+      "employees",
+      id,
+      search_query,
+      page,
+      branchId,
+      status,
+      sortBy,
+      orderBy,
+    ],
+    queryFn: () => {
+      return fetchwithauth({
+        endpoint: `/shops/${id}/employees?${queryParams}`,
+        method: "GET",
+      });
+    },
+    placeholderData: keepPreviousData,
+    // refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useEmployee = (employeeId: number) => {
+  const { id: shopId } = useCurrentShop();
+  const query = useQuery<ApiResponse<EmployeeDetailedDTO>>({
+    queryKey: ["employees", employeeId],
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/employees/${employeeId}`,
+        method: "GET",
+      }),
+    enabled: shopId != null && employeeId != null,
+    refetchOnWindowFocus: true,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return query;
+};
+
+export function useCreateEmployee() {
+  const queryClient = useQueryClient();
+  return useMutation<EmployeePublicDTO, Error, CreateEmployeeVars>({
+    mutationFn: ({ shopId, payload }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/employees`,
+        method: "POST",
+        body: payload,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"], exact: false });
+    },
+  });
+}
+
+export function useUpdateEmployee() {
+  const queryClient = useQueryClient();
+  return useMutation<EmployeePublicDTO, Error, UpdateEmployeeVars>({
+    mutationFn: ({ shopId, employeeId, payload }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/employees/${employeeId}`,
+        method: "PATCH",
+        body: payload,
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"], exact: false });
+    },
+  });
+}
+
+export function useDeleteEmployee() {
+  const queryClient = useQueryClient();
+  return useMutation<EmployeePublicDTO, Error, DeleteEmployeeVars>({
+    mutationFn: ({ shopId, ids }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/employees`,
+        method: "DELETE",
+        body: { ids: ids },
+      }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+  });
+}

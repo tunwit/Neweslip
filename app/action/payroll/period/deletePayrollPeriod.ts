@@ -2,7 +2,7 @@
 import { employeesTable, payrollPeriodsTable } from "@/db/schema";
 import globalDrizzle from "@/db/drizzle";
 import { isOwner } from "@/lib/isOwner";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/types/type.employee";
 import { inArray } from "drizzle-orm";
 import { PayrollPeriod } from "@/types/payrollPeriod";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
