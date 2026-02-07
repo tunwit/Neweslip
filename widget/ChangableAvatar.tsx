@@ -34,6 +34,10 @@ export default function ChangableAvatar({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (src !== url) {
+      setIsLoading(true);
+      setHasError(false);
+    }
     setUrl(src);
   }, [src]);
 
@@ -117,6 +121,7 @@ export default function ChangableAvatar({
               className="relative overflow-hidden rounded-full"
             >
               <Image
+                key={url}
                 src={url}
                 alt="avatar"
                 fill
@@ -128,7 +133,7 @@ export default function ChangableAvatar({
                   setHasError(true);
                 }}
                 onLoadStart={() => setIsLoading(true)}
-                onLoadingComplete={() => setIsLoading(false)}
+                onLoad={() => setIsLoading(false)}
               />
             </div>
           ) : (

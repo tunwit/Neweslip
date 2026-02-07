@@ -11,10 +11,13 @@ export type ShopPublicDTO = {
   id: number;
   name: string;
   avatar: string | null;
+  avatarUrl: string | null;
 };
 
 export type ShopConfigDTO = ShopPublicDTO & {
   taxId: string;
+  avatar: string | null;
+  avatarUrl: string | null;
 
   default_work_hours_per_day: number;
   default_workdays_per_month: number;
@@ -62,4 +65,8 @@ export type VerifyEmailDTO = {
 export type ChangePasswordDTO = {
   oldPassword: string;
   newPassword: string;
+};
+
+export type ChangeAvatarDTO = {
+  file: File;
 };

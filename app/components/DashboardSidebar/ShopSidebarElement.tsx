@@ -19,8 +19,6 @@ export default function ShopSidebarElement({
 }: ShopSidebarElementProps) {
   const pathName = usePathname();
   const rest = pathName.split("/").slice(2).join("/");
-  const url = `${process.env.NEXT_PUBLIC_CDN_URL}/${avatar}`;
-
   return (
     <Link
       href={`/${createSlug(title, String(id))}/${rest}`}
@@ -28,7 +26,7 @@ export default function ShopSidebarElement({
     >
       <ChangableAvatar
         size={32}
-        src={url}
+        src={avatar}
         fallbackTitle={title.charAt(0)}
         editable={false}
       />

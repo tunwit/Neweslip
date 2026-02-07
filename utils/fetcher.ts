@@ -4,23 +4,29 @@ interface FetchProps<TBody = any> {
   body?: TBody;
 }
 export const fetchwithauth = async ({ endpoint, method, body }: FetchProps) => {
+  const isFormData = body instanceof FormData;
+
   const options: RequestInit = {
     method,
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      // authorization: `bearer ${token}`,
-    },
+    headers: isFormData
+      ? undefined
+      : {
+          "Content-Type": "application/json",
+        },
+    body:
+      body && method !== "GET"
+        ? isFormData
+          ? body
+          : JSON.stringify(body)
+        : undefined,
   };
-
-  if (body && method !== "GET") {
-    options.body = JSON.stringify(body);
-  }
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`,
     options,
   );
+
   if (!res.ok) {
     const msg = await res.text();
     const error = new Error(msg || "Request failed");
@@ -28,8 +34,7 @@ export const fetchwithauth = async ({ endpoint, method, body }: FetchProps) => {
     throw error;
   }
 
-  const data = await res.json();
-  return data;
+  return res.json();
 };
 
 export const fetchNoAuth = async ({ endpoint, method, body }: FetchProps) => {

@@ -9,13 +9,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { deleteShopAvatar } from "@/app/action/shop/deleteShopAvatar";
-import { useShopConfigs, useShopData } from "@/hooks/hook.shop";
+import {
+  useChangeShopAvatar,
+  useShopConfigs,
+  useShopData,
+} from "@/hooks/hook.shop";
 
 export default function Profilesetting() {
   const { id, name } = useCurrentShop();
   const { data, isLoading } = useShopConfigs();
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const { mutateAsync: changeAvatarMutate } = useChangeShopAvatar();
 
   if (isLoading || !data?.data) return <p>Loading...</p>;
 
@@ -24,7 +29,7 @@ export default function Profilesetting() {
     console.log(file);
 
     try {
-      await changeShopAvatar(file, id, user.id, data.data?.avatar);
+      await changeAvatarMutate({ file: file });
       queryClient.invalidateQueries({
         queryKey: ["shop", "details"],
         exact: false,
@@ -53,13 +58,11 @@ export default function Profilesetting() {
     }
   };
 
-  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${data.data.avatar}`;
-
   return (
     <>
       <div className="flex flex-col max-w-[50%] justify-center items-center gap-3">
         <ChangableAvatar
-          src={avatar}
+          src={data.data.avatarUrl || ""}
           size={160}
           fallbackTitle={data.data.name.charAt(0)}
           onChange={handleSelectFile}

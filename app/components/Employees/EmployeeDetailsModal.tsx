@@ -1,10 +1,6 @@
 "use client";
 import {
   Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,
@@ -18,35 +14,21 @@ import {
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { Edit, Save } from "@mui/icons-material";
-import BranchSelector from "../../../widget/BranchSelector";
 import StatusSelector from "@/widget/StatusSelector";
-import { changeEmployeeStatus } from "@/app/action/employee/changeEmployeeStatus";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  FieldNamesMarkedBoolean,
-  FormProvider,
-  useForm,
-} from "react-hook-form";
-import {
-  createEmployeeFormField,
-  createEmployeeFormSchema,
-} from "@/types/formField";
+import { FieldNamesMarkedBoolean, FormProvider } from "react-hook-form";
+import { createEmployeeFormSchema } from "@/types/formField";
 import EmployeeDetailsForm from "./detailsTab/EmployeeDetailsForm";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { useZodForm } from "@/lib/useZodForm";
 import normalizeNull from "@/utils/normallizeNull";
-import { updateEmployee } from "@/app/action/employee/updateEmployee";
-import { useSnackbar } from "@/hooks/useSnackBar";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
-import EmployeeDetailsFiles from "./documentsTab/EmployeeDetailsDocuments";
 import EmployeeDetailsDocuments from "./documentsTab/EmployeeDetailsDocuments";
 import { useTranslations } from "next-intl";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { changeEmployeeAvatar } from "@/app/action/employee/changeEmployeeAvatar";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { deleteEmployeeAvatar } from "@/app/action/employee/deleteEmployeeAvatar";
 import { useEmployee, useUpdateEmployee } from "@/hooks/hook.employee";
 import { UpdateEmployeeDTO } from "@/types/type.employee";
 
@@ -67,6 +49,7 @@ export default function EmployeeDetailsModal({
   const { id: shopId } = useCurrentShop();
   const t = useTranslations("employees");
   const { mutateAsync: updateMutate } = useUpdateEmployee();
+
   const employee = data?.data;
 
   useEffect(() => {
@@ -198,23 +181,22 @@ export default function EmployeeDetailsModal({
   const handleSelectFile = async (file?: File) => {
     if (!file || !shopId || !user) return;
     try {
-      await changeEmployeeAvatar(
-        file,
-        employee.id,
-        shopId,
-        user.id,
-        employee.avatar,
-      );
+      console.log(1);
+
+      // await changeAvatarMutate({ file: file });
+
       showSuccess("Change avatar sucessful");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     } catch (err) {
+      console.log(err);
+
       showError(`Change avatar failed ${err}`);
     }
   };
   const handleRemove = async () => {
     if (!employee?.avatar || !shopId || !user) return;
     try {
-      await deleteEmployeeAvatar(employee.avatar, employee.id, shopId, user.id);
+      // await deleteEmployeeAvatar(employee.avatar, employee.id, shopId, user.id);
       queryClient.invalidateQueries({
         queryKey: ["employees"],
         exact: false,

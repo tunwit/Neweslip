@@ -16,12 +16,8 @@ import SettingIcon from "@/assets/icons/SettingIcon";
 import { useSession } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useOwnShop } from "@/hooks/hook.shop";
+import { ShopPublicDTO } from "@/types/type.shop";
 
-interface Shop {
-  id: number;
-  name: string;
-  avatar: string | null;
-}
 const DashboardRails = [
   {
     titleKey: "employees",
@@ -80,14 +76,14 @@ export default function DashboardSidebar() {
       >
         <div className="pl-3 flex flex-col text-sm gap-1">
           {Array.isArray(data?.data) &&
-            data?.data.map((shop: Shop, i: number) => {
+            data?.data.map((shop: ShopPublicDTO, i: number) => {
               const slug = createSlug(shop.name, String(shop.id));
               return (
                 <ShopSidebarElement
                   key={shop.id}
                   id={shop.id}
                   title={shop.name}
-                  avatar={shop.avatar || ""}
+                  avatar={shop.avatarUrl || ""}
                   selected={shopSlug == slug}
                 />
               );

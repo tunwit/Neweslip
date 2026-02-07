@@ -12,6 +12,7 @@ import {
 import { Session } from "inspector/promises";
 import { useCurrentShop } from "./shop/useCurrentShop";
 import {
+  ChangeAvatarDTO,
   ChangePasswordDTO,
   ShopConfigDTO,
   ShopPublicDTO,
@@ -30,15 +31,13 @@ type UpdateShopPasswordVars = {
 };
 
 export const useOwnShop = () => {
-  const { session, isLoaded, isSignedIn } = useSession();
   const query = useQuery<ApiResponse<ShopPublicDTO[]>>({
-    queryKey: ["shop", session?.user?.emailAddresses],
+    queryKey: ["shop"],
     queryFn: () =>
       fetchwithauth({
         endpoint: "/shops",
         method: "GET",
       }),
-    enabled: isLoaded && isSignedIn,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
@@ -122,5 +121,25 @@ export function useChangeShopPassword() {
         method: "POST",
         body: payload,
       }),
+  });
+}
+
+export function useChangeShopAvatar() {
+  const queryClient = useQueryClient();
+  const { id: shopId } = useCurrentShop();
+  return useMutation({
+    mutationFn: (payload: ChangeAvatarDTO) => {
+      const formData = new FormData();
+      formData.append("file", payload.file);
+
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/avatar`,
+        method: "PATCH",
+        body: formData,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["shop"], exact: false });
+    },
   });
 }
