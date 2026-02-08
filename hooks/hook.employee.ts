@@ -6,6 +6,7 @@ import {
 import { useCurrentShop } from "./shop/useCurrentShop";
 import { ApiResponse, PaginatedResponse } from "@/types/response";
 import {
+  ChangeAvatarDTO,
   EmployeeDetailedDTO,
   EmployeePublicDTO,
   EmployeeWithBranchDTO,
@@ -21,18 +22,20 @@ import {
 import { fetchwithauth } from "@/utils/fetcher";
 
 type CreateEmployeeVars = {
-  shopId: number;
   payload: NewEmployeeDTO;
 };
 
 type UpdateEmployeeVars = {
-  shopId: number;
   employeeId: number;
   payload: UpdateEmployeeDTO;
 };
 
+type ChangeAvatarVars = {
+  employeeId: number;
+  payload: ChangeAvatarDTO;
+};
+
 type DeleteEmployeeVars = {
-  shopId: number;
   ids: number[];
 };
 
@@ -55,10 +58,10 @@ export const useEmployees = ({
   limit,
   branchId,
 }: useEmployeesProps) => {
-  const { id } = useCurrentShop();
+  const { id: shopId } = useCurrentShop();
 
   const queryParams = new URLSearchParams({
-    shopId: id.toString(),
+    shopId: shopId!.toString(),
     ...(search_query && { search: search_query }),
     ...(branchId && branchId !== -1 && { branchId: branchId.toString() }),
     ...(status && status !== null && { status: status }),
@@ -71,7 +74,7 @@ export const useEmployees = ({
   return useQuery<PaginatedResponse<EmployeeWithBranchDTO[]>>({
     queryKey: [
       "employees",
-      id,
+      shopId,
       search_query,
       page,
       branchId,
@@ -81,7 +84,7 @@ export const useEmployees = ({
     ],
     queryFn: () => {
       return fetchwithauth({
-        endpoint: `/shops/${id}/employees?${queryParams}`,
+        endpoint: `/shops/${shopId}/employees?${queryParams}`,
         method: "GET",
       });
     },
@@ -111,8 +114,9 @@ export const useEmployee = (employeeId: number) => {
 
 export function useCreateEmployee() {
   const queryClient = useQueryClient();
+  const { id: shopId } = useCurrentShop();
   return useMutation<EmployeePublicDTO, Error, CreateEmployeeVars>({
-    mutationFn: ({ shopId, payload }) =>
+    mutationFn: ({ payload }) =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/employees`,
         method: "POST",
@@ -127,8 +131,9 @@ export function useCreateEmployee() {
 
 export function useUpdateEmployee() {
   const queryClient = useQueryClient();
+  const { id: shopId } = useCurrentShop();
   return useMutation<EmployeePublicDTO, Error, UpdateEmployeeVars>({
-    mutationFn: ({ shopId, employeeId, payload }) =>
+    mutationFn: ({ employeeId, payload }) =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/employees/${employeeId}`,
         method: "PATCH",
@@ -143,8 +148,9 @@ export function useUpdateEmployee() {
 
 export function useDeleteEmployee() {
   const queryClient = useQueryClient();
+  const { id: shopId } = useCurrentShop();
   return useMutation<EmployeePublicDTO, Error, DeleteEmployeeVars>({
-    mutationFn: ({ shopId, ids }) =>
+    mutationFn: ({ ids }) =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/employees`,
         method: "DELETE",
@@ -153,6 +159,26 @@ export function useDeleteEmployee() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+  });
+}
+
+export function useChangeEmployeeAvatar() {
+  const queryClient = useQueryClient();
+  const { id: shopId } = useCurrentShop();
+  return useMutation<EmployeePublicDTO, Error, ChangeAvatarVars>({
+    mutationFn: ({ payload, employeeId }) => {
+      const formData = new FormData();
+      formData.append("file", payload.file);
+
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/employees/${employeeId}/avatar`,
+        method: "PATCH",
+        body: formData,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"], exact: false });
     },
   });
 }

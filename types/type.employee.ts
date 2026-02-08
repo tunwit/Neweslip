@@ -11,6 +11,7 @@ export type EmployeePublicDTO = {
   nickName: string;
   email: string;
   avatar: string | null;
+  avatarUrl: string | null;
   gender: GENDER;
   salary: string;
   createdAt: Date;
@@ -23,6 +24,7 @@ export type EmployeeWithBranchDTO = EmployeePublicDTO & {
 export type EmployeeDetailedDTO = {
   id: number;
   avatar: string | null;
+  avatarUrl: string | null;
   createdAt: Date;
   firstName: string;
   lastName: string;
@@ -69,3 +71,6 @@ export type NewEmployeeDTO = {
 };
 
 export type UpdateEmployeeDTO = Partial<NewEmployeeDTO>;
+export type ChangeAvatarDTO = {
+  file: File;
+};

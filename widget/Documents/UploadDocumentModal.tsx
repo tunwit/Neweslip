@@ -2,6 +2,11 @@ import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import getFileIcon from "@/lib/getFileIcon";
 import { formatBytes } from "@/lib/unitConverter";
 import uploadDocmentValidator from "@/lib/uploadDocmentValidator";
+import { ApiResponse } from "@/types/response";
+import {
+  CreateEmployeeDocResultDTO,
+  EmployeeDocumentPublicDTO,
+} from "@/types/type.employee.document";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
@@ -34,7 +39,7 @@ interface UploadDocumentModalProps {
     files: File[],
     tag: string,
     targetId: number,
-  ) => Promise<{ fileName: string; success: boolean; error?: any }[]>;
+  ) => Promise<ApiResponse<CreateEmployeeDocResultDTO[]>>;
 }
 
 export default function UploadDocumentModal({
@@ -100,13 +105,13 @@ export default function UploadDocumentModal({
 
       setProgressList((prev) =>
         prev.map((p) => {
-          const result = results.find((r) => r.fileName === p.fileName);
+          const result = results?.data?.find((r) => r.fileName === p.fileName);
           if (result)
             return {
               fileName: p.fileName,
               progress: "uploaded",
               success: result.success,
-              error: result.error,
+              error: result.errorMessage,
             };
           return p;
         }),

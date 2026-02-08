@@ -10,53 +10,33 @@ import {
   MenuItem,
 } from "@mui/joy";
 import Link from "next/link";
-import React, { Dispatch, SetStateAction } from "react";
-import { getPresignedUrl } from "@/app/action/getPresignedUrl";
+import { Dispatch, SetStateAction } from "react";
 import getFileIcon from "@/lib/getFileIcon";
 import { formatBytes } from "@/lib/unitConverter";
 import { formatModifiedTime } from "@/utils/formmatter";
 import { useTranslations } from "next-intl";
+import { UserPublicDTO } from "@/types/type.user";
+import { DocumentPublicDTO } from "@/types/type.document";
 
-interface DocumentTableElementProps<
-  T extends {
-    id: number;
-    key: string;
-    fileName: string;
-    size?: number;
-    uploadedAt?: string | Date;
-    createdAt?: string | Date;
-    uploadedByInfo?: { fullName?: string; imageUrl?: string };
-  },
-> {
+interface DocumentTableElementProps<T extends DocumentPublicDTO> {
   doc: T;
   setSelectedDoc: Dispatch<SetStateAction<T | null>>;
   setOpenRename: Dispatch<SetStateAction<boolean>>;
+  onClickUrl: (doc: T) => void;
+  onCopy: (doc: T) => void;
   onDelete: (doc: T) => void;
 }
 
-export default function DocumentTableElement<
-  T extends {
-    id: number;
-    key: string;
-    fileName: string;
-    size?: number;
-    uploadedAt?: string | Date;
-    createdAt?: string | Date;
-    uploadedByInfo?: { fullName?: string; imageUrl?: string };
-  },
->({
+export default function DocumentTableElement<T extends DocumentPublicDTO>({
   doc,
   setSelectedDoc,
   setOpenRename,
+  onClickUrl,
+  onCopy,
   onDelete,
 }: DocumentTableElementProps<T>) {
   const t = useTranslations("documents");
   const td = useTranslations("date_format");
-
-  const onCopy = async () => {
-    const url = await getPresignedUrl(doc.key, 3600, false);
-    navigator.clipboard.writeText(url);
-  };
 
   return (
     <tr
@@ -73,24 +53,26 @@ export default function DocumentTableElement<
           />
           <Link
             href="#"
-            onClick={async () =>
-              window.open(await getPresignedUrl(doc.key, 3600, false), "_blank")
-            }
-            className="text-blue-600 underline"
+            onClick={() => {
+              onClickUrl(doc);
+            }}
+            className="text-blue-600 underline text-sm"
           >
             {doc.fileName}
           </Link>
         </div>
       </td>
-      <td>{formatModifiedTime(new Date(doc.uploadedAt || doc.createdAt!),td)}</td>
+      <td>
+        {formatModifiedTime(new Date(doc.editedAt || doc.createdAt!), td)}
+      </td>
       <td>
         <div className="flex flex-row items-center gap-2">
           <Avatar
             sx={{ width: 20, height: 20 }}
-            src={doc.uploadedByInfo?.imageUrl}
+            src={doc.uploadedBy?.imageUrl}
             size="sm"
           />
-          {doc.uploadedByInfo?.fullName}
+          {doc.uploadedBy?.fullName}
         </div>
       </td>
       <td>{formatBytes(doc.size || 0)}</td>
@@ -116,9 +98,9 @@ export default function DocumentTableElement<
               {t("actions.rename")}
             </MenuItem>
             <MenuItem
-              onClick={async () =>
-                window.open(await getPresignedUrl(doc.key, 3600, true))
-              }
+              onClick={() => {
+                onClickUrl(doc);
+              }}
               download={doc.fileName}
               target="_blank"
             >
@@ -127,7 +109,11 @@ export default function DocumentTableElement<
               </ListItemDecorator>
               {t("actions.download")}
             </MenuItem>
-            <MenuItem onClick={onCopy}>
+            <MenuItem
+              onClick={() => {
+                onCopy(doc);
+              }}
+            >
               <ListItemDecorator>
                 <Icon icon="solar:share-outline" />
               </ListItemDecorator>

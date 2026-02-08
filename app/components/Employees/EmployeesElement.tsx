@@ -29,10 +29,6 @@ export default function EmployeesElement({
 
   const [open, setOpen] = useState<boolean>(false);
   const locale = useLocale();
-  const randomColor = useMemo(() => getRandomPastelColor(), []);
-
-  const url = `${process.env.NEXT_PUBLIC_CDN_URL}/${employee.avatar}`;
-  const queryClient = useQueryClient();
 
   return (
     <>
@@ -55,7 +51,7 @@ export default function EmployeesElement({
         <td onClick={() => setOpen(true)} className="border-b">
           <div className="flex flex-row gap-3">
             <ChangableAvatar
-              src={url}
+              src={employee.avatarUrl || ""}
               fallbackTitle={employee.firstName.charAt(0)}
               editable={false}
             />

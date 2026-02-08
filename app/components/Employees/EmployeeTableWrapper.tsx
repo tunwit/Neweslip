@@ -63,7 +63,7 @@ export function EmployeeTableWrapper({
     try {
       if (!shopId) return;
       uncheckall();
-      await deleteMutate({ shopId: shopId, ids: checked });
+      await deleteMutate({ ids: checked });
       showSuccess(tnm("success"));
     } catch (err: any) {
       showError(tnm("fail", { err: err.message }));

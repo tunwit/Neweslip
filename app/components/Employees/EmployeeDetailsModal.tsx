@@ -18,7 +18,10 @@ import StatusSelector from "@/widget/StatusSelector";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import { FieldNamesMarkedBoolean, FormProvider } from "react-hook-form";
-import { createEmployeeFormSchema } from "@/types/formField";
+import {
+  createEmployeeFormSchema,
+  updateEmployeeFormSchema,
+} from "@/types/formField";
 import EmployeeDetailsForm from "./detailsTab/EmployeeDetailsForm";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { useZodForm } from "@/lib/useZodForm";
@@ -29,7 +32,11 @@ import EmployeeDetailsDocuments from "./documentsTab/EmployeeDetailsDocuments";
 import { useTranslations } from "next-intl";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { useEmployee, useUpdateEmployee } from "@/hooks/hook.employee";
+import {
+  useChangeEmployeeAvatar,
+  useEmployee,
+  useUpdateEmployee,
+} from "@/hooks/hook.employee";
 import { UpdateEmployeeDTO } from "@/types/type.employee";
 
 interface EmployeeDetailsModalProps {
@@ -49,6 +56,7 @@ export default function EmployeeDetailsModal({
   const { id: shopId } = useCurrentShop();
   const t = useTranslations("employees");
   const { mutateAsync: updateMutate } = useUpdateEmployee();
+  const { mutateAsync: changeAvatarMutate } = useChangeEmployeeAvatar();
 
   const employee = data?.data;
 
@@ -63,7 +71,6 @@ export default function EmployeeDetailsModal({
     setStatus(newValue);
     try {
       await updateMutate({
-        shopId: shopId,
         employeeId: employee.id,
         payload: {
           status: newValue,
@@ -75,7 +82,7 @@ export default function EmployeeDetailsModal({
     }
   };
 
-  const methods = useZodForm(createEmployeeFormSchema, {
+  const methods = useZodForm(updateEmployeeFormSchema, {
     defaultValues: {},
     mode: "onChange",
     criteriaMode: "all",
@@ -117,7 +124,7 @@ export default function EmployeeDetailsModal({
   const {
     handleSubmit,
     reset,
-    formState: { dirtyFields, isDirty },
+    formState: { dirtyFields, isDirty, errors },
   } = methods;
 
   function buildDirtyPayload<T extends Record<string, any>>(
@@ -146,6 +153,8 @@ export default function EmployeeDetailsModal({
       salary: number;
     },
   ) => {
+    console.log(shopId, employee);
+
     if (!shopId || !employee) return;
 
     const { salary, dateEmploy, dateOfBirth, ...rest } = buildDirtyPayload(
@@ -155,7 +164,6 @@ export default function EmployeeDetailsModal({
 
     try {
       await updateMutate({
-        shopId: shopId,
         employeeId: employee.id,
         payload: {
           ...rest,
@@ -181,9 +189,10 @@ export default function EmployeeDetailsModal({
   const handleSelectFile = async (file?: File) => {
     if (!file || !shopId || !user) return;
     try {
-      console.log(1);
-
-      // await changeAvatarMutate({ file: file });
+      await changeAvatarMutate({
+        employeeId: employeeId,
+        payload: { file: file },
+      });
 
       showSuccess("Change avatar sucessful");
       queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -207,7 +216,6 @@ export default function EmployeeDetailsModal({
     }
   };
 
-  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${employee?.avatar}`;
   if (isLoading || !employee) return <p>loading</p>;
   return (
     <>
@@ -220,7 +228,7 @@ export default function EmployeeDetailsModal({
             <div className="flex flex-row gap-10 items-center p-2">
               <div className="flex gap-4  items-center">
                 <ChangableAvatar
-                  src={avatar}
+                  src={data.data?.avatarUrl || ""}
                   editable={true}
                   size={80}
                   fallbackTitle={employee?.firstName.charAt(0)}
