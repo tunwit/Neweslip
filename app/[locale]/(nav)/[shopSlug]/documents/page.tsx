@@ -30,66 +30,66 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { renameShopDocument } from "@/app/action/shop/renameShopDocument";
 import { Modal, ModalDialog } from "@mui/joy";
 import { useTranslations } from "next-intl";
+import { useDocuments } from "@/hooks/hook.document";
+import { DocumentPublicDTO } from "@/types/type.document";
 
 export default function Document() {
   const [search, setSearch] = useState("");
   const [debounced] = useDebounce(search, 500);
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
-  const { data, isLoading } = useShopDocuments({
-    shopId: shopId || -1,
-    search_query: debounced,
-  });
+  const shopDoc = useDocuments("shop", shopId || -1);
+  const { data, isLoading } = shopDoc.list;
   const { name } = useCurrentShop();
   const queryClient = useQueryClient();
   const tb = useTranslations("breadcrumb");
   const t = useTranslations("documents");
 
-  const onRename = async (doc: ShopDocumentWithUploader, newName: string) => {
+  const onRename = async (doc: DocumentPublicDTO, newName: string) => {
     if (!shopId || !user?.id) return;
-    const prefix = doc.key.substring(0, doc.key.lastIndexOf("/"));
-
     try {
-      await renameShopDocument(
-        doc.id,
-        newName,
-        doc.key,
-        `${prefix}/${newName}`,
-        shopId,
-        user?.id,
-      );
-      showSuccess(t("modal.rename.success"));
-    } catch (err: any) {
-      showError(t("modal.rename.fail", { err: err.message }));
+      await shopDoc.rename.mutateAsync({
+        documentId: doc.id,
+        payload: { newName: newName },
+      });
+    } catch (err) {
+      showError(`cannot rename ${err}`);
     }
-
-    queryClient.invalidateQueries({
-      queryKey: ["shop", "document"],
-      exact: false,
-    });
   };
 
   const onUpload = async (files: File[], tag: string, targetId: number) => {
     if (!shopId || !user?.id) return [];
 
-    const result = await uploadShopDocument(files, tag, targetId, user?.id);
+    const result = await shopDoc.create.mutateAsync({
+      payload: { files: files, tag: tag },
+    });
 
     return result;
   };
 
-  const onDelete = async (doc: ShopDocumentWithUploader) => {
+  const onDelete = async (doc: DocumentPublicDTO) => {
     if (!shopId || !user) return;
-    try {
-      await deleteShopDocument(doc.id, doc.key, shopId, user.id);
-      queryClient.invalidateQueries({
-        queryKey: ["shop", "document"],
-        exact: false,
-      });
-      showSuccess(t("modal.delete.success"));
-    } catch (err: any) {
-      showError(t("modal.delete.fail", { err: err?.message }));
-    }
+    await shopDoc.remove.mutateAsync({ documentId: doc.id });
+    showSuccess("Deleted");
   };
+
+  const onClickUrl = async (doc: DocumentPublicDTO) => {
+    const result = await shopDoc.getPresign.mutateAsync({
+      payload: { id: doc.id },
+    });
+    if (!result.data?.url) return;
+
+    window.open(result.data?.url, "_blank", "noopener,noreferrer");
+  };
+
+  const onCopy = async (doc: DocumentPublicDTO) => {
+    const result = await shopDoc.getPresign.mutateAsync({
+      payload: { id: doc.id },
+    });
+    if (!result.data?.url) return;
+    navigator.clipboard.writeText(result.data?.url);
+  };
+
   return (
     <>
       <title>Documents - Mitr</title>
@@ -106,9 +106,9 @@ export default function Document() {
           </div>
         </ModalDialog>
       </Modal>
-      <main className="min-h-screen w-full bg-white font-medium">
+      <main className="w-full h-full  font-medium overflow-auto py-10">
         <div className="mx-10">
-          <div className="flex flex-row text-[#424242] text-xs mt-10">
+          <div className="flex flex-row text-[#424242] text-xs ">
             <p>
               {name} {">"} {tb("dashboard")} {">"}&nbsp;
             </p>
@@ -140,8 +140,11 @@ export default function Document() {
             <DocumentTable
               title=""
               tag="files"
+              isLoading={isLoading}
+              onClickUrl={onClickUrl}
               data={data?.data || []}
               targetId={shopId || -1}
+              onCopy={onCopy}
               onRename={async (doc, newName) => onRename(doc, newName)}
               onUpload={async (files: File[], tag: string, targetId: number) =>
                 onUpload(files, tag, targetId)

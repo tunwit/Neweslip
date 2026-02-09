@@ -11,14 +11,9 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { uploadEmployeeDocuments } from "@/app/action/employee/uploadEmployeeDocument";
 import deleteEmployeeDocument from "@/app/action/employee/deleteEmployeeDocument";
 import { useTranslations } from "next-intl";
-import {
-  useCreateEmployeeDocument,
-  useDeleteEmployeeDocument,
-  useEmployeeDocument,
-  useEmployeeDocuments,
-  useRenameEmployeeDocument,
-} from "@/hooks/hook.employee.document";
-import { EmployeeDocumentPublicDTO } from "@/types/type.employee.document";
+import { useDocuments } from "@/hooks/hook.document";
+import { DocumentPublicDTO } from "@/types/type.document";
+
 interface EmployeeDetailsDocumentsProps {
   title: string;
   tag: string;
@@ -29,25 +24,21 @@ export default function EmployeeDetailsDocuments({
   tag,
   employeeId,
 }: EmployeeDetailsDocumentsProps) {
-  const { data, isLoading } = useEmployeeDocuments(employeeId);
+  const { data, isLoading } = useDocuments("employee", employeeId).list;
   const t = useTranslations("documents");
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
-  const { mutateAsync: createMutate } = useCreateEmployeeDocument();
-  const { mutateAsync: getPresignMutate } = useEmployeeDocument();
-  const { mutateAsync: renameMutate } = useRenameEmployeeDocument();
-  const { mutateAsync: deleteMutate } = useDeleteEmployeeDocument();
+  const employeeDocs = useDocuments("employee", employeeId);
 
   const personalDocs = data?.data?.filter((doc) => doc.tag === "personal");
   const contractDocs = data?.data?.filter((doc) => doc.tag === "contract");
   const otherDocs = data?.data?.filter(
     (doc) => doc.tag !== "personal" && doc.tag !== "contract",
   );
-  const onRename = async (doc: EmployeeDocumentPublicDTO, newName: string) => {
+  const onRename = async (doc: DocumentPublicDTO, newName: string) => {
     if (!shopId || !user?.id) return;
     try {
-      await renameMutate({
-        employeeId: employeeId,
+      await employeeDocs.rename.mutateAsync({
         documentId: doc.id,
         payload: { newName: newName },
       });
@@ -59,23 +50,21 @@ export default function EmployeeDetailsDocuments({
   const onUpload = async (files: File[], tag: string, targetId: number) => {
     if (!shopId || !user?.id) return [];
 
-    const result = await createMutate({
-      employeeId: employeeId,
+    const result = await employeeDocs.create.mutateAsync({
       payload: { files: files, tag: tag },
     });
 
     return result;
   };
 
-  const onDelete = async (doc: EmployeeDocumentPublicDTO) => {
+  const onDelete = async (doc: DocumentPublicDTO) => {
     if (!shopId || !user) return;
-    await deleteMutate({ employeeId: employeeId, documentId: doc.id });
+    await employeeDocs.remove.mutateAsync({ documentId: doc.id });
     showSuccess("Deleted");
   };
 
-  const onClickUrl = async (doc: EmployeeDocumentPublicDTO) => {
-    const result = await getPresignMutate({
-      employeeId: employeeId,
+  const onClickUrl = async (doc: DocumentPublicDTO) => {
+    const result = await employeeDocs.getPresign.mutateAsync({
       payload: { id: doc.id },
     });
     if (!result.data?.url) return;
@@ -83,9 +72,8 @@ export default function EmployeeDetailsDocuments({
     window.open(result.data?.url, "_blank", "noopener,noreferrer");
   };
 
-  const onCopy = async (doc: EmployeeDocumentPublicDTO) => {
-    const result = await getPresignMutate({
-      employeeId: employeeId,
+  const onCopy = async (doc: DocumentPublicDTO) => {
+    const result = await employeeDocs.getPresign.mutateAsync({
       payload: { id: doc.id },
     });
     if (!result.data?.url) return;

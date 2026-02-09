@@ -11,3 +11,27 @@ export type DocumentPublicDTO = {
   editedAt: Date | null;
   uploadedBy: UserPublicDTO;
 };
+
+export type CreateDocResultDTO = {
+  fileName: string;
+  tag: string | null;
+  mimeType: string;
+  size: number;
+  uploadedBy: string;
+  metadata: unknown;
+  success: boolean;
+  errorMessage: string;
+};
+
+export type NewDocumentDTO = {
+  files: File[];
+  tag: string;
+};
+
+export type GetPresignDTO = {
+  id: number;
+};
+
+export type RenameDocumentDTO = {
+  newName: string;
+};

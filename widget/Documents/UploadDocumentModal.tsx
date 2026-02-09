@@ -3,10 +3,8 @@ import getFileIcon from "@/lib/getFileIcon";
 import { formatBytes } from "@/lib/unitConverter";
 import uploadDocmentValidator from "@/lib/uploadDocmentValidator";
 import { ApiResponse } from "@/types/response";
-import {
-  CreateEmployeeDocResultDTO,
-  EmployeeDocumentPublicDTO,
-} from "@/types/type.employee.document";
+import { CreateDocResultDTO } from "@/types/type.document";
+
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
@@ -27,8 +25,8 @@ interface FileProgress {
   error?: any;
 }
 
-const filesLimit = 5;
-const filesSizeLimit = 30 * 1024 * 1024;
+const filesLimit = 10;
+const filesSizeLimit = 10 * 1024 * 1024;
 
 interface UploadDocumentModalProps {
   open: boolean;
@@ -39,7 +37,7 @@ interface UploadDocumentModalProps {
     files: File[],
     tag: string,
     targetId: number,
-  ) => Promise<ApiResponse<CreateEmployeeDocResultDTO[]>>;
+  ) => Promise<ApiResponse<CreateDocResultDTO[]>>;
 }
 
 export default function UploadDocumentModal({
@@ -106,6 +104,9 @@ export default function UploadDocumentModal({
       setProgressList((prev) =>
         prev.map((p) => {
           const result = results?.data?.find((r) => r.fileName === p.fileName);
+          if (!result?.success) {
+            setError(result?.errorMessage || "");
+          }
           if (result)
             return {
               fileName: p.fileName,
@@ -279,7 +280,7 @@ export default function UploadDocumentModal({
           </div>
         </section>
 
-        <section className="flex flex-col gap-2 mt-2">
+        <section className="flex flex-col gap-2 mt-2 overflow-hidden ">
           <span className="flex flex-row gap-2">
             <p
               className={` text-xs ${files.length >= filesLimit ? "text-red-900" : "text-gray-400"}`}
@@ -289,50 +290,56 @@ export default function UploadDocumentModal({
             <p className="text-xs text-red-900">{error}</p>
           </span>
 
-          {files.map((f, index) => {
-            const item = progressList[index];
+          <div className="flex flex-col gap-2 overflow-y-auto">
+            {files.map((f, index) => {
+              const item = progressList[index];
 
-            let status = statusSpan.ready;
-            if (!item) {
-              status = statusSpan.ready;
-            } else if (item?.success === false) {
-              status = statusSpan.failed;
-            } else if (item?.success === true) {
-              status = statusSpan.uploaded;
-            } else if (item?.progress) {
-              status = statusSpan.uploading;
-            }
-            return (
-              <div
-                className="relative bg-gray-200 p-3 w-full rounded-lg"
-                key={index}
-              >
-                <button
-                  hidden={progressList[index]?.progress !== undefined}
-                  className="absolute right-3 bg-white border rounded-full"
-                  onClick={() => setFiles(files.filter((_, i) => i !== index))}
+              let status = statusSpan.ready;
+              if (!item) {
+                status = statusSpan.ready;
+              } else if (item?.success === false) {
+                status = statusSpan.failed;
+              } else if (item?.success === true) {
+                status = statusSpan.uploaded;
+              } else if (item?.progress) {
+                status = statusSpan.uploading;
+              }
+              return (
+                <div
+                  className="relative bg-gray-200 p-3 w-full rounded-lg"
+                  key={index}
                 >
-                  <Icon icon="basil:cross-solid" fontSize={15} />
-                </button>
-                <div className="flex flex-row gap-2 mb-2 items-center">
-                  <img src={getFileIcon(f.name)} width={30} />
-                  <div className="flex flex-col">
-                    <p className="font-semibold text-md">{f.name}</p>
-                    <div className="flex flex-row gap-2">
-                      <p className="text-xs text-gray-500">
-                        {t("upload.info.size")} {formatBytes(f.size)}
+                  <button
+                    hidden={progressList[index]?.progress !== undefined}
+                    className="absolute right-3 bg-white border rounded-full"
+                    onClick={() =>
+                      setFiles(files.filter((_, i) => i !== index))
+                    }
+                  >
+                    <Icon icon="basil:cross-solid" fontSize={15} />
+                  </button>
+                  <div className="flex flex-row gap-2 mb-2 items-center">
+                    <img src={getFileIcon(f.name)} width={30} />
+                    <div className="flex flex-col">
+                      <p className="font-semibold text-sm truncate max-w-[95%] ">
+                        {f.name}
                       </p>
-                      {status}
+                      <div className="flex flex-row gap-2">
+                        <p className="text-xs text-gray-500">
+                          {t("upload.info.size")} {formatBytes(f.size)}
+                        </p>
+                        {status}
+                      </div>
                     </div>
                   </div>
+                  <LinearProgress
+                    hidden={progressList[index]?.progress !== "uploading"}
+                    sx={{ marginTop: "8px" }}
+                  />
                 </div>
-                <LinearProgress
-                  hidden={progressList[index]?.progress !== "uploading"}
-                  sx={{ marginTop: "8px" }}
-                />
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </section>
 
         <section className="flex gap-3 flex-row-reverse mt-2">

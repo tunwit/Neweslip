@@ -21,7 +21,7 @@ export default function Page() {
   const t = useTranslations("setting");
 
   return (
-    <main className="w-full bg-white font-medium overflow-scroll">
+    <main className="w-full  font-medium max-h-[calc(100vh-200px)]">
       <title>Setting - Mitr</title>
       <div className="mx-10 flex flex-col min-h-screen ">
         <div className="flex flex-row text-[#424242] text-xs mt-10">
