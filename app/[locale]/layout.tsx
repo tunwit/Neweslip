@@ -1,15 +1,9 @@
-import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
-import { redirect } from "next/navigation";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Suspense } from "react";
 import ClientWrapper from "@/widget/ClientWrapper";
-import { ClerkProvider } from "@clerk/nextjs";
 import "../globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import Providers from "../providers";
-import Navbar from "../components/Navbar/Navbar";
-
 const propmt = Prompt({
   subsets: ["thai", "latin"],
   weight: ["100", "200", "300", "400"],

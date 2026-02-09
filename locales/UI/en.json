@@ -123,6 +123,9 @@
       "details": "Details",
       "documents": "Documents"
     },
+    "load": {
+      "loading_em": "Loading Employee"
+    },
     "actions": {
       "create": "Add employee",
       "showQR": "show QR",

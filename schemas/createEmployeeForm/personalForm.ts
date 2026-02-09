@@ -2,13 +2,13 @@ import { GENDER } from "@/types/enum/enum";
 import { z } from "zod";
 
 export const personalWithAvatarSchema = z.object({
-  avatar: z.instanceof(File).optional(),
-  firstName: z.string(),
-  lastName: z.string().min(1, "Last name is required"),
-  nickName: z.string().min(1, "Nick name is required"),
+  avatar: z.string().optional(),
+  firstName: z.string().trim(),
+  lastName: z.string().trim().min(1, "Last name is required"),
+  nickName: z.string().trim().min(1, "Nick name is required"),
   gender: z.nativeEnum(GENDER),
   dateOfBirth: z.date({ required_error: "Birth date is required" }),
-  email: z.string().email("Invalid email"),
+  email: z.string().trim().email("Invalid email"),
   phoneNumber: z
     .string()
     .trim()
@@ -18,12 +18,12 @@ export const personalWithAvatarSchema = z.object({
 });
 
 export const personalSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string().min(1, "Last name is required"),
-  nickName: z.string().min(1, "Nick name is required"),
+  firstName: z.string().trim(),
+  lastName: z.string().trim().min(1, "Last name is required"),
+  nickName: z.string().trim().min(1, "Nick name is required"),
   gender: z.nativeEnum(GENDER),
   dateOfBirth: z.date({ required_error: "Birth date is required" }),
-  email: z.string().email("Invalid email"),
+  email: z.string().trim().email("Invalid email"),
   phoneNumber: z
     .string()
     .trim()

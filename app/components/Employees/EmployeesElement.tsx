@@ -26,7 +26,6 @@ export default function EmployeesElement({
   employee: EmployeeWithBranchDTO;
 }) {
   const { toggle, isChecked } = useCheckBox<number>("allEmployeeTable");
-
   const [open, setOpen] = useState<boolean>(false);
   const locale = useLocale();
 

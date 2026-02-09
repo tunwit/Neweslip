@@ -20,7 +20,6 @@ interface PersonalFormProps {
 
 export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
   const {
-    register,
     control,
     trigger,
     formState: { errors },
@@ -61,8 +60,12 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
               <ChangableAvatar
                 editable
                 size={100}
-                src={field.value ? URL.createObjectURL(field.value) : undefined}
-                onChange={(file) => field.onChange(file)}
+                src={field.value}
+                onChange={(file) => {
+                  if (!file) return;
+                  const url = URL.createObjectURL(file);
+                  field.onChange(url);
+                }}
                 onRemove={() => field.onChange(undefined)}
               />
             )}

@@ -51,6 +51,7 @@ export default function EmployeeDetailsModal({
 }: EmployeeDetailsModalProps) {
   const { data, isLoading } = useEmployee(employeeId);
   const [status, setStatus] = useState<EMPLOYEE_STATUS | undefined>(undefined);
+  const [preview, setPreview] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { user } = useUser();
   const { id: shopId } = useCurrentShop();
@@ -87,6 +88,11 @@ export default function EmployeeDetailsModal({
     mode: "onChange",
     criteriaMode: "all",
   });
+  const {
+    handleSubmit,
+    reset,
+    formState: { dirtyFields, isDirty, errors },
+  } = methods;
 
   useEffect(() => {
     if (!employee) return;
@@ -120,12 +126,6 @@ export default function EmployeeDetailsModal({
       }),
     );
   }, [employee]);
-
-  const {
-    handleSubmit,
-    reset,
-    formState: { dirtyFields, isDirty, errors },
-  } = methods;
 
   function buildDirtyPayload<T extends Record<string, any>>(
     data: T,
@@ -189,6 +189,7 @@ export default function EmployeeDetailsModal({
   const handleSelectFile = async (file?: File) => {
     if (!file || !shopId || !user) return;
     try {
+      setPreview(window.URL.createObjectURL(file));
       await changeAvatarMutate({
         employeeId: employeeId,
         payload: { file: file },
@@ -228,7 +229,7 @@ export default function EmployeeDetailsModal({
             <div className="flex flex-row gap-10 items-center p-2">
               <div className="flex gap-4  items-center">
                 <ChangableAvatar
-                  src={data.data?.avatarUrl || ""}
+                  src={preview || data.data?.avatarUrl || ""}
                   editable={true}
                   size={80}
                   fallbackTitle={employee?.firstName.charAt(0)}

@@ -74,14 +74,7 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
           {isLoading && (
             <tr className="h-20 hover:bg-gray-50 transition-colors cursor-pointer ">
               <td colSpan={6} className="text-center">
-                <span className="flex items-center gap-2 w-full justify-center">
-                  <Icon
-                    icon={"mynaui:spinner"}
-                    className="animate-spin"
-                    fontSize={25}
-                  />
-                  <p>Loading...</p>
-                </span>
+                {t("load.loading_em")}
               </td>
             </tr>
           )}
