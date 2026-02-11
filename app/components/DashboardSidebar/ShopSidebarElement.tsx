@@ -18,7 +18,7 @@ export default function ShopSidebarElement({
   avatar,
 }: ShopSidebarElementProps) {
   const pathName = usePathname();
-  const rest = pathName.split("/").slice(2).join("/");
+  const rest = pathName.split("/").slice(3).join("/");
   return (
     <Link
       href={`/${createSlug(title, String(id))}/${rest}`}

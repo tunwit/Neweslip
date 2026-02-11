@@ -9,6 +9,7 @@ import { and, eq } from "drizzle-orm";
 import DashboardSidebar from "@/app/components/DashboardSidebar/DashboardSidebar";
 import Navbar from "@/app/components/Navbar/Navbar";
 import GlobalJobSnackbars from "@/widget/GlobalJobSnackbars";
+import { extractSlug } from "@/utils/extractSlug";
 
 async function fetchData(token: string, origin: string, path: string) {
   const res = await fetch(`${origin}${path}`, {
@@ -35,6 +36,7 @@ export default async function ShoppLayout({
 }) {
   const resolvedParams = await params;
   const { shopSlug, locale } = resolvedParams;
+  const { name, id } = extractSlug(shopSlug);
 
   const data = await validateSlug(shopSlug);
   const { userId, getToken } = await auth();
@@ -48,7 +50,6 @@ export default async function ShoppLayout({
   if (!shops || shops.length === 0) {
     redirect(`${locale}/no-shop`);
   }
-  console.log(data);
 
   if (!data) {
     redirect(`/${locale}`);
@@ -57,7 +58,7 @@ export default async function ShoppLayout({
   const branches = await fetchData(
     token,
     "http://localhost:3001",
-    `/shops/${1}/branches`,
+    `/shops/${id}/branches`,
   );
 
   // Redirect to setup if no branches exist
