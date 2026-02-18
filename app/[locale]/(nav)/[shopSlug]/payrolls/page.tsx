@@ -27,6 +27,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import PeriodsTable from "@/app/components/Payrolls/PeriodsTable";
 import { useTranslations } from "next-intl";
 import { usePeriods } from "@/hooks/payroll/period/hook.period";
+import { NewPeriodDTO } from "@/types/type.period";
 
 export default function Home() {
   const rounter = useRouter();
@@ -36,30 +37,24 @@ export default function Home() {
   const { user } = useUser();
   const [creatingPeriod, setCreatingPeriod] = useState(false);
   const { name } = useCurrentShop();
-
-  const { data, isLoading } = usePeriods().list;
+  const periods = usePeriods();
+  const { data, isLoading } = periods.list;
   const tb = useTranslations("breadcrumb");
   const t = useTranslations("payrolls");
   const tPeriod = useTranslations("period");
-  console.log(data);
-  
   const newHandler = async () => {
     setCreatingPeriod(true);
     try {
       if (!id || !user?.id) return;
-      const payload: Omit<NewPayrollPeriod, "shopId"> = {
+      const payload: NewPeriodDTO = {
         name: `New payroll ${new Date().toLocaleDateString()}`,
-        start_period: new Date(),
-        end_period: new Date(),
+        start_period: dayjs().toDate().toString(),
+        end_period: dayjs().toDate().toString(),
       };
 
-      const periodId = await createPayrollPeriod(payload, id, user?.id);
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriods"],
-        exact: false,
-      });
-      if (periodId[0].id) {
-        rounter.push(`payrolls/edit?id=${periodId[0].id}`);
+      const period = await periods.create.mutateAsync({ payload });
+      if (period.data?.id) {
+        rounter.push(`payrolls/edit?id=${period.data?.id}`);
       }
     } finally {
       setCreatingPeriod(false);

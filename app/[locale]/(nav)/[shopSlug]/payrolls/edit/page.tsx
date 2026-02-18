@@ -40,6 +40,7 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { usePeriod } from "@/hooks/payroll/period/hook.period";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -68,7 +69,8 @@ export default function Home() {
     data: periodData,
     isLoading: loadingPeriod,
     error,
-  } = usePayrollPeriod(Number(periodId));
+  } = usePeriod(Number(periodId));
+  
   if (error || !periodId) {
     const basePath = pathname.replace(/\/edit$/, "");
     router.replace(basePath);
