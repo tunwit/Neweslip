@@ -1,0 +1,5 @@
+export enum PAY_PERIOD_STATUS {
+  DRAFT = "DRAFT",
+  FINALIZED = "FINALIZED",
+  PAID = "PAID",
+}

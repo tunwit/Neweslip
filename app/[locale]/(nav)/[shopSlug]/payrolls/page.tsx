@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import PeriodsTable from "@/app/components/Payrolls/PeriodsTable";
 import { useTranslations } from "next-intl";
+import { usePeriods } from "@/hooks/payroll/period/hook.period";
 
 export default function Home() {
   const rounter = useRouter();
@@ -36,12 +37,12 @@ export default function Home() {
   const [creatingPeriod, setCreatingPeriod] = useState(false);
   const { name } = useCurrentShop();
 
-  const pathname = usePathname();
-  const { data, isLoading } = usePayrollPeriods(id || -1);
+  const { data, isLoading } = usePeriods().list;
   const tb = useTranslations("breadcrumb");
   const t = useTranslations("payrolls");
   const tPeriod = useTranslations("period");
-
+  console.log(data);
+  
   const newHandler = async () => {
     setCreatingPeriod(true);
     try {

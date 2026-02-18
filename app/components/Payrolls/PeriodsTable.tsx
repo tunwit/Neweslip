@@ -15,9 +15,10 @@ import { _Translator, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { PeriodSummaryDTO } from "@/types/type.period";
 
 interface PeriodsTableProps {
-  periods: PayrollPeriod[];
+  periods: PeriodSummaryDTO[];
   title: string;
   color: string;
   editable?: boolean;
@@ -158,7 +159,7 @@ export default function PeriodsTable({
                       {tPeriod("fields.created_at")}
                     </p>
                     <p className="text-sm font-bold text-gray-900">
-                      {dateFormat(new Date(payroll.createdAt))}
+                      {dateFormat(new Date(payroll.updatedAt || ""))}
                     </p>
                   </div>
 
