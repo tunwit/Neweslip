@@ -17,6 +17,7 @@ export function usePeriods() {
   const { id: shopId } = useCurrentShop();
   const queryClient = useQueryClient();
   const queryKey = ["periods", shopId];
+
   const list = useQuery<ApiResponse<PeriodSummaryDTO[]>>({
     queryKey,
     queryFn: () =>
@@ -29,6 +30,7 @@ export function usePeriods() {
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });
+
   const create = useMutation<
     ApiResponse<PeriodPublicDTO>,
     Error,
@@ -45,7 +47,51 @@ export function usePeriods() {
       queryClient.invalidateQueries({ queryKey });
     },
   });
-  return { list, create };
+
+  const remove = useMutation<
+    PeriodPublicDTO,
+    Error,
+    { ids: number[] },
+    { previous?: ApiResponse<PeriodPublicDTO[]> }
+  >({
+    mutationFn: ({ ids }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods`,
+        method: "DELETE",
+        body: { ids: ids },
+      }),
+
+    onMutate: async ({ ids }) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previous =
+        queryClient.getQueryData<ApiResponse<PeriodPublicDTO[]>>(queryKey);
+
+      queryClient.setQueryData<ApiResponse<PeriodPublicDTO[]>>(
+        queryKey,
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: old.data?.filter((d) => !ids.includes(d.id)),
+          };
+        },
+      );
+
+      return { previous };
+    },
+
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) {
+        queryClient.setQueryData(queryKey, ctx.previous);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+  return { list, create, remove };
 }
 
 export function usePeriod(periodId?: number | string) {

@@ -16,6 +16,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { PeriodSummaryDTO } from "@/types/type.period";
+import { usePeriods } from "@/hooks/payroll/period/hook.period";
 
 interface PeriodsTableProps {
   periods: PeriodSummaryDTO[];
@@ -62,6 +63,7 @@ export default function PeriodsTable({
   const { user } = useUser();
   const t = useTranslations("payrolls");
   const tPeriod = useTranslations("period");
+  const periodHook = usePeriods();
 
   const {
     checked,
@@ -85,8 +87,8 @@ export default function PeriodsTable({
   const handleDelete = async () => {
     try {
       if (!shopId || !user?.id) return;
-      await deletePayrollPeriod(checked, shopId, user?.id);
-      queryClient.invalidateQueries({ queryKey: ["payrollPeriods"] });
+
+      await periodHook.remove.mutateAsync({ ids: checked });
       showSuccess("Delete period success");
     } catch (err) {
       showError(`Delete period failed\n${err}`);
@@ -94,8 +96,6 @@ export default function PeriodsTable({
       uncheckall();
     }
   };
-  console.log(periods);
-
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
