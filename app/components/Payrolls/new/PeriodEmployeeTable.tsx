@@ -15,13 +15,15 @@ import React, {
   useState,
 } from "react";
 import ChangableAvatar from "@/widget/ChangableAvatar";
+import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
+import { PeriodPublicDTO } from "@/types/type.period";
 
 interface PeriodEmployeeTableProps {
   searchQuery: string;
   checkBoxMethod: UseCheckBoxResult<number>;
-  periodData?: PayrollPeriod;
-  records: PayrollRecord[];
-  setSelected?: Dispatch<SetStateAction<PayrollRecord | null>>;
+  periodData?: PeriodPublicDTO;
+  records: EntryWithTotalDTO[];
+  setSelected?: Dispatch<SetStateAction<EntryWithTotalDTO | null>>;
   setOpenEdit: Dispatch<SetStateAction<boolean>>;
 }
 export default function PeriodEmployeeTable({
@@ -41,14 +43,14 @@ export default function PeriodEmployeeTable({
     setFilterd(
       records.filter((r) => {
         return (
-          r.employee.firstName.toLowerCase().includes(q) ||
-          r.employee.lastName.toLowerCase().includes(q) ||
-          (r.employee.firstName + r.employee.lastName)
+          r.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          r.employee.snapshot.lastName.toLowerCase().includes(q) ||
+          (r.employee.snapshot.firstName + r.employee.snapshot.lastName)
             .toLowerCase()
             .includes(q) ||
-          r.employee.nickName.toLowerCase().includes(q) ||
-          r.employee.branch.name.toLowerCase().includes(q) ||
-          r.employee.branch.nameEng.toLowerCase().includes(q)
+          r.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          r.employee.snapshot.branch.name.toLowerCase().includes(q) ||
+          r.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );
@@ -67,7 +69,7 @@ export default function PeriodEmployeeTable({
   };
 
   const filteredTotalNet = useMemo(() => {
-    return filterd.reduce((sum, r) => sum + (r.totals.net || 0), 0);
+    return filterd.reduce((sum, r) => sum + (r.total.net || 0), 0);
   }, [filterd]);
   return (
     <>
@@ -105,7 +107,7 @@ export default function PeriodEmployeeTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filterd.map((r) => {
-                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${r.employee.avatar}`;
+                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${""}`;
 
                 return (
                   <tr
@@ -127,16 +129,18 @@ export default function PeriodEmployeeTable({
                       <div className="flex flex-row items-center gap-3">
                         <ChangableAvatar
                           src={avatar}
-                          fallbackTitle={r.employee.firstName.charAt(0)}
+                          fallbackTitle={r.employee.snapshot.firstName.charAt(
+                            0,
+                          )}
                           editable={false}
                         />
                         <div className="min-w-max">
                           <p className="font-semibold whitespace-nowrap">
-                            {r.employee.firstName}&nbsp;
-                            {r.employee.lastName}
+                            {r.employee.snapshot.firstName}&nbsp;
+                            {r.employee.snapshot.lastName}
                           </p>
                           <p className="font-light text-gray-700 whitespace-nowrap">
-                            {r.employee.nickName}
+                            {r.employee.snapshot.firstName}
                           </p>
                         </div>
                       </div>
@@ -148,7 +152,7 @@ export default function PeriodEmployeeTable({
                       }}
                     >
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
-                        {getLocalizedName(r.employee.branch, locale)}
+                        {getLocalizedName(r.employee.snapshot.branch, locale)}
                       </span>
                     </td>
                     <td
@@ -158,7 +162,7 @@ export default function PeriodEmployeeTable({
                         setOpenEdit(true);
                       }}
                     >
-                      {moneyFormat(r.baseSalry || 0)}
+                      {moneyFormat(r.salary || 0)}
                     </td>
                     <td
                       className="text-right text-green-600 font-medium whitespace-nowrap"
@@ -167,7 +171,7 @@ export default function PeriodEmployeeTable({
                         setOpenEdit(true);
                       }}
                     >
-                      {moneyFormat(r.totals.totalEarning || 0)}
+                      {moneyFormat(r.total.net || 0)}
                     </td>
                     <td
                       className="text-right text-red-600 font-medium whitespace-nowrap"
@@ -176,16 +180,16 @@ export default function PeriodEmployeeTable({
                         setOpenEdit(true);
                       }}
                     >
-                      {moneyFormat(r.totals.totalDeduction || 0)}
+                      {moneyFormat(r.total.deduction || 0)}
                     </td>
                     <td
-                      className={`text-right whitespace-nowrap ${r.totals.net < 0 && "text-red-800"}`}
+                      className={`text-right whitespace-nowrap ${r.total.net < 0 && "text-red-800"}`}
                       onClick={() => {
                         setSelected?.(r);
                         setOpenEdit(true);
                       }}
                     >
-                      ฿ {moneyFormat(r.totals.net || 0)}
+                      ฿ {moneyFormat(r.total.net || 0)}
                     </td>
                     <td
                       className="text-right pr-6"

@@ -35,9 +35,11 @@ import { PayrollPeriod } from "@/types/payrollPeriod";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import { useDebounce } from "use-debounce";
+import { EntryPublicDTO } from "@/types/type.entry";
+import { PeriodPublicDTO } from "@/types/type.period";
 
 interface PayrollEditEmployeeModalProps {
-  periodData?: PayrollPeriod;
+  periodData?: PeriodPublicDTO;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedRecord: PayrollRecord | null;
@@ -373,9 +375,7 @@ export default function PayrollEditEmployeeModal({
           >
             <span className="flex flex-row items-center gap-2 ">
               <h1 className="font-bold text-lg">{t("fields.note")}</h1>
-              <p className="text-xs text-gray-500">
-                {t("info.note")}
-              </p>
+              <p className="text-xs text-gray-500">{t("info.note")}</p>
             </span>
             <Textarea
               value={note}

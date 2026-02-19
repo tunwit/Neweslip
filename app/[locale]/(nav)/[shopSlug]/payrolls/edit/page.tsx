@@ -41,6 +41,8 @@ import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import { useEntry } from "@/hooks/payroll/entry/hook.entry";
+import { EntryPublicDTO } from "@/types/type.entry";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -57,12 +59,11 @@ export default function Home() {
   const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
     null,
   );
-  const { user } = useUser();
 
+  const { user } = useUser();
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
-
   const periodId = useSearchParams().get("id");
 
   const {
@@ -70,25 +71,24 @@ export default function Home() {
     isLoading: loadingPeriod,
     error,
   } = usePeriod(Number(periodId));
-  
+
+  const { data, isLoading: loadingRecord } = useEntry(Number(periodId)).list;
+
   if (error || !periodId) {
     const basePath = pathname.replace(/\/edit$/, "");
     router.replace(basePath);
   }
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: periodData?.data?.start_period,
-    to: periodData?.data?.end_period,
+    from: new Date(periodData?.data?.start_period || ""),
+    to: new Date(periodData?.data?.end_period || ""),
   });
   const [periodTitle, setPeriodTitle] = useState(periodData?.data?.name);
   const [titleDebounced] = useDebounce(periodTitle, 1000);
   const [debouncedDateRange] = useDebounce(dateRange, 500);
-  const { data, isLoading: loadingRecord } = usePayrollRecords(
-    Number(periodId),
-  );
 
-  const [baseRecords, setBaseRecords] = useState<PayrollRecord[]>([]);
-  const [filterdRecord, setFilterdRecord] = useState<PayrollRecord[]>([]);
+  const [baseRecords, setBaseRecords] = useState<EntryPublicDTO[]>([]);
+  const [filterdRecord, setFilterdRecord] = useState<EntryPublicDTO[]>([]);
   const tPeriod = useTranslations("period");
 
   const deleteHandler = async () => {
@@ -158,8 +158,8 @@ export default function Home() {
     if (!periodData?.data) return;
     setPeriodTitle(periodData.data.name);
     setDateRange({
-      from: periodData.data.start_period,
-      to: periodData.data.end_period,
+      from: new Date(periodData?.data?.start_period || ""),
+      to: new Date(periodData?.data?.end_period || ""),
     });
     if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/edit", "/view");
@@ -436,7 +436,7 @@ export default function Home() {
               searchQuery={debouced}
               checkBoxMethod={methods}
               periodData={periodData?.data}
-              records={(filterdRecord as PayrollRecord[]) || []}
+              records={filterdRecord || []}
               setSelected={setSelectedRecord}
               setOpenEdit={setOpenEdit}
             />

@@ -51,7 +51,7 @@ export function usePeriods() {
 export function usePeriod(periodId?: number | string) {
   const { id: shopId } = useCurrentShop();
 
-  return useQuery<ApiResponse<PeriodPublicDTO>>({
+  return useQuery<ApiResponse<PeriodSummaryDTO>>({
     queryKey: ["period", shopId, periodId],
     queryFn: () =>
       fetchwithauth({
