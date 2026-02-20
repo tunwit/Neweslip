@@ -39,6 +39,9 @@ export default function PeriodEmployeeTable({
   const locale = useLocale();
   useEffect(() => {
     const q = searchQuery.toLowerCase();
+    console.log("record\n-------------");
+
+    console.log(records);
 
     setFilterd(
       records.filter((r) => {

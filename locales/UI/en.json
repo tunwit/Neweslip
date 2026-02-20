@@ -396,7 +396,9 @@
         "fail": "Failed to add employee: {err}"
       },
       "delete": {
-        "success": "Employee removed successfully",
+        "label": "Delete Periods",
+        "description": "{count} Periods will be deleted and connot be undone.",
+        "success": "Employee removeds successfully",
         "fail": "Failed to remove employee: {err}"
       },
       "export": {
