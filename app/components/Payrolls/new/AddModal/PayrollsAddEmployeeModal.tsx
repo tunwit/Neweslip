@@ -14,7 +14,6 @@ import { EmployeeWithShop } from "@/types/type.employee";
 import BranchSelector from "@/widget/BranchSelector";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { useEmployees } from "@/hooks/employee/useEmployees";
 import { getRandomPastelColor } from "@/utils/generatePastelColor";
 import { createPayrollRecords } from "@/app/action/payroll/record/createPayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
@@ -26,6 +25,7 @@ import { Pagination } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
+import { useEmployees } from "@/hooks/hook.employee";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;

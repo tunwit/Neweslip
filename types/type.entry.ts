@@ -1,3 +1,5 @@
+import { CalculationContext } from "./type.calculation";
+
 export type EntryPublicDTO = {
   id: number;
   salary: string;
@@ -18,10 +20,4 @@ export type EntryPublicDTO = {
   paidAt: Date | null;
 };
 
-export type EntryWithTotalDTO = EntryPublicDTO & {
-  total: {
-    net: number;
-    deduction: number;
-    gross: number;
-  };
-};
+export type EntryWithTotalDTO = EntryPublicDTO & CalculationContext;

@@ -1,4 +1,5 @@
 import { PAY_PERIOD_STATUS } from "./enum/enum.period";
+import { CalculationContext } from "./type.calculation";
 
 export type PeriodPublicDTO = {
   id: number;
@@ -10,10 +11,10 @@ export type PeriodPublicDTO = {
   edited: boolean | null;
 };
 
-export type PeriodSummaryDTO = PeriodPublicDTO & {
-  totalNet: number;
-  employeeCount: number;
-};
+export type PeriodSummaryDTO = PeriodPublicDTO &
+  CalculationContext & {
+    employeeCount: number;
+  };
 
 export type NewPeriodDTO = {
   name: string;

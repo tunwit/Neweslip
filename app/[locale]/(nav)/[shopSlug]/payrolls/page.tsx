@@ -28,11 +28,10 @@ import PeriodsTable from "@/app/components/Payrolls/PeriodsTable";
 import { useTranslations } from "next-intl";
 import { usePeriods } from "@/hooks/payroll/period/hook.period";
 import { NewPeriodDTO } from "@/types/type.period";
+import ConfirmModal from "@/widget/ConfirmModal";
 
 export default function Home() {
   const rounter = useRouter();
-  const queryClient = useQueryClient();
-
   const { id } = useCurrentShop();
   const { user } = useUser();
   const [creatingPeriod, setCreatingPeriod] = useState(false);
@@ -42,6 +41,7 @@ export default function Home() {
   const tb = useTranslations("breadcrumb");
   const t = useTranslations("payrolls");
   const tPeriod = useTranslations("period");
+
   const newHandler = async () => {
     setCreatingPeriod(true);
     try {
@@ -77,6 +77,7 @@ export default function Home() {
           </div>
         </ModalDialog>
       </Modal>
+
       <section className="px-10 pb-5 bg-white w-full border-b border-gray-200">
         <div className=" flex flex-row text-[#424242] text-xs pt-10 ">
           <p>

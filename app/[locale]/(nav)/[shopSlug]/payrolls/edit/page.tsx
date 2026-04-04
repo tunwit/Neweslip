@@ -410,13 +410,13 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <AdvancedFilters
+            {/* <AdvancedFilters
               periodId={periodData?.data?.id || -1}
               show={showFilter}
               setShow={setShowFilter}
               originalData={data?.data || []}
               setData={setFilterdRecord}
-            />
+            /> */}
           </div>
 
           <div className="flex flex-col justify-center pb-10">

@@ -14,9 +14,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { _Translator, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { PeriodSummaryDTO } from "@/types/type.period";
 import { usePeriods } from "@/hooks/payroll/period/hook.period";
+import ConfirmModal from "@/widget/ConfirmModal";
 
 interface PeriodsTableProps {
   periods: PeriodSummaryDTO[];
@@ -58,11 +59,12 @@ export default function PeriodsTable({
   editable = true,
 }: PeriodsTableProps) {
   const pathname = usePathname();
-  const queryClient = useQueryClient();
+  const [isShowConfirmDelete, setIsShowConfirmDelete] = useState(false);
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
   const t = useTranslations("payrolls");
   const tPeriod = useTranslations("period");
+  const tCommon = useTranslations("common");
   const periodHook = usePeriods();
 
   const {
@@ -96,9 +98,19 @@ export default function PeriodsTable({
       uncheckall();
     }
   };
+
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <ConfirmModal
+          open={isShowConfirmDelete}
+          setOpen={setIsShowConfirmDelete}
+          onConfirm={handleDelete}
+          title={tPeriod("modal.delete.label")}
+          description={tPeriod("modal.delete.description", {
+            count: checked.length,
+          })}
+        />
         <div
           className={`px-6 py-4 bg-${color}-50 border-b border-${color}-200 flex items-center justify-between`}
         >
@@ -122,11 +134,11 @@ export default function PeriodsTable({
           </div>
           {checked.length > 0 && (
             <button
-              onClick={handleDelete}
+              onClick={() => setIsShowConfirmDelete(true)}
               className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1"
             >
               <Icon icon="mynaui:trash" fontSize={16} />
-              Delete Selected
+              {tCommon("selected", { count: checked.length })}
             </button>
           )}
         </div>
@@ -168,7 +180,7 @@ export default function PeriodsTable({
                       {tPeriod("fields.total_amount")}
                     </p>
                     <p className="font-semibold text-gray-900">
-                      {moneyFormat(payroll.totalNet)}฿
+                      {moneyFormat(payroll.netPay)}฿
                     </p>
                   </div>
 

@@ -10,8 +10,7 @@ import {
 
 export function useEntry(periodId: number) {
   const { id: shopId } = useCurrentShop();
-  const queryClient = useQueryClient();
-  const queryKey = ["periods", shopId];
+  const queryKey = ["pentries", periodId];
   const list = useQuery<ApiResponse<EntryWithTotalDTO[]>>({
     queryKey,
     queryFn: () =>
