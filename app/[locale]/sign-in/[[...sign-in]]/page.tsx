@@ -16,7 +16,7 @@ export default function SignInPage() {
         redirectUrl: "/sso-callback",
         redirectUrlComplete: "/",
       })
-      .catch((err: unknown) => {
+      .catch((err: any) => {
         console.log(err.errors);
         console.error(err, null, 2);
       });
