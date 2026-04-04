@@ -18,7 +18,6 @@ import { getRandomPastelColor } from "@/utils/generatePastelColor";
 import { createPayrollRecords } from "@/app/action/payroll/record/createPayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { Branch } from "@/types/type.branch";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
 import { Pagination } from "@mui/material";
@@ -26,6 +25,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useEmployees } from "@/hooks/hook.employee";
+import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;
@@ -57,6 +57,7 @@ export default function PayrollsAddEmployeeModal({
   const tn = useTranslations("new_employees");
   const tc = useTranslations("common");
   const tnav = useTranslations("navigation");
+  const { mutateAsync: createEntryMutate } = useEntry(periodId).create;
 
   const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
     setPage(page);
@@ -65,13 +66,7 @@ export default function PayrollsAddEmployeeModal({
   const handlerConfirm = async () => {
     if (!user?.id) return;
     try {
-      await createPayrollRecords(checked, periodId, user?.id);
-      queryClient.invalidateQueries({ queryKey: ["payrollRecord"] });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", periodId],
-        exact: false,
-      });
-
+      createEntryMutate({ payload: { employeeIds: checked } });
       showSuccess(tn("modal.create.success"));
       setOpen(false);
     } catch (err: any) {

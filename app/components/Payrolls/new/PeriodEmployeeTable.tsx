@@ -72,7 +72,7 @@ export default function PeriodEmployeeTable({
   };
 
   const filteredTotalNet = useMemo(() => {
-    return filterd.reduce((sum, r) => sum + (r.total.net || 0), 0);
+    return filterd.reduce((sum, r) => sum + (r.netPay || 0), 0);
   }, [filterd]);
   return (
     <>
@@ -174,7 +174,7 @@ export default function PeriodEmployeeTable({
                         setOpenEdit(true);
                       }}
                     >
-                      {moneyFormat(r.total.net || 0)}
+                      {moneyFormat(r.summary.gross || 0)}
                     </td>
                     <td
                       className="text-right text-red-600 font-medium whitespace-nowrap"
@@ -183,16 +183,16 @@ export default function PeriodEmployeeTable({
                         setOpenEdit(true);
                       }}
                     >
-                      {moneyFormat(r.total.deduction || 0)}
+                      {moneyFormat(r.summary.adjustment || 0)}
                     </td>
                     <td
-                      className={`text-right whitespace-nowrap ${r.total.net < 0 && "text-red-800"}`}
+                      className={`text-right whitespace-nowrap ${r.netPay < 0 && "text-red-800"}`}
                       onClick={() => {
                         setSelected?.(r);
                         setOpenEdit(true);
                       }}
                     >
-                      ฿ {moneyFormat(r.total.net || 0)}
+                      ฿ {moneyFormat(r.netPay || 0)}
                     </td>
                     <td
                       className="text-right pr-6"

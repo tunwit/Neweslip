@@ -1,9 +1,10 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { ApiResponse } from "@/types/response";
-import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
+import { EntryPublicDTO, EntryWithTotalDTO, NewEntryDTO } from "@/types/type.entry";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
   keepPreviousData,
+  useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -11,6 +12,7 @@ import {
 export function useEntry(periodId: number) {
   const { id: shopId } = useCurrentShop();
   const queryKey = ["pentries", periodId];
+  const queryClient = useQueryClient();
   const list = useQuery<ApiResponse<EntryWithTotalDTO[]>>({
     queryKey,
     queryFn: () =>
@@ -24,5 +26,22 @@ export function useEntry(periodId: number) {
     staleTime: 1000 * 60 * 5,
   });
 
-  return { list };
+  const create = useMutation<
+    ApiResponse<EntryPublicDTO>,
+    Error,
+    { payload: NewEntryDTO }
+  >({
+    mutationFn: ({ payload }) => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries`,
+        method: "POST",
+        body: payload,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
+  return { list, create };
 }

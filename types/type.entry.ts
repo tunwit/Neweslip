@@ -21,3 +21,7 @@ export type EntryPublicDTO = {
 };
 
 export type EntryWithTotalDTO = EntryPublicDTO & CalculationContext;
+
+export type NewEntryDTO = {
+  employeeIds: number[];
+};
