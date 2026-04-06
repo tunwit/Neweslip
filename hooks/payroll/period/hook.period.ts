@@ -4,6 +4,7 @@ import {
   NewPeriodDTO,
   PeriodPublicDTO,
   PeriodSummaryDTO,
+  UpdatePeriodDTO,
 } from "@/types/type.period";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
@@ -96,9 +97,11 @@ export function usePeriods() {
 
 export function usePeriod(periodId?: number | string) {
   const { id: shopId } = useCurrentShop();
+  const queryClient = useQueryClient();
+  const queryKey = ["period", shopId, periodId];
 
-  return useQuery<ApiResponse<PeriodSummaryDTO>>({
-    queryKey: ["period", shopId, periodId],
+  const get = useQuery<ApiResponse<PeriodSummaryDTO>>({
+    queryKey: queryKey,
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/periods/${periodId}`,
@@ -107,4 +110,22 @@ export function usePeriod(periodId?: number | string) {
     enabled: !!shopId && !!periodId,
     staleTime: 1000 * 60 * 5,
   });
+
+  const update = useMutation<
+    ApiResponse<PeriodPublicDTO>,
+    Error,
+    { payload: UpdatePeriodDTO }
+  >({
+    mutationFn: ({ payload }) => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}`,
+        method: "PATCH",
+        body: payload,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+  return { get, update };
 }

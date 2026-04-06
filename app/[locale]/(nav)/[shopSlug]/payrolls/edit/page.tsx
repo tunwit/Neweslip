@@ -66,11 +66,15 @@ export default function Home() {
   const pathname = usePathname();
   const periodId = useSearchParams().get("id");
 
+  const periodMethod = usePeriod(Number(periodId));
+
   const {
     data: periodData,
     isLoading: loadingPeriod,
     error,
-  } = usePeriod(Number(periodId));
+  } = periodMethod.get;
+
+  const { mutateAsync: periodUpdateAsync } = periodMethod.update;
 
   const { data, isLoading: loadingRecord } = useEntry(Number(periodId)).list;
   const { mutateAsync: deleteEntryMutate } = useEntry(Number(periodId)).remove;
@@ -81,8 +85,8 @@ export default function Home() {
   }
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(periodData?.data?.start_period || ""),
-    to: new Date(periodData?.data?.end_period || ""),
+    from: new Date(periodData?.data?.start_period || 0),
+    to: new Date(periodData?.data?.end_period || 0),
   });
   const [periodTitle, setPeriodTitle] = useState(periodData?.data?.name);
   const [titleDebounced] = useDebounce(periodTitle, 1000);
@@ -92,6 +96,9 @@ export default function Home() {
   const [filterdRecord, setFilterdRecord] = useState<EntryPublicDTO[]>([]);
   const tPeriod = useTranslations("period");
 
+  useEffect(() => {
+    console.log(dateRange);
+  }, [dateRange]);
   const deleteHandler = async () => {
     if (!user?.id) return;
     try {
@@ -113,19 +120,18 @@ export default function Home() {
       !periodId ||
       !user?.id ||
       !periodData?.data ||
-      !dateRange?.from ||
-      !dateRange?.to
+      !debouncedDateRange?.from ||
+      !debouncedDateRange?.to
     )
       return;
     const result = {
-      ...periodData?.data,
       name: titleDebounced,
-      start_period: new Date(dateRange?.from),
-      end_period: new Date(dateRange?.to),
+      start_period: new Date(debouncedDateRange?.from),
+      end_period: new Date(debouncedDateRange?.to),
     };
 
     try {
-      await updatePayrollPeriod(Number(periodId), result, user?.id);
+      await periodUpdateAsync({ payload: result });
     } catch (err: any) {
       showError(tPeriod("modal.save.fail", { err: err.message }));
     } finally {
@@ -309,7 +315,7 @@ export default function Home() {
                     {tPeriod("fields.total_amount")}
                   </p>
                   <p className="text-xl font-bold text-green-900 mt-1">
-                    {moneyFormat(periodData?.data?.totalNet || 0)}
+                    {moneyFormat(periodData?.data?.netPay || 0)}
                   </p>
                 </div>
                 <div className="bg-green-200 p-2 rounded-lg">

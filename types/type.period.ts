@@ -21,3 +21,11 @@ export type NewPeriodDTO = {
   start_period: string;
   end_period: string;
 };
+
+export type UpdatePeriodDTO = {
+  name?: string | undefined;
+  start_period?: Date | undefined;
+  end_period?: Date | undefined;
+  work_hours_per_day?: string | null | undefined;
+  workdays_per_month?: string | null | undefined;
+};
