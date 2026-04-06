@@ -65,15 +65,14 @@ export default function PayrollsAddEmployeeModal({
 
   const handlerConfirm = async () => {
     if (!user?.id) return;
+    let result;
     try {
-      createEntryMutate({ payload: { employeeIds: checked } });
+      result = await createEntryMutate({ payload: { employeeIds: checked } });
       showSuccess(tn("modal.create.success"));
-      setOpen(false);
     } catch (err: any) {
-      let msg = err.message;
-      if (msg == "ER_DUP_ENTRY") msg = "You cannot add duplicate employee";
-      showError(tn("modal.create.fail", { err: msg }));
+      showError(tn("modal.create.fail", { err: "Duplicate Entry" }));
     } finally {
+      setOpen(false);
       uncheckall();
     }
   };

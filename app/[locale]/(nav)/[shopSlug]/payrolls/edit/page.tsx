@@ -73,6 +73,7 @@ export default function Home() {
   } = usePeriod(Number(periodId));
 
   const { data, isLoading: loadingRecord } = useEntry(Number(periodId)).list;
+  const { mutateAsync: deleteEntryMutate } = useEntry(Number(periodId)).remove;
 
   if (error || !periodId) {
     const basePath = pathname.replace(/\/edit$/, "");
@@ -94,13 +95,7 @@ export default function Home() {
   const deleteHandler = async () => {
     if (!user?.id) return;
     try {
-      await deletePayrollRecords(checked, Number(periodId), user?.id);
-      queryClient.invalidateQueries({ queryKey: ["payrollRecord"] });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", periodId],
-        exact: false,
-      });
-
+      await deleteEntryMutate({ ids: checked });
       showSuccess(tPeriod("modal.delete.success"));
     } catch (err: any) {
       showError(tPeriod("modal.delete.fail", { err: err.message }));

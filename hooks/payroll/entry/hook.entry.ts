@@ -1,6 +1,10 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { ApiResponse } from "@/types/response";
-import { EntryPublicDTO, EntryWithTotalDTO, NewEntryDTO } from "@/types/type.entry";
+import {
+  EntryPublicDTO,
+  EntryWithTotalDTO,
+  NewEntryDTO,
+} from "@/types/type.entry";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
   keepPreviousData,
@@ -11,7 +15,7 @@ import {
 
 export function useEntry(periodId: number) {
   const { id: shopId } = useCurrentShop();
-  const queryKey = ["pentries", periodId];
+  const queryKey = ["entries", periodId];
   const queryClient = useQueryClient();
   const list = useQuery<ApiResponse<EntryWithTotalDTO[]>>({
     queryKey,
@@ -38,10 +42,56 @@ export function useEntry(periodId: number) {
         body: payload,
       });
     },
+    onSuccess: (data) => {
+      console.log("created:", data);
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
   });
 
-  return { list, create };
+  const remove = useMutation<
+    EntryPublicDTO,
+    Error,
+    { ids: number[] },
+    { previous?: ApiResponse<EntryPublicDTO[]> }
+  >({
+    mutationFn: ({ ids }) =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries`,
+        method: "DELETE",
+        body: { ids: ids },
+      }),
+
+    onMutate: async ({ ids }) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previous =
+        queryClient.getQueryData<ApiResponse<EntryPublicDTO[]>>(queryKey);
+
+      queryClient.setQueryData<ApiResponse<EntryPublicDTO[]>>(
+        queryKey,
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: old.data?.filter((d) => !ids.includes(d.id)),
+          };
+        },
+      );
+
+      return { previous };
+    },
+
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) {
+        queryClient.setQueryData(queryKey, ctx.previous);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+  return { list, create, remove };
 }
