@@ -1,4 +1,4 @@
-import { OT_METHOD, OT_TYPE } from "@/types/enum/enum";
+import { OT_METHOD, OT_TYPE } from "@/types/enum/enum.ot";
 import Decimal from "decimal.js";
 
 function calculateRate(
@@ -28,6 +28,8 @@ export function calculateOT(
   rateOfPay?: string | null,
 ) {
   const decimalRateOfPay = new Decimal(rateOfPay ?? 0);
+  console.log(rate);
+
   const decimalRate = new Decimal(rate);
 
   let baseRate = calculateRate(
@@ -42,7 +44,6 @@ export function calculateOT(
       baseRate = baseRate.mul(hourPerDay); // daily rate
     }
   }
-
 
   const result = new Decimal(value).mul(baseRate).mul(decimalRate) || 0;
 

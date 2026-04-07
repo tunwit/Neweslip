@@ -25,3 +25,15 @@ export type NewOTFieldDTO = {
   multiplier: string;
   fixedAmount: string | null;
 };
+
+export type OTValuePublicDTO = {
+  id: number;
+  name: string;
+  nameEng: string;
+  type: OT_TYPE;
+  amount: string;
+  method: OT_METHOD;
+  multiplier: string;
+  fixedAmount: string | null;
+  value: string;
+};

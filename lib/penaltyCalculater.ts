@@ -1,9 +1,4 @@
-import {
-  OT_METHOD,
-  OT_TYPE,
-  PENALTY_METHOD,
-  PENALTY_TYPE,
-} from "@/types/enum/enum";
+import { PENALTY_METHOD, PENALTY_TYPE } from "@/types/enum/enum.penalty";
 import Decimal from "decimal.js";
 
 function calculateRate(
@@ -40,7 +35,7 @@ export function calculatePenalty(
   );
 
   switch (method) {
-    case PENALTY_METHOD.PERMINUTE:
+    case PENALTY_METHOD.PER_MINUTE:
       if (type === PENALTY_TYPE.BASEDONSALARY) {
         baseRate = baseRate.div(60);
       }

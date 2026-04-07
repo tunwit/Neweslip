@@ -37,6 +37,7 @@ import { getLocalizedName } from "@/lib/getLocalizedName";
 import { useDebounce } from "use-debounce";
 import { EntryPublicDTO } from "@/types/type.entry";
 import { PeriodPublicDTO } from "@/types/type.period";
+import { useEntryItems } from "@/hooks/payroll/entry/hook.entry";
 
 interface PayrollEditEmployeeModalProps {
   periodData?: PeriodPublicDTO;
@@ -100,9 +101,10 @@ export default function PayrollEditEmployeeModal({
   const { id } = useCurrentShop();
   const { user } = useUser();
   const router = useRouter();
-  const { data, isLoading } = useRecordDetails(
-    Number(selectedRecord?.id ?? undefined),
-  );
+  const { data: itemsData, isLoading } = useEntryItems(
+    periodData?.id,
+    selectedRecord.id,
+  ).get;
   const locale = useLocale();
 
   // reset Datafrom previous employee
@@ -111,9 +113,9 @@ export default function PayrollEditEmployeeModal({
     setDeductionAmount({});
     setOtAmount({});
     setPenaltyAmount({});
-    setBaseSalary(new Decimal(data?.data?.salary || 0));
-    setNote(data?.data?.note || "");
-  }, [data]);
+    setBaseSalary(new Decimal(itemsData?.data?.salary || 0));
+    setNote(itemsData?.data?.note || "");
+  }, [itemsData]);
 
   useEffect(() => {
     if (!isDirty) return;
@@ -139,7 +141,7 @@ export default function PayrollEditEmployeeModal({
     note,
   ]);
 
-  if (!id || data === null) router.back();
+  if (!id || itemsData === null) router.back();
 
   const saveDataHandler = async () => {
     if (!selectedRecord || !user?.id) return;
@@ -215,7 +217,7 @@ export default function PayrollEditEmployeeModal({
       </span>
     ),
   };
-
+  if (isLoading) return <p>Loading...</p>;
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -269,12 +271,8 @@ export default function PayrollEditEmployeeModal({
               <TabPanel value={0}>
                 <PayrollTable
                   showIncomeRow={true}
-                  salary={data?.data?.salary}
-                  data={
-                    data?.data?.salaryValues.filter(
-                      (v) => v.type === SALARY_FIELD_DEFINATION_TYPE.INCOME,
-                    ) ?? []
-                  }
+                  salary={"1"}
+                  data={itemsData?.data?.earnings || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={incomeAmount}
@@ -286,11 +284,7 @@ export default function PayrollEditEmployeeModal({
               </TabPanel>
               <TabPanel value={1}>
                 <PayrollTable
-                  data={
-                    data?.data?.salaryValues.filter(
-                      (v) => v.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION,
-                    ) ?? []
-                  }
+                  data={itemsData?.data?.deductions || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={deductionAmount}
@@ -300,7 +294,7 @@ export default function PayrollEditEmployeeModal({
               </TabPanel>
               <TabPanel value={2} keepMounted={true}>
                 <PayrollTable
-                  data={data?.data?.otValues ?? []}
+                  data={itemsData?.data?.ots || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
@@ -313,8 +307,8 @@ export default function PayrollEditEmployeeModal({
                       item.method,
                       new Decimal(periodData?.work_hours_per_day || 0),
                       new Decimal(periodData?.workdays_per_month || 0),
-                      item.rate,
-                      item.rateOfPay,
+                      item.multiplier,
+                      item.fixedAmount,
                     )
                   }
                   amountValues={otAmount}
@@ -324,7 +318,7 @@ export default function PayrollEditEmployeeModal({
               </TabPanel>
               <TabPanel value={3} keepMounted={true}>
                 <PayrollTable
-                  data={data?.data?.penaltyValues ?? []}
+                  data={itemsData?.data?.penalties || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
@@ -337,7 +331,7 @@ export default function PayrollEditEmployeeModal({
                       item.method,
                       new Decimal(periodData?.work_hours_per_day || 0),
                       new Decimal(periodData?.workdays_per_month || 0),
-                      item.rateOfPay,
+                      item.fixedAmount,
                     )
                   }
                   amountValues={penaltyAmount}
@@ -347,12 +341,7 @@ export default function PayrollEditEmployeeModal({
               </TabPanel>
               <TabPanel value={4} keepMounted={true}>
                 <PayrollTable
-                  data={
-                    data?.data?.salaryValues.filter(
-                      (v) =>
-                        v.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED,
-                    ) ?? []
-                  }
+                  data={itemsData?.data?.non_calculated || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   amountValues={displayAmount}

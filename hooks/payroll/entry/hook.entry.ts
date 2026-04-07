@@ -4,6 +4,7 @@ import {
   EntryPublicDTO,
   EntryWithTotalDTO,
   NewEntryDTO,
+  PayrollItemsWithSummaryDTO,
 } from "@/types/type.entry";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
@@ -94,4 +95,24 @@ export function useEntry(periodId: number) {
     },
   });
   return { list, create, remove };
+}
+
+export function useEntryItems(periodId: number, entryId: number) {
+  const { id: shopId } = useCurrentShop();
+  const queryKey = ["entries", "items", entryId];
+  const queryClient = useQueryClient();
+  const get = useQuery<ApiResponse<PayrollItemsWithSummaryDTO>>({
+    queryKey,
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/payroll-items`,
+        method: "GET",
+      }),
+    enabled: shopId != null,
+    refetchOnWindowFocus: true,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return { get };
 }

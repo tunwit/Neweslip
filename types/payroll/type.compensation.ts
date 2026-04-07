@@ -19,3 +19,11 @@ export type NewCompensationFieldDTO = {
   nameEng: string;
   type: COMPEN_FIELD_DEFINATION_TYPE;
 };
+
+export type CompensationValuePublicDTO = {
+  id: number;
+  name: string;
+  nameEng: string;
+  type: COMPEN_FIELD_DEFINATION_TYPE;
+  amount: string;
+};

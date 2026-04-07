@@ -23,3 +23,14 @@ export type NewPenaltyFieldDTO = {
   method: PENALTY_METHOD;
   fixedAmount: string | null;
 };
+
+export type PenaltyValuePublicDTO = {
+  id: number;
+  name: string;
+  nameEng: string;
+  type: PENALTY_TYPE;
+  amount: string;
+  method: PENALTY_METHOD;
+  fixedAmount: string | null;
+  value: string;
+};

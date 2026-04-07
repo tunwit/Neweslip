@@ -8,6 +8,8 @@ export type PeriodPublicDTO = {
   updatedAt: Date | null;
   start_period: string;
   end_period: string;
+  work_hours_per_day: string;
+  workdays_per_month: string;
   edited: boolean | null;
 };
 
