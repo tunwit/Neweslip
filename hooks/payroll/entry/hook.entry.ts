@@ -1,10 +1,10 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { ApiResponse } from "@/types/response";
 import {
+  EntryBreakDownDTO,
   EntryPublicDTO,
   EntryWithTotalDTO,
   NewEntryDTO,
-  PayrollItemsWithSummaryDTO,
 } from "@/types/type.entry";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
@@ -97,18 +97,18 @@ export function useEntry(periodId: number) {
   return { list, create, remove };
 }
 
-export function useEntryItems(periodId: number, entryId: number) {
+export function useEntryBreakdown(periodId: number, entryId: number) {
   const { id: shopId } = useCurrentShop();
   const queryKey = ["entries", "items", entryId];
   const queryClient = useQueryClient();
-  const get = useQuery<ApiResponse<PayrollItemsWithSummaryDTO>>({
+  const get = useQuery<ApiResponse<EntryBreakDownDTO>>({
     queryKey,
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/payroll-items`,
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/break-down`,
         method: "GET",
       }),
-    enabled: shopId != null,
+    enabled: shopId != null && periodId > 0 && entryId > 0,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,

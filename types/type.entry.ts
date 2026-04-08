@@ -6,6 +6,7 @@ import { CalculationContext } from "./type.calculation";
 export type EntryPublicDTO = {
   id: number;
   salary: string;
+  note: string | null;
   employee: {
     id: number;
     snapshot: {
@@ -33,16 +34,34 @@ export type PayrollItemsDTO = {
   penalties: PenaltyValuePublicDTO[];
 };
 
-export type PayrollItemsWithSummaryDTO = PayrollItemsDTO & {
-  summary: {
-    earningTotal: number;
-    deductionTotal: number;
-    overtimeTotal: number;
-    penaltyTotal: number;
-    netTotal: number;
-  };
+export type EntrySummaryDTO = {
+  earningTotal: number;
+  deductionTotal: number;
+  overtimeTotal: number;
+  penaltyTotal: number;
+  netTotal: number;
+};
+
+export type EntryBreakDownDTO = {
+  entry: EntryPublicDTO;
+  items: PayrollItemsDTO;
+  summary: EntrySummaryDTO;
 };
 
 export type NewEntryDTO = {
   employeeIds: number[];
+};
+
+export type UpdateBreakDownDTO = {
+  entry: {
+    salary: EntryPublicDTO["salary"];
+    note: EntryPublicDTO["note"];
+  };
+  items: {
+    earnings: Pick<CompensationValuePublicDTO, "id" | "amount">[];
+    deductions: Pick<CompensationValuePublicDTO, "id" | "amount">[];
+    non_calculated: Pick<CompensationValuePublicDTO, "id" | "amount">[];
+    ots: Pick<OTValuePublicDTO, "id" | "value">[];
+    penalties: Pick<PenaltyValuePublicDTO, "id" | "value">[];
+  };
 };

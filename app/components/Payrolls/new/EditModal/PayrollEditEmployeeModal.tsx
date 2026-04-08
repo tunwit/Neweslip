@@ -35,10 +35,9 @@ import { PayrollPeriod } from "@/types/payrollPeriod";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import { useDebounce } from "use-debounce";
-import { EntryPublicDTO } from "@/types/type.entry";
+import { EntryPublicDTO, UpdateBreakDownDTO } from "@/types/type.entry";
 import { PeriodPublicDTO } from "@/types/type.period";
-import { useEntryItems } from "@/hooks/payroll/entry/hook.entry";
-
+import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
 interface PayrollEditEmployeeModalProps {
   periodData?: PeriodPublicDTO;
   open: boolean;
@@ -74,19 +73,19 @@ export default function PayrollEditEmployeeModal({
 
     setOpen(false);
   };
-  const [incomeAmount, setIncomeAmount] = useState<
+  const [changedEarning, setChangedEarning] = useState<
     Record<number, { amount: number }>
   >({});
-  const [deductionAmount, setDeductionAmount] = useState<
+  const [changedDeduction, setChangedDeduction] = useState<
     Record<number, { amount: number }>
   >({});
-  const [otAmount, setOtAmount] = useState<
+  const [changedOt, setChangedOt] = useState<
     Record<number, { value?: number; amount: number }>
   >({});
-  const [penaltyAmount, setPenaltyAmount] = useState<
+  const [changedPenalty, setChangedPenalty] = useState<
     Record<number, { value?: number; amount: number }>
   >({});
-  const [displayAmount, setDisplayAmount] = useState<
+  const [changedDisplay, setChangedDisplay] = useState<
     Record<number, { amount: number }>
   >({});
   const [note, setNote] = useState("");
@@ -101,21 +100,26 @@ export default function PayrollEditEmployeeModal({
   const { id } = useCurrentShop();
   const { user } = useUser();
   const router = useRouter();
-  const { data: itemsData, isLoading } = useEntryItems(
-    periodData?.id,
-    selectedRecord.id,
+  const { data: breakdownData, isLoading } = useEntryBreakdown(
+    periodData?.id || -1,
+    selectedRecord?.id || -1,
   ).get;
   const locale = useLocale();
 
   // reset Datafrom previous employee
+
+  const resetChanged = () => {
+    setChangedEarning({});
+    setChangedDeduction({});
+    setChangedOt({});
+    setChangedPenalty({});
+  };
+
   useEffect(() => {
-    setIncomeAmount({});
-    setDeductionAmount({});
-    setOtAmount({});
-    setPenaltyAmount({});
-    setBaseSalary(new Decimal(itemsData?.data?.salary || 0));
-    setNote(itemsData?.data?.note || "");
-  }, [itemsData]);
+    resetChanged();
+    setBaseSalary(new Decimal(breakdownData?.data?.entry.salary || 0));
+    setNote(breakdownData?.data?.entry.note || "");
+  }, [breakdownData]);
 
   useEffect(() => {
     if (!isDirty) return;
@@ -132,50 +136,66 @@ export default function PayrollEditEmployeeModal({
 
     return () => clearTimeout(handler);
   }, [
-    incomeAmount,
-    deductionAmount,
-    otAmount,
-    penaltyAmount,
-    displayAmount,
+    changedEarning,
+    changedDeduction,
+    changedOt,
+    changedPenalty,
+    changedDisplay,
     baseSalary,
     note,
   ]);
 
-  if (!id || itemsData === null) router.back();
+  if (isLoading) return <p>Loading...</p>;
+
+  const breakdown = breakdownData?.data;
+  if (breakdown === undefined) return <p>Loading...</p>;
+  if (!id || !breakdown === null) router.back();
 
   const saveDataHandler = async () => {
     if (!selectedRecord || !user?.id) return;
     setIsSubmitting(true);
-    const result = {
-      salary: baseSalary.toNumber(),
-      salaryValues: [
-        ...Object.entries(incomeAmount).map(([id, data]) => ({
-          id: Number(id),
-          amount: data.amount,
-        })),
-        ...Object.entries(deductionAmount).map(([id, data]) => ({
-          id: Number(id),
-          amount: data.amount,
-        })),
-        ...Object.entries(displayAmount).map(([id, data]) => ({
-          id: Number(id),
-          amount: data.amount,
-        })),
-      ],
-      otValues: Object.entries(otAmount).map(([id, data]) => ({
-        id: Number(id),
-        amount: data.amount,
-        value: data.value ?? 0,
-      })),
-      penaltyValues: Object.entries(penaltyAmount).map(([id, data]) => ({
-        id: Number(id),
-        amount: data.amount,
-        value: data.value ?? 0,
-      })),
-      note: note,
+    const result: UpdateBreakDownDTO = {
+      entry: {
+        note: note,
+        salary: baseSalary.toString(),
+      },
+      items: {
+        earnings: [
+          ...Object.entries(changedEarning).map(([id, data]) => ({
+            id: Number(id),
+            amount: String(data.amount),
+          })),
+        ],
+        deductions: [
+          ...Object.entries(changedDeduction).map(([id, data]) => ({
+            id: Number(id),
+            amount: String(data.amount),
+          })),
+        ],
+        ots: [
+          ...Object.entries(changedOt).map(([id, data]) => ({
+            id: Number(id),
+            value: String(data.value),
+          })),
+        ],
+        penalties: [
+          ...Object.entries(changedPenalty).map(([id, data]) => ({
+            id: Number(id),
+            value: String(data.value),
+          })),
+        ],
+        non_calculated: [
+          ...Object.entries(changedDisplay).map(([id, data]) => ({
+            id: Number(id),
+            amount: String(data.amount),
+          })),
+        ],
+      },
     };
+    console.log(result);
+
     try {
-      await updatePayrollRecord(result, selectedRecord.id, id!, user?.id);
+      // await updatePayrollRecord(result, selectedRecord.id, id!, user?.id);
     } catch (err) {
       showError(`Cannot save data \n ${err}`);
     } finally {
@@ -217,7 +237,7 @@ export default function PayrollEditEmployeeModal({
       </span>
     ),
   };
-  if (isLoading) return <p>Loading...</p>;
+
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -272,11 +292,11 @@ export default function PayrollEditEmployeeModal({
                 <PayrollTable
                   showIncomeRow={true}
                   salary={"1"}
-                  data={itemsData?.data?.earnings || []}
+                  data={breakdown.items.earnings || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
-                  amountValues={incomeAmount}
-                  setInputValues={setIncomeAmount}
+                  amountValues={changedEarning}
+                  setInputValues={setChangedEarning}
                   setIsDirty={setIsDirty}
                   baseSalary={baseSalary}
                   setBaseSalary={setBaseSalary}
@@ -284,17 +304,17 @@ export default function PayrollEditEmployeeModal({
               </TabPanel>
               <TabPanel value={1}>
                 <PayrollTable
-                  data={itemsData?.data?.deductions || []}
+                  data={breakdown.items.deductions || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
-                  amountValues={deductionAmount}
-                  setInputValues={setDeductionAmount}
+                  amountValues={changedDeduction}
+                  setInputValues={setChangedDeduction}
                   setIsDirty={setIsDirty}
                 />
               </TabPanel>
               <TabPanel value={2} keepMounted={true}>
                 <PayrollTable
-                  data={itemsData?.data?.ots || []}
+                  data={breakdown.items.ots || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
@@ -311,14 +331,14 @@ export default function PayrollEditEmployeeModal({
                       item.fixedAmount,
                     )
                   }
-                  amountValues={otAmount}
-                  setInputValues={setOtAmount}
+                  amountValues={changedOt}
+                  setInputValues={setChangedOt}
                   setIsDirty={setIsDirty}
                 />
               </TabPanel>
               <TabPanel value={3} keepMounted={true}>
                 <PayrollTable
-                  data={itemsData?.data?.penalties || []}
+                  data={breakdown.items.penalties || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
                   showValueColumn={true}
@@ -334,18 +354,18 @@ export default function PayrollEditEmployeeModal({
                       item.fixedAmount,
                     )
                   }
-                  amountValues={penaltyAmount}
-                  setInputValues={setPenaltyAmount}
+                  amountValues={changedPenalty}
+                  setInputValues={setChangedPenalty}
                   setIsDirty={setIsDirty}
                 />
               </TabPanel>
               <TabPanel value={4} keepMounted={true}>
                 <PayrollTable
-                  data={itemsData?.data?.non_calculated || []}
+                  data={breakdown.items.non_calculated || []}
                   renderName={(item) => getLocalizedName(item, locale)}
                   renderAmount={(item) => Number(item.amount)}
-                  amountValues={displayAmount}
-                  setInputValues={setDisplayAmount}
+                  amountValues={changedDisplay}
+                  setInputValues={setChangedDisplay}
                   setIsDirty={setIsDirty}
                   baseSalary={baseSalary}
                   setBaseSalary={setBaseSalary}
@@ -353,7 +373,10 @@ export default function PayrollEditEmployeeModal({
                 />
               </TabPanel>
               <TabPanel value={5}>
-                <PayrollSummaryTab recordId={selectedRecord?.id || -1} />
+                <PayrollSummaryTab
+                  periodId={periodData?.id || -1}
+                  entryId={selectedRecord?.id || -1}
+                />
               </TabPanel>
             </Tabs>
           </div>
