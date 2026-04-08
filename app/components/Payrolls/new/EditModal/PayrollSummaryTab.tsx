@@ -43,13 +43,13 @@ export default function PayrollSummaryTab({
         <tbody>
           <tr>
             <td className="font-medium">{t("fields.base_salary")}</td>
-            <td>{breakdown.entry.salary}</td>
+            <td>{moneyFormat(breakdown.entry.salary)}</td>
             <td></td>
           </tr>
           {breakdown.items.earnings.map((salary) => (
             <tr key={salary.id}>
               <td className="font-medium">{salary.name}</td>
-              <td>{salary.amount}</td>
+              <td>{moneyFormat(salary.amount)}</td>
               <td></td>
             </tr>
           ))}
@@ -57,14 +57,14 @@ export default function PayrollSummaryTab({
             <tr key={salary.id}>
               <td className="font-medium">{salary.name}</td>
               <td></td>
-              <td>{salary.amount}</td>
+              <td>{moneyFormat(salary.amount)}</td>
             </tr>
           ))}
           {breakdown.items.ots.map((ot) => (
             <tr key={ot.id}>
               <td className="font-medium">{ot.name}</td>
               <td>
-                {ot.amount} (
+                {moneyFormat(ot.amount)} (
                 {tc(`unit.${translateOT[ot.method]}`, {
                   count: toNumberIfWhole(ot.value),
                 })}
@@ -78,7 +78,7 @@ export default function PayrollSummaryTab({
               <td className="font-medium">{penalty.name}</td>
               <td></td>
               <td>
-                {penalty.amount} (
+                {moneyFormat(penalty.amount)} (
                 {tc(`unit.${translatePenalty[penalty.method]}`, {
                   count: toNumberIfWhole(penalty.value),
                 })}
