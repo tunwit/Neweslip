@@ -46,7 +46,7 @@ import { EntryPublicDTO } from "@/types/type.entry";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
-  const { checked } = methods;
+  const { checked, uncheckall } = methods;
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openCalendar, setOpenCalendar] = useState(false);
@@ -104,6 +104,7 @@ export default function Home() {
     try {
       await deleteEntryMutate({ ids: checked });
       showSuccess(tPeriod("modal.delete.success"));
+      uncheckall();
     } catch (err: any) {
       showError(tPeriod("modal.delete.fail", { err: err.message }));
     }

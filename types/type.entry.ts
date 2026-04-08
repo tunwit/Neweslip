@@ -45,7 +45,7 @@ export type EntrySummaryDTO = {
 export type EntryBreakDownDTO = {
   entry: EntryPublicDTO;
   items: PayrollItemsDTO;
-  summary: EntrySummaryDTO;
+  calculation: CalculationContext;
 };
 
 export type NewEntryDTO = {
@@ -54,14 +54,18 @@ export type NewEntryDTO = {
 
 export type UpdateBreakDownDTO = {
   entry: {
-    salary: EntryPublicDTO["salary"];
-    note: EntryPublicDTO["note"];
+    salary?: EntryPublicDTO["salary"];
+    note?: EntryPublicDTO["note"];
   };
   items: {
-    earnings: Pick<CompensationValuePublicDTO, "id" | "amount">[];
-    deductions: Pick<CompensationValuePublicDTO, "id" | "amount">[];
-    non_calculated: Pick<CompensationValuePublicDTO, "id" | "amount">[];
-    ots: Pick<OTValuePublicDTO, "id" | "value">[];
-    penalties: Pick<PenaltyValuePublicDTO, "id" | "value">[];
+    earnings?: Pick<CompensationValuePublicDTO, "id" | "amount">[] | undefined;
+    deductions?:
+      | Pick<CompensationValuePublicDTO, "id" | "amount">[]
+      | undefined;
+    non_calculated?:
+      | Pick<CompensationValuePublicDTO, "id" | "amount">[]
+      | undefined;
+    ots?: Pick<OTValuePublicDTO, "id" | "value">[] | undefined;
+    penalties?: Pick<PenaltyValuePublicDTO, "id" | "value">[] | undefined;
   };
 };

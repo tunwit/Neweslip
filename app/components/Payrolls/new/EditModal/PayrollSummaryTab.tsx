@@ -1,7 +1,7 @@
 import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
 import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
 import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
-import { moneyFormat } from "@/utils/formmatter";
+import { moneyFormat, toNumberIfWhole } from "@/utils/formmatter";
 import { Table } from "@mui/joy";
 import { useTranslations } from "next-intl";
 
@@ -9,12 +9,25 @@ interface PayrollSummaryTabProps {
   periodId: number;
   entryId: number;
 }
+
+const translateOT = {
+  DAILY: "day",
+  HOURLY: "hour",
+};
+
+const translatePenalty = {
+  DAILY: "day",
+  HOURLY: "hour",
+  PER_MINUTE: "minute",
+};
+
 export default function PayrollSummaryTab({
   periodId,
   entryId,
 }: PayrollSummaryTabProps) {
   const { data: breakdownData } = useEntryBreakdown(periodId, entryId).get;
   const t = useTranslations("record");
+  const tc = useTranslations("common");
   const breakdown = breakdownData?.data;
   if (!breakdown) return <p>Loading...</p>;
   return (
@@ -51,7 +64,11 @@ export default function PayrollSummaryTab({
             <tr key={ot.id}>
               <td className="font-medium">{ot.name}</td>
               <td>
-                {ot.amount} ({ot.value})
+                {ot.amount} (
+                {tc(`unit.${translateOT[ot.method]}`, {
+                  count: toNumberIfWhole(ot.value),
+                })}
+                )
               </td>
               <td></td>
             </tr>
@@ -61,19 +78,25 @@ export default function PayrollSummaryTab({
               <td className="font-medium">{penalty.name}</td>
               <td></td>
               <td>
-                {penalty.amount} ({penalty.value})
+                {penalty.amount} (
+                {tc(`unit.${translatePenalty[penalty.method]}`, {
+                  count: toNumberIfWhole(penalty.value),
+                })}
+                )
               </td>
             </tr>
           ))}
         </tbody>
         <tfoot>
           <tr>
-            <td className="py-3 px-4 font-semibold text-gray-700">Totals</td>
-            <td className="py-3 px-4 font-semibold text-gray-900">
-              {moneyFormat(breakdown.summary.earningTotal || 0)} ฿
+            <td className="py-3 px-4 font-semibold text-gray-700">
+              {t("fields.total")}
             </td>
             <td className="py-3 px-4 font-semibold text-gray-900">
-              {moneyFormat(breakdown.summary.deductionTotal || 0)} ฿
+              {moneyFormat(breakdown.calculation.summary.gross || 0)} ฿
+            </td>
+            <td className="py-3 px-4 font-semibold text-gray-900">
+              {moneyFormat(breakdown.calculation.summary.adjustment || 0)} ฿
             </td>
           </tr>
           <tr className="bg-gray-50">
@@ -84,7 +107,7 @@ export default function PayrollSummaryTab({
               colSpan={2}
               className="py-3 px-4 font-bold text-lg text-gray-900"
             >
-              {moneyFormat(breakdown.summary.netTotal || 0)} ฿
+              {moneyFormat(breakdown.calculation.netPay || 0)} ฿
             </td>
           </tr>
         </tfoot>

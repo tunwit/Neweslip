@@ -92,18 +92,22 @@ export default function PayrollEditEmployeeModal({
   const [baseSalary, setBaseSalary] = useState<Decimal>(new Decimal(0));
   const [isDirty, setIsDirty] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [state, setState] = useState<0 | 1 | 2>(2);
+  const [state, setState] = useState<0 | 1 | 2 | 3>(2);
   //0 : changed
   //1 : saving
   //2 : saved
+  //3 : failed
 
   const { id } = useCurrentShop();
   const { user } = useUser();
   const router = useRouter();
-  const { data: breakdownData, isLoading } = useEntryBreakdown(
+  const entryHook = useEntryBreakdown(
     periodData?.id || -1,
     selectedRecord?.id || -1,
-  ).get;
+  );
+  const { data: breakdownData, isLoading } = entryHook.get;
+  const { mutateAsync: updateEntryAsync } = entryHook.update;
+
   const locale = useLocale();
 
   // reset Datafrom previous employee
@@ -128,10 +132,11 @@ export default function PayrollEditEmployeeModal({
       setState(1);
       try {
         await saveDataHandler();
+        setState(2);
       } catch (err) {
+        setState(3);
         showError(`Cannot save data ${err}`);
       }
-      setState(2);
     }, 1000);
 
     return () => clearTimeout(handler);
@@ -192,12 +197,11 @@ export default function PayrollEditEmployeeModal({
         ],
       },
     };
-    console.log(result);
 
     try {
-      // await updatePayrollRecord(result, selectedRecord.id, id!, user?.id);
+      await updateEntryAsync({ payload: result });
     } catch (err) {
-      showError(`Cannot save data \n ${err}`);
+      throw Error();
     } finally {
       setIsSubmitting(false);
     }
@@ -234,6 +238,16 @@ export default function PayrollEditEmployeeModal({
           icon={"material-symbols:check-rounded"}
         />
         <p className="text-sm">{t("edit.status.saved")}</p>
+      </span>
+    ),
+    3: (
+      <span className="flex flex-row gap-1 item-center justify-center">
+        <Icon
+          className="text-gray-500"
+          width={20}
+          icon={"zondicons:exclamation-outline"}
+        />
+        <p className="text-sm">{t("edit.status.failed")}</p>
       </span>
     ),
   };

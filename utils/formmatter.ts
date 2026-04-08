@@ -15,6 +15,14 @@ export function moneyFormat(value: number | string | Decimal): string {
   return `${formatted}`;
 }
 
+export function toNumberIfWhole(value: string | number): number | string {
+  const num = Number(value);
+
+  if (Number.isNaN(num)) return value;
+
+  return Number.isInteger(num) ? num : value;
+}
+
 export function dateFormat(date: Date) {
   return new Intl.DateTimeFormat("th-TH", {
     year: "numeric",

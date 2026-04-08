@@ -5,6 +5,7 @@ import {
   EntryPublicDTO,
   EntryWithTotalDTO,
   NewEntryDTO,
+  UpdateBreakDownDTO,
 } from "@/types/type.entry";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
@@ -100,6 +101,7 @@ export function useEntry(periodId: number) {
 export function useEntryBreakdown(periodId: number, entryId: number) {
   const { id: shopId } = useCurrentShop();
   const queryKey = ["entries", "items", entryId];
+  const queryKeyList = ["entries", periodId];
   const queryClient = useQueryClient();
   const get = useQuery<ApiResponse<EntryBreakDownDTO>>({
     queryKey,
@@ -114,5 +116,23 @@ export function useEntryBreakdown(periodId: number, entryId: number) {
     staleTime: 1000 * 60 * 5,
   });
 
-  return { get };
+  const update = useMutation<
+    ApiResponse<EntryBreakDownDTO>,
+    Error,
+    { payload: UpdateBreakDownDTO }
+  >({
+    mutationFn: ({ payload }) => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}`,
+        method: "PATCH",
+        body: payload,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKeyList });
+    },
+  });
+
+  return { get, update };
 }

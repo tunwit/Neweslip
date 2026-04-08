@@ -459,7 +459,8 @@
       "status": {
         "changed": "Modified",
         "uploading": "Saving",
-        "saved": "Saved"
+        "saved": "Saved",
+        "failed": "Failed"
       },
       "actions": {
         "done": "Done"
