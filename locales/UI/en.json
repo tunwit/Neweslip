@@ -342,7 +342,9 @@
       "total_base_salary": "Total base salary",
       "total_earning": "Total earnings",
       "total_deduction": "Total deductions",
-      "grand_total": "Net total"
+      "grand_total": "Net total",
+      "work_hour_per_day": "Working hours / day",
+      "work_day_per_month": "Working days / month"
     },
     "actions": {
       "export": "Export",
@@ -350,11 +352,17 @@
       "add_employee": "Add employee",
       "delete": "Remove employee",
       "finalize": "Finalize",
-      "unlock": "Unlock"
+      "unlock": "Unlock",
+      "save": "Save",
+      "cancel": "Cancel"
     },
     "search": {
       "label": "Search employees",
       "placeholder": "Search employees by name or branch"
+    },
+    "setting": {
+      "label": "Period Settings",
+      "description": "These values apply to all employees in this payroll run."
     },
     "filters": {
       "label": "Filters",

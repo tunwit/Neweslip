@@ -28,8 +28,6 @@ export function calculateOT(
   rateOfPay?: string | null,
 ) {
   const decimalRateOfPay = new Decimal(rateOfPay ?? 0);
-  console.log(rate);
-
   const decimalRate = new Decimal(rate);
 
   let baseRate = calculateRate(

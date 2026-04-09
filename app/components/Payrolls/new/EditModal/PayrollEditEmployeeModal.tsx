@@ -31,18 +31,17 @@ import Decimal from "decimal.js";
 import PayrollSummaryTab from "./PayrollSummaryTab";
 import { height } from "@mui/system";
 import { useQueryClient } from "@tanstack/react-query";
-import { PayrollPeriod } from "@/types/payrollPeriod";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import { useDebounce } from "use-debounce";
-import { EntryPublicDTO, UpdateBreakDownDTO } from "@/types/type.entry";
+import { EntryWithTotalDTO, UpdateBreakDownDTO } from "@/types/type.entry";
 import { PeriodPublicDTO } from "@/types/type.period";
 import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
 interface PayrollEditEmployeeModalProps {
   periodData?: PeriodPublicDTO;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedRecord: PayrollRecord | null;
+  selectedRecord: EntryWithTotalDTO | null;
 }
 
 export default function PayrollEditEmployeeModal({
@@ -59,7 +58,7 @@ export default function PayrollEditEmployeeModal({
       queryKey: ["payrollPeriod", "verify", periodData?.id],
     });
     queryClient.invalidateQueries({
-      queryKey: ["payrollRecord", selectedRecord?.periodId],
+      queryKey: ["payrollRecord", periodData],
       exact: false,
     });
     queryClient.invalidateQueries({
@@ -123,6 +122,7 @@ export default function PayrollEditEmployeeModal({
     resetChanged();
     setBaseSalary(new Decimal(breakdownData?.data?.entry.salary || 0));
     setNote(breakdownData?.data?.entry.note || "");
+    setIsDirty(false);
   }, [breakdownData]);
 
   useEffect(() => {
@@ -132,6 +132,7 @@ export default function PayrollEditEmployeeModal({
       setState(1);
       try {
         await saveDataHandler();
+        setIsDirty(false);
         setState(2);
       } catch (err) {
         setState(3);
@@ -255,15 +256,15 @@ export default function PayrollEditEmployeeModal({
   return (
     <>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog sx={{ background: "#fafafa", maxHeight: "75%" }}>
+        <ModalDialog sx={{ background: "#fafafa", maxHeight: "90%" }}>
           <div className="flex flex-row justify-between items-center">
             <p>{t("edit.label")}</p>
 
             {stateIcon[state]}
           </div>
           <p className="text-3xl font-bold">
-            {selectedRecord?.employee.firstName}{" "}
-            {selectedRecord?.employee.lastName}
+            {selectedRecord?.employee.snapshot.firstName}{" "}
+            {selectedRecord?.employee.snapshot.lastName}
           </p>
           <div
             hidden={!isLoading}

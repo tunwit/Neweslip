@@ -10,7 +10,6 @@ import {
 } from "@mui/joy";
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { EmployeeWithShop } from "@/types/type.employee";
 import BranchSelector from "@/widget/BranchSelector";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
@@ -26,6 +25,10 @@ import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useEmployees } from "@/hooks/hook.employee";
 import { useEntry } from "@/hooks/payroll/entry/hook.entry";
+import {
+  EmployeePublicDTO,
+  EmployeeWithBranchDTO,
+} from "@/types/type.employee";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;
@@ -50,7 +53,7 @@ export default function PayrollsAddEmployeeModal({
     search_query: debounced,
     page: page,
   });
-  const [selected, setSelected] = useState<EmployeeWithShop | null>(null);
+  const [selected, setSelected] = useState<EmployeeWithBranchDTO | null>(null);
   const { user } = useUser();
   const locale = useLocale();
   const te = useTranslations("employees");

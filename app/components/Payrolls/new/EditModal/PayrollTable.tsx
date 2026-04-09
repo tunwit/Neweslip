@@ -2,7 +2,13 @@ import { moneyFormat } from "@/utils/formmatter";
 import { Checkbox, Table } from "@mui/joy";
 import Decimal from "decimal.js";
 import { useTranslations } from "next-intl";
-import React, { Dispatch, SetStateAction, useEffect, useState, useTransition } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 
 interface PayrollTableProps<T extends { id: number }> {
   data: T[];
@@ -20,7 +26,7 @@ interface PayrollTableProps<T extends { id: number }> {
   setIsDirty: Dispatch<SetStateAction<boolean>>;
   baseSalary?: Decimal;
   setBaseSalary?: Dispatch<SetStateAction<Decimal>>;
-  showFooter?:boolean
+  showFooter?: boolean;
 }
 
 export default function PayrollTable<T extends { id: number }>({
@@ -37,11 +43,11 @@ export default function PayrollTable<T extends { id: number }>({
   setIsDirty,
   baseSalary,
   setBaseSalary,
-  showFooter=true
+  showFooter = true,
 }: PayrollTableProps<T>) {
   const [total, setTotal] = useState<Decimal>();
-  const t = useTranslations("record.edit")
-  const tr = useTranslations("record")
+  const t = useTranslations("record.edit");
+  const tr = useTranslations("record");
 
   const updateValue = (id: number, val: number) => {
     setInputValues((prev) => ({
@@ -63,6 +69,8 @@ export default function PayrollTable<T extends { id: number }>({
     setTotal(totalSum);
   }, [amountValues, showIncomeRow, baseSalary]);
 
+  const isInitialized = React.useRef(false);
+
   useEffect(() => {
     if (!autoCalculate || !calculateAmount || !data) return;
 
@@ -80,12 +88,11 @@ export default function PayrollTable<T extends { id: number }>({
         }
       });
 
-      // Only return updated object if something changed
       return changed ? updated : prev;
     });
 
-    if (data.length > 0) setIsDirty(true);
-  }, [baseSalary, autoCalculate, calculateAmount, data]);
+    isInitialized.current = true;
+  }, [data]);
 
   const applyAutoAmount = (item: any, v: number) => {
     if (!autoCalculate || !calculateAmount) return;
@@ -102,25 +109,27 @@ export default function PayrollTable<T extends { id: number }>({
   };
 
   useEffect(() => {
-    if (!data || Object.keys(amountValues).length > 0) return; // prevents infinite loop
+    if (!autoCalculate || !calculateAmount || !data) return;
+    if (!isInitialized.current) return; // skip until initialized
 
     setInputValues((prev) => {
-      const updated: Record<number, { amount: number; value?: number }> = {
-        ...prev,
-      };
+      let updated = { ...prev };
+      let changed = false;
 
       data.forEach((item: any) => {
-        if (!updated[item.id]) {
-          updated[item.id] = {
-            amount: renderAmount(item),
-            value: item.value ?? undefined,
-          };
+        const value = prev[item.id]?.value ?? item.value ?? 0;
+        const newAmount = calculateAmount(item, value);
+
+        if (prev[item.id]?.amount !== newAmount) {
+          updated[item.id] = { value, amount: newAmount };
+          changed = true;
         }
       });
 
-      return updated;
+      if (changed) setIsDirty(true); // only dirty on actual recalc
+      return changed ? updated : prev;
     });
-  }, [data, baseSalary]);
+  }, [baseSalary]);
 
   return (
     <div className="overflow-auto max-h-[calc(100vh-350px)]">

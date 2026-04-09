@@ -25,7 +25,7 @@ import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
-import { Modal, ModalDialog } from "@mui/joy";
+import { IconButton, Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
@@ -42,13 +42,15 @@ import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { usePeriod } from "@/hooks/payroll/period/hook.period";
 import { useEntry } from "@/hooks/payroll/entry/hook.entry";
-import { EntryPublicDTO } from "@/types/type.entry";
+import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
+import PayrollsSettingModal from "@/app/components/Payrolls/new/SettingModal/PayrollsSettingModal";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
   const { checked, uncheckall } = methods;
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openSetting, setOpenSetting] = useState(false);
   const [openCalendar, setOpenCalendar] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -56,9 +58,8 @@ export default function Home() {
 
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
-    null,
-  );
+  const [selectedRecord, setSelectedRecord] =
+    useState<EntryWithTotalDTO | null>(null);
 
   const { user } = useUser();
   const queryClient = useQueryClient();
@@ -92,8 +93,7 @@ export default function Home() {
   const [titleDebounced] = useDebounce(periodTitle, 1000);
   const [debouncedDateRange] = useDebounce(dateRange, 500);
 
-  const [baseRecords, setBaseRecords] = useState<EntryPublicDTO[]>([]);
-  const [filterdRecord, setFilterdRecord] = useState<EntryPublicDTO[]>([]);
+  const [filterdRecord, setFilterdRecord] = useState<EntryWithTotalDTO[]>([]);
   const tPeriod = useTranslations("period");
 
   useEffect(() => {
@@ -152,7 +152,6 @@ export default function Home() {
 
   useEffect(() => {
     if (!data?.data) return;
-    setBaseRecords(data.data);
     setFilterdRecord(data.data);
   }, [data]);
 
@@ -205,6 +204,14 @@ export default function Home() {
         setOpen={setOpenAdd}
         periodId={Number(periodId)}
       />
+      {!loadingPeriod && (
+        <PayrollsSettingModal
+          open={openSetting}
+          setOpen={setOpenSetting}
+          period={periodData?.data}
+        />
+      )}
+
       {openEdit && (
         <PayrollEditEmployeeModal
           periodData={periodData?.data}
@@ -245,6 +252,15 @@ export default function Home() {
             ></input>
 
             <div className="flex gap-3 z-10 h-5">
+              <IconButton
+                loading={isExporting}
+                disabled={isExporting}
+                color="neutral"
+                variant="outlined"
+                onClick={() => setOpenSetting(true)}
+              >
+                <Icon icon="lsicon:setting-outline" fontSize={20} />
+              </IconButton>
               <Button
                 loading={isExporting}
                 disabled={isExporting}

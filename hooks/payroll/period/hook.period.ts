@@ -29,7 +29,6 @@ export function usePeriods() {
     enabled: shopId != null,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
-    staleTime: 1000 * 60 * 5,
   });
 
   const create = useMutation<
@@ -99,6 +98,7 @@ export function usePeriod(periodId?: number | string) {
   const { id: shopId } = useCurrentShop();
   const queryClient = useQueryClient();
   const queryKey = ["period", shopId, periodId];
+  const queryKeyEntries = ["entries", periodId];
 
   const get = useQuery<ApiResponse<PeriodSummaryDTO>>({
     queryKey: queryKey,
@@ -108,7 +108,6 @@ export function usePeriod(periodId?: number | string) {
         method: "GET",
       }),
     enabled: !!shopId && !!periodId,
-    staleTime: 1000 * 60 * 5,
   });
 
   const update = useMutation<
@@ -125,6 +124,7 @@ export function usePeriod(periodId?: number | string) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: queryKeyEntries });
     },
   });
   return { get, update };

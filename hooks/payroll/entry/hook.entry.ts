@@ -130,7 +130,7 @@ export function useEntryBreakdown(periodId: number, entryId: number) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKeyList });
+      queryClient.invalidateQueries({ queryKey: queryKeyList });
     },
   });
 
