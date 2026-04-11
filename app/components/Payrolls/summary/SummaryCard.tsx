@@ -12,16 +12,17 @@ import SalaryBreakdown from "@/widget/SalaryBreakdown";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
+import { EntryWithTotalDTO } from "@/types/type.entry";
 
 interface SummaryCardProps {
-  record: PayrollRecordSummary;
+  entry: EntryWithTotalDTO;
 }
 
-export default function SummaryCard({ record }: SummaryCardProps) {
+export default function SummaryCard({ entry }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations("record");
   const locale = useLocale();
-  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
+  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${entry.employee.avatar}`;
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -33,19 +34,20 @@ export default function SummaryCard({ record }: SummaryCardProps) {
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
             <ChangableAvatar
               src={avatar}
-              fallbackTitle={record.employee.firstName.charAt(0)}
+              fallbackTitle={entry.employee.snapshot.firstName.charAt(0)}
               editable={false}
             />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                {record.employee.firstName} {record.employee.lastName}
+                {entry.employee.snapshot.firstName}{" "}
+                {entry.employee.snapshot.lastName}
               </h3>
               <div className="grid grid-cols-[auto_auto] gap-3 mt-1 w-fit">
                 <p className="text-sm text-gray-600">
-                  {record.employee.nickName}
+                  {entry.employee.snapshot.nickName}
                 </p>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {getLocalizedName(record.employee.branch, locale)}
+                  {getLocalizedName(entry.employee.snapshot.branch, locale)}
                 </span>
               </div>
             </div>
@@ -53,7 +55,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
 
           <div className="flex gap-5 items-center">
             <span
-              hidden={!record.paid}
+              hidden={!entry.paidAt}
               className="flex text-green-600 text-xs gap-1 items-center self-baseline-last bg-green-100 px-2 py-1 rounded-lg border border-green-600"
             >
               <Icon icon="ic:outline-paid" /> {t("fields.paid")}
@@ -63,7 +65,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
                 {t("fields.net")}
               </p>
               <p className="text-2xl font-semibold text-gray-900">
-                ฿ {moneyFormat(record.totals.net)}
+                ฿ {moneyFormat(entry.netPay)}
               </p>
             </div>
             <Icon
@@ -84,7 +86,7 @@ export default function SummaryCard({ record }: SummaryCardProps) {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <SalaryBreakdown record={record} />
+              <SalaryBreakdown entryId={entry.id} />
             </motion.div>
           )}
         </AnimatePresence>

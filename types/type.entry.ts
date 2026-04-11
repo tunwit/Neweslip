@@ -9,6 +9,7 @@ export type EntryPublicDTO = {
   note: string | null;
   employee: {
     id: number;
+    avatar?: string | null;
     snapshot: {
       firstName: string;
       lastName: string;

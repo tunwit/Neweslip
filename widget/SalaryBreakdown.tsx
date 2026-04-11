@@ -1,28 +1,36 @@
-import {
-  OT_METHOD,
-  PENALTY_METHOD,
-  SALARY_FIELD_DEFINATION_TYPE,
-} from "@/types/enum/enum";
+import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
+import { PENALTY_METHOD } from "@/types/enum/enum.penalty";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
+import { EntryWithTotalDTO } from "@/types/type.entry";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 interface SalaryBreakdownProps {
-  record: PayrollRecordSummary;
+  entryId: number;
 }
 
 const unitMap = {
   [PENALTY_METHOD.DAILY]: "day",
   [PENALTY_METHOD.HOURLY]: "hour",
-  [PENALTY_METHOD.PERMINUTE]: "minute",
+  [PENALTY_METHOD.PER_MINUTE]: "minute",
 };
-export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
+export default function SalaryBreakdown({ entryId }: SalaryBreakdownProps) {
+  const periodId = useSearchParams().get("id");
+  const { data: breakdownData, isLoading } = useEntryBreakdown(
+    Number(periodId),
+    entryId,
+  ).get;
   const t = useTranslations("record");
   const tc = useTranslations("common");
+  if (!breakdownData || !breakdownData?.data) return <p>Loading...</p>;
+  const breakdown = breakdownData?.data;
+
   return (
     <div className="p-6">
+      {isLoading && isLoading}
       <div className="grid grid-cols-3 gap-8">
         {/* Base Salary */}
         <div>
@@ -36,7 +44,7 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
                   {t("fields.base_salary")}
                 </td>
                 <td className="font-medium text-gray-900 text-right py-1">
-                  ฿ {moneyFormat(record.baseSalary)}
+                  ฿ {moneyFormat(breakdown.entry.salary || 0)}
                 </td>
               </tr>
             </tbody>
@@ -51,24 +59,20 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
           </h4>
           <table className="w-full">
             <tbody>
-              {record.fields
-                .filter(
-                  (field) => field.type === SALARY_FIELD_DEFINATION_TYPE.INCOME,
-                )
-                .map((field) => (
-                  <tr key={field.id}>
-                    <td className="text-sm text-gray-600 py-1">{field.name}</td>
-                    <td className="font-medium text-green-600 text-right py-1">
-                      {moneyFormat(field.amount)}
-                    </td>
-                  </tr>
-                ))}
+              {breakdown.items.earnings.map((field) => (
+                <tr key={field.id}>
+                  <td className="text-sm text-gray-600 py-1">{field.name}</td>
+                  <td className="font-medium text-green-600 text-right py-1">
+                    {moneyFormat(field.amount)}
+                  </td>
+                </tr>
+              ))}
               <tr className="border-t border-gray-200">
                 <td className="text-sm font-semibold text-gray-700 pt-3 py-1">
                   {t("fields.total_earning")}
                 </td>
                 <td className="font-bold text-green-600 text-right pt-3 py-1">
-                  {moneyFormat(record.totals.totalSalaryIncome)}
+                  {moneyFormat(breakdown.calculation.totals.earnings)}
                 </td>
               </tr>
             </tbody>
@@ -83,25 +87,20 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
           </h4>
           <table className="w-full">
             <tbody>
-              {record.fields
-                .filter(
-                  (field) =>
-                    field.type === SALARY_FIELD_DEFINATION_TYPE.DEDUCTION,
-                )
-                .map((field) => (
-                  <tr key={field.id}>
-                    <td className="text-sm text-gray-600 py-1">{field.name}</td>
-                    <td className="font-medium text-red-600 text-right py-1">
-                      {moneyFormat(field.amount)}
-                    </td>
-                  </tr>
-                ))}
+              {breakdown.items.deductions.map((field) => (
+                <tr key={field.id}>
+                  <td className="text-sm text-gray-600 py-1">{field.name}</td>
+                  <td className="font-medium text-red-600 text-right py-1">
+                    {moneyFormat(field.amount)}
+                  </td>
+                </tr>
+              ))}
               <tr className="border-t border-gray-200">
                 <td className="text-sm font-semibold text-gray-700 pt-3 py-1">
                   {t("fields.total_deduction")}
                 </td>
                 <td className="font-bold text-red-600 text-right pt-3 py-1">
-                  {moneyFormat(record.totals.totalSalaryDeduction)}
+                  {moneyFormat(breakdown.calculation.totals.deductions)}
                 </td>
               </tr>
             </tbody>
@@ -116,7 +115,7 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
           </h4>
           <table className="w-full">
             <tbody>
-              {record.ot.map((overtime) => (
+              {breakdown.items.ots.map((overtime) => (
                 <tr key={overtime.id}>
                   <td className="text-sm text-gray-600 py-1 w-[60%]">
                     {overtime.name}
@@ -141,7 +140,7 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
                   {t("fields.total_overtime")}
                 </td>
                 <td className="font-bold text-blue-600 text-right pt-3 py-1">
-                  {moneyFormat(record.totals.totalOT)}
+                  {moneyFormat(breakdown.calculation.totals.overtime)}
                 </td>
               </tr>
             </tbody>
@@ -156,7 +155,7 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
           </h4>
           <table className="w-full">
             <tbody>
-              {record.penalties.map((penalty) => (
+              {breakdown.items.penalties.map((penalty) => (
                 <tr key={penalty.id}>
                   <td className="text-sm text-gray-600 py-1 w-[60%]">
                     {penalty.name}
@@ -183,7 +182,7 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
                   {t("fields.total_penalties")}
                 </td>
                 <td className="font-bold text-amber-600 text-right pt-3 py-1">
-                  {moneyFormat(record.totals.totalPenalty)}
+                  {moneyFormat(breakdown.calculation.totals.penalties)}
                 </td>
               </tr>
             </tbody>
@@ -198,26 +197,24 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
           </h4>
           <table className="w-full">
             <tbody>
-              {record.fields
-                .filter(
-                  (field) =>
-                    field.type === SALARY_FIELD_DEFINATION_TYPE.NON_CALCULATED,
-                )
-                .map((field) => (
-                  <tr key={field.id}>
-                    <td className="text-sm text-gray-600 py-1">{field.name}</td>
-                    <td className="font-medium text-green-600 text-right py-1">
-                      {field.amount}
-                    </td>
-                  </tr>
-                ))}
+              {breakdown.items.non_calculated.map((field) => (
+                <tr key={field.id}>
+                  <td className="text-sm text-gray-600 py-1">{field.name}</td>
+                  <td className="font-medium text-green-600 text-right py-1">
+                    {field.amount}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
       <div className="bg-blue-50 flex items-center gap-2 border border-blue-200 p-2 rounded-md my-1">
         <p className="text-blue-900 font-bold">{t("fields.note")}:</p>
-        <p className="text-sm text-blue-800"> {record.note ? record.note :  "-"}</p>
+        <p className="text-sm text-blue-800">
+          {" "}
+          {breakdown.entry.note ? breakdown.entry.note : "-"}
+        </p>
       </div>
       {/* Net Calculation */}
       <div className="mt-2 pt-6 border-t-2 border-gray-300">
@@ -234,18 +231,18 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
               <span className="text-amber-800">- {t("fields.penalties")}</span>
             </p>
             <p className="text-sm text-gray-700">
-              {moneyFormat(record.baseSalary)}{" "}
+              {moneyFormat(breakdown.entry.salary)}{" "}
               <span className="text-green-800">
-                + {moneyFormat(record.totals.totalSalaryIncome)}
+                + {moneyFormat(breakdown.calculation.totals.earnings)}
               </span>{" "}
               <span className="text-red-800">
-                - {moneyFormat(record.totals.totalSalaryDeduction)}
+                - {moneyFormat(breakdown.calculation.totals.deductions)}
               </span>{" "}
               <span className="text-blue-800">
-                + {moneyFormat(record.totals.totalOT)}
+                + {moneyFormat(breakdown.calculation.totals.overtime)}
               </span>{" "}
               <span className="text-amber-800">
-                - {moneyFormat(record.totals.totalPenalty)}
+                - {moneyFormat(breakdown.calculation.totals.penalties)}
               </span>
             </p>
           </div>
@@ -255,7 +252,7 @@ export default function SalaryBreakdown({ record }: SalaryBreakdownProps) {
               {t("fields.net")}
             </p>
             <p className="text-3xl font-semibold text-gray-900">
-              {moneyFormat(record.totals.net)}
+              {moneyFormat(breakdown.calculation.netPay)}
             </p>
           </div>
         </div>

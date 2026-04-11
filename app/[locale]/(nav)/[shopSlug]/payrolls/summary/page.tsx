@@ -32,6 +32,10 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { useTranslations } from "next-intl";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import { useEntry } from "@/hooks/payroll/entry/hook.entry";
+import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
+import { number } from "zod";
 
 export default function Home() {
   const periodId = useSearchParams().get("id");
@@ -39,38 +43,38 @@ export default function Home() {
   const [finalizing, setFinalizing] = useState(false);
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
+  const [filtered, setFiltered] = useState<EntryWithTotalDTO[]>([]);
   const [showFilter, setShowFilter] = useState(false);
   const { name } = useCurrentShop();
 
-  const {
-    data: periodData,
-    isLoading: loadingPeriod,
-    error,
-  } = usePayrollPeriod(Number(periodId));
   const tBreadcrumb = useTranslations("breadcrumb");
   const t = useTranslations("summary_period");
   const tPeriod = useTranslations("period");
 
-  const { data: summaryData, isLoading: loadingSummary } =
-    usePayrollPeriodSummary(Number(periodId));
+  const { data: periodData, isLoading: loadingPeriod } = usePeriod(
+    Number(periodId),
+  ).get;
+  const { data: entriesData, isLoading: loadingRecord } = useEntry(
+    Number(periodId),
+  ).list;
+
   const pathname = usePathname();
   const router = useRouter();
   const { data: verify, isLoading: loadingVerify } = usePayrollPeriodVerify(
     Number(periodId),
   );
 
-  if (error || !periodId) {
-    const basePath = pathname.replace(/\/summary$/, "");
-    router.replace(basePath);
-  }
+  // if (error || !periodId) {
+  //   const basePath = pathname.replace(/\/summary$/, "");
+  //   router.replace(basePath);
+  // }
   useEffect(() => {
-    if (!summaryData?.data) return;
-    if (summaryData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
+    if (!periodData?.data) return;
+    if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodId}`);
     }
-  }, [summaryData]);
+  }, [periodData]);
 
   const backToEditHandler = () => {
     const newPath = pathname.replace("/summary", "/edit");
@@ -78,48 +82,47 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!summaryData?.data?.records) return;
+    if (!entriesData?.data) return;
     const q = debouced.toLowerCase();
 
     setFiltered(
-      summaryData?.data?.records.filter((r) => {
+      entriesData?.data?.filter((r) => {
         return (
-          r.employee.firstName.toLowerCase().includes(q) ||
-          r.employee.lastName.toLowerCase().includes(q) ||
-          (r.employee.firstName + r.employee.lastName)
+          r.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          r.employee.snapshot.lastName.toLowerCase().includes(q) ||
+          (r.employee.snapshot.firstName + r.employee.snapshot.lastName)
             .toLowerCase()
             .includes(q) ||
-          r.employee.nickName.toLowerCase().includes(q) ||
-          r.employee.branch.name.toLowerCase().includes(q) ||
-          r.employee.branch.nameEng.toLowerCase().includes(q)
+          r.employee.snapshot.nickName.toLowerCase().includes(q) ||
+          r.employee.snapshot.branch.name.toLowerCase().includes(q) ||
+          r.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );
-  }, [summaryData?.data?.records, debouced]);
+  }, [entriesData?.data, debouced]);
 
-  const isLoading =
-    loadingPeriod || loadingSummary || loadingVerify || finalizing;
+  const isLoading = loadingPeriod || loadingVerify || finalizing;
 
   let loadingMessage = "";
   if (finalizing) loadingMessage = t("load.finalizing");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
-  if (loadingSummary) loadingMessage = tPeriod("load.loading_records");
+  if (loadingPeriod) loadingMessage = tPeriod("load.loading_records");
   if (loadingVerify) loadingMessage = t("load.verifying");
 
   const filteredTotalNet = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.totals.net || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.netPay || 0), 0);
   }, [filtered]);
 
   const filteredTotalEarning = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.totals.totalEarning || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.summary.gross || 0), 0);
   }, [filtered]);
   const filteredTotalDeduction = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.totals.totalDeduction || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.summary.adjustment || 0), 0);
   }, [filtered]);
 
   const filteredTotalSalary = useMemo(() => {
     return filtered.reduce((sum, r) => {
-      return sum + ("baseSalary" in r ? r.baseSalary || 0 : 0);
+      return sum + ("baseSalary" in r ? Number(r.salary) || 0 : 0);
     }, 0);
   }, [filtered]);
 
@@ -137,13 +140,13 @@ export default function Home() {
           </div>
         </ModalDialog>
       </Modal>
-      <FinalizeModal
+      {/* <FinalizeModal
         open={openFinalizeModal}
         setOpen={setOpenFinalizeModal}
         setFinalizing={setFinalizing}
         periodSummary={summaryData?.data}
         problems={verify?.data || []}
-      />
+      /> */}
       <title>{periodData?.data?.name}</title>
       <div className="flex flex-col h-full overflow-y-auto">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
@@ -259,24 +262,19 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <AdvancedFilters
+            {/* <AdvancedFilters
               periodId={periodData?.data?.id || -1}
               show={showFilter}
               setShow={setShowFilter}
               originalData={summaryData?.data?.records || []}
               setData={setFiltered}
-            />
+            /> */}
           </div>
         </section>
 
         <section className="flex flex-col px-10  mt-5 gap-4">
           {filtered.map((record) => {
-            return (
-              <SummaryCard
-                key={record.id}
-                record={record as PayrollRecordSummary}
-              />
-            );
+            return <SummaryCard key={record.id} entry={record} />;
           })}
         </section>
         <section className="px-10 mb-5">
