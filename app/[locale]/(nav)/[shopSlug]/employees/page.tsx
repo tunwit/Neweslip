@@ -25,8 +25,6 @@ import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWr
 import Head from "next/head";
 import { useTranslations } from "next-intl";
 import OrderByFilter from "@/widget/OrderByFilter";
-import { enqueuePayrollEmails } from "@/src/lib/enqueuePayrollEmails";
-
 export default function Home() {
   const rounter = useRouter();
   const [search, setSearch] = useState("");

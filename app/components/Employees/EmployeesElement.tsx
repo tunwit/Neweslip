@@ -28,7 +28,6 @@ export default function EmployeesElement({
   const { toggle, isChecked } = useCheckBox<number>("allEmployeeTable");
   const [open, setOpen] = useState<boolean>(false);
   const locale = useLocale();
-
   return (
     <>
       <EmployeeDetailsModal

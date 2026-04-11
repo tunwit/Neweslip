@@ -69,7 +69,6 @@ export function EmployeeTableWrapper({
       showError(tnm("fail", { err: err.message }));
     }
   };
-
   return (
     <>
       <section className="flex flex-col justify-center items-center w-full">

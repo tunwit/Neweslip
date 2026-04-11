@@ -22,7 +22,6 @@ export default function SummaryCard({ entry }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations("record");
   const locale = useLocale();
-  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${entry.employee.avatar}`;
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -33,7 +32,7 @@ export default function SummaryCard({ entry }: SummaryCardProps) {
         >
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
             <ChangableAvatar
-              src={avatar}
+              src={entry.employee.avatar ?? ""}
               fallbackTitle={entry.employee.snapshot.firstName.charAt(0)}
               editable={false}
             />

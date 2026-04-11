@@ -39,9 +39,6 @@ export default function PeriodEmployeeTable({
   const locale = useLocale();
   useEffect(() => {
     const q = searchQuery.toLowerCase();
-    console.log("record\n-------------");
-
-    console.log(records);
 
     setFilterd(
       records.filter((r) => {
@@ -110,8 +107,6 @@ export default function PeriodEmployeeTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filterd.map((r) => {
-                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${""}`;
-
                 return (
                   <tr
                     key={r.id}
@@ -131,7 +126,7 @@ export default function PeriodEmployeeTable({
                     >
                       <div className="flex flex-row items-center gap-3">
                         <ChangableAvatar
-                          src={avatar}
+                          src={r.employee.avatar ?? ""}
                           fallbackTitle={r.employee.snapshot.firstName.charAt(
                             0,
                           )}
