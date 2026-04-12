@@ -1,4 +1,5 @@
 import { PAYROLL_PROBLEM } from "@/types/enum/enum";
+import { ISSUE_TYPE, ValidationResultDTO } from "@/types/payroll/type.validate";
 import { PayrollProblem } from "@/types/payrollProblem";
 import { formatMetaMoney } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -6,17 +7,17 @@ import { useTranslations } from "next-intl";
 import React from "react";
 
 interface problemCardProps {
-  issue: PayrollProblem;
+  issue: ValidationResultDTO;
 }
 
 const style = {
-  [PAYROLL_PROBLEM.WARNNING]: {
+  [ISSUE_TYPE.WARNING]: {
     icon: "ion:warning-outline",
     bgColor: "bg-amber-50",
     textColor: "text-amber-700",
     borderColor: "border-amber-200",
   },
-  [PAYROLL_PROBLEM.CRITICAL]: {
+  [ISSUE_TYPE.CRITICAL]: {
     icon: "mdi:forbid",
     bgColor: "bg-red-50",
     textColor: "text-red-700",

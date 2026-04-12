@@ -54,15 +54,18 @@ export default function Home() {
   const { data: periodData, isLoading: loadingPeriod } = usePeriod(
     Number(periodId),
   ).get;
+  const { data: validateData, isLoading: loadingValidate } = usePeriod(
+    Number(periodId),
+  ).validate;
+
+  console.log("validate", validateData);
+
   const { data: entriesData, isLoading: loadingRecord } = useEntry(
     Number(periodId),
   ).list;
 
   const pathname = usePathname();
   const router = useRouter();
-  const { data: verify, isLoading: loadingVerify } = usePayrollPeriodVerify(
-    Number(periodId),
-  );
 
   // if (error || !periodId) {
   //   const basePath = pathname.replace(/\/summary$/, "");
@@ -101,13 +104,13 @@ export default function Home() {
     );
   }, [entriesData?.data, debouced]);
 
-  const isLoading = loadingPeriod || loadingVerify || finalizing;
+  const isLoading = loadingPeriod || loadingValidate || finalizing;
 
   let loadingMessage = "";
   if (finalizing) loadingMessage = t("load.finalizing");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_records");
-  if (loadingVerify) loadingMessage = t("load.verifying");
+  if (loadingValidate) loadingMessage = t("load.verifying");
 
   const filteredTotalNet = useMemo(() => {
     return filtered.reduce((sum, r) => sum + (r.netPay || 0), 0);
@@ -189,7 +192,7 @@ export default function Home() {
 
         <section className="px-10 mt-8">
           <div
-            hidden={verify?.data?.length !== 0}
+            hidden={validateData?.data?.length !== 0}
             className={`bg-green-50 p-4 border border-green-200 rounded-md`}
           >
             <div className="flex flex-row items-center gap-3">
@@ -209,7 +212,7 @@ export default function Home() {
           </div>
 
           <div
-            hidden={verify?.data?.length === 0}
+            hidden={validateData?.data?.length === 0}
             className="bg-white p-4 rounded-md shadow"
           >
             <span className="flex flex-row items-center gap-3">
@@ -219,12 +222,12 @@ export default function Home() {
                 fontSize={20}
               />
               <h1 className="font-semibold text-md">
-                {t("issues.label", { count: verify?.data?.length || 0 })}
+                {t("issues.label", { count: validateData?.data?.length || 0 })}
               </h1>
             </span>
 
             <div className="flex flex-col gap-2 mt-3">
-              {verify?.data?.map((v, _) => {
+              {validateData?.data?.map((v, _) => {
                 return <ProblemCard key={_} issue={v} />;
               })}
             </div>

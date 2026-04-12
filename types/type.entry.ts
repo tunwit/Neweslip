@@ -7,22 +7,24 @@ export type EntryPublicDTO = {
   id: number;
   salary: string;
   note: string | null;
-  employee: {
-    id: number;
-    avatar?: string | null;
-    snapshot: {
-      firstName: string;
-      lastName: string;
-      nickName: string;
-      branch: {
-        id: number;
-        name: string;
-        nameEng: string;
-      };
-    };
-  };
+  employee: EmployeeSnapshotDTO;
   payslipSent: boolean | null;
   paidAt: Date | null;
+};
+
+export type EmployeeSnapshotDTO = {
+  id: number;
+  avatar?: string | null;
+  snapshot: {
+    firstName: string;
+    lastName: string;
+    nickName: string;
+    branch: {
+      id: number;
+      name: string;
+      nameEng: string;
+    };
+  };
 };
 
 export type EntryWithTotalDTO = EntryPublicDTO & CalculationContext;

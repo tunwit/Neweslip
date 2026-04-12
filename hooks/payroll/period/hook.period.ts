@@ -1,4 +1,5 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { ValidationResultDTO } from "@/types/payroll/type.validate";
 import { ApiResponse } from "@/types/response";
 import {
   NewPeriodDTO,
@@ -98,6 +99,7 @@ export function usePeriod(periodId?: number | string) {
   const { id: shopId } = useCurrentShop();
   const queryClient = useQueryClient();
   const queryKey = ["period", shopId, periodId];
+  const queryValidateKey = ["period", shopId, periodId, "validate"];
   const queryKeyEntries = ["entries", periodId];
 
   const get = useQuery<ApiResponse<PeriodSummaryDTO>>({
@@ -105,6 +107,16 @@ export function usePeriod(periodId?: number | string) {
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/periods/${periodId}`,
+        method: "GET",
+      }),
+    enabled: !!shopId && !!periodId,
+  });
+
+  const validate = useQuery<ApiResponse<ValidationResultDTO[]>>({
+    queryKey: queryValidateKey,
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/validate`,
         method: "GET",
       }),
     enabled: !!shopId && !!periodId,
@@ -127,5 +139,5 @@ export function usePeriod(periodId?: number | string) {
       queryClient.invalidateQueries({ queryKey: queryKeyEntries });
     },
   });
-  return { get, update };
+  return { get, validate, update };
 }
