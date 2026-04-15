@@ -53,7 +53,7 @@ export default function Home() {
 
   const { data: periodData, isLoading: loadingPeriod } = usePeriod(
     Number(periodId),
-  ).get;
+  ).getWithCal;
   const { data: validateData, isLoading: loadingValidate } = usePeriod(
     Number(periodId),
   ).validate;
@@ -143,13 +143,13 @@ export default function Home() {
           </div>
         </ModalDialog>
       </Modal>
-      {/* <FinalizeModal
+      <FinalizeModal
         open={openFinalizeModal}
         setOpen={setOpenFinalizeModal}
         setFinalizing={setFinalizing}
-        periodSummary={summaryData?.data}
-        problems={verify?.data || []}
-      /> */}
+        periodSummary={periodData?.data}
+        problems={validateData?.data || []}
+      />
       <title>{periodData?.data?.name}</title>
       <div className="flex flex-col h-full overflow-y-auto">
         <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">

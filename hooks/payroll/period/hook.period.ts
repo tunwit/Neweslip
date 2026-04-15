@@ -5,6 +5,7 @@ import {
   NewPeriodDTO,
   PeriodPublicDTO,
   PeriodSummaryDTO,
+  PeriodWithCountDTO,
   UpdatePeriodDTO,
 } from "@/types/type.period";
 import { fetchwithauth } from "@/utils/fetcher";
@@ -101,12 +102,23 @@ export function usePeriod(periodId?: number | string) {
   const queryKey = ["period", shopId, periodId];
   const queryValidateKey = ["period", shopId, periodId, "validate"];
   const queryKeyEntries = ["entries", periodId];
+  const queryKeyWithCal = ["period", shopId, periodId, "withCal"];
 
-  const get = useQuery<ApiResponse<PeriodSummaryDTO>>({
+  const get = useQuery<ApiResponse<PeriodWithCountDTO>>({
     queryKey: queryKey,
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/periods/${periodId}`,
+        method: "GET",
+      }),
+    enabled: !!shopId && !!periodId,
+  });
+
+  const getWithCal = useQuery<ApiResponse<PeriodSummaryDTO>>({
+    queryKey: queryKeyWithCal,
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}?withCal=true`,
         method: "GET",
       }),
     enabled: !!shopId && !!periodId,
@@ -139,5 +151,19 @@ export function usePeriod(periodId?: number | string) {
       queryClient.invalidateQueries({ queryKey: queryKeyEntries });
     },
   });
-  return { get, validate, update };
+
+  const finalize = useMutation<ApiResponse<PeriodPublicDTO>, Error>({
+    mutationFn: () => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/finalize`,
+        method: "POST",
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: queryKeyEntries });
+      queryClient.invalidateQueries({ queryKey: queryValidateKey });
+    },
+  });
+  return { get, validate, update, getWithCal, finalize };
 }

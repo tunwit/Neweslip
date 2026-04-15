@@ -13,10 +13,10 @@ export type PeriodPublicDTO = {
   edited: boolean | null;
 };
 
-export type PeriodSummaryDTO = PeriodPublicDTO &
-  CalculationContext & {
-    employeeCount: number;
-  };
+export type PeriodWithCountDTO = PeriodPublicDTO & {
+  employeeCount: number;
+};
+export type PeriodSummaryDTO = PeriodWithCountDTO & CalculationContext;
 
 export type NewPeriodDTO = {
   name: string;

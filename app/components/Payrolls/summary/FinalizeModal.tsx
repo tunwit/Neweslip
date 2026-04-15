@@ -1,9 +1,12 @@
 "use client";
 import { finalizePayroll } from "@/app/action/payroll/period/finalizePayroll";
 import UsersIcon from "@/assets/icons/UsersIcon";
+import { usePeriod } from "@/hooks/payroll/period/hook.period";
 import { PAYROLL_PROBLEM } from "@/types/enum/enum";
+import { ISSUE_TYPE, ValidationResultDTO } from "@/types/payroll/type.validate";
 import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { PayrollProblem } from "@/types/payrollProblem";
+import { PeriodSummaryDTO } from "@/types/type.period";
 import { dateFormat, formatMetaMoney, moneyFormat } from "@/utils/formmatter";
 import { showError } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
@@ -18,8 +21,8 @@ interface FinalizeModalPros {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   setFinalizing: Dispatch<SetStateAction<boolean>>;
-  periodSummary?: PayrollPeriodSummary;
-  problems: PayrollProblem[];
+  periodSummary?: PeriodSummaryDTO;
+  problems: ValidationResultDTO[];
 }
 export default function FinalizeModal({
   open,
@@ -40,28 +43,19 @@ export default function FinalizeModal({
   const tp = useTranslations("period");
   const ts = useTranslations("summary_period");
 
+  const { mutateAsync: finalizeAsync } = usePeriod(
+    periodSummary?.id || -1,
+  ).finalize;
   const isCriticalPresence =
-    problems.filter((p) => p.type === PAYROLL_PROBLEM.CRITICAL).length > 0;
+    problems.filter((p) => p.type === ISSUE_TYPE.CRITICAL).length > 0;
 
   const finalizeHandler = async () => {
     if (!periodSummary || isCriticalPresence || !user) return;
     setFinalizing(true);
     try {
-      await finalizePayroll(periodSummary.id, user.id);
+      await finalizeAsync();
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodSummary.id}`);
-      queryClient.invalidateQueries({
-        queryKey: ["payrollRecord", periodSummary.id],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", periodSummary.id],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", "summary", periodSummary.id],
-        exact: false,
-      });
       setOpen(false);
     } catch (err) {
       showError(`Cannot finalize payroll ${err}`);
@@ -69,6 +63,8 @@ export default function FinalizeModal({
       setFinalizing(false);
     }
   };
+  if (!periodSummary) return;
+
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog sx={{ padding: 0, width: "50%" }}>
@@ -131,7 +127,7 @@ export default function FinalizeModal({
                   {tr("fields.base_salary")}
                 </span>
                 <span className="font-medium text-gray-900">
-                  ฿ {moneyFormat(periodSummary?.totalBaseSalary || 0)}
+                  ฿ {moneyFormat(0)}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
@@ -139,7 +135,7 @@ export default function FinalizeModal({
                   + {tr("fields.total_earning")}
                 </span>
                 <span className="font-medium text-green-700">
-                  ฿ {moneyFormat(periodSummary?.totalEarning || 0)}
+                  ฿ {moneyFormat(periodSummary?.summary.gross || 0)}
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
@@ -147,7 +143,7 @@ export default function FinalizeModal({
                   - {tr("fields.total_deduction")}
                 </span>
                 <span className="font-medium text-red-700">
-                  ฿ {moneyFormat(periodSummary?.totalDeduction || 0)}
+                  ฿ {moneyFormat(periodSummary?.summary.adjustment || 0)}
                 </span>
               </div>
               <div className="flex justify-between items-center p-4 bg-blue-100 rounded-lg border-2 border-blue-300">
@@ -162,7 +158,7 @@ export default function FinalizeModal({
                   </span>
                 </div>
                 <span className="text-2xl font-bold text-blue-900">
-                  ฿ {moneyFormat(periodSummary?.totalNet || 0)}
+                  ฿ {moneyFormat(periodSummary?.netPay || 0)}
                 </span>
               </div>
             </div>
@@ -192,8 +188,8 @@ export default function FinalizeModal({
 
             <div
               hidden={
-                problems.filter((p) => p.type === PAYROLL_PROBLEM.WARNNING)
-                  .length <= 0
+                problems.filter((p) => p.type === ISSUE_TYPE.WARNING).length <=
+                0
               }
               className="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
             >
@@ -207,13 +203,13 @@ export default function FinalizeModal({
                   <h4 className="font-semibold text-yellow-900 mb-2">
                     {ts("issues.label", {
                       count: problems.filter(
-                        (p) => p.type === PAYROLL_PROBLEM.WARNNING,
+                        (p) => p.type === ISSUE_TYPE.WARNING,
                       ).length,
                     })}
                   </h4>
                   <ul className="space-y-2">
                     {problems
-                      .filter((p) => p.type === PAYROLL_PROBLEM.WARNNING)
+                      .filter((p) => p.type === ISSUE_TYPE.WARNING)
                       .map((p, _) => {
                         return (
                           <li key={_} className="text-sm text-yellow-800">
@@ -237,8 +233,8 @@ export default function FinalizeModal({
 
             <div
               hidden={
-                problems.filter((p) => p.type === PAYROLL_PROBLEM.CRITICAL)
-                  .length <= 0
+                problems.filter((p) => p.type === ISSUE_TYPE.CRITICAL).length <=
+                0
               }
               className="bg-red-50 border border-red-200 rounded-lg p-4"
             >
@@ -252,13 +248,13 @@ export default function FinalizeModal({
                   <h4 className="font-semibold text-red-900 mb-2">
                     {ts("critical_issue.label", {
                       count: problems.filter(
-                        (p) => p.type === PAYROLL_PROBLEM.CRITICAL,
+                        (p) => p.type === ISSUE_TYPE.CRITICAL,
                       ).length,
                     })}
                   </h4>
                   <ul className="space-y-2">
                     {problems
-                      .filter((p) => p.type === PAYROLL_PROBLEM.CRITICAL)
+                      .filter((p) => p.type === ISSUE_TYPE.CRITICAL)
                       .map((p, _) => {
                         return (
                           <li key={_} className="text-sm text-red-800">
@@ -297,7 +293,7 @@ export default function FinalizeModal({
                     <Icon
                       icon="ic:outline-lock"
                       fontSize={18}
-                      className="mt-0.5 flex-shrink-0"
+                      className="mt-0.5 shrink-0"
                     />
                     <span>{tf("info.lock_payroll")}</span>
                   </li>
@@ -305,7 +301,7 @@ export default function FinalizeModal({
                     <Icon
                       icon="simple-line-icons:check"
                       fontSize={18}
-                      className="mt-0.5 flex-shrink-0"
+                      className="mt-0.5 shrink-0"
                     />
                     <span>{tf("info.to_finalized")}</span>
                   </li>
@@ -313,7 +309,7 @@ export default function FinalizeModal({
                     <Icon
                       icon="material-symbols:mail-outline"
                       fontSize={18}
-                      className="mt-0.5 flex-shrink-0"
+                      className="mt-0.5 shrink-0"
                     />
                     <span>{tf("info.generate_payslip")}</span>
                   </li>
@@ -349,7 +345,7 @@ export default function FinalizeModal({
               onClick={finalizeHandler}
               className="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center gap-2 font-semibold transition-colors"
             >
-               {tp("actions.finalize")}
+              {tp("actions.finalize")}
             </Button>
             <Button
               variant="outlined"
@@ -357,7 +353,7 @@ export default function FinalizeModal({
               onClick={() => setOpen(false)}
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700"
             >
-               {tf("actions.cancle")}
+              {tf("actions.cancle")}
             </Button>
           </div>
         </section>
