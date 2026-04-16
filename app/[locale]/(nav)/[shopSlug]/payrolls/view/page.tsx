@@ -1,48 +1,26 @@
 "use client";
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import { Add } from "@mui/icons-material";
 import { useEffect, useMemo, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePayrollRecords } from "@/hooks/payroll/record/usePayrollRecords";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { getRandomPastelColor } from "@/utils/generatePastelColor";
-import BranchSelector from "@/widget/BranchSelector";
-import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
-import { Employee } from "@/types/type.employee";
 import { PayrollRecord } from "@/types/payrollRecord";
-import { deletePayrollRecords } from "@/app/action/payroll/record/deletePayrollRecord";
-import { showError, showSuccess } from "@/utils/showSnackbar";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
-import { useUser } from "@clerk/nextjs";
 import { dateFormat, dateTimeFormat, moneyFormat } from "@/utils/formmatter";
-import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
-import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
 import { Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
-import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
-import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
-import SendEmailsModal from "@/app/components/Payrolls/view/SendEmailsModal";
-import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
-import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { motion, AnimatePresence } from "framer-motion";
 import UnlockModal from "@/app/components/Payrolls/view/UnlockModal";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import { EntryWithTotalDTO } from "@/types/type.entry";
+import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -57,7 +35,7 @@ export default function Home() {
     null,
   );
   const [showFilter, setShowFilter] = useState(false);
-  const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
+  const [filtered, setFiltered] = useState<EntryWithTotalDTO[]>([]);
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
   const periodId = useSearchParams().get("id");
@@ -69,16 +47,19 @@ export default function Home() {
   const router = useRouter();
   const { name } = useCurrentShop();
 
-  const { data: summaryData, isLoading: loadingSummary } =
-    usePayrollPeriodSummary(Number(periodId));
-
   const {
     data: periodData,
     isLoading: loadingPeriod,
     error,
-  } = usePayrollPeriod(Number(periodId));
+  } = usePeriod(Number(periodId)).getWithCal;
 
-  if (error || !periodId) {
+  const {
+    data: entriesData,
+    isLoading: loadingEntry,
+    error: entryError,
+  } = useEntry(Number(periodId)).list;
+
+  if (error || entryError || !periodId) {
     const basePath = pathname.replace(/\/view$/, "");
     router.replace(basePath);
   }
@@ -112,47 +93,63 @@ export default function Home() {
   }, [periodData]);
 
   useEffect(() => {
-    if (!summaryData?.data?.records) return;
+    if (!entriesData?.data) return;
     const q = debouced.toLowerCase();
 
     setFiltered(
-      summaryData?.data?.records.filter((r) => {
+      entriesData?.data?.filter((r) => {
         return (
-          r.employee.firstName.toLowerCase().includes(q) ||
-          r.employee.lastName.toLowerCase().includes(q) ||
-          (r.employee.firstName + r.employee.lastName)
+          r.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          r.employee.snapshot.lastName.toLowerCase().includes(q) ||
+          (r.employee.snapshot.firstName + r.employee.snapshot.lastName)
             .toLowerCase()
             .includes(q) ||
-          r.employee.nickName.toLowerCase().includes(q) ||
-          r.employee.branch.name.toLowerCase().includes(q) ||
-          r.employee.branch.nameEng.toLowerCase().includes(q)
+          r.employee.snapshot.nickName.toLowerCase().includes(q) ||
+          r.employee.snapshot.branch.name.toLowerCase().includes(q) ||
+          r.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );
-  }, [summaryData?.data?.records, debouced]);
+  }, [entriesData?.data, debouced]);
 
   const filteredTotalNet = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.totals.net || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.netPay || 0), 0);
   }, [filtered]);
 
   const filteredTotalEarning = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.totals.totalEarning || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.summary.gross || 0), 0);
   }, [filtered]);
   const filteredTotalDeduction = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.totals.totalDeduction || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.summary.adjustment || 0), 0);
   }, [filtered]);
 
   const filteredTotalSalary = useMemo(() => {
     return filtered.reduce((sum, r) => {
-      return sum + ("baseSalary" in r ? r.baseSalary || 0 : 0);
+      return sum + ("baseSalary" in r ? Number(r.baseSalary) || 0 : 0);
     }, 0);
   }, [filtered]);
 
-  const isLoading = loadingPeriod || !summaryData;
+  const period = periodData?.data!;
+  const isLoading = loadingPeriod || loadingEntry || !period;
 
   let loadingMessage = tc("load.preparing");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
+  if (!period)
+    return (
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
 
+            <p> {loadingMessage}</p>
+          </div>
+        </ModalDialog>
+      </Modal>
+    );
   return (
     <main className="h-full  w-full bg-gray-100 font-medium ">
       <PayrollsAddEmployeeModal
@@ -160,7 +157,7 @@ export default function Home() {
         setOpen={setOpenAdd}
         periodId={Number(periodId)}
       />
-      {openEdit && (
+      {/* {openEdit && (
         <PayrollEditEmployeeModal
           periodData={periodData?.data}
           selectedRecord={selectedRecord}
@@ -182,27 +179,14 @@ export default function Home() {
           open={openSendEmails}
           setOpen={setOpenSendEmails}
         />
-      )}
+      )} */}
       <UnlockModal
         periodId={Number(periodId) || -1}
         open={openUnlock}
         setOpen={setOpenUnlock}
       />
 
-      <Modal open={isLoading}>
-        <ModalDialog>
-          <div className="flex flex-col items-center justify-center">
-            <Icon
-              icon={"mynaui:spinner"}
-              className="animate-spin"
-              fontSize={50}
-            />
-
-            <p> {loadingMessage}</p>
-          </div>
-        </ModalDialog>
-      </Modal>
-      <title>{periodData?.data?.name}</title>
+      <title>{period.name}</title>
 
       <div className="flex flex-col h-full bg-white">
         <AnimatePresence initial={false}>
@@ -227,7 +211,7 @@ export default function Home() {
                 <div className="mt-5 flex flex-row justify-between items-center   ">
                   <div>
                     <span className="flex flex-row gap-3  items-center  text-black text-4xl font-bold">
-                      <p>{periodData?.data?.name}</p>
+                      <p>{period.name}</p>
                       <p className="text-lg opacity-50 font-light">
                         ({tv("info.read_only")})
                       </p>
@@ -268,7 +252,7 @@ export default function Home() {
                         </p>
                         <p className="text-xl font-bold text-blue-900 mt-1">
                           {tPeriod(
-                            `status.${PAY_PERIOD_STATUS_LABELS[periodData?.data?.status ?? PAY_PERIOD_STATUS.DRAFT]?.toLowerCase()}`,
+                            `status.${PAY_PERIOD_STATUS_LABELS[period.status ?? PAY_PERIOD_STATUS.DRAFT]?.toLowerCase()}`,
                           )}
                         </p>
                       </div>
@@ -289,7 +273,7 @@ export default function Home() {
                           {tPeriod("fields.employees")}
                         </p>
                         <p className="text-xl font-bold text-purple-900 mt-1">
-                          {periodData?.data?.employeeCount}
+                          {period.employeeCount}
                         </p>
                       </div>
                       <div className="bg-purple-200 p-2 rounded-lg">
@@ -305,7 +289,7 @@ export default function Home() {
                           {tPeriod("fields.grand_total")}
                         </p>
                         <p className="text-xl font-bold text-green-900 mt-1">
-                          {moneyFormat(periodData?.data?.totalNet || 0)}
+                          {moneyFormat(period.netPay || 0)}
                         </p>
                       </div>
                       <div className="bg-green-200 p-2 rounded-lg">
@@ -325,13 +309,9 @@ export default function Home() {
                           {tPeriod("fields.period")}
                         </p>
                         <p className="text-xl font-bold text-orange-900 mt-1">
-                          {dateFormat(
-                            new Date(periodData?.data?.start_period || 0),
-                          )}{" "}
+                          {dateFormat(new Date(period.start_period || 0))}{" "}
                           {" - "}
-                          {dateFormat(
-                            new Date(periodData?.data?.end_period || 0),
-                          )}
+                          {dateFormat(new Date(period.end_period || 0))}
                         </p>
                       </div>
                       <div className="bg-orange-200 p-2 rounded-lg">
@@ -377,11 +357,9 @@ export default function Home() {
                 <p className="text-green-900">{tv("section.label")}</p>
                 <p className="font-light text-xs text-green-700 ">
                   {tv("section.description", {
-                    name:
-                      summaryData?.data?.finalizedByUser?.fullName || "unknown",
-                    date: dateTimeFormat(
-                      new Date(summaryData?.data?.finalized_at || 0),
-                    ),
+                    name: `${period.finalized_by?.firstName || "unknown"} 
+                        ${period.finalized_by?.lastName || "unknown"} `,
+                    date: dateTimeFormat(new Date(period.finalized_at || 0)),
                   })}
                 </p>
               </div>
@@ -544,23 +522,18 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              <AdvancedFilters
+              {/* <AdvancedFilters
                 periodId={periodData?.data?.id || -1}
                 show={showFilter}
                 setShow={setShowFilter}
                 originalData={summaryData?.data?.records || []}
                 setData={setFiltered}
-              />
+              /> */}
             </div>
           </section>
           <div className="space-y-3 mb-5">
-            {filtered.map((record) => {
-              return (
-                <SummaryCard
-                  key={record.id}
-                  record={record as PayrollRecordSummary}
-                />
-              );
+            {filtered.map((entry) => {
+              return <SummaryCard key={entry.id} entry={entry} />;
             })}
             <SummarySection
               totalSalary={filteredTotalSalary}

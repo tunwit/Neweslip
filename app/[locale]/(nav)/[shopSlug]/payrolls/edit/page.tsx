@@ -73,7 +73,7 @@ export default function Home() {
     data: periodData,
     isLoading: loadingPeriod,
     error,
-  } = periodMethod.get;
+  } = periodMethod.getWithCal;
 
   const { mutateAsync: periodUpdateAsync } = periodMethod.update;
 

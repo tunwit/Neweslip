@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { FormProvider } from "react-hook-form";
+import { usePeriod } from "@/hooks/payroll/period/hook.period";
 
 interface ChangePasswordModalProps {
   periodId: number;
@@ -34,6 +35,8 @@ export default function UnlockModal({
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { mutateAsync: unlockAsync, error: UnlockError } =
+    usePeriod(periodId).unlock;
   const t = useTranslations("view_payroll.unlock");
 
   const onUnlock = async (e: FormEvent<HTMLFormElement>) => {
@@ -42,31 +45,17 @@ export default function UnlockModal({
     setError("");
     setIsSubmitting(true);
     try {
-      const result = await unlockPayroll(periodId, password, user?.id);
+      const result = await unlockAsync({ payload: { password } });
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodId}`);
-      queryClient.invalidateQueries({
-        queryKey: ["payrollRecord", periodId],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", periodId],
-        exact: false,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", "summary"],
-        exact: false,
-      });
-
-      if (result.code === 401) {
+      setOpen(false);
+    } catch (err: any) {
+      if (err.status === 401) {
         setError(t("modal.unlock.wrong_password"));
         return;
       } else {
-        showError(t("modal.unlock.fail", { err: "" }));
+        showError(t("modal.unlock.fail", { err: err.message }));
       }
-      if (result.code === 200) setOpen(false);
-    } catch (err: any) {
-      showError(t("modal.unlock.fail", { err: err.message }));
     } finally {
       setIsSubmitting(false);
     }

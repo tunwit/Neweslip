@@ -1,5 +1,6 @@
 import { PAY_PERIOD_STATUS } from "./enum/enum.period";
 import { CalculationContext } from "./type.calculation";
+import { UserPublicDTO } from "./type.user";
 
 export type PeriodPublicDTO = {
   id: number;
@@ -11,6 +12,8 @@ export type PeriodPublicDTO = {
   work_hours_per_day: string;
   workdays_per_month: string;
   edited: boolean | null;
+  finalized_at: Date | null;
+  finalized_by: UserPublicDTO | null;
 };
 
 export type PeriodWithCountDTO = PeriodPublicDTO & {
@@ -30,4 +33,8 @@ export type UpdatePeriodDTO = {
   end_period?: Date | undefined;
   work_hours_per_day?: string | null | undefined;
   workdays_per_month?: string | null | undefined;
+};
+
+export type UnlockPeriodDTO = {
+  password: string;
 };

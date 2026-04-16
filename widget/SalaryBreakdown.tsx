@@ -25,12 +25,17 @@ export default function SalaryBreakdown({ entryId }: SalaryBreakdownProps) {
   ).get;
   const t = useTranslations("record");
   const tc = useTranslations("common");
-  if (!breakdownData || !breakdownData?.data) return <p>Loading...</p>;
+  if (!breakdownData || !breakdownData?.data)
+    return (
+      <div className="py-2 w-full flex justify-center items-center gap-1">
+        <Icon icon={"mynaui:spinner"} className="animate-spin" fontSize={25} />
+        <p>{tc("load.preparing")}</p>
+      </div>
+    );
   const breakdown = breakdownData?.data;
 
   return (
     <div className="p-6">
-      {isLoading && isLoading}
       <div className="grid grid-cols-3 gap-8">
         {/* Base Salary */}
         <div>

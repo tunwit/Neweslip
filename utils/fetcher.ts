@@ -28,10 +28,19 @@ export const fetchwithauth = async ({ endpoint, method, body }: FetchProps) => {
   );
 
   if (!res.ok) {
-    const msg = await res.text();
-    const error = new Error(msg || "Request failed");
-    (error as any).status = res.status;
-    throw error;
+    let errorBody: any;
+
+    try {
+      errorBody = await res.json();
+    } catch {
+      errorBody = { message: await res.text() };
+    }
+
+    throw {
+      status: res.status,
+      code: errorBody.code ?? "UNKNOWN_ERROR",
+      message: errorBody.message ?? "Request failed",
+    };
   }
 
   return res.json();
