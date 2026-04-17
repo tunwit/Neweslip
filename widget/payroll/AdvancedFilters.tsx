@@ -1,31 +1,46 @@
-import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
-import { usePeriodFields } from "@/hooks/payroll/fields/usePeriodFields";
-import {
-  PayrollPeriodSummary,
-  PayrollRecordSummary,
-} from "@/types/payrollPeriodSummary";
-import { PayrollRecord } from "@/types/payrollRecord";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Option, Select } from "@mui/joy";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { PeriodFilterContextDTO, PeriodSummaryDTO } from "@/types/type.period";
+import { EntryBreakDownDTO } from "@/types/type.entry";
+import { getLocalizedName } from "@/lib/getLocalizedName";
 
-interface FilterRule {
+/* ---------------- TYPES ---------------- */
+
+type NumberOperator = "eq" | "neq" | "gt" | "gte" | "lt" | "lte";
+
+type FilterRule =
+  | {
+      id: string;
+      type: "number";
+      field: string;
+      operator: NumberOperator;
+      value: number;
+    }
+  | {
+      id: string;
+      type: "boolean";
+      field: "paid";
+      operator: "eq" | "neq";
+      value: boolean;
+    };
+
+type FieldOption = {
   id: string;
-  field: string;
-  operator: string;
-  value: string | boolean;
-}
+  name: string;
+  nameEng: string;
+};
 
-// Operators for number fields
-const numberOperators = [
-  { value: "eq" },
-  { value: "neq" },
-  { value: "gt" },
-  { value: "gte" },
-  { value: "lt" },
-  { value: "lte" },
-] as const;
+/* ---------------- CONSTANTS ---------------- */
+
+const numberOperators: NumberOperator[] = [
+  "eq",
+  "neq",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+];
 
 const numberOperatorsSymbol: Record<string, string> = {
   eq: "=",
@@ -39,228 +54,239 @@ const numberOperatorsSymbol: Record<string, string> = {
 const quickFilters = [
   {
     label: "has_overtime",
-    filter: { field: "totalOT", operator: "gt", value: "0" },
+    filter: { type: "number", field: "totalOT", operator: "gt", value: 0 },
   },
   {
     label: "has_penalty",
-    filter: { field: "totalPenalty", operator: "gt", value: "0" },
+    filter: { type: "number", field: "totalPenalty", operator: "gt", value: 0 },
   },
   {
     label: "no_deduction",
-    filter: { field: "totalDeduction", operator: "eq", value: "0" },
+    filter: {
+      type: "number",
+      field: "totalDeduction",
+      operator: "eq",
+      value: 0,
+    },
   },
   {
     label: "high_earners",
-    filter: { field: "net", operator: "gt", value: "20000" },
+    filter: { type: "number", field: "net", operator: "gt", value: 20000 },
   },
   {
     label: "low_earners",
-    filter: { field: "net", operator: "lt", value: "16000" },
+    filter: { type: "number", field: "net", operator: "lt", value: 16000 },
   },
   {
     label: "paid",
-    filter: { field: "paid", operator: "eq", value: true },
+    filter: { type: "boolean", field: "paid", operator: "eq", value: true },
   },
-];
+] as const;
 
-/**
- * Generic AdvancedFilters component
- *
- * T: the record type passed in (PayrollRecord | PayrollRecordSummary)
- * T must have `.id: number`
- */
-interface AdvancedFiltersProps<T extends { id: number }> {
+/* ---------------- HELPERS ---------------- */
+
+const buildValueMap = (entry: EntryBreakDownDTO) => {
+  const map: Record<string, number | boolean> = {};
+
+  Object.entries(entry.calculation.totals).forEach(([k, v]) => {
+    map[k] = v;
+  });
+
+  entry.items.earnings.forEach((f) => {
+    map[f.nameEng] = Number(f.amount);
+  });
+
+  entry.items.deductions.forEach((f) => {
+    map[f.nameEng] = Number(f.amount);
+  });
+
+  entry.items.ots.forEach((f) => {
+    map[f.nameEng] = Number(f.amount);
+  });
+
+  entry.items.penalties.forEach((f) => {
+    map[f.nameEng] = Number(f.amount);
+  });
+
+  entry.items.non_calculated.forEach((f) => {
+    map[f.nameEng] = Number(f.amount);
+  });
+
+  // computed
+  map["totalOT"] = entry.calculation.totals.overtime;
+  map["totalPenalty"] = entry.calculation.totals.penalties;
+  map["totalDeduction"] = entry.calculation.summary.adjustment;
+  map["net"] = entry.calculation.netPay;
+  map["paid"] = entry.entry.paidAt !== null;
+
+  return map;
+};
+
+const evaluateNumber = (value: number, op: NumberOperator, target: number) => {
+  switch (op) {
+    case "eq":
+      return value === target;
+    case "neq":
+      return value !== target;
+    case "gt":
+      return value > target;
+    case "gte":
+      return value >= target;
+    case "lt":
+      return value < target;
+    case "lte":
+      return value <= target;
+    default:
+      return true;
+  }
+};
+
+/* ---------------- COMPONENT ---------------- */
+
+interface Props<T extends { id: number }> {
   periodId: number;
   show: boolean;
   setShow: Dispatch<SetStateAction<boolean>>;
-  originalData: T[]; // Original unfiltered data
-  setData: Dispatch<SetStateAction<T[]>>;
+  context: PeriodFilterContextDTO;
+  onApply: (data: EntryBreakDownDTO[]) => void;
 }
 
 export default function AdvancedFilters<T extends { id: number }>({
-  periodId,
   show,
   setShow,
-  originalData,
-  setData,
-}: AdvancedFiltersProps<T>) {
-  const { data } = usePayrollPeriodSummary(periodId);
-  const { data: periodFields } = usePeriodFields(Number(periodId));
+  context,
+  onApply,
+}: Props<T>) {
+  const locale = useLocale();
+  const [draftFilters, setDraftFilters] = useState<FilterRule[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<FilterRule[]>([]);
 
-  const [filters, setFilters] = useState<FilterRule[]>([]);
-  const [activeFilters, setActiveFilters] = useState<FilterRule[]>([]);
   const t = useTranslations("period");
-  const updateFilter = (id: string, key: string, value: string) => {
-    setFilters((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, [key]: value } : f)),
-    );
-  };
 
-  const removeFilter = (id: string) => {
-    setFilters((prev) => prev.filter((f) => f.id !== id));
-    setActiveFilters((prev) => prev.filter((f) => f.id !== id));
-  };
+  /* ---------------- FIELD OPTIONS ---------------- */
+
+  const extendedFields: FieldOption[] = [
+    ...context.fields.map((f) => ({
+      id: f.nameEng,
+      name: f.name,
+      nameEng: f.nameEng,
+    })),
+    { id: "totalOT", name: "ค่าล่วงเวลา", nameEng: "Overtimes" },
+    { id: "totalPenalty", name: "ค่าหักลงโทษ", nameEng: "Penalties" },
+    { id: "totalDeduction", name: "รายหัก", nameEng: "Deductions" },
+    { id: "net", name: "ยอดสุทธิ", nameEng: "Net" },
+    { id: "paid", name: "จ่ายเเล้ว", nameEng: "Paid" },
+  ];
+
+  /* ---------------- FILTER LOGIC ---------------- */
 
   const applyFilterLogic = (
-    summary: PayrollPeriodSummary,
-    records: T[],
-    filterRules: FilterRule[],
-  ): T[] => {
-    if (filterRules.length === 0) return records;
+    breakdowns: EntryBreakDownDTO[],
+    filters: FilterRule[],
+  ) => {
+    if (filters.length === 0) return breakdowns;
 
-    // Build summary map: id -> PayrollRecordSummary
-    const summaryMap = new Map<number, PayrollRecordSummary>();
-    summary.records.forEach((rec) => summaryMap.set(rec.id, rec));
+    return breakdowns.filter((e) => {
+      const valueMap = buildValueMap(e);
 
-    return records.filter((origRecord) => {
-      const summaryRecord = summaryMap.get(origRecord.id);
+      return filters.every((filter) => {
+        const value = valueMap[filter.field];
+        if (value === undefined) return true;
 
-      // If no matching summary record, exclude (or you could choose to include)
-      if (!summaryRecord) return false;
-
-      // Every filter must pass
-      return filterRules.every((filter) => {
-        let recordValue: number | string | undefined = undefined;
-
-        if (filter.field === "paid") {
-          const isPaid = summaryRecord.paid; // boolean
-          const fPaid = filter.value === "true";
-
-          if (filter.operator === "eq") {
-            return isPaid === fPaid;
-          }
-
-          if (filter.operator === "neq") {
-            return isPaid !== fPaid;
-          }
-
-          return true;
+        if (filter.type === "boolean") {
+          return filter.operator === "eq"
+            ? value === filter.value
+            : value !== filter.value;
         }
 
-        // 1) totals (net, totalEarning, totalDeduction, totalPenalty, totalOT, etc)
-        if (
-          Object.prototype.hasOwnProperty.call(
-            summaryRecord.totals,
-            filter.field,
-          )
-        ) {
-          recordValue = (summaryRecord.totals as any)[filter.field];
-        }
+        if (typeof value !== "number") return false;
 
-        // 2) custom salary fields
-        if (recordValue === undefined) {
-          const customField = summaryRecord.fields.find(
-            (f) =>
-              f.name === filter.field || (f).nameEng === filter.field,
-          );
-          if (customField) recordValue = (customField).amount;
-        }
-
-        // 3) OT fields
-        if (recordValue === undefined) {
-          const otField = summaryRecord.ot.find(
-            (f) =>
-              f.name === filter.field || (f).nameEng === filter.field,
-          );
-          if (otField) recordValue = (otField).amount;
-        }
-
-        // 4) Penalty fields
-        if (recordValue === undefined) {
-          const penField = summaryRecord.penalties.find(
-            (f) =>
-              f.name === filter.field || (f).nameEng === filter.field,
-          );
-          if (penField) recordValue = (penField).amount;
-        }
-
-        // If we still don't have a value for this field, treat as "pass" (do not filter out)
-        if (recordValue === undefined) return true;
-
-        // Compare numeric values
-        if(typeof filter.value !== "string") return
-        const filterValue = parseFloat(filter.value);
-        const numericValue = parseFloat(String(recordValue));
-
-        if (isNaN(filterValue) || isNaN(numericValue)) return false;
-
-        switch (filter.operator) {
-          case "eq":
-            return numericValue === filterValue;
-          case "neq":
-            return numericValue !== filterValue;
-          case "gt":
-            return numericValue > filterValue;
-          case "gte":
-            return numericValue >= filterValue;
-          case "lt":
-            return numericValue < filterValue;
-          case "lte":
-            return numericValue <= filterValue;
-          default:
-            return true;
-        }
+        return evaluateNumber(value, filter.operator, filter.value);
       });
     });
   };
 
   const applyFilter = () => {
-    if (!data?.data) return;
-    // We pass originalData (T[]) so the return is T[]
-    const filtered = applyFilterLogic(data.data, originalData, filters);
-    setData(filtered);
-    setActiveFilters([...filters]);
+    if (!context?.fields?.length) return;
+
+    const filtered = applyFilterLogic(context.breakdowns, draftFilters);
+
+    onApply(filtered);
+    setAppliedFilters(draftFilters);
     setShow(false);
   };
 
   const clearFilter = () => {
-    setFilters([]);
-    setActiveFilters([]);
+    setDraftFilters([]);
+    setAppliedFilters([]);
   };
 
   useEffect(() => {
-    // Run initial filter on mount (keeps behavior consistent with original)
+    if (!context) return;
     applyFilter();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [context]);
 
-  const addQuickFilter = (field: string, operator: string, value: string) => {
-    if (!periodFields?.data) return;
-    if (periodFields.data.length === 0) return;
-    const newFilter: FilterRule = {
-      id: Date.now().toString(),
-      field,
-      operator,
-      value,
-    };
-
-    setFilters((prev) => [...prev, newFilter]);
-  };
+  /* ---------------- ACTIONS ---------------- */
 
   const addFilter = () => {
-    if (!periodFields?.data) return;
-    if (periodFields.data.length === 0) return;
+    if (!extendedFields.length) return;
 
-    const newFilter: FilterRule = {
-      id: Date.now().toString(),
-      field: periodFields.data[0] ?? "",
-      operator: numberOperators[0].value,
-      value: "0",
-    };
-    setFilters((prev) => [...prev, newFilter]);
+    setDraftFilters((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        type: "number",
+        field: extendedFields[0].id,
+        operator: "eq",
+        value: 0,
+      },
+    ]);
   };
+
+  const addQuickFilter = (filter: FilterRule) => {
+    setDraftFilters((prev) => [
+      ...prev,
+      { ...filter, id: crypto.randomUUID() },
+    ]);
+  };
+
+  const updateFilter = <T extends FilterRule>(
+    id: string,
+    patch: Partial<T>,
+  ) => {
+    setDraftFilters((prev) =>
+      prev.map((f) => {
+        if (f.id !== id) return f;
+
+        return {
+          ...f,
+          ...patch,
+        } as FilterRule;
+      }),
+    );
+  };
+
+  const removeFilter = (id: string) => {
+    setDraftFilters((prev) => prev.filter((f) => f.id !== id));
+    setAppliedFilters((prev) => prev.filter((f) => f.id !== id));
+  };
+  const fieldMap = Object.fromEntries(extendedFields.map((f) => [f.id, f]));
+  /* ---------------- UI ---------------- */
 
   return (
     <>
-      <div hidden={activeFilters.length === 0} className="flex gap-3  mt-4">
-        {activeFilters.map((a) => (
+      <div hidden={appliedFilters.length === 0} className="flex gap-3  mt-4">
+        {appliedFilters.map((a) => (
           <span
             key={a.id}
             className="flex flex-row gap-2 text-blue-700 bg-blue-100 px-3 py-2 rounded-md text-sm"
           >
             <p>
-              {a.field} {numberOperatorsSymbol[a.operator] || "unknown"}{" "}
-              {a.value}
+              {getLocalizedName(
+                fieldMap[a.field] || { name: a.field, nameEng: a.field },
+                locale,
+              )}{" "}
+              {numberOperatorsSymbol[a.operator] || "unknown"} {a.value}
             </p>
             <button
               onClick={() => {
@@ -283,13 +309,7 @@ export default function AdvancedFilters<T extends { id: number }>({
           {quickFilters.map((q, i) => (
             <button
               key={i}
-              onClick={() =>
-                addQuickFilter(
-                  q.filter.field,
-                  q.filter.operator,
-                  String(q.filter.value),
-                )
-              }
+              onClick={() => addQuickFilter(q.filter as FilterRule)}
               className="flex items-center justify-center text-xs text-gray-700 bg-gray-200 w-fit h-fit px-3 py-1 pt-2 rounded-sm"
             >
               {t(`filters.quick_filters.filters.${q.label}`)}
@@ -299,12 +319,12 @@ export default function AdvancedFilters<T extends { id: number }>({
 
         <div className="flex flex-col max-w-[700px] justify-center mt-3">
           <div className="space-y-3 mb-4">
-            {filters.length === 0 ? (
+            {draftFilters.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">
                 {t("filters.no_filter")}
               </p>
             ) : (
-              filters.map((filter) => (
+              draftFilters.map((filter) => (
                 <div
                   key={filter.id}
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
@@ -314,12 +334,15 @@ export default function AdvancedFilters<T extends { id: number }>({
                     value={filter.field}
                     className="text-sm flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     onChange={(e) =>
-                      updateFilter(filter.id, "field", e.target.value)
+                      updateFilter(filter.id, { field: e.target.value })
                     }
                   >
-                    {periodFields?.data?.map((field, idx) => (
-                      <option key={idx} value={field ?? ""}>
-                        {field}
+                    {extendedFields.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {getLocalizedName(
+                          { name: f.name, nameEng: f.nameEng },
+                          locale,
+                        )}
                       </option>
                     ))}
                   </select>
@@ -329,13 +352,15 @@ export default function AdvancedFilters<T extends { id: number }>({
                     value={filter.operator}
                     className="text-sm w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     onChange={(e) =>
-                      updateFilter(filter.id, "operator", e.target.value)
+                      updateFilter(filter.id, {
+                        operator: e.target.value as NumberOperator,
+                      })
                     }
                   >
                     {numberOperators.map((op) => (
-                      <option key={op.value} value={op.value}>
-                        {numberOperatorsSymbol[op.value]} (
-                        {t(`filters.operator.${op.value}`)})
+                      <option key={op} value={op}>
+                        {numberOperatorsSymbol[op]} (
+                        {t(`filters.operator.${op}`)})
                       </option>
                     ))}
                   </select>
@@ -346,7 +371,9 @@ export default function AdvancedFilters<T extends { id: number }>({
                       className="text-sm w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       value={String(filter.value)}
                       onChange={(e) =>
-                        updateFilter(filter.id, "value", e.target.value)
+                        updateFilter(filter.id, {
+                          value: e.target.value === "true",
+                        })
                       }
                     >
                       <option value={"true"}>true</option>
@@ -357,7 +384,9 @@ export default function AdvancedFilters<T extends { id: number }>({
                       type={"number"}
                       value={filter.value as unknown as number}
                       onChange={(e) =>
-                        updateFilter(filter.id, "value", e.target.value)
+                        updateFilter(filter.id, {
+                          value: Number(e.target.value),
+                        })
                       }
                       placeholder="Enter value"
                       className="text-sm flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -389,7 +418,7 @@ export default function AdvancedFilters<T extends { id: number }>({
         <div className="flex flex-row-reverse border-t py-2 mt-2">
           <div className="space-x-3">
             <button
-              disabled={filters.length === 0}
+              disabled={draftFilters.length === 0}
               onClick={clearFilter}
               className="text-sm text-gray-700 disabled:text-gray-300"
             >

@@ -380,7 +380,8 @@
           "has_penalty": "Has penalties",
           "no_deduction": "No deductions",
           "high_earners": "High earners (>20k)",
-          "low_earners": "Low earners (<16k)"
+          "low_earners": "Low earners (<16k)",
+          "paid": "Paid"
         }
       },
       "operator": {

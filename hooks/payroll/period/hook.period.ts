@@ -3,8 +3,10 @@ import { ValidationResultDTO } from "@/types/payroll/type.validate";
 import { ApiResponse } from "@/types/response";
 import {
   NewPeriodDTO,
+  PeriodFilterContextDTO,
   PeriodPublicDTO,
   PeriodSummaryDTO,
+  PeriodWithBreakdownsDTO,
   PeriodWithCountDTO,
   UnlockPeriodDTO,
   UpdatePeriodDTO,
@@ -97,6 +99,20 @@ export function usePeriods() {
   return { list, create, remove };
 }
 
+export function usePeriodValidate(periodId?: number | string) {
+  const { id: shopId } = useCurrentShop();
+
+  return useQuery<ApiResponse<ValidationResultDTO[]>>({
+    queryKey: ["period", shopId, periodId, "validate"],
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/validate`,
+        method: "GET",
+      }),
+    enabled: !!shopId && !!periodId,
+  });
+}
+
 export function usePeriod(periodId?: number | string) {
   const { id: shopId } = useCurrentShop();
   const queryClient = useQueryClient();
@@ -105,6 +121,7 @@ export function usePeriod(periodId?: number | string) {
   const queryValidateKey = ["period", shopId, periodId, "validate"];
   const queryKeyEntries = ["entries", periodId];
   const queryKeyWithCal = ["period", shopId, periodId, "withCal"];
+  const queryKeyFilterContext = ["period", shopId, periodId, "context"];
 
   const get = useQuery<ApiResponse<PeriodWithCountDTO>>({
     queryKey: queryKey,
@@ -120,17 +137,17 @@ export function usePeriod(periodId?: number | string) {
     queryKey: queryKeyWithCal,
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/shops/${shopId}/periods/${periodId}?withCal=true`,
+        endpoint: `/shops/${shopId}/periods/${periodId}?include=calculation`,
         method: "GET",
       }),
     enabled: !!shopId && !!periodId,
   });
 
-  const validate = useQuery<ApiResponse<ValidationResultDTO[]>>({
-    queryKey: queryValidateKey,
+  const getFilterContext = useQuery<ApiResponse<PeriodFilterContextDTO>>({
+    queryKey: queryKeyFilterContext,
     queryFn: () =>
       fetchwithauth({
-        endpoint: `/shops/${shopId}/periods/${periodId}/validate`,
+        endpoint: `/shops/${shopId}/periods/${periodId}?include=calculation,fields,breakdowns`,
         method: "GET",
       }),
     enabled: !!shopId && !!periodId,
@@ -188,5 +205,12 @@ export function usePeriod(periodId?: number | string) {
       queryClient.invalidateQueries({ queryKey: queryKeyList });
     },
   });
-  return { get, validate, update, getWithCal, finalize, unlock };
+  return {
+    get,
+    update,
+    getWithCal,
+    getFilterContext,
+    finalize,
+    unlock,
+  };
 }

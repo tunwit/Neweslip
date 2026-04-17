@@ -20,7 +20,8 @@ import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { usePeriod } from "@/hooks/payroll/period/hook.period";
 import { EntryWithTotalDTO } from "@/types/type.entry";
-import { useEntry } from "@/hooks/payroll/entry/hook.entry";
+import { useEntry, useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
+import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -46,12 +47,9 @@ export default function Home() {
   const pathname = usePathname();
   const router = useRouter();
   const { name } = useCurrentShop();
-
-  const {
-    data: periodData,
-    isLoading: loadingPeriod,
-    error,
-  } = usePeriod(Number(periodId)).getWithCal;
+  const periodHook = usePeriod(Number(periodId));
+  const { data: periodData, isLoading: loadingPeriod } =
+    periodHook.getFilterContext;
 
   const {
     data: entriesData,
@@ -59,7 +57,7 @@ export default function Home() {
     error: entryError,
   } = useEntry(Number(periodId)).list;
 
-  if (error || entryError || !periodId) {
+  if (entryError || !periodId) {
     const basePath = pathname.replace(/\/view$/, "");
     router.replace(basePath);
   }
@@ -134,7 +132,7 @@ export default function Home() {
 
   let loadingMessage = tc("load.preparing");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
-  if (!period)
+  if (!period || !periodData?.data)
     return (
       <Modal open={isLoading}>
         <ModalDialog>
@@ -152,11 +150,6 @@ export default function Home() {
     );
   return (
     <main className="h-full  w-full bg-gray-100 font-medium ">
-      <PayrollsAddEmployeeModal
-        open={openAdd}
-        setOpen={setOpenAdd}
-        periodId={Number(periodId)}
-      />
       {/* {openEdit && (
         <PayrollEditEmployeeModal
           periodData={periodData?.data}
@@ -522,13 +515,19 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              {/* <AdvancedFilters
-                periodId={periodData?.data?.id || -1}
+              <AdvancedFilters
+                periodId={Number(periodId) || -1}
                 show={showFilter}
                 setShow={setShowFilter}
-                originalData={summaryData?.data?.records || []}
-                setData={setFiltered}
-              /> */}
+                context={periodData.data}
+                onApply={(filteredBreakdowns) => {
+                  const mapped = filteredBreakdowns.map((b) => ({
+                    ...b.entry,
+                    ...b.calculation,
+                  }));
+                  setFiltered(mapped);
+                }}
+              />
             </div>
           </section>
           <div className="space-y-3 mb-5">

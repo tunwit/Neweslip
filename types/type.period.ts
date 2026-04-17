@@ -1,5 +1,6 @@
 import { PAY_PERIOD_STATUS } from "./enum/enum.period";
 import { CalculationContext } from "./type.calculation";
+import { EntryBreakDownDTO } from "./type.entry";
 import { UserPublicDTO } from "./type.user";
 
 export type PeriodPublicDTO = {
@@ -20,6 +21,20 @@ export type PeriodWithCountDTO = PeriodPublicDTO & {
   employeeCount: number;
 };
 export type PeriodSummaryDTO = PeriodWithCountDTO & CalculationContext;
+
+export type PeriodFilterContextDTO = PeriodWithCountDTO &
+  CalculationContext & {
+    fields: {
+      name: string;
+      nameEng: string;
+    }[];
+  } & {
+    breakdowns: EntryBreakDownDTO[];
+  };
+
+export type PeriodWithBreakdownsDTO = PeriodWithCountDTO & {
+  breakdowns: EntryBreakDownDTO[];
+};
 
 export type NewPeriodDTO = {
   name: string;

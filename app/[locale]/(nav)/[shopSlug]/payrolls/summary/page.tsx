@@ -32,7 +32,10 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { useTranslations } from "next-intl";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import {
+  usePeriod,
+  usePeriodValidate,
+} from "@/hooks/payroll/period/hook.period";
 import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
 import { number } from "zod";
@@ -54,12 +57,9 @@ export default function Home() {
   const { data: periodData, isLoading: loadingPeriod } = usePeriod(
     Number(periodId),
   ).getWithCal;
-  const { data: validateData, isLoading: loadingValidate } = usePeriod(
+  const { data: validateData, isLoading: loadingValidate } = usePeriodValidate(
     Number(periodId),
-  ).validate;
-
-  console.log("validate", validateData);
-
+  );
   const { data: entriesData, isLoading: loadingRecord } = useEntry(
     Number(periodId),
   ).list;

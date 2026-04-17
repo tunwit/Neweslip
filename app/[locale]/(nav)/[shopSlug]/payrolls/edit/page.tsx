@@ -96,9 +96,6 @@ export default function Home() {
   const [filterdRecord, setFilterdRecord] = useState<EntryWithTotalDTO[]>([]);
   const tPeriod = useTranslations("period");
 
-  useEffect(() => {
-    console.log(dateRange);
-  }, [dateRange]);
   const deleteHandler = async () => {
     if (!user?.id) return;
     try {
