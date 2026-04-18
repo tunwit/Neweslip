@@ -136,3 +136,21 @@ export function useEntryBreakdown(periodId: number, entryId: number) {
 
   return { get, update };
 }
+
+export function useEntrySlip(periodId: number, entryId: number) {
+  const { id: shopId } = useCurrentShop();
+  const queryKey = ["entries", "pay-slip", entryId];
+  const queryClient = useQueryClient();
+  const get = useMutation<ApiResponse<EntryBreakDownDTO>, Error>({
+    mutationFn: () => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/pay-slip`,
+        method: "GET",
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+  return { get };
+}

@@ -22,7 +22,9 @@ interface PeriodEmployeeTableProps {
   searchQuery: string;
   checkBoxMethod: UseCheckBoxResult<number>;
   periodData?: PeriodPublicDTO;
-  records: EntryWithTotalDTO[];
+  displayEntries: EntryWithTotalDTO[];
+  totalEntries: number;
+  totalNetPay: number;
   setSelected?: Dispatch<SetStateAction<EntryWithTotalDTO | null>>;
   setOpenEdit: Dispatch<SetStateAction<boolean>>;
 }
@@ -30,18 +32,20 @@ export default function PeriodEmployeeTable({
   searchQuery,
   checkBoxMethod,
   periodData,
-  records,
+  displayEntries,
+  totalEntries,
+  totalNetPay,
   setSelected,
   setOpenEdit,
 }: PeriodEmployeeTableProps) {
-  const [filterd, setFilterd] = useState(records);
+  const [filterd, setFilterd] = useState(displayEntries);
   const t = useTranslations("record");
   const locale = useLocale();
   useEffect(() => {
     const q = searchQuery.toLowerCase();
 
     setFilterd(
-      records.filter((r) => {
+      displayEntries.filter((r) => {
         return (
           r.employee.snapshot.firstName.toLowerCase().includes(q) ||
           r.employee.snapshot.lastName.toLowerCase().includes(q) ||
@@ -54,15 +58,15 @@ export default function PeriodEmployeeTable({
         );
       }),
     );
-  }, [records, searchQuery]);
+  }, [displayEntries, searchQuery]);
 
   const { toggle, isChecked, checkall, uncheckall, isSomeChecked } =
     checkBoxMethod;
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!records) return;
+    if (!displayEntries) return;
     if (e.currentTarget.checked) {
-      checkall(records.map((r) => r.id));
+      checkall(displayEntries.map((r) => r.id));
     } else {
       uncheckall();
     }
@@ -80,7 +84,7 @@ export default function PeriodEmployeeTable({
               <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
                 <th className="font-light text-sm pl-6 w-[6%]">
                   <Checkbox
-                    indeterminate={isSomeChecked(records.length)}
+                    indeterminate={isSomeChecked(displayEntries.length)}
                     onChange={handleAllCheckbox}
                   />
                 </th>
@@ -213,16 +217,28 @@ export default function PeriodEmployeeTable({
                   colSpan={6}
                   className="text-left pl-6 text-sm font-normal text-gray-700 whitespace-nowrap"
                 >
-                  {t("info.showing", { count: filterd.length })}
+                  <span className="flex gap-1">
+                    {t("info.showing", { count: filterd.length })}{" "}
+                    {totalEntries !== filterd.length && (
+                      <p className="text-xs pt-2">/ 5 คน</p>
+                    )}
+                  </span>
                 </th>
                 <th colSpan={2}>
                   <div className="text-right pr-6">
                     <p className="text-xs text-gray-500 uppercase whitespace-nowrap">
                       {t("info.total_payroll")}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">
-                      ฿ {moneyFormat(filteredTotalNet || 0)}
-                    </p>
+                    <span className="flex flex-row-reverse gap-1">
+                      {totalNetPay !== filteredTotalNet && (
+                        <p className="text-xs font-normal pt-5">
+                          / {moneyFormat(filteredTotalNet || 0)}
+                        </p>
+                      )}
+                      <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">
+                        ฿ {moneyFormat(filteredTotalNet || 0)}
+                      </p>
+                    </span>
                   </div>
                 </th>
               </tr>

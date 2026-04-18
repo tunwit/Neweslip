@@ -1,4 +1,7 @@
-import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
+import {
+  useEntryBreakdown,
+  useEntrySlip,
+} from "@/hooks/payroll/entry/hook.entry";
 import { PENALTY_METHOD } from "@/types/enum/enum.penalty";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { EntryWithTotalDTO } from "@/types/type.entry";
@@ -6,7 +9,7 @@ import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 
 interface SalaryBreakdownProps {
   entryId: number;
@@ -23,8 +26,19 @@ export default function SalaryBreakdown({ entryId }: SalaryBreakdownProps) {
     Number(periodId),
     entryId,
   ).get;
+  const { mutateAsync: generateSlip } = useEntrySlip(
+    Number(periodId),
+    entryId,
+  ).get;
   const t = useTranslations("record");
   const tc = useTranslations("common");
+  const test = () => {
+    generateSlip();
+  };
+
+  useEffect(() => {
+    test();
+  }, []);
   if (!breakdownData || !breakdownData?.data)
     return (
       <div className="py-2 w-full flex justify-center items-center gap-1">

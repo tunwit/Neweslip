@@ -147,12 +147,10 @@ export default function PayrollsAddEmployeeModal({
                     label: te("fields.name"),
                     width: "45%",
                     render: (row, i) => {
-                      const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${row.avatar}`;
-
                       return (
                         <span className="flex flex-row items-center gap-2">
                           <ChangableAvatar
-                            src={avatar}
+                            src={row.avatarUrl ?? ""}
                             fallbackTitle={row.firstName.charAt(0)}
                             editable={false}
                           />

@@ -151,6 +151,7 @@ export default function PeriodsTable({
             >
               <div className="flex items-center gap-4">
                 <Checkbox
+                  disabled={!editable}
                   checked={isChecked(payroll.id)}
                   onChange={() => toggle(payroll.id)}
                 />

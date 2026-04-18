@@ -56,7 +56,7 @@ export default function Home() {
 
   const { data: periodData, isLoading: loadingPeriod } = usePeriod(
     Number(periodId),
-  ).getWithCal;
+  ).getFilterContext;
   const { data: validateData, isLoading: loadingValidate } = usePeriodValidate(
     Number(periodId),
   );
@@ -104,7 +104,8 @@ export default function Home() {
     );
   }, [entriesData?.data, debouced]);
 
-  const isLoading = loadingPeriod || loadingValidate || finalizing;
+  const isLoading =
+    loadingPeriod || loadingValidate || finalizing || !periodData?.data;
 
   let loadingMessage = "";
   if (finalizing) loadingMessage = t("load.finalizing");
@@ -129,8 +130,8 @@ export default function Home() {
     }, 0);
   }, [filtered]);
 
-  return (
-    <main className="h-full w-full bg-gray-100 font-medium ">
+  if (isLoading)
+    return (
       <Modal open={isLoading}>
         <ModalDialog>
           <div className="flex flex-col items-center justify-center">
@@ -143,6 +144,10 @@ export default function Home() {
           </div>
         </ModalDialog>
       </Modal>
+    );
+
+  return (
+    <main className="h-full w-full bg-gray-100 font-medium ">
       <FinalizeModal
         open={openFinalizeModal}
         setOpen={setOpenFinalizeModal}
@@ -265,13 +270,19 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            {/* <AdvancedFilters
-              periodId={periodData?.data?.id || -1}
+            <AdvancedFilters
+              periodId={Number(periodId) || -1}
               show={showFilter}
               setShow={setShowFilter}
-              originalData={summaryData?.data?.records || []}
-              setData={setFiltered}
-            /> */}
+              context={periodData?.data!}
+              onApply={(filteredBreakdowns) => {
+                const mapped = filteredBreakdowns.map((b) => ({
+                  ...b.entry,
+                  ...b.calculation,
+                }));
+                setFiltered(mapped);
+              }}
+            />
           </div>
         </section>
 

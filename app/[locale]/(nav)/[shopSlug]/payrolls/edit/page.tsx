@@ -73,7 +73,7 @@ export default function Home() {
     data: periodData,
     isLoading: loadingPeriod,
     error,
-  } = periodMethod.getWithCal;
+  } = periodMethod.getFilterContext;
 
   const { mutateAsync: periodUpdateAsync } = periodMethod.update;
 
@@ -194,6 +194,23 @@ export default function Home() {
   if (loadingRecord) loadingMessage = tPeriod("load.loading_records");
   else if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
 
+  if (isLoading)
+    return (
+      <Modal open={isLoading}>
+        <ModalDialog>
+          <div className="flex flex-col items-center justify-center">
+            <Icon
+              icon={"mynaui:spinner"}
+              className="animate-spin"
+              fontSize={50}
+            />
+
+            <p> {loadingMessage}</p>
+          </div>
+        </ModalDialog>
+      </Modal>
+    );
+
   return (
     <main className="min-h-screen w-full bg-gray-100 font-medium ">
       <PayrollsAddEmployeeModal
@@ -217,19 +234,7 @@ export default function Home() {
           setOpen={setOpenEdit}
         />
       )}
-      <Modal open={isLoading}>
-        <ModalDialog>
-          <div className="flex flex-col items-center justify-center">
-            <Icon
-              icon={"mynaui:spinner"}
-              className="animate-spin"
-              fontSize={50}
-            />
 
-            <p> {loadingMessage}</p>
-          </div>
-        </ModalDialog>
-      </Modal>
       <title>{periodData?.data?.name}</title>
 
       <div className="flex flex-col h-full">
@@ -425,13 +430,20 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            {/* <AdvancedFilters
-              periodId={periodData?.data?.id || -1}
+            <AdvancedFilters
+              periodId={Number(periodId) || -1}
               show={showFilter}
               setShow={setShowFilter}
-              originalData={data?.data || []}
-              setData={setFilterdRecord}
-            /> */}
+              context={periodData?.data!}
+              onApply={(filteredBreakdowns) => {
+                const mapped = filteredBreakdowns.map((b) => ({
+                  ...b.entry,
+                  ...b.calculation,
+                }));
+                console.log(mapped);
+                setFilterdRecord(mapped);
+              }}
+            />
           </div>
 
           <div className="flex flex-col justify-center pb-10">
@@ -451,7 +463,9 @@ export default function Home() {
               searchQuery={debouced}
               checkBoxMethod={methods}
               periodData={periodData?.data}
-              records={filterdRecord || []}
+              displayEntries={filterdRecord || []}
+              totalEntries={data?.data?.length ?? 0}
+              totalNetPay={periodData?.data?.netPay ?? 0}
               setSelected={setSelectedRecord}
               setOpenEdit={setOpenEdit}
             />
