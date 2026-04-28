@@ -20,13 +20,16 @@ import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
+import { usePeriodSlips } from "@/hooks/payroll/period/hook.period";
+import { PeriodFilterContextDTO } from "@/types/type.period";
+import { useEntrySlip } from "@/hooks/payroll/entry/hook.entry";
 interface PaySlipGenerateModalProps {
-  summaryData: PayrollPeriodSummary;
+  periodContext: PeriodFilterContextDTO;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 export default function PaySlipGenerateModal({
-  summaryData,
+  periodContext,
   open,
   setOpen,
 }: PaySlipGenerateModalProps) {
@@ -43,6 +46,9 @@ export default function PaySlipGenerateModal({
     checkall,
     uncheckall,
   } = useCheckBox<number>("generate_payslip");
+
+  const { mutateAsync: getSlip } = usePeriodSlips(periodContext.id).get;
+
   const t = useTranslations("view_payroll.generate");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
@@ -51,48 +57,27 @@ export default function PaySlipGenerateModal({
   const locale = useLocale();
   const params = useParams();
 
-  const getBlob = async (periodId: number, recordIds: number[]) => {
-    const response = await fetch(`/api/payroll/periods/${periodId}/payslips`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(recordIds),
-    });
-
-    const blob = await response.blob();
-    return blob;
-  };
-
   const onPreview = async (recordId: number) => {
-    const response = await fetch(`/api/payroll/records/preview`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        shopId: summaryData.shopId,
-        recordId: recordId,
-      }),
-    });
-    const data = await response.json();
-
-    window.open(
-      `/${params.shopSlug}/payrolls/preview?jid=${data.data.jobId}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
+    // const response = await fetch(`/api/payroll/records/preview`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     shopId: summaryData.shopId,
+    //     recordId: recordId,
+    //   }),
+    // });
+    // const data = await response.json();
+    // window.open(
+    //   `/${params.shopSlug}/payrolls/preview?jid=${data.data.jobId}`,
+    //   "_blank",
+    //   "noopener,noreferrer",
+    // );
   };
 
   const onDownloadIndividule = async (recordIds: number[]) => {
     setLoadingStates((prev) => ({ ...prev, [recordIds[0]]: true }));
     try {
-      const blob = await getBlob(summaryData.id, recordIds);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      const ext = blob.type.split("/")[1] || "";
-      a.download = `payslip${Date.now()}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      await getSlip({ payload: { entryIds: recordIds } });
     } catch (err: any) {
       showError(t("modal.download.fail", { err: err.message }));
     } finally {
@@ -100,25 +85,10 @@ export default function PaySlipGenerateModal({
     }
   };
 
-  const handleDownloadAll = async (periodId: number) => {
+  const handleDownloadChecked = async () => {
     setDownloadingAll(true);
     try {
-      const blob = await getBlob(periodId, checked);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      const start = new Date(summaryData.start_period)
-        .toISOString()
-        .split("T")[0];
-
-      const end = new Date(summaryData.end_period).toISOString().split("T")[0];
-
-      const ext = blob.type.split("/")[1] || "";
-      a.download = `payslip_${start}_to_${end}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      await getSlip({ payload: { entryIds: checked } });
     } catch (err: any) {
       showError(t("modal.download.fail", { err: err.message }));
     } finally {
@@ -128,7 +98,7 @@ export default function PaySlipGenerateModal({
 
   const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.checked) {
-      checkall(summaryData.records.map((r) => r.id));
+      checkall(periodContext.breakdowns.map((b) => b.entry.id));
     } else {
       uncheckall();
     }
@@ -152,8 +122,8 @@ export default function PaySlipGenerateModal({
                 </h2>
                 <p className="text-sm text-gray-600">
                   {tPeriod("fields.period")}:{" "}
-                  {dateFormat(new Date(summaryData.start_period))} -{" "}
-                  {dateFormat(new Date(summaryData.end_period))}
+                  {dateFormat(new Date(periodContext.start_period))} -{" "}
+                  {dateFormat(new Date(periodContext.end_period))}
                 </p>
               </div>
             </div>
@@ -178,54 +148,59 @@ export default function PaySlipGenerateModal({
             <div className="pb-3 border-b border-gray-200">
               <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
-                  checked={isAllChecked(summaryData.employeeCount)}
-                  indeterminate={isSomeChecked(summaryData.employeeCount)}
+                  checked={isAllChecked(periodContext.employeeCount)}
+                  indeterminate={isSomeChecked(periodContext.employeeCount)}
                   onChange={handleCheckAll}
                 />
                 <p className="font-medium text-gray-700">
-                  {tc("select_all", { count: summaryData.employeeCount })}
+                  {tc("select_all", { count: periodContext.employeeCount })}
                 </p>
               </label>
             </div>
             <div className="space-y-3">
-              {summaryData.records.map((record) => {
-                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
+              {periodContext.breakdowns.map((b) => {
                 return (
                   <div
-                    key={record.employee.id}
+                    key={b.entry.employee.id}
                     className={`flex items-center gap-4 p-4 border rounded-lg transition-colors ${
-                      isChecked(record.id)
+                      isChecked(b.entry.id)
                         ? "border-blue-300 bg-blue-50"
                         : "border-gray-200 hover:bg-gray-50"
                     }`}
                   >
                     <Checkbox
-                      checked={isChecked(record.id)}
-                      onChange={() => toggle(record.id)}
+                      checked={isChecked(b.entry.id)}
+                      onChange={() => toggle(b.entry.id)}
                     />
                     {/* Employee Info */}
                     <ChangableAvatar
-                      src={avatar}
+                      src={b.entry.employee.avatar ?? ""}
                       size={40}
-                      fallbackTitle={record.employee.firstName.charAt(0)}
+                      fallbackTitle={b.entry.employee.snapshot.firstName.charAt(
+                        0,
+                      )}
                       editable={false}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 truncate">
-                        {record.employee.firstName} {record.employee.lastName}
+                        {b.entry.employee.snapshot.firstName}{" "}
+                        {b.entry.employee.snapshot.lastName}
                       </p>
                       <div className="flex items-center gap-3 mt-1">
                         <p className="text-sm text-gray-600">
-                          {record.employee.nickName}
+                          {b.entry.employee.snapshot.nickName}
                         </p>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {getLocalizedName(record.employee.branch, locale)}
+                          {getLocalizedName(
+                            b.entry.employee.snapshot.branch,
+                            locale,
+                          )}
                         </span>
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className="font-medium text-gray-900">
-                        ฿{moneyFormat(record.totals.net)}
+                        ฿{moneyFormat(b.calculation.netPay)}
                       </p>
                     </div>
 
@@ -233,7 +208,7 @@ export default function PaySlipGenerateModal({
                     <div className="flex gap-2 flex-shrink-0">
                       {/* Preview */}
                       <button
-                        onClick={() => onPreview(record.id)}
+                        onClick={() => onPreview(b.entry.id)}
                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         title="Preview"
                       >
@@ -246,11 +221,11 @@ export default function PaySlipGenerateModal({
 
                       {/* Download */}
                       <button
-                        onClick={() => onDownloadIndividule([record.id])}
+                        onClick={() => onDownloadIndividule([b.entry.id])}
                         className="p-2 border border-blue-300 bg-blue-50 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         title="Download"
                       >
-                        {loadingStates[record.id] ? (
+                        {loadingStates[b.entry.id] ? (
                           <Loader2
                             size={18}
                             className="animate-spin text-blue-600"
@@ -272,17 +247,17 @@ export default function PaySlipGenerateModal({
               <p>
                 {" "}
                 {tc("selected", {
-                  count: `${checked.length} of ${summaryData.employeeCount}`,
+                  count: `${checked.length} of ${periodContext.employeeCount}`,
                 })}
               </p>
               <p>
                 {tPeriod("fields.grand_total")}: ฿
-                {moneyFormat(summaryData.totalNet)}
+                {moneyFormat(periodContext.netPay)}
               </p>
             </div>
             <div className="flex flex-row-reverse gap-3">
               <button
-                onClick={() => handleDownloadAll(summaryData.id)}
+                onClick={() => handleDownloadChecked()}
                 disabled={downloadingAll}
                 className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium transition-colors"
               >

@@ -18,6 +18,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { number } from "zod";
 
 export function usePeriods() {
   const { id: shopId } = useCurrentShop();
@@ -213,4 +214,41 @@ export function usePeriod(periodId?: number | string) {
     finalize,
     unlock,
   };
+}
+
+export function usePeriodSlips(periodId: number) {
+  const { id: shopId } = useCurrentShop();
+  const queryKey = ["periods", "pay-slip", periodId];
+  const queryClient = useQueryClient();
+  const get = useMutation<
+    { blob: Blob; filename: string },
+    Error,
+    { payload: { entryIds: number[] } }
+  >({
+    mutationFn: async ({ payload }) => {
+      const res = (await fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/pay-slips`,
+        method: "POST",
+        body: payload,
+        responseType: "blob",
+      })) as Response;
+      const blob = await res.blob();
+      const disposition = res.headers.get("Content-Disposition");
+      const filename =
+        disposition?.match(/filename="?(.+?)"?$/)?.[1] ?? "payslip.zip";
+
+      return { blob, filename };
+    },
+    onSuccess: ({ blob, filename }) => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    },
+  });
+  return { get };
 }

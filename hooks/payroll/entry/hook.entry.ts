@@ -137,20 +137,35 @@ export function useEntryBreakdown(periodId: number, entryId: number) {
   return { get, update };
 }
 
-export function useEntrySlip(periodId: number, entryId: number) {
+export function useEntrySlip(periodId: number) {
   const { id: shopId } = useCurrentShop();
-  const queryKey = ["entries", "pay-slip", entryId];
+  const queryKey = ["entries", "pay-slip", periodId];
   const queryClient = useQueryClient();
-  const get = useMutation<ApiResponse<EntryBreakDownDTO>, Error>({
-    mutationFn: () => {
-      return fetchwithauth({
-        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/pay-slip`,
-        method: "GET",
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey });
-    },
-  });
+  const get = (entryId: number) =>
+    useMutation({
+      mutationFn: async () => {
+        const res = (await fetchwithauth({
+          endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/pay-slip`,
+          method: "GET",
+          responseType: "blob",
+        })) as Response;
+        const blob = await res.blob();
+        const disposition = res.headers.get("Content-Disposition");
+        const filename =
+          disposition?.match(/filename="?(.+?)"?$/)?.[1] ?? "payslip.zip";
+
+        return { blob, filename };
+      },
+      onSuccess: ({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+      },
+    });
   return { get };
 }

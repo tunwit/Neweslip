@@ -22,6 +22,7 @@ import { usePeriod } from "@/hooks/payroll/period/hook.period";
 import { EntryWithTotalDTO } from "@/types/type.entry";
 import { useEntry, useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
+import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
@@ -157,27 +158,27 @@ export default function Home() {
           open={openEdit}
           setOpen={setOpenEdit}
         />
-      )}
-      {openPayslipGenerate && summaryData?.data && (
+      )} */}
+      {openPayslipGenerate && entriesData?.data && (
         <PaySlipGenerateModal
-          summaryData={summaryData.data}
+          periodContext={periodData.data}
           open={openPayslipGenerate}
           setOpen={setOpenPayslipGenerate}
         />
       )}
 
-      {openSendEmails && summaryData?.data && (
+      {/* {openSendEmails && summaryData?.data && (
         <SendEmailsModal
           summaryData={summaryData.data}
           open={openSendEmails}
           setOpen={setOpenSendEmails}
         />
-      )} */}
+      )}
       <UnlockModal
         periodId={Number(periodId) || -1}
         open={openUnlock}
         setOpen={setOpenUnlock}
-      />
+      /> */}
 
       <title>{period.name}</title>
 

@@ -26,19 +26,9 @@ export default function SalaryBreakdown({ entryId }: SalaryBreakdownProps) {
     Number(periodId),
     entryId,
   ).get;
-  const { mutateAsync: generateSlip } = useEntrySlip(
-    Number(periodId),
-    entryId,
-  ).get;
   const t = useTranslations("record");
   const tc = useTranslations("common");
-  const test = () => {
-    generateSlip();
-  };
 
-  useEffect(() => {
-    test();
-  }, []);
   if (!breakdownData || !breakdownData?.data)
     return (
       <div className="py-2 w-full flex justify-center items-center gap-1">

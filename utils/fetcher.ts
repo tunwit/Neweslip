@@ -2,18 +2,25 @@ interface FetchProps<TBody = any> {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: TBody;
+  responseType?: "json" | "blob";
 }
-export const fetchwithauth = async ({ endpoint, method, body }: FetchProps) => {
+export const fetchwithauth = async ({
+  endpoint,
+  method,
+  body,
+  responseType = "json",
+}: FetchProps) => {
   const isFormData = body instanceof FormData;
 
   const options: RequestInit = {
     method,
     credentials: "include",
-    headers: isFormData
-      ? undefined
-      : {
-          "Content-Type": "application/json",
-        },
+    headers:
+      isFormData || method === "GET"
+        ? undefined
+        : {
+            "Content-Type": "application/json",
+          },
     body:
       body && method !== "GET"
         ? isFormData
@@ -43,6 +50,9 @@ export const fetchwithauth = async ({ endpoint, method, body }: FetchProps) => {
     };
   }
 
+  if (responseType === "blob") {
+    return res;
+  }
   return res.json();
 };
 
