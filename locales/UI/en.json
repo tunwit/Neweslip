@@ -570,7 +570,7 @@
       "note": "Note",
       "note_content": "You can view, download individual files, or download all payslips at once.",
       "action": {
-        "download_all": "Download all",
+        "download_all": "Download",
         "downloading": "Downloading",
         "close": "Close"
       },

@@ -43,6 +43,7 @@ export default function PaySlipGenerateModal({
     checked,
     isAllChecked,
     isSomeChecked,
+    isNoneChecked,
     checkall,
     uncheckall,
   } = useCheckBox<number>("generate_payslip");
@@ -258,7 +259,7 @@ export default function PaySlipGenerateModal({
             <div className="flex flex-row-reverse gap-3">
               <button
                 onClick={() => handleDownloadChecked()}
-                disabled={downloadingAll}
+                disabled={downloadingAll || isNoneChecked()}
                 className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 font-medium transition-colors"
               >
                 {downloadingAll ? (

@@ -1,7 +1,6 @@
 "use client";
 import { usePreview } from "@/hooks/payroll/record/usePreview";
 import { useSearchParams } from "next/navigation";
-import React from "react";
 
 export default function page() {
   const jobId = useSearchParams().get("jid");
