@@ -6,7 +6,11 @@ import {
   InferSelectModel,
 } from "drizzle-orm";
 
-//Full schema from DB
+export enum SEND_EMAIL_METHOD {
+  SMTP = "SMTP",
+  RESEND = "RESEND",
+}
+
 export type ShopPublicDTO = {
   id: number;
   name: string;
@@ -22,6 +26,7 @@ export type ShopConfigDTO = ShopPublicDTO & {
   default_work_hours_per_day: number;
   default_workdays_per_month: number;
 
+  send_email_method: SEND_EMAIL_METHOD;
   SMTPHost: string;
   SMTPPort: number;
   SMTPSecure: boolean;
@@ -54,13 +59,30 @@ export type UpdateShopDataDTO = Partial<{
   emailPassword: string | null;
 }>;
 
-export type VerifyEmailDTO = {
+export type SMTPConfig = {
   SMTPHost: string;
   SMTPPort: number;
   SMTPSecure: boolean;
+
   emailAddress: string;
   emailPassword: string;
 };
+
+type SMTPConfigWithMethod = {
+  send_email_method: SEND_EMAIL_METHOD.SMTP;
+} & SMTPConfig;
+
+export type ResendConfig = {
+  resendApiKey: string;
+};
+
+type ResendConfigWithMethod = {
+  send_email_method: SEND_EMAIL_METHOD.RESEND;
+} & ResendConfig;
+
+export type VerifyEmailDTO = SMTPConfigWithMethod | ResendConfigWithMethod;
+
+export type VerifyEmailResult = { valid: boolean; error: string };
 
 export type ChangePasswordDTO = {
   oldPassword: string;

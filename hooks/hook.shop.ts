@@ -18,6 +18,7 @@ import {
   ShopPublicDTO,
   UpdateShopDataDTO,
   VerifyEmailDTO,
+  VerifyEmailResult,
 } from "@/types/type.shop";
 
 type UpdateShopDataVars = {
@@ -102,7 +103,7 @@ export function useUpdateShop() {
 
 export function useVerifyEmailConfig() {
   const { id: shopId } = useCurrentShop();
-  return useMutation({
+  return useMutation<ApiResponse<VerifyEmailResult>, Error, VerifyEmailDTO>({
     mutationFn: (payload: VerifyEmailDTO) =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/email/verify`,

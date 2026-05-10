@@ -2,8 +2,12 @@ import { useUpdateShop, useVerifyEmailConfig } from "@/hooks/hook.shop";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { verify } from "@/lib/emailService";
 import { useZodForm } from "@/lib/useZodForm";
-import { emailConfigForm } from "@/schemas/email/emailConfigForm";
-import { ShopConfigDTO, VerifyEmailDTO } from "@/types/type.shop";
+import { SMTPEmailConfigForm } from "@/schemas/email/emailConfigForm";
+import {
+  SEND_EMAIL_METHOD,
+  ShopConfigDTO,
+  VerifyEmailDTO,
+} from "@/types/type.shop";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
@@ -16,14 +20,19 @@ import {
   Option,
   Select,
 } from "@mui/joy";
+import { dataTagErrorSymbol } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, FormProvider } from "react-hook-form";
+import z from "zod";
 
 interface EmailFormProps {
   shopData: ShopConfigDTO;
 }
-export default function EmailForm({ shopData }: EmailFormProps) {
+
+type SMTPFormData = z.infer<typeof SMTPEmailConfigForm>;
+
+export default function SMTPEmailForm({ shopData }: EmailFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [verifyStatus, setVerifyStatus] = useState(false);
   const [verifyError, setVerifyError] = useState("");
@@ -35,7 +44,7 @@ export default function EmailForm({ shopData }: EmailFormProps) {
   const { mutateAsync: verify } = useVerifyEmailConfig();
   const { mutateAsync: updateShop } = useUpdateShop();
 
-  const methods = useZodForm(emailConfigForm, {
+  const methods = useZodForm(SMTPEmailConfigForm, {
     defaultValues: {
       SMTPHost: shopData.SMTPHost || "",
       SMTPPort: shopData.SMTPPort || undefined,
@@ -51,16 +60,21 @@ export default function EmailForm({ shopData }: EmailFormProps) {
     formState: { errors, isSubmitting, isDirty },
   } = methods;
 
-  const onSubmit = async (data: Omit<VerifyEmailDTO, "emailName">) => {
+  const onSubmit = async (data: SMTPFormData) => {
     if (!shopId || !user?.id) return;
 
     try {
-      await verify(data);
-      setVerifyStatus(true);
+      const result = await verify({
+        send_email_method: SEND_EMAIL_METHOD.SMTP,
+        ...data,
+      });
+
+      setVerifyStatus(result.data?.valid || false);
+      setVerifyError(result.data?.error || "Invalid Email config");
+      if (!result.data?.valid) return;
     } catch {
       setVerifyStatus(false);
       setVerifyError("Invalid Email config");
-      return;
     } finally {
       setVerified(true);
     }
