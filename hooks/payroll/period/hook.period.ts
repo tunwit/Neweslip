@@ -1,6 +1,7 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { ValidationResultDTO } from "@/types/payroll/type.validate";
 import { ApiResponse } from "@/types/response";
+import { CreateBatch } from "@/types/type.batch";
 import {
   NewPeriodDTO,
   PeriodFilterContextDTO,
@@ -8,6 +9,7 @@ import {
   PeriodSummaryDTO,
   PeriodWithBreakdownsDTO,
   PeriodWithCountDTO,
+  SendPayslipEmailDTO,
   UnlockPeriodDTO,
   UpdatePeriodDTO,
 } from "@/types/type.period";
@@ -227,7 +229,7 @@ export function usePeriodSlips(periodId: number) {
   >({
     mutationFn: async ({ payload }) => {
       const res = (await fetchwithauth({
-        endpoint: `/shops/${shopId}/periods/${periodId}/pay-slips`,
+        endpoint: `/shops/${shopId}/periods/${periodId}/pay-slips/export/zip`,
         method: "POST",
         body: payload,
         responseType: "blob",
@@ -250,5 +252,19 @@ export function usePeriodSlips(periodId: number) {
       window.URL.revokeObjectURL(url);
     },
   });
-  return { get };
+
+  const sendEmail = useMutation<
+    ApiResponse<CreateBatch>,
+    Error,
+    { payload: SendPayslipEmailDTO }
+  >({
+    mutationFn: async ({ payload }) => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/pay-slips/send-email`,
+        method: "POST",
+        body: { toSend: payload },
+      });
+    },
+  });
+  return { get, sendEmail };
 }

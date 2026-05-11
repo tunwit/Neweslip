@@ -45,7 +45,12 @@ export default function ResendEmailForm({ shopData }: EmailFormProps) {
   const { mutateAsync: verify } = useVerifyEmailConfig();
   const { mutateAsync: updateShop } = useUpdateShop();
 
-  const methods = useZodForm(ResendEmailConfigForm);
+  const methods = useZodForm(ResendEmailConfigForm, {
+    defaultValues: {
+      emailName: shopData.emailName || "",
+      emailAddress: shopData.emailAddress || "",
+    },
+  });
   const {
     handleSubmit,
     control,
@@ -71,7 +76,10 @@ export default function ResendEmailForm({ shopData }: EmailFormProps) {
     }
 
     try {
-      await updateShop({ shopId: shopId, payload: data });
+      await updateShop({
+        shopId: shopId,
+        payload: { ...data, send_email_method: SEND_EMAIL_METHOD.RESEND },
+      });
       showSuccess("Save email successfully");
     } catch (err) {
       showError(`Cannot save email ${err}`);

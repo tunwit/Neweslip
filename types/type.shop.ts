@@ -53,6 +53,9 @@ export type UpdateShopDataDTO = Partial<{
   SMTPHost: string;
   SMTPPort: number;
   SMTPSecure: boolean;
+  
+  send_email_method: SEND_EMAIL_METHOD;
+  resend_api_key: string;
 
   emailName: string | null;
   emailAddress: string | null;

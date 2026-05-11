@@ -19,9 +19,14 @@ import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { EmailPayload } from "@/types/mailPayload";
 import { useUser } from "@clerk/nextjs";
-import { useJobStore } from "@/hooks/useJobStore";
+import { JOB_BATCH_STATUS, useJobStore } from "@/hooks/useJobStore";
 import { PayslipAndSendQueue } from "@/src/features/payslip/payslip.model";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import {
+  PeriodFilterContextDTO,
+  SendPayslipEmailDTO,
+} from "@/types/type.period";
+import { usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 
 interface ProgressItem {
   email: string;
@@ -38,13 +43,13 @@ interface ProgressState {
 }
 
 interface SendEmailsModalProps {
-  summaryData: PayrollPeriodSummary;
+  periodContext: PeriodFilterContextDTO;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SendEmailsModal({
-  summaryData,
+  periodContext,
   open,
   setOpen,
 }: SendEmailsModalProps) {
@@ -52,7 +57,7 @@ export default function SendEmailsModal({
     batchId: -1,
     batchName: null,
   });
-  const [data, setData] = useState(summaryData);
+  const [data, setData] = useState(periodContext);
   const { addJob } = useJobStore();
   const [progress, setProgress] = useState({
     completed: 0,
@@ -64,8 +69,8 @@ export default function SendEmailsModal({
 
   const [originalEmails, setOriginalEmails] = useState(() => {
     const emails: Record<number, string> = {};
-    summaryData.records.forEach((record) => {
-      emails[record.id] = record.employee.email;
+    periodContext.breakdowns.forEach((breakdown) => {
+      emails[breakdown.entry.id] = breakdown.entry.employee.email;
     });
     return emails;
   });
@@ -79,6 +84,10 @@ export default function SendEmailsModal({
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
   const locale = useLocale();
+
+  const { mutateAsync: sendEmailAsync } = usePeriodSlips(
+    periodContext.id,
+  ).sendEmail;
 
   const {
     checked,
@@ -110,16 +119,19 @@ export default function SendEmailsModal({
     setTempEmail("");
     setData((prev) => ({
       ...prev,
-      records: prev.records.map((record) =>
-        record.id === recordId
+      breakdowns: prev.breakdowns.map((breakdown) =>
+        breakdown.entry.id === recordId
           ? {
-              ...record,
-              employee: {
-                ...record.employee,
-                email: email,
+              ...breakdown,
+              entry: {
+                ...breakdown.entry,
+                employee: {
+                  ...breakdown.entry.employee,
+                  email: email,
+                },
               },
             }
-          : record,
+          : breakdown,
       ),
     }));
   };
@@ -130,16 +142,19 @@ export default function SendEmailsModal({
 
     setData((prev) => ({
       ...prev,
-      records: prev.records.map((record) =>
-        record.id === recordId
+      breakdown: prev.breakdowns.map((breakdown) =>
+        breakdown.entry.id === recordId
           ? {
-              ...record,
-              employee: {
-                ...record.employee,
-                email: originalEmail,
+              ...breakdown,
+              entry: {
+                ...breakdown.entry,
+                employee: {
+                  ...breakdown.entry.employee,
+                  email: originalEmail,
+                },
               },
             }
-          : record,
+          : breakdown,
       ),
     }));
   };
@@ -147,13 +162,16 @@ export default function SendEmailsModal({
   const handleResetAllEmail = () => {
     setData((prev) => ({
       ...prev,
-      records: prev.records.map((record) => {
-        const originalEmail = originalEmails[record.id];
+      breakdown: prev.breakdowns.map((breakdown) => {
+        const originalEmail = originalEmails[breakdown.entry.id];
         return {
-          ...record,
-          employee: {
-            ...record.employee,
-            email: originalEmail ?? record.employee.email, // fallback
+          ...breakdown,
+          entry: {
+            ...breakdown.entry,
+            employee: {
+              ...breakdown.entry.employee,
+              email: originalEmail ?? breakdown.entry.employee.email,
+            },
           },
         };
       }),
@@ -162,59 +180,55 @@ export default function SendEmailsModal({
 
   const handleAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.checked) {
-      checkall(data.records.map((r) => r.id));
+      checkall(data.breakdowns.map((b) => b.entry.id));
     } else {
       uncheckall();
     }
   };
   const isEmailOverridden = (recordId: number) => {
-    const record = data.records.find((r) => r.id === recordId);
+    const record = data.breakdowns.find((b) => b.entry.id === recordId);
     if (!record) return false;
-    return record.employee.email !== originalEmails[recordId];
+    return record.entry.employee.email !== originalEmails[recordId];
   };
 
   const getOverrideCount = () => {
-    return data.records.filter(
-      (record) => record.employee.email !== originalEmails[record.id],
+    return data.breakdowns.filter(
+      (b) => b.entry.employee.email !== originalEmails[b.entry.id],
     ).length;
   };
 
   const onSend = async () => {
     if (!user?.id || !shopId) return;
-    const payload: PayslipAndSendQueue[] = data.records
-      .filter((r) => checked.includes(r.id))
-      .map((r) => {
-        return {
-          recordId: r.id,
-          shopId: shopId,
-          email: r.employee.email,
-          metaData: {
-            userId: user.id,
-          },
-        };
+    const payload: SendPayslipEmailDTO = data.breakdowns
+      .filter((b) => checked.includes(b.entry.id))
+      .map((b) => {
+        return { entryId: b.entry.id, overrideEmail: b.entry.employee.email };
       });
     setIsSubmitting(true);
-
     try {
-      const response = await fetch("/api/payroll/emails", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      const result = await sendEmailAsync({ payload: payload });
+      if (!result.data) return;
+
+      addJob({
+        batchId: result.data.batchId,
+        progressUrl: result.data.progressUrl,
+        title: "Sending Emails",
       });
 
-      const {
-        data: { batchId, batchName },
-      } = await response.json();
-      setBatchData({ batchId, batchName });
-      addJob({
-        batchId,
-        batchName,
-        title: t("modal.download.label"),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["payrollPeriod", "summary", summaryData.id],
-        exact: false,
-      });
+      // const response = await fetch("/api/payroll/emails", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(payload),
+      // });
+      // const {
+      //   data: { batchId, batchName },
+      // } = await response.json();
+      // setBatchData({ batchId, batchName });
+
+      // queryClient.invalidateQueries({
+      //   queryKey: ["payrollPeriod", "summary", summaryData.id],
+      //   exact: false,
+      // });
       // setOpen(false)
     } catch (error) {
       console.error("Error:", error);
@@ -335,22 +349,22 @@ export default function SendEmailsModal({
             </div>
 
             <div className="space-y-3">
-              {data.records.map((record) => {
-                const isEditing = editingEmail === record.id;
-                const isOverridden = isEmailOverridden(record.id);
-                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
+              {data.breakdowns.map((breakdown) => {
+                const isEditing = editingEmail === breakdown.entry.id;
+                const isOverridden = isEmailOverridden(breakdown.entry.id);
+                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${breakdown.entry.employee.avatar}`;
                 return (
                   <div
-                    key={record.employee.id}
+                    key={breakdown.entry.employee.id}
                     className={`flex items-center gap-4 p-4 border-2 rounded-lg transition-all ${
-                      isChecked(record.id)
+                      isChecked(breakdown.entry.id)
                         ? "border-purple-300 bg-purple-50"
                         : "border-gray-200 hover:bg-gray-50"
                     }`}
                   >
                     <Checkbox
-                      checked={isChecked(record.id)}
-                      onChange={() => toggle(record.id)}
+                      checked={isChecked(breakdown.entry.id)}
+                      onChange={() => toggle(breakdown.entry.id)}
                     />
 
                     {/* Employee Avatar */}
@@ -358,13 +372,15 @@ export default function SendEmailsModal({
                       <ChangableAvatar
                         src={avatar}
                         size={40}
-                        fallbackTitle={record.employee.firstName.charAt(0)}
+                        fallbackTitle={breakdown.entry.employee.snapshot.firstName.charAt(
+                          0,
+                        )}
                         editable={false}
                       />
                       <div
-                        className={`absolute -bottom-1 -right-1  ${record.sentMail ? "bg-green-700" : "bg-red-700"} rounded-full p-1`}
+                        className={`absolute -bottom-1 -right-1  ${breakdown.entry.payslipSent ? "bg-green-700" : "bg-red-700"} rounded-full p-1`}
                       >
-                        {record.sentMail ? (
+                        {breakdown.entry.payslipSent ? (
                           <Icon icon="prime:send" fontSize={14} />
                         ) : (
                           <Icon icon="carbon:not-sent" fontSize={14} />
@@ -375,7 +391,8 @@ export default function SendEmailsModal({
                     {/* Employee Info */}
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-900">
-                        {record.employee.firstName} {record.employee.lastName}
+                        {breakdown.entry.employee.snapshot.firstName}{" "}
+                        {breakdown.entry.employee.snapshot.lastName}
                       </p>
                       <div className="flex gap-2">
                         {/* Email Display/Edit */}
@@ -398,7 +415,7 @@ export default function SendEmailsModal({
                                 className="p-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700"
                                 title="Save"
                                 onClick={() =>
-                                  handleSaveEmail(record.id, tempEmail)
+                                  handleSaveEmail(breakdown.entry.id, tempEmail)
                                 }
                               >
                                 <Icon
@@ -431,7 +448,7 @@ export default function SendEmailsModal({
                               <span
                                 className={`text-sm ${isOverridden ? "text-orange-900 font-medium" : "text-gray-600"}`}
                               >
-                                {record.employee.email}
+                                {breakdown.entry.employee.email}
                               </span>
                               {isOverridden && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
@@ -445,7 +462,10 @@ export default function SendEmailsModal({
                         {/* Branch */}
                         <div className="mt-1">
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            {getLocalizedName(record.employee.branch, locale)}
+                            {getLocalizedName(
+                              breakdown.entry.employee.snapshot.branch,
+                              locale,
+                            )}
                           </span>
                         </div>
                       </div>
@@ -457,7 +477,9 @@ export default function SendEmailsModal({
                         <>
                           {isOverridden && (
                             <button
-                              onClick={() => handleResetEmail(record.id)}
+                              onClick={() =>
+                                handleResetEmail(breakdown.entry.id)
+                              }
                               className="px-2 py-1 text-xs text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded transition-colors font-medium"
                               title="Reset to original email"
                             >
@@ -466,7 +488,10 @@ export default function SendEmailsModal({
                           )}
                           <button
                             onClick={() =>
-                              handleEditEmail(record.id, record.employee.email)
+                              handleEditEmail(
+                                breakdown.entry.id,
+                                breakdown.entry.employee.email,
+                              )
                             }
                             className="p-1.5 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
                             title="Edit email"
@@ -476,7 +501,7 @@ export default function SendEmailsModal({
                         </>
                       )}
                       <p className="font-semibold text-gray-900 min-w-[100px] text-right">
-                        ฿{moneyFormat(record.totals.net)}
+                        ฿{moneyFormat(breakdown.calculation.netPay)}
                       </p>
                     </div>
                   </div>
@@ -500,7 +525,7 @@ export default function SendEmailsModal({
                 )}
               </div>
               <div className="text-sm text-gray-600">
-                {tPeriod("fields.grand_total")}: ฿{moneyFormat(data.totalNet)}
+                {tPeriod("fields.grand_total")}: ฿{moneyFormat(data.netPay)}
               </div>
             </div>
 

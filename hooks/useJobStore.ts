@@ -1,22 +1,33 @@
 import { create } from "zustand";
 
+export enum JOB_BATCH_STATUS {
+  WAITING = "WAITING",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+}
+
 type Job = {
-  batchId: number;
-  batchName: number;
+  batchId: string;
+  progressUrl: string;
   title: string;
-  progress: number;
-  completed: number;
+
+  success: number;
   failed: number;
   total: number;
+  status: JOB_BATCH_STATUS;
+  progress: number;
 };
 
 type JobStore = {
   jobs: Job[];
   addJob: (
-    job: Omit<Job, "progress" | "completed" | "failed" | "total">,
+    job: Omit<
+      Job,
+      "progress" | "completed" | "failed" | "total" | "success" | "status"
+    >,
   ) => void;
-  updateJob: (batchId: number, data: Partial<Job>) => void;
-  removeJob: (batchId: number) => void;
+  updateJob: (batchId: string, data: Partial<Job>) => void;
+  removeJob: (batchId: string) => void;
 };
 
 export const useJobStore = create<JobStore>((set) => ({
@@ -28,9 +39,10 @@ export const useJobStore = create<JobStore>((set) => ({
         {
           ...job,
           progress: 0,
-          completed: 0,
+          success: 0,
           failed: 0,
           total: 0,
+          status: JOB_BATCH_STATUS.WAITING,
         },
       ],
     })),

@@ -80,7 +80,10 @@ export default function SMTPEmailForm({ shopData }: EmailFormProps) {
     }
 
     try {
-      await updateShop({ shopId: shopId, payload: data });
+      await updateShop({
+        shopId: shopId,
+        payload: { ...data, send_email_method: SEND_EMAIL_METHOD.SMTP },
+      });
       showSuccess("Save email successfully");
     } catch (err) {
       showError(`Cannot save email ${err}`);

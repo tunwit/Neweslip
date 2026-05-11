@@ -1,11 +1,7 @@
-import { cookies } from "next/headers";
+
 import { redirect } from "next/navigation";
 import { validateSlug } from "@/lib/validateSlug";
-import getBranches from "@/lib/getBranches";
 import { auth } from "@clerk/nextjs/server";
-import globalDrizzle from "@/db/drizzle";
-import { branchesTable, shopOwnerTable, shopsTable } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
 import DashboardSidebar from "@/app/components/DashboardSidebar/DashboardSidebar";
 import Navbar from "@/app/components/Navbar/Navbar";
 import GlobalJobSnackbars from "@/widget/GlobalJobSnackbars";

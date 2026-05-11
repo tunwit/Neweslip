@@ -15,6 +15,7 @@ export type EntryPublicDTO = {
 export type EmployeeSnapshotDTO = {
   id: number;
   avatar?: string | null;
+  email: string;
   snapshot: {
     firstName: string;
     lastName: string;

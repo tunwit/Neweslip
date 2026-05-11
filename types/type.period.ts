@@ -53,3 +53,8 @@ export type UpdatePeriodDTO = {
 export type UnlockPeriodDTO = {
   password: string;
 };
+
+export type SendPayslipEmailDTO = {
+  entryId: number;
+  overrideEmail?: string | null | undefined;
+}[];
