@@ -18,15 +18,15 @@ export default function Home() {
   const { data, isLoading, isSuccess, isError, error } = useOwnShop();
   console.log(data);
 
-  useEffect(() => {
-    if (!data || isLoading) return;
-    if (data && data.data && data.data.length > 0) {
-      const shopslug = createSlug(data.data[0].name, String(data.data[0].id));
-      redirect(`/${shopslug}/employees`);
-    } else {
-      redirect(`/no-shop`);
-    }
-  }, [isSuccess, isLoading, data]);
+  // useEffect(() => {
+  //   if (!data || isLoading) return;
+  //   if (data && data.data && data.data.length > 0) {
+  //     const shopslug = createSlug(data.data[0].name, String(data.data[0].id));
+  //     redirect(`/${shopslug}/employees`);
+  //   } else {
+  //     redirect(`/no-shop`);
+  //   }
+  // }, [isSuccess, isLoading, data]);
 
   if (isError) {
     const status = (error as any)?.status;

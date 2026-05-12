@@ -17,7 +17,6 @@ export default function SetupBranchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const shopId = searchParams.get("shopId");
-  const user = useUser();
   const method = useZodForm(branchSchema);
   const { mutateAsync } = useCreateBranch();
   const {

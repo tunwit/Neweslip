@@ -1,4 +1,3 @@
-
 import { redirect } from "next/navigation";
 import { validateSlug } from "@/lib/validateSlug";
 import { auth } from "@clerk/nextjs/server";
@@ -30,38 +29,6 @@ export default async function ShoppLayout({
   params: Promise<{ shopSlug: string; locale: string }>;
   children: React.ReactNode;
 }) {
-  const resolvedParams = await params;
-  const { shopSlug, locale } = resolvedParams;
-  const { name, id } = extractSlug(shopSlug);
-
-  const data = await validateSlug(shopSlug);
-  const { userId, getToken } = await auth();
-  const token = await getToken();
-
-  if (!token || !userId) {
-    redirect(`/${locale}`);
-  }
-
-  const shops = await fetchData(token, "http://localhost:3001", "/shops");
-  if (!shops || shops.length === 0) {
-    redirect(`${locale}/no-shop`);
-  }
-
-  if (!data) {
-    redirect(`/${locale}`);
-  }
-
-  const branches = await fetchData(
-    token,
-    "http://localhost:3001",
-    `/shops/${id}/branches`,
-  );
-
-  // Redirect to setup if no branches exist
-  if (!branches || branches.length === 0) {
-    redirect(`/${locale}/setup-branch?shopId=${data.id}`);
-  }
-
   return (
     <div className="flex w-screen ">
       <div className="flex flex-col min-h-screen w-full ">

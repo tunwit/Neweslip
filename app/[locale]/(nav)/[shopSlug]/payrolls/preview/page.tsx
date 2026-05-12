@@ -1,11 +1,12 @@
 "use client";
-import { usePreview } from "@/hooks/payroll/record/usePreview";
+import { useEntrySlip } from "@/hooks/payroll/entry/hook.entry";
 import { useSearchParams } from "next/navigation";
 
 export default function page() {
-  const jobId = useSearchParams().get("jid");
+  const periodId = useSearchParams().get("pid");
+  const eid = useSearchParams().get("eid");
 
-  const { data } = usePreview(jobId);
+  const { data } = useEntrySlip(Number(periodId)).preview(Number(eid));
 
   return (
     <>

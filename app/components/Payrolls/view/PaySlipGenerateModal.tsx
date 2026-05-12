@@ -23,6 +23,7 @@ import { useParams } from "next/navigation";
 import { usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 import { PeriodFilterContextDTO } from "@/types/type.period";
 import { useEntrySlip } from "@/hooks/payroll/entry/hook.entry";
+import Link from "next/link";
 interface PaySlipGenerateModalProps {
   periodContext: PeriodFilterContextDTO;
   open: boolean;
@@ -57,22 +58,17 @@ export default function PaySlipGenerateModal({
   const pathname = usePathname();
   const locale = useLocale();
   const params = useParams();
-
-  const onPreview = async (recordId: number) => {
-    // const response = await fetch(`/api/payroll/records/preview`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     shopId: summaryData.shopId,
-    //     recordId: recordId,
-    //   }),
-    // });
-    // const data = await response.json();
+  const newPath = pathname.replace("/view", "/preview");
+  const onPreview = async (entryId: number) => {
     // window.open(
-    //   `/${params.shopSlug}/payrolls/preview?jid=${data.data.jobId}`,
+    //   `${newPath}?pid=${periodContext.id}&eid=${entryId}`,
     //   "_blank",
     //   "noopener,noreferrer",
     // );
+    const tab = window.open("about:blank", "_blank");
+    if (!tab) return;
+
+    tab.location.href = `${newPath}?pid=${periodContext.id}&eid=${entryId}`;
   };
 
   const onDownloadIndividule = async (recordIds: number[]) => {
@@ -208,8 +204,8 @@ export default function PaySlipGenerateModal({
                     {/* Action Buttons */}
                     <div className="flex gap-2 flex-shrink-0">
                       {/* Preview */}
-                      <button
-                        onClick={() => onPreview(b.entry.id)}
+                      <Link
+                        href={`${newPath}?pid=${periodContext.id}&eid=${b.entry.id}`}
                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         title="Preview"
                       >
@@ -218,7 +214,7 @@ export default function PaySlipGenerateModal({
                           fontSize={18}
                           className="text-gray-600"
                         />
-                      </button>
+                      </Link>
 
                       {/* Download */}
                       <button
