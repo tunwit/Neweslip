@@ -10,14 +10,13 @@ import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ChevronRight } from "@mui/icons-material";
 import { Checkbox } from "@mui/joy";
-import { useQueryClient } from "@tanstack/react-query";
 import { _Translator, useTranslations } from "next-intl";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { PeriodSummaryDTO } from "@/types/type.period";
 import { usePeriods } from "@/hooks/payroll/period/hook.period";
 import ConfirmModal from "@/widget/ConfirmModal";
+import { Link } from "@/i18n/navigation";
 
 interface PeriodsTableProps {
   periods: PeriodSummaryDTO[];

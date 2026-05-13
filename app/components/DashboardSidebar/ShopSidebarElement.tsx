@@ -1,7 +1,7 @@
+import { Link } from "@/i18n/navigation";
 import { createSlug } from "@/utils/createSlug";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { Avatar } from "@mui/joy";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 

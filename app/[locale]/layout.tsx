@@ -1,7 +1,6 @@
 import { Prompt } from "next/font/google";
 import { Suspense } from "react";
 import ClientWrapper from "@/widget/ClientWrapper";
-import "../globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import Providers from "../providers";
 const propmt = Prompt({

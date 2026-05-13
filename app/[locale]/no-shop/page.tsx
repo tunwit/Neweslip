@@ -1,8 +1,8 @@
 "use client";
 
 import { useOwnShop } from "@/hooks/hook.shop";
+import { Link } from "@/i18n/navigation";
 import { SignOutButton } from "@clerk/nextjs";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 

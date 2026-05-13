@@ -22,7 +22,8 @@ import { useInvitation } from "@/hooks/useInvitation";
 import { getUserByEmail } from "../../action/getUserByEmail";
 import { acceptInvitation } from "../../action/invitation/acceptInvitation";
 import { showError } from "@/utils/showSnackbar";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+
 
 export default function InvitaionPage() {
   const params = useSearchParams();

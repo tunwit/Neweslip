@@ -66,10 +66,7 @@ export default function LanguageSelector({
           value={key}
           onClick={() => {
             const query = searchParams.toString();
-            router.push(query ? `${pathname}?${query}` : pathname, {
-              locale: lang.code,
-            });
-            router.refresh();
+            router.replace(`${pathname}?${query}`, { locale: lang.code });
           }}
         >
           <ListItemDecorator>

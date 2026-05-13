@@ -18,12 +18,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 import { PeriodFilterContextDTO } from "@/types/type.period";
-import { useEntrySlip } from "@/hooks/payroll/entry/hook.entry";
-import Link from "next/link";
+
 interface PaySlipGenerateModalProps {
   periodContext: PeriodFilterContextDTO;
   open: boolean;

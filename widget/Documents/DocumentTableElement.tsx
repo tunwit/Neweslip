@@ -9,7 +9,6 @@ import {
   MenuButton,
   MenuItem,
 } from "@mui/joy";
-import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import getFileIcon from "@/lib/getFileIcon";
 import { formatBytes } from "@/lib/unitConverter";
@@ -17,6 +16,7 @@ import { formatModifiedTime } from "@/utils/formmatter";
 import { useTranslations } from "next-intl";
 import { UserPublicDTO } from "@/types/type.user";
 import { DocumentPublicDTO } from "@/types/type.document";
+import { Link } from "@/i18n/navigation";
 
 interface DocumentTableElementProps<T extends DocumentPublicDTO> {
   doc: T;

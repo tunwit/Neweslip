@@ -9,9 +9,9 @@ import { FormProvider } from "react-hook-form";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { Button } from "@mui/joy";
 import { useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import { useCreateBranch } from "@/hooks/hook.branch";
 import { NewBranchDTO } from "@/types/type.branch";
+import { Link } from "@/i18n/navigation";
 
 export default function SetupBranchPage() {
   const router = useRouter();

@@ -1,12 +1,10 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Dayjs } from "dayjs";
-import React from "react";
 import Checkbox from "@mui/joy/Checkbox";
-import { log } from "node:console";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { useCheckBox } from "@/hooks/useCheckBox";
+import { Link } from "@/i18n/navigation";
 
 interface PendingElementProps {
   id: number;
