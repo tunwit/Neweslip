@@ -1,19 +1,10 @@
-import { changeShopPassword } from "@/app/action/shop/changeShopPassword";
-import { unlockPayroll } from "@/app/action/payroll/period/unlockPayroll";
-import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { hashPassword } from "@/lib/password";
-import { useZodForm } from "@/lib/useZodForm";
-import { changePasswordSchema } from "@/schemas/setting/changePasswordForm";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
-import { useQueryClient } from "@tanstack/react-query";
+import { Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
-import { FormProvider } from "react-hook-form";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { usePeriod } from "@/hooks/payroll/period/hook.period";
 
 interface ChangePasswordModalProps {
@@ -26,7 +17,6 @@ export default function UnlockModal({
   open,
   setOpen,
 }: ChangePasswordModalProps) {
-  const { id } = useCurrentShop();
   const { user } = useUser();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +24,6 @@ export default function UnlockModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { mutateAsync: unlockAsync, error: UnlockError } =
     usePeriod(periodId).unlock;
   const t = useTranslations("view_payroll.unlock");

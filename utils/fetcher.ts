@@ -1,26 +1,32 @@
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+
 interface FetchProps<TBody = any> {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: TBody;
+  cookie?: ReadonlyRequestCookies;
   responseType?: "json" | "blob";
 }
 export const fetchwithauth = async ({
   endpoint,
   method,
   body,
+  cookie,
   responseType = "json",
 }: FetchProps) => {
   const isFormData = body instanceof FormData;
+  const cookieHeader = cookie?.toString();
 
   const options: RequestInit = {
     method,
     credentials: "include",
-    headers:
-      isFormData || method === "GET"
-        ? undefined
-        : {
-            "Content-Type": "application/json",
-          },
+    headers: {
+      ...(isFormData || method === "GET"
+        ? {}
+        : { "Content-Type": "application/json" }),
+
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+    },
     body:
       body && method !== "GET"
         ? isFormData

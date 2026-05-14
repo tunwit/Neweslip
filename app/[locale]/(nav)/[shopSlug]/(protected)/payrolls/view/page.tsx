@@ -18,7 +18,7 @@ import UnlockModal from "@/app/components/Payrolls/view/UnlockModal";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import { usePeriod, usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 import { EntryWithTotalDTO } from "@/types/type.entry";
 import { useEntry, useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
@@ -50,6 +50,7 @@ export default function Home() {
   const router = useRouter();
   const { name } = useCurrentShop();
   const periodHook = usePeriod(Number(periodId));
+  const slipMutate = usePeriodSlips(Number(periodId));
   const { data: periodData, isLoading: loadingPeriod } =
     periodHook.getFilterContext;
 
@@ -64,20 +65,20 @@ export default function Home() {
     router.replace(basePath);
   }
   const onExportAsExcel = async () => {
-    const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `payroll_summary_${Date.now()}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    await slipMutate.excel.mutateAsync();
+    // const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    // });
+    // const blob = await response.blob();
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = `payroll_summary_${Date.now()}.xlsx`;
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+    // window.URL.revokeObjectURL(url);
   };
 
   const onPayment = () => {
@@ -176,11 +177,11 @@ export default function Home() {
         />
       )}
 
-      {/* <UnlockModal
+      <UnlockModal
         periodId={Number(periodId) || -1}
         open={openUnlock}
         setOpen={setOpenUnlock}
-      /> */}
+      />
 
       <title>{period.name}</title>
 

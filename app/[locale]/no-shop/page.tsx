@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 export default function SetupShopPage() {
   const { data, isSuccess } = useOwnShop();
+
   useEffect(() => {
     if (!isSuccess) return;
     if (!data || !data?.data) return;

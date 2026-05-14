@@ -35,7 +35,6 @@ export default function FinalizeModal({
   const [confirmCheckbox, setConfirmCheckbox] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const queryClient = useQueryClient();
   const t = useTranslations("period");
   const tf = useTranslations("finalized_period");
   const tc = useTranslations("common");
@@ -54,6 +53,7 @@ export default function FinalizeModal({
     setFinalizing(true);
     try {
       await finalizeAsync();
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const newPath = pathname.replace("/summary", "/view");
       router.push(`${newPath}?id=${periodSummary.id}`);
       setOpen(false);

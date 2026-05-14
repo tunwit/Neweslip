@@ -222,7 +222,7 @@ export function usePeriodSlips(periodId: number) {
   const { id: shopId } = useCurrentShop();
   const queryKey = ["periods", "pay-slip", periodId];
   const queryClient = useQueryClient();
-  const get = useMutation<
+  const zip = useMutation<
     { blob: Blob; filename: string },
     Error,
     { payload: { entryIds: number[] } }
@@ -253,6 +253,15 @@ export function usePeriodSlips(periodId: number) {
     },
   });
 
+  const excel = useMutation({
+    mutationFn: async () => {
+      return await fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/pay-slips/export/excel`,
+        method: "POST",
+      });
+    },
+  });
+
   const sendEmail = useMutation<
     ApiResponse<CreateBatch>,
     Error,
@@ -266,5 +275,5 @@ export function usePeriodSlips(periodId: number) {
       });
     },
   });
-  return { get, sendEmail };
+  return { zip, excel, sendEmail };
 }

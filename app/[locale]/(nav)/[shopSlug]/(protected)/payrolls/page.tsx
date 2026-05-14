@@ -42,7 +42,7 @@ export default function Home() {
     try {
       if (!id || !user?.id) return;
       const payload: NewPeriodDTO = {
-        name: `New payroll ${new Date().toLocaleDateString()}`,
+        name: `New payroll ${dayjs().format("YYYY-MM-DD")}`,
         start_period: dayjs().toDate().toString(),
         end_period: dayjs().toDate().toString(),
       };

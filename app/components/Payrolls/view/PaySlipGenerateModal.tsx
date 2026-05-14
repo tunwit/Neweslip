@@ -48,7 +48,7 @@ export default function PaySlipGenerateModal({
     uncheckall,
   } = useCheckBox<number>("generate_payslip");
 
-  const { mutateAsync: getSlip } = usePeriodSlips(periodContext.id).get;
+  const { mutateAsync: getSlip } = usePeriodSlips(periodContext.id).zip;
 
   const t = useTranslations("view_payroll.generate");
   const tPeriod = useTranslations("period");

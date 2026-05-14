@@ -57,7 +57,6 @@ export default function PeriodsTable({
   color,
   editable = true,
 }: PeriodsTableProps) {
-  const pathname = usePathname();
   const [isShowConfirmDelete, setIsShowConfirmDelete] = useState(false);
   const { id: shopId } = useCurrentShop();
   const { user } = useUser();
@@ -65,6 +64,7 @@ export default function PeriodsTable({
   const tPeriod = useTranslations("period");
   const tCommon = useTranslations("common");
   const periodHook = usePeriods();
+  const pathname = usePathname().replace(/^\/(th|en)/, "");
 
   const {
     checked,

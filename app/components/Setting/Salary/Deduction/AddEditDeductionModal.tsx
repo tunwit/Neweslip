@@ -139,7 +139,7 @@ export default function AddEditDeductionModal({
               </div>
               <div className="mt-3">
                 <Button
-                  disabled={isSubmitting || isSubmitSuccessful}
+                  disabled={isSubmitting}
                   loadingPosition="start"
                   loading={isSubmitting}
                   type="summit"

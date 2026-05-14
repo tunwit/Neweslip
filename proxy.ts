@@ -1,17 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-import { fetchwithauth } from "./utils/fetcher";
-import { ApiResponse } from "./types/response";
-import {
-  SHOP_CONTEXT_STATUS,
-  ShopContextDTO,
-  UserShopStatusDTO,
-} from "./types/type.user";
-import { redirect } from "./i18n/navigation";
-import { getLocale } from "next-intl/server";
-
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher([

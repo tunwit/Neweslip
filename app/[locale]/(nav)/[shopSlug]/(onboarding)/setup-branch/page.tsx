@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useZodForm } from "@/lib/useZodForm";
 import { branchSchema } from "@/schemas/setting/branchForm";
@@ -8,15 +7,14 @@ import { InputForm } from "@/widget/InputForm";
 import { FormProvider } from "react-hook-form";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { Button } from "@mui/joy";
-import { useUser } from "@clerk/nextjs";
 import { useCreateBranch } from "@/hooks/hook.branch";
 import { NewBranchDTO } from "@/types/type.branch";
 import { Link } from "@/i18n/navigation";
+import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function SetupBranchPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const shopId = searchParams.get("shopId");
+  const { id:shopId } = useCurrentShop();
   const method = useZodForm(branchSchema);
   const { mutateAsync } = useCreateBranch();
   const {
@@ -37,6 +35,7 @@ export default function SetupBranchPage() {
           address: data.address,
         },
       });
+
       // Redirect back to shop page after successful creation
       showSuccess("Create branch successful");
       router.push(`/`);
