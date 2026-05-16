@@ -168,18 +168,21 @@ export function useEntrySlip(periodId: number) {
       },
     });
 
-  const preview = (entryId: number) =>
-    useQuery<ApiResponse<string>>({
-      queryKey: ["preview", shopId, periodId, entryId],
-      queryFn: () =>
-        fetchwithauth({
-          endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/preview`,
-          method: "GET",
-        }),
-      enabled: shopId != null && periodId > 0 && entryId > 0,
-      refetchOnWindowFocus: true,
-      placeholderData: keepPreviousData,
-      staleTime: 1000 * 60 * 5,
-    });
-  return { get, preview };
+  return { get };
 }
+
+export const usePreviewSlip = (
+  periodId: number,
+  entryId: number,
+) => {
+  const { id: shopId } = useCurrentShop();
+  return useQuery<ApiResponse<string>>({
+    queryKey: ["preview", shopId, periodId, entryId],
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${entryId}/preview`,
+        method: "GET",
+      }),
+    staleTime: 1000 * 60 * 5,
+  });
+};

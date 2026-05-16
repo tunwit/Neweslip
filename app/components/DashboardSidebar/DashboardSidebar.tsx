@@ -34,8 +34,8 @@ const DashboardRails = [
   {
     titleKey: "payrolls",
     icon: MoneyIcon,
-    id: "payrolls",
-    href: "/payrolls",
+    id: "periods",
+    href: "/periods",
   },
   // {
   //   titleKey: "Records",

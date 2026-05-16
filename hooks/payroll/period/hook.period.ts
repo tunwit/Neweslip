@@ -247,18 +247,38 @@ export function usePeriodSlips(periodId: number) {
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
+      document.body.appendChild(a);
       a.click();
-
+      a.remove();
       window.URL.revokeObjectURL(url);
     },
   });
 
   const excel = useMutation({
     mutationFn: async () => {
-      return await fetchwithauth({
+      const res = (await fetchwithauth({
         endpoint: `/shops/${shopId}/periods/${periodId}/pay-slips/export/excel`,
         method: "POST",
-      });
+        responseType: "blob",
+      })) as Response;
+      const blob = await res.blob();
+      const disposition = res.headers.get("Content-Disposition");
+      const filename =
+        disposition?.match(/filename="?(.+?)"?$/)?.[1] ?? "export.xlsx";
+
+      return { blob, filename };
+    },
+    onSuccess: ({ blob, filename }) => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
     },
   });
 

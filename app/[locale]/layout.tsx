@@ -1,13 +1,6 @@
-import { Prompt } from "next/font/google";
-import { Suspense } from "react";
 import ClientWrapper from "@/widget/ClientWrapper";
-import { NextIntlClientProvider } from "next-intl";
 import Providers from "../providers";
-const propmt = Prompt({
-  subsets: ["thai", "latin"],
-  weight: ["100", "200", "300", "400"],
-  variable: "--font-propmt",
-});
+import { NextIntlClientProvider } from "next-intl";
 
 export default async function RootLayout({
   children,
@@ -16,17 +9,15 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>) {
-  const locale = (await params).locale;
+  const { locale } = await params;
   return (
     <NextIntlClientProvider locale={locale}>
-      <Providers>
-        <Suspense>
-          <div className="flex flex-col min-h-screen">
-            <div className="flex flex-row h-full  w-screen">
-              <ClientWrapper>{children}</ClientWrapper>
-            </div>
+      <Providers locale={locale}>
+        <div className="flex flex-col min-h-screen">
+          <div className="flex flex-row h-full  w-screen">
+            <ClientWrapper>{children}</ClientWrapper>
           </div>
-        </Suspense>
+        </div>
       </Providers>
     </NextIntlClientProvider>
   );

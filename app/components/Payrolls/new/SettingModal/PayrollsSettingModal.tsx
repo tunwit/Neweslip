@@ -19,7 +19,6 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
-import { Pagination } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";

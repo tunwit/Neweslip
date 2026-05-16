@@ -3,7 +3,12 @@ import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useMemo, useState } from "react";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { PayrollRecord } from "@/types/payrollRecord";
 import { dateFormat, dateTimeFormat, moneyFormat } from "@/utils/formmatter";
@@ -25,23 +30,17 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
 import SendEmailsModal from "@/app/components/Payrolls/view/SendEmailsModal";
 
-export default function Home() {
-  const methods = useCheckBox<number>("payrollRecordTable");
-  const [openAdd, setOpenAdd] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
+export default function ViewPeriodPage() {
   const [openPayslipGenerate, setOpenPayslipGenerate] = useState(false);
   const [openSendEmails, setOpenSendEmails] = useState(false);
   const [openUnlock, setOpenUnlock] = useState(false);
 
   const [hideHeader, setHideHeader] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<PayrollRecord | null>(
-    null,
-  );
   const [showFilter, setShowFilter] = useState(false);
   const [filtered, setFiltered] = useState<EntryWithTotalDTO[]>([]);
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const periodId = useSearchParams().get("id");
+  const { periodId } = useParams();
   const tPeriod = useTranslations("period");
   const tv = useTranslations("view_payroll");
   const tc = useTranslations("common");
@@ -66,30 +65,17 @@ export default function Home() {
   }
   const onExportAsExcel = async () => {
     await slipMutate.excel.mutateAsync();
-    // const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    // });
-    // const blob = await response.blob();
-    // const url = window.URL.createObjectURL(blob);
-    // const a = document.createElement("a");
-    // a.href = url;
-    // a.download = `payroll_summary_${Date.now()}.xlsx`;
-    // document.body.appendChild(a);
-    // a.click();
-    // document.body.removeChild(a);
-    // window.URL.revokeObjectURL(url);
   };
 
   const onPayment = () => {
     const newPath = pathname.replace("/view", "/payment");
-    router.push(`${newPath}?id=${periodId}`);
+    router.push(`${newPath}`);
   };
 
   useEffect(() => {
     if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/view", "/edit");
-      router.push(`${newPath}?id=${periodId}`);
+      router.push(`${newPath}`);
     }
   }, [periodData]);
 

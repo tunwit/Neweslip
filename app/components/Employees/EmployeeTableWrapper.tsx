@@ -1,22 +1,20 @@
-import { Pagination } from "@mui/material";
 import EmployeesTable from "./EmployeesTable";
-import { ChangeEvent, MouseEventHandler, useEffect, useState } from "react";
+import { Activity, useState } from "react";
 import {
   EMPLOYEE_ORDERBY,
   EMPLOYEE_SORTBY,
   EMPLOYEE_STATUS,
 } from "@/types/enum/enum";
 import { Button } from "@mui/joy";
-import { deleteEmployee } from "@/app/action/employee/deleteEmployee";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSnackbar } from "@/hooks/useSnackBar";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { auth } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useDeleteEmployee, useEmployees } from "@/hooks/hook.employee";
+import Pagination from "../UI/Pagination";
+import EmployeeDetailsModal from "./EmployeeDetailsModal";
 
 interface EmployeeTableWrapperProps {
   sortBy?: EMPLOYEE_SORTBY;
@@ -35,6 +33,8 @@ export function EmployeeTableWrapper({
 }: EmployeeTableWrapperProps) {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(15);
+  const [targetEmployee, setTargetEmployee] = useState(-1);
+  const [openEmployeeModal, setOpenEmployeeModal] = useState(false);
 
   const { data, isError, isSuccess, isLoading } = useEmployees({
     sortBy,
@@ -48,14 +48,11 @@ export function EmployeeTableWrapper({
 
   const { checked, uncheckall } = useCheckBox<number>("allEmployeeTable");
   const { id: shopId } = useCurrentShop();
-  const queryClient = useQueryClient();
   const t = useTranslations("employees");
   const tnm = useTranslations("new_employees.modal.delete");
   const { mutateAsync: deleteMutate } = useDeleteEmployee();
 
-  const user = useUser();
-
-  const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
+  const onPageChange = (page: number) => {
     setPage(page);
   };
 
@@ -65,12 +62,20 @@ export function EmployeeTableWrapper({
       uncheckall();
       await deleteMutate({ ids: checked });
       showSuccess(tnm("success"));
-    } catch (err: any) {
-      showError(tnm("fail", { err: err.message }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showError(tnm("fail", { err: message }));
     }
   };
   return (
     <>
+      <Activity mode={openEmployeeModal ? "visible" : "hidden"}>
+        <EmployeeDetailsModal
+          employeeId={targetEmployee}
+          open={openEmployeeModal}
+          setOpen={setOpenEmployeeModal}
+        />
+      </Activity>
       <section className="flex flex-col justify-center items-center w-full">
         <div className="w-full -mt-3">
           <Button
@@ -89,15 +94,15 @@ export function EmployeeTableWrapper({
               data={data}
               isLoading={isLoading}
               isSuccess={isSuccess}
+              setTargetEmployee={setTargetEmployee}
+              setOpenEmployeeModal={setOpenEmployeeModal}
             />
           </div>
         </div>
         <Pagination
-          count={data?.pagination.totalPages || 1}
-          page={data?.pagination.page || page}
-          onChange={onPageChange}
-          shape="rounded"
-          size="medium"
+          totalPages={data?.pagination.totalPages || 1}
+          page={data?.pagination.page || 1}
+          onPageChange={onPageChange}
         />
       </section>
     </>

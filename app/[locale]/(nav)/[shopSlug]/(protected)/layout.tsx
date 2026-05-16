@@ -16,8 +16,6 @@ export default async function ShoppLayout({
   }
 
   const context = await getShopContext(shopSlug);
-  console.log(context);
-
   if (context?.status !== SHOP_CONTEXT_STATUS.OK) {
     redirect({ href: `${context?.redirectTo}`, locale: locale });
   }

@@ -37,6 +37,7 @@ export default function BankSelector({
   return (
     <Autocomplete
       disabled={disable}
+      defaultValue={banks[0]}
       value={selectedBank}
       options={banks}
       freeSolo={true}
@@ -64,23 +65,30 @@ export default function BankSelector({
           <></>
         )
       }
-      renderOption={(props, bank) => (
-        <AutocompleteOption {...props}>
-          <ListItemDecorator>
-            <Image
-              unoptimized={true}
-              loading="lazy"
-              width="20"
-              height="20"
-              src={`/bankIcons/${bank.code}.png`}
-              alt="bank logo"
-            />
-          </ListItemDecorator>
-          <ListItemContent sx={{ fontSize: "sm" }}>
-            {bank.label}
-          </ListItemContent>
-        </AutocompleteOption>
-      )}
+      renderOption={(props, bank) => {
+        const { key, ...rest } = props as typeof props & {
+          key: React.Key;
+        };
+
+        return (
+          <AutocompleteOption key={key} {...rest}>
+            <ListItemDecorator>
+              <Image
+                unoptimized
+                loading="lazy"
+                width={20}
+                height={20}
+                src={`/bankIcons/${bank.code}.png`}
+                alt="bank logo"
+              />
+            </ListItemDecorator>
+
+            <ListItemContent sx={{ fontSize: "sm" }}>
+              {bank.label}
+            </ListItemContent>
+          </AutocompleteOption>
+        );
+      }}
     />
   );
 }

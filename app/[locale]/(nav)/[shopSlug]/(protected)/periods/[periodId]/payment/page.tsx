@@ -75,7 +75,7 @@ export default function Home() {
     if (!summaryData?.data) return;
     if (summaryData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/payment", "/edit");
-      router.push(`${newPath}?id=${periodId}`);
+      router.push(`${newPath}`);
     }
   }, [summaryData]);
 

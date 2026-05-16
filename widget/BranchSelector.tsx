@@ -19,9 +19,10 @@ export default function BranchSelector({
   disable = false,
   isEnableAll = false,
 }: BranchSelectorProps) {
-  const { data, isLoading } = useBranches();
+  const { data } = useBranches();
   const t = useTranslations("employees.filters");
   const locale = useLocale();
+
   return (
     <>
       <Select

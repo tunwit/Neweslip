@@ -34,9 +34,9 @@ export default function UnlockModal({
     setError("");
     setIsSubmitting(true);
     try {
-      const result = await unlockAsync({ payload: { password } });
+      await unlockAsync({ payload: { password } });
       const newPath = pathname.replace("/summary", "/view");
-      router.push(`${newPath}?id=${periodId}`);
+      router.push(`${newPath}`);
       setOpen(false);
     } catch (err: any) {
       if (err.status === 401) {

@@ -38,6 +38,7 @@ import {
   useUpdateEmployee,
 } from "@/hooks/hook.employee";
 import { UpdateEmployeeDTO } from "@/types/type.employee";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface EmployeeDetailsModalProps {
   employeeId: number;
@@ -260,7 +261,7 @@ export default function EmployeeDetailsModal({
               <Button
                 disabled={!isDirty}
                 onClick={handleSubmit(onSave)}
-                startDecorator={<Save sx={{ fontSize: "16px" }} />}
+                startDecorator={<Icon icon={"material-symbols:save"} />}
                 sx={{ fontSize: "12px", gap: 0 }}
                 size="sm"
                 variant="outlined"

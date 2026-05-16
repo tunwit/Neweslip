@@ -25,7 +25,7 @@ import { usePeriods } from "@/hooks/payroll/period/hook.period";
 import { NewPeriodDTO } from "@/types/type.period";
 import ConfirmModal from "@/widget/ConfirmModal";
 
-export default function Home() {
+export default function PeriodsPage() {
   const rounter = useRouter();
   const { id } = useCurrentShop();
   const { user } = useUser();

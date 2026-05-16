@@ -1,7 +1,7 @@
 "use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
-import React, { useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import EmployeeDetailsModal from "./EmployeeDetailsModal";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { EmployeeWithBranchDTO } from "@/types/type.employee";
@@ -12,29 +12,23 @@ import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useQueryClient } from "@tanstack/react-query";
 
-function getRandomPastelColor() {
-  const r = Math.floor(Math.random() * 128) + 127; // Random red value (127-255)
-  const g = Math.floor(Math.random() * 128) + 127; // Random green value (127-255)
-  const b = Math.floor(Math.random() * 128) + 127; // Random blue value (127-255)
-
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
 export default function EmployeesElement({
   employee,
+  setTargetEmployee,
+  setOpenEmployeeModal,
 }: {
   employee: EmployeeWithBranchDTO;
+  setTargetEmployee: Dispatch<SetStateAction<number>>;
+  setOpenEmployeeModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const { toggle, isChecked } = useCheckBox<number>("allEmployeeTable");
-  const [open, setOpen] = useState<boolean>(false);
   const locale = useLocale();
+  const handleClick = () => {
+    setTargetEmployee(employee.id);
+    setOpenEmployeeModal(true);
+  };
   return (
     <>
-      <EmployeeDetailsModal
-        employeeId={employee.id}
-        open={open}
-        setOpen={setOpen}
-      />
       <tr className="h-15 hover:bg-gray-50 transition-colors cursor-pointer">
         <td className="pl-6 border-b">
           <div className="flex gap-4 items-center">
@@ -46,7 +40,7 @@ export default function EmployeesElement({
             />
           </div>
         </td>
-        <td onClick={() => setOpen(true)} className="border-b">
+        <td onClick={handleClick} className="border-b">
           <div className="flex flex-row gap-3">
             <ChangableAvatar
               src={employee.avatarUrl || ""}
@@ -59,16 +53,16 @@ export default function EmployeesElement({
             </div>
           </div>
         </td>
-        <td onClick={() => setOpen(true)} className="border-b">
+        <td onClick={handleClick} className="border-b">
           {employee.nickName}
         </td>
-        <td onClick={() => setOpen(true)} className="border-b">
+        <td onClick={handleClick} className="border-b">
           {moneyFormat(employee.salary)} ฿
         </td>
-        <td onClick={() => setOpen(true)} className="border-b">
+        <td onClick={handleClick} className="border-b">
           {getLocalizedName(employee.branch, locale)}
         </td>
-        <td onClick={() => setOpen(true)} className="border-b">
+        <td onClick={handleClick} className="border-b">
           <EmployeeStatusBadge status={employee.status} />
         </td>
       </tr>

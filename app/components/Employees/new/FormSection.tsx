@@ -20,6 +20,8 @@ import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useCreateEmployee } from "@/hooks/hook.employee";
+import { EMPLOYEE_STATUS, GENDER } from "@/types/enum/enum.employee";
+import { useBranches } from "@/hooks/hook.branch";
 
 interface FormSectionProps {
   currentPage: number;
@@ -41,29 +43,43 @@ export default function FormSection({
   currentPage,
   setCurrentPage,
 }: FormSectionProps) {
+  const { data } = useBranches();
   const methods = useZodForm(createEmployeeFormSchema, {
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      nickName: "",
+      gender: GENDER.MALE,
       dateOfBirth: new Date(),
+      email: "",
+      phoneNumber: "",
+      // address
+      address1: "",
+      address2: "",
+      address3: "",
+      // contract
+      salary: 0,
+      position: "",
       dateEmploy: new Date(),
+      bankName: "",
+      bankAccountNumber: "",
+      bankAccountOwner: "",
+      promtpay: "",
+      status: EMPLOYEE_STATUS.ACTIVE,
+      branchId: -1,
     },
   });
+
   const pathname = usePathname().split("/");
   const rounter = useRouter();
-  const { show, setMessage } = useSnackbar();
-  const queryClient = useQueryClient();
-  const user = useUser();
   const tn = useTranslations("new_employees");
   const tnm = useTranslations("new_employees.modal.create");
   const { mutateAsync: createMutate } = useCreateEmployee();
 
-  // FIX: Change the input type of onSubmit from NewEmployee to FormField
   const onSubmit = async (data: FormField) => {
     const valid = await methods.trigger();
     if (!valid) return;
 
-    const slug = pathname[2];
-    const { id } = extractSlug(slug);
-    // Construct the final data object, merging the form data with the required shopId
     const employeePayload: NewEmployeeDTO = {
       ...data,
       dateEmploy: data.dateEmploy?.toISOString(),
@@ -73,9 +89,11 @@ export default function FormSection({
     };
 
     try {
-      await createMutate({ shopId: id, payload: employeePayload });
+      await createMutate({ payload: employeePayload });
       showSuccess(tnm("success"));
       rounter.push("/");
+      methods.clearErrors();
+      methods.reset();
     } catch (err: any) {
       methods.setError("firstName", {
         type: "server",

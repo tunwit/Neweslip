@@ -1,16 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import {
-  FileText,
-  Download,
-  Eye,
-  Mail,
-  X,
-  CheckCircle,
-  Loader2,
-  Package,
-} from "lucide-react";
-import { Checkbox, Modal, ModalDialog } from "@mui/joy";
-import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
+import { FileText, Download, X, Loader2, Package } from "lucide-react";
+import { Button, Checkbox, Modal, ModalDialog } from "@mui/joy";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError } from "@/utils/showSnackbar";
@@ -18,8 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 import { PeriodFilterContextDTO } from "@/types/type.period";
 
@@ -53,29 +42,23 @@ export default function PaySlipGenerateModal({
   const t = useTranslations("view_payroll.generate");
   const tPeriod = useTranslations("period");
   const tc = useTranslations("common");
-  const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const params = useParams();
-  const newPath = pathname.replace("/view", "/preview");
+
   const onPreview = async (entryId: number) => {
-    // window.open(
-    //   `${newPath}?pid=${periodContext.id}&eid=${entryId}`,
-    //   "_blank",
-    //   "noopener,noreferrer",
-    // );
+    const newPath = pathname.replace("/view", `/entry/${entryId}/preview`);
     const tab = window.open("about:blank", "_blank");
     if (!tab) return;
-
-    tab.location.href = `${newPath}?pid=${periodContext.id}&eid=${entryId}`;
+    tab.location.href = `${newPath}`;
   };
 
   const onDownloadIndividule = async (recordIds: number[]) => {
     setLoadingStates((prev) => ({ ...prev, [recordIds[0]]: true }));
     try {
       await getSlip({ payload: { entryIds: recordIds } });
-    } catch (err: any) {
-      showError(t("modal.download.fail", { err: err.message }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showError(t("modal.download.fail", { err: message }));
     } finally {
       setLoadingStates((prev) => ({ ...prev, [recordIds[0]]: false }));
     }
@@ -85,8 +68,9 @@ export default function PaySlipGenerateModal({
     setDownloadingAll(true);
     try {
       await getSlip({ payload: { entryIds: checked } });
-    } catch (err: any) {
-      showError(t("modal.download.fail", { err: err.message }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showError(t("modal.download.fail", { err: message }));
     } finally {
       setDownloadingAll(false);
     }
@@ -107,7 +91,7 @@ export default function PaySlipGenerateModal({
       <ModalDialog sx={{ padding: 0, width: "40%" }}>
         <div className="bg-white rounded-lg min-w-xl w-full max-h-[90vh] overflow-hidden">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-linear-to-r from-blue-50 to-blue-100">
             <div className="flex items-center gap-3">
               <div className="bg-blue-600 p-2 rounded-lg">
                 <FileText className="text-white" size={24} />
@@ -194,17 +178,19 @@ export default function PaySlipGenerateModal({
                         </span>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0">
+                    <div className="text-right shrink-0`">
                       <p className="font-medium text-gray-900">
                         ฿{moneyFormat(b.calculation.netPay)}
                       </p>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex gap-2 shrink-0`">
                       {/* Preview */}
-                      <Link
-                        href={`${newPath}?pid=${periodContext.id}&eid=${b.entry.id}`}
+                      <button
+                        onClick={() => {
+                          onPreview(b.entry.id);
+                        }}
                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         title="Preview"
                       >
@@ -213,7 +199,7 @@ export default function PaySlipGenerateModal({
                           fontSize={18}
                           className="text-gray-600"
                         />
-                      </Link>
+                      </button>
 
                       {/* Download */}
                       <button

@@ -61,7 +61,7 @@ export const useEmployees = ({
   const { id: shopId } = useCurrentShop();
 
   const queryParams = new URLSearchParams({
-    shopId: shopId!.toString(),
+    ...(shopId && { shopId: shopId.toString() }),
     ...(search_query && { search: search_query }),
     ...(branchId && branchId !== -1 && { branchId: branchId.toString() }),
     ...(status && status !== null && { status: status }),
@@ -82,6 +82,7 @@ export const useEmployees = ({
       sortBy,
       orderBy,
     ],
+    enabled: !!shopId,
     queryFn: () => {
       return fetchwithauth({
         endpoint: `/shops/${shopId}/employees?${queryParams}`,

@@ -19,7 +19,6 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { useUser } from "@clerk/nextjs";
-import { Pagination } from "@mui/material";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
@@ -29,6 +28,7 @@ import {
   EmployeePublicDTO,
   EmployeeWithBranchDTO,
 } from "@/types/type.employee";
+import Pagination from "@/app/components/UI/Pagination";
 
 interface PayrollsAddEmployeeModal {
   periodId: number;
@@ -62,7 +62,7 @@ export default function PayrollsAddEmployeeModal({
   const tnav = useTranslations("navigation");
   const { mutateAsync: createEntryMutate } = useEntry(periodId).create;
 
-  const onPageChange = (_: ChangeEvent<unknown>, page: number) => {
+  const onPageChange = (page: number) => {
     setPage(page);
   };
 
@@ -178,11 +178,9 @@ export default function PayrollsAddEmployeeModal({
 
             <div className="w-full flex justify-center mt-2">
               <Pagination
-                count={data?.pagination.totalPages || 1}
+                totalPages={data?.pagination.totalPages || 1}
                 page={data?.pagination.page || page}
-                onChange={onPageChange}
-                shape="rounded"
-                size="medium"
+                onPageChange={onPageChange}
               />
             </div>
 

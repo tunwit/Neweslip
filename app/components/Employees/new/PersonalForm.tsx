@@ -66,7 +66,7 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
                   const url = URL.createObjectURL(file);
                   field.onChange(url);
                 }}
-                onRemove={() => field.onChange(undefined)}
+                onRemove={() => field.onChange(null)}
               />
             )}
           />
@@ -137,8 +137,10 @@ export default function PersonalForm({ setCurrentPage }: PersonalFormProps) {
               name="dateOfBirth"
               render={({ field }) => (
                 <DatePickerLocalize
-                  date={dayjs(field?.value)}
-                  onChange={(newvalue) => field.onChange(newvalue!.toDate())}
+                  date={field.value ? dayjs(field.value) : null}
+                  onChange={(newvalue) =>
+                    field.onChange(newvalue?.toDate() ?? null)
+                  }
                 />
               )}
             />

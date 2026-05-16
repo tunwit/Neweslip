@@ -1,12 +1,7 @@
 "use client";
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { moneyFormat } from "@/utils/formmatter";
 import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
@@ -41,7 +36,7 @@ import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
 import { number } from "zod";
 
 export default function Home() {
-  const periodId = useSearchParams().get("id");
+  const { periodId } = useParams();
   const [openFinalizeModal, setOpenFinalizeModal] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   const [query, setQuery] = useState("");
@@ -75,13 +70,13 @@ export default function Home() {
     if (!periodData?.data) return;
     if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/summary", "/view");
-      router.push(`${newPath}?id=${periodId}`);
+      router.push(`${newPath}`);
     }
   }, [periodData]);
 
   const backToEditHandler = () => {
     const newPath = pathname.replace("/summary", "/edit");
-    router.push(`${newPath}?id=${periodId}`);
+    router.push(`${newPath}`);
   };
 
   useEffect(() => {

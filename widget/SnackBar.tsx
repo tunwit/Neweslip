@@ -1,15 +1,10 @@
-"use Client";
+"use client";
 import CheckIcon from "@/assets/icons/CheckIcon";
 import { useSnackbar } from "@/hooks/useSnackBar";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Snackbar } from "@mui/joy";
 import { useTranslations } from "next-intl";
 import React from "react";
-
-interface SnackBarProps {
-  type: "success" | "fail" | "warning";
-  message: string;
-}
 
 const SnackBarType = {
   success: {

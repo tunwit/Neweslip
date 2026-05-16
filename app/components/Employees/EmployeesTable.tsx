@@ -23,11 +23,19 @@ interface EmployeesTableProps {
   data: PaginatedResponse<EmployeeWithBranchDTO[]> | undefined;
   isLoading: boolean;
   isSuccess: boolean;
+  setTargetEmployee: Dispatch<SetStateAction<number>>;
+  setOpenEmployeeModal: Dispatch<SetStateAction<boolean>>;
 }
-function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
+function EmployeesTable({
+  data,
+  isLoading,
+  isSuccess,
+  setTargetEmployee,
+  setOpenEmployeeModal,
+}: EmployeesTableProps) {
   const { id } = useCurrentShop();
   const { data: employeeStat } = useEmployeeStats({ shopId: id! });
-  const { checked, checkall, uncheckall, isAllChecked, isSomeChecked } =
+  const { checkall, uncheckall, isAllChecked, isSomeChecked } =
     useCheckBox<number>("allEmployeeTable");
   const t = useTranslations("employees");
 
@@ -89,7 +97,14 @@ function EmployeesTable({ data, isLoading, isSuccess }: EmployeesTableProps) {
 
           {isSuccess &&
             data?.data?.map((emp: EmployeeWithBranchDTO, i: number) => {
-              return <EmployeesElement key={emp.id} employee={emp} />;
+              return (
+                <EmployeesElement
+                  key={emp.id}
+                  employee={emp}
+                  setTargetEmployee={setTargetEmployee}
+                  setOpenEmployeeModal={setOpenEmployeeModal}
+                />
+              );
             })}
         </tbody>
         <tfoot className="h-15 bg-gray-50   sticky bottom-0 z-10 ">

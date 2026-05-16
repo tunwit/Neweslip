@@ -1,9 +1,8 @@
+"use client";
 import { Step, StepIndicator, Stepper } from "@mui/joy";
-import React, { useTransition } from "react";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import HomeIcon from "@mui/icons-material/Home";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonIcon from "@mui/icons-material/Person";
 import { useTranslations } from "next-intl";
 

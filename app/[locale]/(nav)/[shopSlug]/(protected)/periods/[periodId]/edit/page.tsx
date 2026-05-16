@@ -40,12 +40,12 @@ import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import { usePeriod, usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
 import PayrollsSettingModal from "@/app/components/Payrolls/new/SettingModal/PayrollsSettingModal";
 
-export default function Home() {
+export default function EditPeriodPage() {
   const methods = useCheckBox<number>("payrollRecordTable");
   const { checked, uncheckall } = methods;
   const [openAdd, setOpenAdd] = useState(false);
@@ -65,22 +65,20 @@ export default function Home() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
-  const periodId = useSearchParams().get("id");
+  const { periodId } = useParams();
 
   const periodMethod = usePeriod(Number(periodId));
 
-  const {
-    data: periodData,
-    isLoading: loadingPeriod,
-    error,
-  } = periodMethod.getFilterContext;
+  const { data: periodData, isLoading: loadingPeriod } =
+    periodMethod.getFilterContext;
 
   const { mutateAsync: periodUpdateAsync } = periodMethod.update;
 
   const { data, isLoading: loadingRecord } = useEntry(Number(periodId)).list;
   const { mutateAsync: deleteEntryMutate } = useEntry(Number(periodId)).remove;
+  const slipMutate = usePeriodSlips(Number(periodId));
 
-  if (error || !periodId) {
+  if (!periodId) {
     const basePath = pathname.replace(/\/edit$/, "");
     router.replace(basePath);
   }
@@ -109,7 +107,7 @@ export default function Home() {
 
   const summaryHandler = () => {
     const newPath = pathname.replace("/edit", "/summary");
-    router.push(`${newPath}?id=${periodId}`);
+    router.push(`${newPath}`);
   };
 
   const saveDataHandler = async () => {
@@ -161,27 +159,14 @@ export default function Home() {
     });
     if (periodData?.data?.status !== PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/edit", "/view");
-      router.push(`${newPath}?id=${periodId}`);
+      router.push(`${newPath}`);
     }
   }, [periodData]);
 
   const onExport = async () => {
     setIsExporting(true);
     try {
-      const response = await fetch(`/api/payroll/periods/${periodId}/export`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `payroll_summary_${Date.now()}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      await slipMutate.excel.mutateAsync();
     } catch (err: any) {
       showError(tPeriod("modal.export.fail", { err: err.message }));
     } finally {
@@ -255,8 +240,6 @@ export default function Home() {
 
             <div className="flex gap-3 z-10 h-5">
               <IconButton
-                loading={isExporting}
-                disabled={isExporting}
                 color="neutral"
                 variant="outlined"
                 onClick={() => setOpenSetting(true)}

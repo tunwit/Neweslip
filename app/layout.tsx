@@ -1,11 +1,12 @@
 import { Prompt } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
 
-const propmt = Prompt({
+const prompt = Prompt({
   subsets: ["thai", "latin"],
   weight: ["100", "200", "300", "400"],
-  variable: "--font-propmt",
+  variable: "--font-prompt",
 });
 
 export default async function RootLayout({
@@ -15,9 +16,9 @@ export default async function RootLayout({
 }>) {
   return (
     <ClerkProvider signInUrl="/th/sign-in">
-      <html className={`${propmt.variable} antialiased`}>
-        <body className={`${propmt.className} antialiased flex`}>
-          {children}
+      <html className={`${prompt.variable} antialiased`}>
+        <body className={`${prompt.className} antialiased flex`}>
+          <Suspense>{children}</Suspense>
         </body>
       </html>
     </ClerkProvider>

@@ -18,7 +18,6 @@ import {
   EMPLOYEE_SORTBY,
   EMPLOYEE_STATUS,
 } from "@/types/enum/enum";
-import { Pagination } from "@mui/material";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
@@ -55,7 +54,12 @@ export default function Home() {
             <p className="text-black text-4xl font-bold">{t("label")}</p>
             <Button
               onClick={() => rounter.push("employees/new")}
-              startDecorator={<Add sx={{ fontSize: "20px" }} />}
+              startDecorator={
+                <Icon
+                  icon={"material-symbols:add-rounded"}
+                  className="text-xl"
+                />
+              }
               sx={{
                 fontSize: "13px",
                 "--Button-gap": "5px",
@@ -77,7 +81,7 @@ export default function Home() {
                 <input
                   type="text"
                   placeholder={t("search.placeholder")}
-                  className="text-[#424242] font-light text-sm  w-full  focus:outline-none "
+                  className="text-[#424242] font-light text-sm  w-full  focus:outline-none h-6"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />

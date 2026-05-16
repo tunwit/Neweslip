@@ -1,4 +1,3 @@
-import React from "react";
 import { IconButton, Button, Box } from "@mui/joy";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -31,7 +30,7 @@ export default function Pagination({
       range.push(totalPages);
     }
 
-    for (let i of range) {
+    for (const i of range) {
       if (prev !== undefined) {
         if (i - prev === 2) {
           rangeWithDots.push(prev + 1);

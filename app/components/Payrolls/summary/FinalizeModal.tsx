@@ -55,7 +55,7 @@ export default function FinalizeModal({
       await finalizeAsync();
       await new Promise((resolve) => setTimeout(resolve, 2000));
       const newPath = pathname.replace("/summary", "/view");
-      router.push(`${newPath}?id=${periodSummary.id}`);
+      router.push(`${newPath}`);
       setOpen(false);
     } catch (err) {
       showError(`Cannot finalize payroll ${err}`);
