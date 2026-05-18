@@ -11,10 +11,10 @@ export default function SignInPage() {
   const handleGoogleSignIn = () => {
     if (!signIn) return;
     return signIn
-      .authenticateWithRedirect({
+      .sso({
         strategy: "oauth_google",
-        redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/",
+        redirectCallbackUrl: "/sso-callback",
+        redirectUrl: "/",
       })
       .catch((err: any) => {
         console.log(err.errors);

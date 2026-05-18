@@ -12,13 +12,13 @@ import SalaryBreakdown from "@/widget/SalaryBreakdown";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { EntryWithTotalDTO } from "@/types/type.entry";
+import { EntryBreakDownDTO } from "@/types/type.entry";
 
 interface SummaryCardProps {
-  entry: EntryWithTotalDTO;
+  breakdown: EntryBreakDownDTO;
 }
 
-export default function SummaryCard({ entry }: SummaryCardProps) {
+export default function SummaryCard({ breakdown }: SummaryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations("record");
   const locale = useLocale();
@@ -32,21 +32,21 @@ export default function SummaryCard({ entry }: SummaryCardProps) {
         >
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
             <ChangableAvatar
-              src={entry.employee.avatar ?? ""}
-              fallbackTitle={entry.employee.snapshot.firstName.charAt(0)}
+              src={breakdown.entry.employee.avatar ?? ""}
+              fallbackTitle={breakdown.entry.employee.snapshot.firstName.charAt(0)}
               editable={false}
             />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                {entry.employee.snapshot.firstName}{" "}
-                {entry.employee.snapshot.lastName}
+                {breakdown.entry.employee.snapshot.firstName}{" "}
+                {breakdown.entry.employee.snapshot.lastName}
               </h3>
               <div className="grid grid-cols-[auto_auto] gap-3 mt-1 w-fit">
                 <p className="text-sm text-gray-600">
-                  {entry.employee.snapshot.nickName}
+                  {breakdown.entry.employee.snapshot.nickName}
                 </p>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {getLocalizedName(entry.employee.snapshot.branch, locale)}
+                  {getLocalizedName(breakdown.entry.employee.snapshot.branch, locale)}
                 </span>
               </div>
             </div>
@@ -54,7 +54,7 @@ export default function SummaryCard({ entry }: SummaryCardProps) {
 
           <div className="flex gap-5 items-center">
             <span
-              hidden={!entry.paidAt}
+              hidden={!breakdown.entry.paidAt}
               className="flex text-green-600 text-xs gap-1 items-center self-baseline-last bg-green-100 px-2 py-1 rounded-lg border border-green-600"
             >
               <Icon icon="ic:outline-paid" /> {t("fields.paid")}
@@ -64,7 +64,7 @@ export default function SummaryCard({ entry }: SummaryCardProps) {
                 {t("fields.net")}
               </p>
               <p className="text-2xl font-semibold text-gray-900">
-                ฿ {moneyFormat(entry.netPay)}
+                ฿ {moneyFormat(breakdown.calculation.netPay)}
               </p>
             </div>
             <Icon
@@ -85,7 +85,7 @@ export default function SummaryCard({ entry }: SummaryCardProps) {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <SalaryBreakdown entryId={entry.id} />
+              <SalaryBreakdown breakdown={breakdown} />
             </motion.div>
           )}
         </AnimatePresence>

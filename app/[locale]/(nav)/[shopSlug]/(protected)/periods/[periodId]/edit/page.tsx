@@ -417,13 +417,12 @@ export default function EditPeriodPage() {
               periodId={Number(periodId) || -1}
               show={showFilter}
               setShow={setShowFilter}
-              context={periodData?.data!}
+              context={periodData?.data}
               onApply={(filteredBreakdowns) => {
                 const mapped = filteredBreakdowns.map((b) => ({
                   ...b.entry,
                   ...b.calculation,
                 }));
-                console.log(mapped);
                 setFilterdRecord(mapped);
               }}
             />

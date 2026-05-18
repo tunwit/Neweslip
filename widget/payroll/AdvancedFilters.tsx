@@ -147,7 +147,7 @@ interface Props<T extends { id: number }> {
   periodId: number;
   show: boolean;
   setShow: Dispatch<SetStateAction<boolean>>;
-  context: PeriodFilterContextDTO;
+  context?: PeriodFilterContextDTO;
   onApply: (data: EntryBreakDownDTO[]) => void;
 }
 
@@ -162,21 +162,6 @@ export default function AdvancedFilters<T extends { id: number }>({
   const [appliedFilters, setAppliedFilters] = useState<FilterRule[]>([]);
 
   const t = useTranslations("period");
-
-  /* ---------------- FIELD OPTIONS ---------------- */
-
-  const extendedFields: FieldOption[] = [
-    ...context.fields.map((f) => ({
-      id: f.nameEng,
-      name: f.name,
-      nameEng: f.nameEng,
-    })),
-    { id: "totalOT", name: "ค่าล่วงเวลา", nameEng: "Overtimes" },
-    { id: "totalPenalty", name: "ค่าหักลงโทษ", nameEng: "Penalties" },
-    { id: "totalDeduction", name: "รายหัก", nameEng: "Deductions" },
-    { id: "net", name: "ยอดสุทธิ", nameEng: "Net" },
-    { id: "paid", name: "จ่ายเเล้ว", nameEng: "Paid" },
-  ];
 
   /* ---------------- FILTER LOGIC ---------------- */
 
@@ -225,6 +210,23 @@ export default function AdvancedFilters<T extends { id: number }>({
     if (!context) return;
     applyFilter();
   }, [context]);
+
+  if (!context) return null;
+
+  /* ---------------- FIELD OPTIONS ---------------- */
+
+  const extendedFields: FieldOption[] = [
+    ...context.fields.map((f) => ({
+      id: f.nameEng,
+      name: f.name,
+      nameEng: f.nameEng,
+    })),
+    { id: "totalOT", name: "ค่าล่วงเวลา", nameEng: "Overtimes" },
+    { id: "totalPenalty", name: "ค่าหักลงโทษ", nameEng: "Penalties" },
+    { id: "totalDeduction", name: "รายหัก", nameEng: "Deductions" },
+    { id: "net", name: "ยอดสุทธิ", nameEng: "Net" },
+    { id: "paid", name: "จ่ายเเล้ว", nameEng: "Paid" },
+  ];
 
   /* ---------------- ACTIONS ---------------- */
 

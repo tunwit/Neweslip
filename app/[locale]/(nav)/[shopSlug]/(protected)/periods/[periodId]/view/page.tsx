@@ -24,7 +24,7 @@ import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { usePeriod, usePeriodSlips } from "@/hooks/payroll/period/hook.period";
-import { EntryWithTotalDTO } from "@/types/type.entry";
+import { EntryBreakDownDTO, EntryWithTotalDTO } from "@/types/type.entry";
 import { useEntry, useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
@@ -37,7 +37,7 @@ export default function ViewPeriodPage() {
 
   const [hideHeader, setHideHeader] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [filtered, setFiltered] = useState<EntryWithTotalDTO[]>([]);
+  const [filtered, setFiltered] = useState<EntryBreakDownDTO[]>([]);
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
   const { periodId } = useParams();
@@ -53,16 +53,6 @@ export default function ViewPeriodPage() {
   const { data: periodData, isLoading: loadingPeriod } =
     periodHook.getFilterContext;
 
-  const {
-    data: entriesData,
-    isLoading: loadingEntry,
-    error: entryError,
-  } = useEntry(Number(periodId)).list;
-
-  if (entryError || !periodId) {
-    const basePath = pathname.replace(/\/view$/, "");
-    router.replace(basePath);
-  }
   const onExportAsExcel = async () => {
     await slipMutate.excel.mutateAsync();
   };
@@ -80,34 +70,41 @@ export default function ViewPeriodPage() {
   }, [periodData]);
 
   useEffect(() => {
-    if (!entriesData?.data) return;
+    if (!periodData?.data) return;
     const q = debouced.toLowerCase();
 
     setFiltered(
-      entriesData?.data?.filter((r) => {
+      periodData.data.breakdowns.filter((b) => {
+        const entry = b.entry;
         return (
-          r.employee.snapshot.firstName.toLowerCase().includes(q) ||
-          r.employee.snapshot.lastName.toLowerCase().includes(q) ||
-          (r.employee.snapshot.firstName + r.employee.snapshot.lastName)
+          entry.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          entry.employee.snapshot.lastName.toLowerCase().includes(q) ||
+          (entry.employee.snapshot.firstName + entry.employee.snapshot.lastName)
             .toLowerCase()
             .includes(q) ||
-          r.employee.snapshot.nickName.toLowerCase().includes(q) ||
-          r.employee.snapshot.branch.name.toLowerCase().includes(q) ||
-          r.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
+          entry.employee.snapshot.nickName.toLowerCase().includes(q) ||
+          entry.employee.snapshot.branch.name.toLowerCase().includes(q) ||
+          entry.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );
-  }, [entriesData?.data, debouced]);
+  }, [periodData?.data, debouced]);
 
   const filteredTotalNet = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.netPay || 0), 0);
+    return filtered.reduce((sum, r) => sum + (r.calculation.netPay || 0), 0);
   }, [filtered]);
 
   const filteredTotalEarning = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.summary.gross || 0), 0);
+    return filtered.reduce(
+      (sum, r) => sum + (r.calculation.summary.gross || 0),
+      0,
+    );
   }, [filtered]);
   const filteredTotalDeduction = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.summary.adjustment || 0), 0);
+    return filtered.reduce(
+      (sum, r) => sum + (r.calculation.summary.adjustment || 0),
+      0,
+    );
   }, [filtered]);
 
   const filteredTotalSalary = useMemo(() => {
@@ -116,8 +113,8 @@ export default function ViewPeriodPage() {
     }, 0);
   }, [filtered]);
 
-  const period = periodData?.data!;
-  const isLoading = loadingPeriod || loadingEntry || !period;
+  const period = periodData?.data;
+  const isLoading = loadingPeriod || !period;
 
   let loadingMessage = tc("load.preparing");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
@@ -147,7 +144,7 @@ export default function ViewPeriodPage() {
           setOpen={setOpenEdit}
         />
       )} */}
-      {openPayslipGenerate && entriesData?.data && (
+      {openPayslipGenerate && periodData?.data && (
         <PaySlipGenerateModal
           periodContext={periodData.data}
           open={openPayslipGenerate}
@@ -155,7 +152,7 @@ export default function ViewPeriodPage() {
         />
       )}
 
-      {openSendEmails && entriesData?.data && (
+      {openSendEmails && periodData?.data && (
         <SendEmailsModal
           periodContext={periodData.data}
           open={openSendEmails}
@@ -511,18 +508,14 @@ export default function ViewPeriodPage() {
                 setShow={setShowFilter}
                 context={periodData.data}
                 onApply={(filteredBreakdowns) => {
-                  const mapped = filteredBreakdowns.map((b) => ({
-                    ...b.entry,
-                    ...b.calculation,
-                  }));
-                  setFiltered(mapped);
+                  setFiltered(filteredBreakdowns);
                 }}
               />
             </div>
           </section>
           <div className="space-y-3 mb-5">
-            {filtered.map((entry) => {
-              return <SummaryCard key={entry.id} entry={entry} />;
+            {filtered.map((b) => {
+              return <SummaryCard key={b.entry.id} breakdown={b} />;
             })}
             <SummarySection
               totalSalary={filteredTotalSalary}

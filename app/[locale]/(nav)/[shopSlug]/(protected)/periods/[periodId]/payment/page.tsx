@@ -39,16 +39,23 @@ import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriod
 import PaymentCard from "@/app/components/Payrolls/payment/PaymentCard";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { usePeriod } from "@/hooks/payroll/period/hook.period";
+import {
+  EntryBreakDownDTO,
+  EntryPublicDTO,
+  EntryWithTotalDTO,
+} from "@/types/type.entry";
+import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");
   const router = useRouter();
   const [showFilter, setShowFilter] = useState(false);
-  const periodId = useSearchParams().get("id");
+  const { periodId } = useParams();
   const [selectedTab, setSelectedTab] = useState("manual");
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [filtered, setFiltered] = useState<PayrollRecordSummary[]>([]);
+  const [filtered, setFiltered] = useState<EntryBreakDownDTO[]>([]);
   const pathname = usePathname();
   const tPeriod = useTranslations("period");
   const tp = useTranslations("payment_payroll");
@@ -58,55 +65,50 @@ export default function Home() {
   const [hideHeader, setHideHeader] = useState(false);
   const { name } = useCurrentShop();
 
-  const {
-    data: periodData,
-    isLoading: loadingPeriod,
-    error,
-  } = usePayrollPeriod(Number(periodId));
-  const { data: summaryData, isLoading: loadingSummary } =
-    usePayrollPeriodSummary(Number(periodId));
+  const { data: periodData, isLoading: loadingPeriod } = usePeriod(
+    Number(periodId),
+  ).getContextWithPayment;
 
-  if (error || !periodId) {
-    const basePath = pathname.replace(/\/payment$/, "");
-    router.replace(basePath);
-  }
+  // if (error || !periodId) {
+  //   const basePath = pathname.replace(/\/payment$/, "");
+  //   router.replace(basePath);
+  // }
 
   useEffect(() => {
-    if (!summaryData?.data) return;
-    if (summaryData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
+    if (!periodData?.data) return;
+    if (periodData?.data?.status === PAY_PERIOD_STATUS.DRAFT) {
       const newPath = pathname.replace("/payment", "/edit");
       router.push(`${newPath}`);
     }
-  }, [summaryData]);
+  }, [periodData]);
 
   useEffect(() => {
-    if (!summaryData?.data?.records) return;
+    if (!periodData?.data) return;
     const q = debouced.toLowerCase();
 
     setFiltered(
-      summaryData?.data?.records.filter((r) => {
+      periodData.data.breakdowns.filter((b) => {
+        const entry = b.entry;
         return (
-          r.employee.firstName.toLowerCase().includes(q) ||
-          r.employee.lastName.toLowerCase().includes(q) ||
-          (r.employee.firstName + r.employee.lastName)
+          entry.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          entry.employee.snapshot.lastName.toLowerCase().includes(q) ||
+          (entry.employee.snapshot.firstName + entry.employee.snapshot.lastName)
             .toLowerCase()
             .includes(q) ||
-          r.employee.nickName.toLowerCase().includes(q) ||
-          r.employee.branch.name.toLowerCase().includes(q) ||
-          r.employee.branch.nameEng.toLowerCase().includes(q)
+          entry.employee.snapshot.nickName.toLowerCase().includes(q) ||
+          entry.employee.snapshot.branch.name.toLowerCase().includes(q) ||
+          entry.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );
-  }, [summaryData?.data?.records, debouced]);
+  }, [periodData?.data, debouced]);
 
-  const isLoading = loadingPeriod || loadingSummary;
+  const isLoading = loadingPeriod;
 
   let loadingMessage = tc("load.preparing");
-  if (loadingSummary) loadingMessage = tPeriod("load.loading_records");
   if (loadingPeriod) loadingMessage = tPeriod("load.loading_payrolls");
-
   return (
-    <main className="min-h-screen w-full bg-gray-100 font-medium ">
+    <main className=" w-full bg-gray-100 font-medium ">
       <title>Payment - Eslip</title>
       <Modal open={isLoading}>
         <ModalDialog>
@@ -206,7 +208,7 @@ export default function Home() {
                           {tPeriod("fields.grand_total")}
                         </p>
                         <p className="text-xl font-bold text-green-900 mt-1">
-                          {moneyFormat(periodData?.data?.totalNet || 0)}
+                          {moneyFormat(periodData?.data?.netPay || 0)}
                         </p>
                       </div>
                       <div className="bg-green-200 p-2 rounded-lg">
@@ -375,20 +377,26 @@ export default function Home() {
                   </div>
                 </div>
                 <AdvancedFilters
-                  periodId={periodData?.data?.id || -1}
+                  periodId={Number(periodId) || -1}
                   show={showFilter}
                   setShow={setShowFilter}
-                  originalData={summaryData?.data?.records || []}
-                  setData={setFiltered}
+                  context={periodData?.data}
+                  onApply={(filteredBreakdowns) => {
+                    setFiltered(filteredBreakdowns);
+                  }}
                 />
               </div>
             </section>
             <section className="space-y-3 my-3">
-              {filtered?.map((record) => {
+              {filtered?.map((b) => {
                 return (
                   <PaymentCard
-                    key={record.id}
-                    record={record as PayrollRecordSummary}
+                    key={b.entry.id}
+                    periodId={Number(periodId)}
+                    breakdown={b}
+                    paymentDetails={
+                      periodData!.data!.paymentsByEntryId[b.entry.id]
+                    }
                   />
                 );
               })}

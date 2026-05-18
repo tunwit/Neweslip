@@ -4,6 +4,7 @@ import { ApiResponse } from "@/types/response";
 import { CreateBatch } from "@/types/type.batch";
 import {
   NewPeriodDTO,
+  PeriodContextWithPaymentDTO,
   PeriodFilterContextDTO,
   PeriodPublicDTO,
   PeriodSummaryDTO,
@@ -125,6 +126,13 @@ export function usePeriod(periodId?: number | string) {
   const queryKeyEntries = ["entries", periodId];
   const queryKeyWithCal = ["period", shopId, periodId, "withCal"];
   const queryKeyFilterContext = ["period", shopId, periodId, "context"];
+  const queryKeyContextPayment = [
+    "period",
+    shopId,
+    periodId,
+    "context",
+    "payment",
+  ];
 
   const get = useQuery<ApiResponse<PeriodWithCountDTO>>({
     queryKey: queryKey,
@@ -151,6 +159,18 @@ export function usePeriod(periodId?: number | string) {
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/periods/${periodId}?include=calculation,fields,breakdowns`,
+        method: "GET",
+      }),
+    enabled: !!shopId && !!periodId,
+  });
+
+  const getContextWithPayment = useQuery<
+    ApiResponse<PeriodContextWithPaymentDTO>
+  >({
+    queryKey: queryKeyContextPayment,
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}?include=calculation,fields,breakdowns,payments`,
         method: "GET",
       }),
     enabled: !!shopId && !!periodId,
@@ -215,6 +235,7 @@ export function usePeriod(periodId?: number | string) {
     getFilterContext,
     finalize,
     unlock,
+    getContextWithPayment,
   };
 }
 

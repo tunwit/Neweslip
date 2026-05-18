@@ -15,16 +15,27 @@ import { setMarkRecordAsPaid } from "@/app/action/payroll/record/markRecordAsPai
 import { useUser } from "@clerk/nextjs";
 import { showError } from "@/utils/showSnackbar";
 import ChangableAvatar from "@/widget/ChangableAvatar";
+import { EntryBreakDownDTO } from "@/types/type.entry";
+import { EmployeePaymentDTO } from "@/types/type.employee";
+import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 
 interface SummaryCardProps {
-  record: PayrollRecordSummary;
+  periodId: number;
+  breakdown: EntryBreakDownDTO;
+  paymentDetails: EmployeePaymentDTO;
 }
 
-export default function PaymentCard({ record }: SummaryCardProps) {
-  const [paid, setPaid] = useState(record.paid);
+export default function PaymentCard({
+  periodId,
+  breakdown,
+  paymentDetails,
+}: SummaryCardProps) {
+  console.log("redewr");
+
+  const [paid, setPaid] = useState(!!breakdown.entry.paidAt);
+  const { mutateAsync: setPaidMutate } = useEntry(Number(periodId)).setPaid;
   const [expanded, setExpanded] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
-  const { user } = useUser();
   const te = useTranslations("employees");
   const tr = useTranslations("record");
   const tp = useTranslations("payment_payroll");
@@ -38,20 +49,18 @@ export default function PaymentCard({ record }: SummaryCardProps) {
     setTimeout(() => setCopiedId(""), 2000);
   };
   const handleMarkedAsPaid = async (setTo: boolean) => {
-    if (!user) return;
-
+    setPaid(setTo);
     try {
-      await setMarkRecordAsPaid(record.id, setTo, user.id);
-      setPaid(setTo);
+      await setPaidMutate({
+        payload: { entryId: breakdown.entry.id, paid: setTo },
+      });
     } catch (err) {
       showError(`fail to mark as paid ${err}`);
       setPaid(!setTo);
     }
   };
 
-  const bank = banks.find((b) => b.label === record.employee.bankName);
-  const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${record.employee.avatar}`;
-
+  const bank = banks.find((b) => b.label === paymentDetails.bankName);
   return (
     <div className="space-y-4">
       <div className="hover:shadow bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -62,21 +71,29 @@ export default function PaymentCard({ record }: SummaryCardProps) {
         >
           <div className="grid grid-cols-[auto_1fr] gap-4 items-center">
             <ChangableAvatar
-              src={avatar}
-              fallbackTitle={record.employee.firstName.charAt(0)}
+              src={breakdown.entry.employee.avatar || ""}
+              fallbackTitle={breakdown.entry.employee.snapshot.firstName.charAt(
+                0,
+              )}
               editable={false}
             />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
-                {record.employee.firstName} {record.employee.lastName}
+                {breakdown.entry.employee.snapshot.firstName}{" "}
+                {breakdown.entry.employee.snapshot.lastName}
               </h3>
               <span className="flex items-center gap-2">
                 <p className="text-xs text-gray-600">
-                  {record.employee.bankName} •{" "}
-                  {formatBankAccountNumber(record.employee.bankAccountNumber)}
+                  {paymentDetails.bankName} •{" "}
+                  {formatBankAccountNumber(
+                    paymentDetails.bankAccountNumber || "",
+                  )}
                 </p>
                 <p className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  {getLocalizedName(record.employee.branch, locale)}
+                  {getLocalizedName(
+                    breakdown.entry.employee.snapshot.branch,
+                    locale,
+                  )}
                 </p>
               </span>
             </div>
@@ -94,7 +111,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                 {tr("fields.net")}
               </p>
               <p className="text-xl font-semibold text-gray-900">
-                ฿ {moneyFormat(record.totals.net)}
+                ฿ {moneyFormat(breakdown.calculation.netPay)}
               </p>
             </div>
             <Icon
@@ -141,7 +158,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                             alt="bank logo"
                           />
                           <p className="font-medium text-gray-900">
-                            {record.employee.bankName}
+                            {paymentDetails.bankName}
                           </p>
                         </div>
                       </div>
@@ -153,20 +170,20 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                         <div className="flex items-center justify-between mt-1">
                           <p className="font-mono font-medium text-gray-900">
                             {formatBankAccountNumber(
-                              record.employee.bankAccountNumber,
+                              paymentDetails.bankAccountNumber || "",
                             )}
                           </p>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCopy(
-                                record.employee.bankAccountNumber,
-                                `bank-${record.employee.id}`,
+                                paymentDetails.bankAccountNumber || "",
+                                `bank-${breakdown.entry.id}`,
                               );
                             }}
                             className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                           >
-                            {copiedId === `bank-${record.employee.id}` ? (
+                            {copiedId === `bank-${breakdown.entry.id}` ? (
                               <Check className="w-4 h-4 text-green-600" />
                             ) : (
                               <Copy className="w-4 h-4 text-gray-400" />
@@ -180,7 +197,7 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                           {te("fields.bank_account_owner")}
                         </label>
                         <p className="font-medium text-gray-900 mt-1">
-                          {record.employee.bankAccountOwner}
+                          {paymentDetails.bankAccountOwner}
                         </p>
                       </div>
 
@@ -190,19 +207,19 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                         </label>
                         <div className="flex items-center justify-between mt-1">
                           <p className="font-mono font-semibold text-xl text-gray-900">
-                            ฿{moneyFormat(record.totals.net)}
+                            ฿{moneyFormat(breakdown.calculation.netPay)}
                           </p>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCopy(
-                                record.totals.net.toString(),
-                                `amount-${record.employee.id}`,
+                                breakdown.calculation.netPay.toString(),
+                                `amount-${breakdown.entry.id}`,
                               );
                             }}
                             className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                           >
-                            {copiedId === `amount-${record.employee.id}` ? (
+                            {copiedId === `amount-${breakdown.entry.id}` ? (
                               <Check className="w-4 h-4 text-green-600" />
                             ) : (
                               <Copy className="w-4 h-4 text-gray-400" />
@@ -240,14 +257,14 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                     </div>
 
                     <div className="bg-white rounded-lg p-4 space-y-3 ">
-                      {isValidPromptPay(record.employee.promtpay) ? (
+                      {isValidPromptPay(paymentDetails.promtpay || "") ? (
                         <>
                           <div className="flex justify-center py-4">
                             <div className="w-48 h-48  bg-purple-200  rounded-lg flex items-center justify-center p-2">
                               <div className="text-center">
                                 <img
                                   className="rounded-md"
-                                  src={`https://promptpay.io/${record.employee.promtpay.trim()}/${record.totals.net.toString()}.png`}
+                                  src={`https://promptpay.io/${paymentDetails.promtpay ? paymentDetails.promtpay.trim() : ""}/${breakdown.calculation.netPay.toString()}.png`}
                                 />
                               </div>
                             </div>
@@ -260,20 +277,20 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                             <div className="flex items-center justify-between mt-1">
                               <div>
                                 <p className="font-mono font-medium text-gray-900">
-                                  {record.employee.promtpay}
+                                  {paymentDetails.promtpay}
                                 </p>
                               </div>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleCopy(
-                                    record.employee.promtpay,
-                                    `pp-${record.employee.id}`,
+                                    paymentDetails.promtpay || "",
+                                    `pp-${breakdown.entry.id}`,
                                   );
                                 }}
                                 className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                               >
-                                {copiedId === `pp-${record.employee.id}` ? (
+                                {copiedId === `pp-${breakdown.entry.id}` ? (
                                   <Check className="w-4 h-4 text-green-600" />
                                 ) : (
                                   <Copy className="w-4 h-4 text-gray-400" />
@@ -316,11 +333,11 @@ export default function PaymentCard({ record }: SummaryCardProps) {
                   </p>
                   <p className="text-sm text-blue-800">
                     {" "}
-                    {record.note ? record.note : "-"}
+                    {breakdown.entry.note ? breakdown.entry.note : "-"}
                   </p>
                 </div>
                 <section hidden={!showBreakdown} className="bg-white">
-                  <SalaryBreakdown record={record} />
+                  <SalaryBreakdown breakdown={breakdown} />
                 </section>
               </div>
             </motion.div>

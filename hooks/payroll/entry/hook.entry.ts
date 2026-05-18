@@ -6,6 +6,7 @@ import {
   EntryWithTotalDTO,
   NewEntryDTO,
   UpdateBreakDownDTO,
+  UpdatePaidDTO,
 } from "@/types/type.entry";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
@@ -95,7 +96,22 @@ export function useEntry(periodId: number) {
       queryClient.invalidateQueries({ queryKey });
     },
   });
-  return { list, create, remove };
+
+  const setPaid = useMutation<
+    ApiResponse<EntryPublicDTO>,
+    Error,
+    { payload: UpdatePaidDTO }
+  >({
+    mutationFn: ({ payload }) => {
+      return fetchwithauth({
+        endpoint: `/shops/${shopId}/periods/${periodId}/entries/${payload.entryId}/paid`,
+        method: "PATCH",
+        body: { paid: payload.paid },
+      });
+    },
+  });
+
+  return { list, create, remove, setPaid };
 }
 
 export function useEntryBreakdown(periodId: number, entryId: number) {
@@ -171,10 +187,7 @@ export function useEntrySlip(periodId: number) {
   return { get };
 }
 
-export const usePreviewSlip = (
-  periodId: number,
-  entryId: number,
-) => {
+export const usePreviewSlip = (periodId: number, entryId: number) => {
   const { id: shopId } = useCurrentShop();
   return useQuery<ApiResponse<string>>({
     queryKey: ["preview", shopId, periodId, entryId],

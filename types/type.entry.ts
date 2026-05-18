@@ -56,6 +56,11 @@ export type NewEntryDTO = {
   employeeIds: number[];
 };
 
+export type UpdatePaidDTO = {
+  entryId: number;
+  paid: boolean;
+};
+
 export type UpdateBreakDownDTO = {
   entry: {
     salary?: EntryPublicDTO["salary"];

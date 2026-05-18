@@ -47,6 +47,13 @@ export type EmployeeDetailedDTO = {
   status: EMPLOYEE_STATUS;
 };
 
+export type EmployeePaymentDTO = {
+  bankName: string | null;
+  bankAccountOwner: string | null;
+  bankAccountNumber: string | null;
+  promtpay: string | null;
+};
+
 export type NewEmployeeDTO = {
   position?: string | undefined;
   dateOfBirth?: string | undefined;

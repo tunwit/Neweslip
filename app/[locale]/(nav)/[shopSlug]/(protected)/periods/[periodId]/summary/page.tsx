@@ -32,7 +32,11 @@ import {
   usePeriodValidate,
 } from "@/hooks/payroll/period/hook.period";
 import { useEntry } from "@/hooks/payroll/entry/hook.entry";
-import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
+import {
+  EntryBreakDownDTO,
+  EntryPublicDTO,
+  EntryWithTotalDTO,
+} from "@/types/type.entry";
 import { number } from "zod";
 
 export default function Home() {
@@ -41,7 +45,7 @@ export default function Home() {
   const [finalizing, setFinalizing] = useState(false);
   const [query, setQuery] = useState("");
   const [debouced] = useDebounce(query, 500);
-  const [filtered, setFiltered] = useState<EntryWithTotalDTO[]>([]);
+  const [filtered, setFiltered] = useState<EntryBreakDownDTO[]>([]);
   const [showFilter, setShowFilter] = useState(false);
   const { name } = useCurrentShop();
 
@@ -55,9 +59,6 @@ export default function Home() {
   const { data: validateData, isLoading: loadingValidate } = usePeriodValidate(
     Number(periodId),
   );
-  const { data: entriesData, isLoading: loadingRecord } = useEntry(
-    Number(periodId),
-  ).list;
 
   const pathname = usePathname();
   const router = useRouter();
@@ -80,24 +81,25 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!entriesData?.data) return;
+    if (!periodData?.data) return;
     const q = debouced.toLowerCase();
 
     setFiltered(
-      entriesData?.data?.filter((r) => {
+      periodData?.data?.breakdowns.filter((b) => {
+        const entry = b.entry;
         return (
-          r.employee.snapshot.firstName.toLowerCase().includes(q) ||
-          r.employee.snapshot.lastName.toLowerCase().includes(q) ||
-          (r.employee.snapshot.firstName + r.employee.snapshot.lastName)
+          entry.employee.snapshot.firstName.toLowerCase().includes(q) ||
+          entry.employee.snapshot.lastName.toLowerCase().includes(q) ||
+          (entry.employee.snapshot.firstName + entry.employee.snapshot.lastName)
             .toLowerCase()
             .includes(q) ||
-          r.employee.snapshot.nickName.toLowerCase().includes(q) ||
-          r.employee.snapshot.branch.name.toLowerCase().includes(q) ||
-          r.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
+          entry.employee.snapshot.nickName.toLowerCase().includes(q) ||
+          entry.employee.snapshot.branch.name.toLowerCase().includes(q) ||
+          entry.employee.snapshot.branch.nameEng.toLowerCase().includes(q)
         );
       }),
     );
-  }, [entriesData?.data, debouced]);
+  }, [periodData?.data, debouced]);
 
   const isLoading =
     loadingPeriod || loadingValidate || finalizing || !periodData?.data;
@@ -109,19 +111,25 @@ export default function Home() {
   if (loadingValidate) loadingMessage = t("load.verifying");
 
   const filteredTotalNet = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.netPay || 0), 0);
+    return filtered.reduce((sum, b) => sum + (b.calculation.netPay || 0), 0);
   }, [filtered]);
 
   const filteredTotalEarning = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.summary.gross || 0), 0);
+    return filtered.reduce(
+      (sum, b) => sum + (b.calculation.summary.gross || 0),
+      0,
+    );
   }, [filtered]);
   const filteredTotalDeduction = useMemo(() => {
-    return filtered.reduce((sum, r) => sum + (r.summary.adjustment || 0), 0);
+    return filtered.reduce(
+      (sum, b) => sum + (b.calculation.summary.adjustment || 0),
+      0,
+    );
   }, [filtered]);
 
   const filteredTotalSalary = useMemo(() => {
-    return filtered.reduce((sum, r) => {
-      return sum + ("baseSalary" in r ? Number(r.salary) || 0 : 0);
+    return filtered.reduce((sum, b) => {
+      return sum + ("baseSalary" in b ? Number(b.entry.salary) || 0 : 0);
     }, 0);
   }, [filtered]);
 
@@ -269,21 +277,17 @@ export default function Home() {
               periodId={Number(periodId) || -1}
               show={showFilter}
               setShow={setShowFilter}
-              context={periodData?.data!}
+              context={periodData?.data}
               onApply={(filteredBreakdowns) => {
-                const mapped = filteredBreakdowns.map((b) => ({
-                  ...b.entry,
-                  ...b.calculation,
-                }));
-                setFiltered(mapped);
+                setFiltered(filteredBreakdowns);
               }}
             />
           </div>
         </section>
 
         <section className="flex flex-col px-10  mt-5 gap-4">
-          {filtered.map((record) => {
-            return <SummaryCard key={record.id} entry={record} />;
+          {filtered.map((b) => {
+            return <SummaryCard key={b.entry.id} breakdown={b} />;
           })}
         </section>
         <section className="px-10 mb-5">
