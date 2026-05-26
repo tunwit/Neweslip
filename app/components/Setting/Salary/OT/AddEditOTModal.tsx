@@ -91,9 +91,6 @@ export default function AddEditOTModal({
         });
         showSuccess("OT updated successfully");
       } else {
-        // add mode
-        console.log(data);
-
         await createMutate({ shopId: shopId, payload: data });
         showSuccess("OT added successfully");
       }

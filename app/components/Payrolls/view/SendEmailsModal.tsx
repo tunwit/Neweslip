@@ -53,10 +53,6 @@ export default function SendEmailsModal({
   open,
   setOpen,
 }: SendEmailsModalProps) {
-  const [batchData, setBatchData] = useState({
-    batchId: -1,
-    batchName: null,
-  });
   const [data, setData] = useState(periodContext);
   const { addJob } = useJobStore();
   const [progress, setProgress] = useState({
@@ -74,7 +70,6 @@ export default function SendEmailsModal({
     });
     return emails;
   });
-  const queryClient = useQueryClient();
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEmail, setEditingEmail] = useState(-1);
@@ -231,7 +226,9 @@ export default function SendEmailsModal({
       // });
       // setOpen(false)
     } catch (error) {
-      console.error("Error:", error);
+      console.log(error);
+
+      showError(error?.message ?? "Unexpected Error");
     } finally {
       setIsSubmitting(false);
     }

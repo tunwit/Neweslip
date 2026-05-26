@@ -10,11 +10,12 @@ const SnackBarType = {
   success: {
     color: "success",
     icon: "lets-icons:check-fill",
+    iconColor: "success",
   },
-
   warning: {
     color: "warning",
     icon: "mdi:cross-circle",
+    iconColor: "warning",
   },
   failed: {
     color: "danger",
@@ -33,7 +34,12 @@ export default function SnackBar() {
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       startDecorator={<Icon icon={SnackBarType[message.type].icon} />}
       endDecorator={
-        <Button onClick={() => hide()} size="sm" variant="soft" color="success">
+        <Button
+          onClick={() => hide()}
+          size="sm"
+          variant="soft"
+          color={SnackBarType[message.type].color}
+        >
           {t("snackbar.dismiss")}
         </Button>
       }

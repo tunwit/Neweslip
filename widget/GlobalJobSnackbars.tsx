@@ -4,16 +4,20 @@
 import { JOB_BATCH_STATUS, useJobStore } from "@/hooks/useJobStore";
 import { fetchwithauth } from "@/utils/fetcher";
 import { Snackbar, LinearProgress, Box, Typography } from "@mui/joy";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function GlobalJobSnackbars() {
   const { jobs, updateJob, removeJob } = useJobStore();
+  const intervalsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   useEffect(() => {
-    const timers = jobs.map((job) => {
+    // start polling for new jobs
+    jobs.forEach((job) => {
+      if (intervalsRef.current.has(job.batchId)) return;
+
       const interval = setInterval(async () => {
         const res = await fetchwithauth({
-          endpoint: `${job.progressUrl}`,
+          endpoint: job.progressUrl,
           method: "GET",
         });
 
@@ -31,15 +35,32 @@ export default function GlobalJobSnackbars() {
           data.success + data.failed >= data.total ||
           data.status === JOB_BATCH_STATUS.COMPLETED
         ) {
-          clearInterval(interval);
+          clearInterval(intervalsRef.current.get(job.batchId)!);
+          intervalsRef.current.delete(job.batchId);
 
           setTimeout(() => removeJob(job.batchId), 3000);
         }
       }, 1500);
 
-      return interval;
+      intervalsRef.current.set(job.batchId, interval);
     });
-  }, [jobs]);
+
+    // cleanup removed jobs
+    for (const [batchId, interval] of intervalsRef.current.entries()) {
+      if (!jobs.find((j) => j.batchId === batchId)) {
+        clearInterval(interval);
+        intervalsRef.current.delete(batchId);
+      }
+    }
+
+    return () => {
+      // cleanup on unmount
+      for (const interval of intervalsRef.current.values()) {
+        clearInterval(interval);
+      }
+      intervalsRef.current.clear();
+    };
+  }, [jobs, updateJob, removeJob]);
 
   return (
     <>

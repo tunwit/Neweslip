@@ -42,7 +42,6 @@ export default function OwnersTable() {
       showError(`Delete owners failed \n${err}`);
     }
   };
-  console.log(data?.data);
 
   return (
     <div className="-mt-4">

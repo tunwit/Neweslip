@@ -44,8 +44,6 @@ export async function verify(
   password: string,
 ) {
   try {
-    console.log(host, port, secure, username, password);
-
     const transport = await createTransporter(
       host,
       port,
