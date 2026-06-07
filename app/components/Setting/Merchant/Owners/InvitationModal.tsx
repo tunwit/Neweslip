@@ -17,6 +17,7 @@ import { showError } from "@/utils/showSnackbar";
 import { isOwner } from "@/lib/isOwner";
 import { getUserByEmail } from "@/app/action/getUserByEmail";
 import { useTranslations } from "next-intl";
+import { useInvitation } from "@/hooks/hook.invitation";
 
 interface InvitationModalProps {
   open: boolean;
@@ -36,6 +37,7 @@ export default function InvitationModal({
   const canvas = useRef(null);
   const user = useUser();
   const t = useTranslations("owners");
+  const invitation = useInvitation();
 
   const generateHandler = async () => {
     if (!shopId || !user.user) return;
@@ -44,38 +46,25 @@ export default function InvitationModal({
     setError("");
 
     try {
-      const userByEmail = await getUserByEmail(email);
-      const alreadyOwn = await isOwner(shopId, userByEmail[0]?.id);
+      const result = await invitation.create.mutateAsync({
+        payload: { email: email },
+      });
+      if (result.data) {
+        const url = result.data?.inviteUrl;
+        setInvitationUrl(url);
 
-      if (alreadyOwn) {
-        setError(t("modal.invitation.user_already_own"));
-        return;
+        QRCode.toCanvas(
+          canvas.current,
+          url,
+          {
+            width: 200,
+            margin: 2,
+          },
+          function (error: unknown) {
+            if (error) console.error(error);
+          },
+        );
       }
-      const invitation = await createInvitation(
-        email,
-        `/accept-invitation`,
-        shopId,
-        user.user?.id,
-      );
-
-      if (!invitation.success) {
-        showError("create invitaion failed");
-        return;
-      }
-      const url = `${window.origin}/accept-invitation?token=${invitation.token}`;
-      setInvitationUrl(url);
-
-      QRCode.toCanvas(
-        canvas.current,
-        url,
-        {
-          width: 200,
-          margin: 2,
-        },
-        function (error: unknown) {
-          if (error) console.error(error);
-        },
-      );
     } catch (err) {
       console.log(err);
     } finally {
@@ -109,6 +98,7 @@ export default function InvitationModal({
               }}
               endDecorator={
                 <Button
+                  type="submit"
                   disabled={isSubmitting || email === ""}
                   loading={isSubmitting}
                   onClick={generateHandler}

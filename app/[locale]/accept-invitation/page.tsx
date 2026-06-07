@@ -10,7 +10,6 @@ import {
   useSignUp,
   useUser,
 } from "@clerk/nextjs";
-import { redirect, usePathname, useSearchParams } from "next/navigation";
 import { createShopOwner } from "../../action/shop/createShopOwner";
 import { Button, FormControl, FormLabel, Input } from "@mui/joy";
 import { useShopDetails } from "@/hooks/shop/useShopDetails";
@@ -18,12 +17,14 @@ import { useEffect, useState } from "react";
 import { FormSubmitHandler } from "react-hook-form";
 import { isOwner } from "@/lib/isOwner";
 import { clerkClient } from "@clerk/nextjs/server";
-import { useInvitation } from "@/hooks/useInvitation";
 import { getUserByEmail } from "../../action/getUserByEmail";
 import { acceptInvitation } from "../../action/invitation/acceptInvitation";
 import { showError } from "@/utils/showSnackbar";
-import { Link } from "@/i18n/navigation";
-
+import { Link, redirect, useRouter } from "@/i18n/navigation";
+import { useInvitation } from "@/hooks/hook.invitation";
+import { useOwnShop } from "@/hooks/hook.shop";
+import ChangableAvatar from "@/widget/ChangableAvatar";
+import { useSearchParams } from "next/navigation";
 
 export default function InvitaionPage() {
   const params = useSearchParams();
@@ -34,75 +35,63 @@ export default function InvitaionPage() {
   const [wrongEmail, setWrongEmail] = useState(false);
   const { signUp } = useSignUp();
   const { signIn } = useSignIn();
-  const { data: invitationData, isLoading: loadingInvitation } =
-    useInvitation(token);
+  const inviteHook = useInvitation();
+
+  const { data: invitation, isLoading: loadinginvitation } =
+    inviteHook.useGetByToken(token);
+
+  const { mutateAsync: acceptAsync } = inviteHook.useAccept(token);
+
+  const { data: ownShops, isLoading: loadingshops } = useOwnShop();
+
   const { session, isSignedIn, isLoaded: sessionLoaded } = useSession();
-  const { data: shopData, isLoading: loadingShop } = useShopDetails(
-    invitationData?.data?.metaData?.shopId,
-  );
-  const shopId = invitationData?.data?.metaData?.shopId;
+  const router = useRouter();
 
   const acceptHandler = async (
     e?: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
     e?.preventDefault();
     setIsSubmitting(true);
-    if (!shopId) return;
     if (!token) return;
-    if (!invitationData?.data?.expiresAt) return;
-    if (new Date(invitationData?.data?.expiresAt) < new Date()) return;
-    if (isSignedIn) {
-      await createShopOwner(shopId, session.user.id);
 
-      let success = false;
+    if (isSignedIn) {
       try {
-        await acceptInvitation(token);
-        success = true;
+        await acceptAsync();
+        router.push("/");
       } catch (err) {
-        showError(`Cannot accept invitaion ${err}`);
+        console.log(err);
+
+        showError("Cannot accept invitation");
       }
-      if (success) redirect(`/`);
     } else {
-      const exist = await getUserByEmail(invitationData.data?.email || "");
-      if (exist.length > 0) {
-        await signIn?.authenticateWithRedirect({
-          strategy: "oauth_google",
-          redirectUrl: "/sso-callback",
-          redirectUrlComplete: `${window.location.origin}/accept-invitation?token=${token}&method=auto`,
-        });
-      } else {
-        await signUp?.authenticateWithRedirect({
-          strategy: "oauth_google",
-          redirectUrl: "/sso-callback",
-          redirectUrlComplete: `${window.location.origin}/accept-invitation?token=${token}&method=auto`,
-        });
-      }
+      await signIn?.sso({
+        strategy: "oauth_google",
+        redirectCallbackUrl: "/sso-callback",
+        redirectUrl: `${window.location.origin}/accept-invitation?token=${token}&method=auto`,
+      });
     }
   };
 
   useEffect(() => {
-    if (isSignedIn && invitationData?.data) {
+    if (isSignedIn && invitation?.data && ownShops?.data) {
       const emailMatch =
         session.user.primaryEmailAddress?.emailAddress.toLowerCase() ===
-        invitationData.data.email.toLowerCase();
+        invitation.data.email.toLowerCase();
+
+      const alreadyOwn = ownShops.data.some(
+        (s) => s.id === invitation?.data?.shop.id,
+      );
+      setAlreadyOwner(alreadyOwn);
+
       if (!emailMatch) {
         setWrongEmail(true);
       } else if (method === "auto") {
-        acceptHandler(); // call here safely
+        acceptHandler();
       }
     }
-    const ownerCheck = async () => {
-      if (!invitationData?.data?.metaData?.shopId || !session?.user.id) return;
-      const alreadyOwn = await isOwner(
-        invitationData?.data?.metaData?.shopId,
-        session?.user.id,
-      );
-      setAlreadyOwner(alreadyOwn);
-    };
-    ownerCheck();
-  }, [isSignedIn, session, invitationData, method]);
+  }, [isSignedIn, session, invitation, method]);
 
-  const loading = loadingInvitation || !sessionLoaded || loadingShop;
+  const loading = loadinginvitation || !sessionLoaded || loadingshops;
 
   if (!token) return <p>Invalid token</p>;
 
@@ -113,16 +102,15 @@ export default function InvitaionPage() {
       </div>
     );
   }
-
   let content;
-  if (!invitationData?.data) {
+  if (!invitation?.data) {
     content = (
       <div className="flex flex-col gap-3 items-center justify-center text-2xl font-bold text-gray-900 mb-2">
         <p className="text-2xl font-bold text-gray-900">Invitation not found</p>
         <p className="text-gray-500">Please contact supervisor</p>
       </div>
     );
-  } else if (new Date(invitationData?.data?.expiresAt) < new Date()) {
+  } else if (new Date(invitation?.data?.expiresAt) < new Date()) {
     content = (
       <div className="flex flex-col gap-3 items-center justify-center mb-2">
         <p className="text-2xl font-bold text-gray-900">Invitation Expired</p>
@@ -135,7 +123,7 @@ export default function InvitaionPage() {
         <p className="text-2xl font-bold text-gray-900">
           This invitation is ment for
         </p>
-        <p className="text-gray-500">{invitationData?.data?.email}</p>
+        <p className="text-gray-500">{invitation?.data?.email}</p>
       </div>
     );
   } else if (alreadyOwner) {
@@ -155,7 +143,7 @@ export default function InvitaionPage() {
           </h1>
 
           <h2 className="text-4xl font-bold text-gray-900 mb-3">
-            {shopData?.data?.name}
+            {invitation.data.shop.name}
           </h2>
         </div>
 
@@ -200,7 +188,11 @@ export default function InvitaionPage() {
         <div className="pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-600 text-center">
             Need help?{" "}
-            <Link href="/support" className="text-blue-600 hover:underline">
+            <Link
+              locale="th"
+              href="/support"
+              className="text-blue-600 hover:underline"
+            >
               Contact Support
             </Link>
           </p>

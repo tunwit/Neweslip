@@ -90,7 +90,7 @@ export default function ChangableAvatar({
         className={editable ? "cursor-pointer" : "cursor-default"}
         onClick={handleClick}
       >
-        <div className="relative w-full h-full group">
+        <div className="relative w-full h-full group aspect-square">
           {displayUrl && !hasError ? (
             <div className="relative w-full h-full overflow-hidden rounded-full">
               <Image

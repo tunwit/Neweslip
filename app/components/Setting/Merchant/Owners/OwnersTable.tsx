@@ -14,7 +14,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import ConfirmModal from "@/widget/ConfirmModal";
 import { useTranslations } from "next-intl";
 import { formatModifiedTime } from "@/utils/formmatter";
-import { useOwners } from "@/hooks/hook.owner";
+import { useDeleteOwners, useOwners } from "@/hooks/hook.owner";
+import ChangableAvatar from "@/widget/ChangableAvatar";
 
 export default function OwnersTable() {
   const { id: shopId } = useCurrentShop();
@@ -28,12 +29,13 @@ export default function OwnersTable() {
   const queryClient = useQueryClient();
   const t = useTranslations("owners");
   const tDate = useTranslations("date_format");
+  const { mutateAsync: deleteAsync } = useDeleteOwners();
 
   const handleDelete = async () => {
     try {
       if (!shopId) return;
       uncheckall();
-      await deleteShopOwner(checked, shopId, user?.id || null);
+      await deleteAsync({ toDeleteUserIds: checked });
       showSuccess("Delete owners success");
       queryClient.invalidateQueries({ queryKey: ["owners"] });
 
@@ -80,9 +82,12 @@ export default function OwnersTable() {
               render: (r) => {
                 return (
                   <div className="flex items-center gap-2">
-                    <div className="bg-red-200   aspect-square w-7 h-7 text-center rounded-full flex items-center justify-center">
-                      <p className="text-xs">{r.firstName?.charAt(0)}</p>
-                    </div>
+                    <ChangableAvatar
+                      allowRemove={false}
+                      editable={false}
+                      src={r.imageUrl}
+                      size={28}
+                    />
                     <p>
                       {r.fullName}{" "}
                       {user?.primaryEmailAddress?.emailAddress === r.email &&
