@@ -7,6 +7,12 @@ interface FetchProps<TBody = any> {
   cookie?: ReadonlyRequestCookies;
   responseType?: "json" | "blob";
 }
+
+const backendUrl =
+  typeof window === "undefined"
+    ? process.env.BACKEND_URL // server: use Docker hostname
+    : process.env.NEXT_PUBLIC_BACKEND_URL; // browser: use localhost
+
 export const fetchwithauth = async ({
   endpoint,
   method,
@@ -36,7 +42,7 @@ export const fetchwithauth = async ({
   };
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`,
+    `${backendUrl}${endpoint}`,
     options,
   );
 
