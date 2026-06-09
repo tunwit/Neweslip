@@ -1,7 +1,5 @@
-import { changeShopPassword } from "@/app/action/shop/changeShopPassword";
 import { useChangeShopPassword } from "@/hooks/hook.shop";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { hashPassword } from "@/lib/password";
 import { useZodForm } from "@/lib/useZodForm";
 import { changePasswordSchema } from "@/schemas/setting/changePasswordForm";
 import { showError, showSuccess } from "@/utils/showSnackbar";

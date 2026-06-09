@@ -7,7 +7,6 @@ import React, {
   SetStateAction,
   useEffect,
   useState,
-  useTransition,
 } from "react";
 
 interface PayrollTableProps<T extends { id: number }> {
@@ -75,7 +74,7 @@ export default function PayrollTable<T extends { id: number }>({
     if (!autoCalculate || !calculateAmount || !data) return;
 
     setInputValues((prev) => {
-      let updated = { ...prev };
+      const updated = { ...prev };
       let changed = false;
 
       data.forEach((item: any) => {
@@ -113,7 +112,7 @@ export default function PayrollTable<T extends { id: number }>({
     if (!isInitialized.current) return; // skip until initialized
 
     setInputValues((prev) => {
-      let updated = { ...prev };
+      const updated = { ...prev };
       let changed = false;
 
       data.forEach((item: any) => {

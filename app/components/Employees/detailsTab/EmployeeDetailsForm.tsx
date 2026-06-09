@@ -4,27 +4,20 @@ import React, { Suspense, useState } from "react";
 import BranchSelector from "../../../../widget/BranchSelector";
 import {
   EmployeeDetailedDTO,
-  EmployeeWithBranchDTO,
 } from "@/types/type.employee";
 import {
   Controller,
-  FormProvider,
-  useForm,
   useFormContext,
   useWatch,
 } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  createEmployeeFormField,
   createEmployeeFormSchema,
 } from "@/types/formField";
 import GenderSelector from "@/widget/GenderSelector";
-import normalizeNull from "@/utils/normallizeNull";
-import { DatePicker } from "@mui/x-date-pickers";
 import DatePickerLocalize from "@/widget/DatePickerLocalize";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import BankSelector from "@/widget/BankSelector";
-import { useZodForm, ZodForm } from "@/lib/useZodForm";
+import { ZodForm } from "@/lib/useZodForm";
 import { InputForm } from "@/widget/InputForm";
 import { z } from "zod";
 import { useTranslations } from "next-intl";

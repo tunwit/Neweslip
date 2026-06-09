@@ -1,29 +1,15 @@
 "use client";
 import {
-  RedirectToSignIn,
-  SignedOut,
-  SignOutButton,
-  SignUp,
-  useAuth,
   useSession,
   useSignIn,
   useSignUp,
-  useUser,
 } from "@clerk/nextjs";
-import { createShopOwner } from "../../action/shop/createShopOwner";
-import { Button, FormControl, FormLabel, Input } from "@mui/joy";
-import { useShopDetails } from "@/hooks/shop/useShopDetails";
+import { Button, FormControl} from "@mui/joy";
 import { useEffect, useState } from "react";
-import { FormSubmitHandler } from "react-hook-form";
-import { isOwner } from "@/lib/isOwner";
-import { clerkClient } from "@clerk/nextjs/server";
-import { getUserByEmail } from "../../action/getUserByEmail";
-import { acceptInvitation } from "../../action/invitation/acceptInvitation";
 import { showError } from "@/utils/showSnackbar";
-import { Link, redirect, useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useInvitation } from "@/hooks/hook.invitation";
 import { useOwnShop } from "@/hooks/hook.shop";
-import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useSearchParams } from "next/navigation";
 
 export default function InvitaionPage() {

@@ -1,4 +1,4 @@
-import { showError, showSuccess } from "@/utils/showSnackbar";
+import { showError } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Modal, ModalClose, ModalDialog } from "@mui/joy";

@@ -1,6 +1,4 @@
-import { PAYROLL_PROBLEM } from "@/types/enum/enum";
 import { ISSUE_TYPE, ValidationResultDTO } from "@/types/payroll/type.validate";
-import { PayrollProblem } from "@/types/payrollProblem";
 import { formatMetaMoney } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useTranslations } from "next-intl";

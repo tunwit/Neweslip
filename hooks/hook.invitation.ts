@@ -6,7 +6,6 @@ import {
   CreateInvitation,
   CreateTokenRepounseDTO,
   InvitationPublicDTO,
-  InvitationWithTokenDTO,
 } from "@/types/type.invitation";
 
 export function useInvitation() {

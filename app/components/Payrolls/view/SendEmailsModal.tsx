@@ -1,26 +1,20 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Loader2, Package, X } from "lucide-react";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { Loader2, X } from "lucide-react";
 import {
   Checkbox,
-  CircularProgress,
   Input,
-  LinearProgress,
   Modal,
   ModalDialog,
 } from "@mui/joy";
-import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { showError, showSuccess } from "@/utils/showSnackbar";
+import { showError } from "@/utils/showSnackbar";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { useQueryClient } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { EmailPayload } from "@/types/mailPayload";
 import { useUser } from "@clerk/nextjs";
-import { JOB_BATCH_STATUS, useJobStore } from "@/hooks/useJobStore";
-import { PayslipAndSendQueue } from "@/src/features/payslip/payslip.model";
+import { useJobStore } from "@/hooks/useJobStore";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import {
   PeriodFilterContextDTO,

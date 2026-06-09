@@ -3,7 +3,7 @@
 
 import { JOB_BATCH_STATUS, useJobStore } from "@/hooks/useJobStore";
 import { fetchwithauth } from "@/utils/fetcher";
-import { Snackbar, LinearProgress, Box, Typography } from "@mui/joy";
+import { Snackbar, LinearProgress } from "@mui/joy";
 import { useEffect, useRef } from "react";
 
 export default function GlobalJobSnackbars() {

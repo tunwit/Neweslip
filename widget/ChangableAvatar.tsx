@@ -1,10 +1,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Avatar } from "@mui/joy";
 import Image from "next/image";
 import React, {
   ChangeEvent,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";

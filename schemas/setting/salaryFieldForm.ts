@@ -1,6 +1,5 @@
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
-import { string, z } from "zod";
+import { z } from "zod";
 
 export const salaryFieldSchema = z.object({
   name: z.string().max(50, "Field name cannot exceed 50 charecter"),

@@ -1,7 +1,8 @@
-import { Link } from "@/i18n/navigation";
+
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function NotFound() {
   const t = await getTranslations("not_found");

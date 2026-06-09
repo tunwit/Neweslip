@@ -3,7 +3,6 @@ import LanguageSelector from "@/widget/LangaugeSelector";
 import { useSignIn } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import React from "react";
 
 export default function SignInPage() {
   const { signIn } = useSignIn();
@@ -23,7 +22,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br w-full from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br w-full from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <div className="absolute top-5 right-5">
         <LanguageSelector theme="white"/>
       </div>

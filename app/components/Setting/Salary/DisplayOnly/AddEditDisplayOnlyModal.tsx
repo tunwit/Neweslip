@@ -1,5 +1,3 @@
-import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
-import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
 import {
   useCreateCompensationField,
   useUpdateCompensationField,
@@ -17,9 +15,6 @@ import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
 import {
   Button,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,

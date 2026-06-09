@@ -1,51 +1,28 @@
 "use client";
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import { Add } from "@mui/icons-material";
-import { useEffect, useMemo, useRef, useState } from "react";
-import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
-import { usePayrollRecords } from "@/hooks/payroll/record/usePayrollRecords";
+import { useEffect, useState } from "react";
 import {
   useParams,
   usePathname,
   useRouter,
-  useSearchParams,
 } from "next/navigation";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { getRandomPastelColor } from "@/utils/generatePastelColor";
-import BranchSelector from "@/widget/BranchSelector";
-import PayrollEditEmployeeModal from "@/app/components/Payrolls/new/EditModal/PayrollEditEmployeeModal";
-import { Employee } from "@/types/type.employee";
-import { PayrollRecord } from "@/types/payrollRecord";
-import { deletePayrollRecords } from "@/app/action/payroll/record/deletePayrollRecord";
-import { showError, showSuccess } from "@/utils/showSnackbar";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
-import { useUser } from "@clerk/nextjs";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
-import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
 import UsersIcon from "@/assets/icons/UsersIcon";
-import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
 import { Modal, ModalDialog } from "@mui/joy";
 import { PAY_PERIOD_STATUS_LABELS } from "@/types/enum/enumLabel";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import { motion, AnimatePresence } from "framer-motion";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
-import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
-import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import PaymentCard from "@/app/components/Payrolls/payment/PaymentCard";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { usePeriod } from "@/hooks/payroll/period/hook.period";
 import {
   EntryBreakDownDTO,
-  EntryPublicDTO,
-  EntryWithTotalDTO,
 } from "@/types/type.entry";
-import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 
 export default function Home() {
   const methods = useCheckBox<number>("payrollRecordTable");

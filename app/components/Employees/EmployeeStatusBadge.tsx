@@ -1,4 +1,3 @@
-import DotIcon from "@/assets/icons/DotIcon";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useTranslations } from "next-intl";

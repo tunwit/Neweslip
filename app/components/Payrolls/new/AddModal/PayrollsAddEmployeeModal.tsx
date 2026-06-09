@@ -1,20 +1,14 @@
 import {
   Button,
   Modal,
-  ModalClose,
   ModalDialog,
-  ModalOverflow,
-  Option,
-  Select,
-  Typography,
 } from "@mui/joy";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import BranchSelector from "@/widget/BranchSelector";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { getRandomPastelColor } from "@/utils/generatePastelColor";
-import { createPayrollRecords } from "@/app/action/payroll/record/createPayrollRecord";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
@@ -25,7 +19,6 @@ import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useEmployees } from "@/hooks/hook.employee";
 import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 import {
-  EmployeePublicDTO,
   EmployeeWithBranchDTO,
 } from "@/types/type.employee";
 import Pagination from "@/app/components/UI/Pagination";

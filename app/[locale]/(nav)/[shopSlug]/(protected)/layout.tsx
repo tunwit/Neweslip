@@ -11,11 +11,13 @@ export default async function ShoppLayout({
 }) {
   const { locale, shopSlug } = await params;
   const shopStatus = await getShopStatus();
+
   if (!shopStatus?.hasShop) {
     redirect({ href: "/no-shop", locale: locale });
   }
 
   const context = await getShopContext(shopSlug);
+
   if (context?.status !== SHOP_CONTEXT_STATUS.OK) {
     redirect({ href: `${context?.redirectTo}`, locale: locale });
   }

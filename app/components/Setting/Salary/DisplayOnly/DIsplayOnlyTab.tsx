@@ -1,16 +1,11 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, IconButton, Table } from "@mui/joy";
+import { Button } from "@mui/joy";
 import React, { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
-import { deletePenaltyField } from "@/app/action/payroll/penaltyField/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import AddEditDisplayOnlyModal from "./AddEditDisplayOnlyModal";
 import { useTranslations } from "next-intl";
 import { CompensationFieldPublicDTO } from "@/types/payroll/type.compensation";

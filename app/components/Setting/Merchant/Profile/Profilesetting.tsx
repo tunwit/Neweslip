@@ -1,22 +1,13 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { Avatar } from "@mui/joy";
-import { ChangeEvent, useRef } from "react";
 import OverviewForm from "./OverviewForm";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { changeShopAvatar } from "@/app/action/shop/changeShopAvatar";
 import { useUser } from "@clerk/nextjs";
 import { useQueryClient } from "@tanstack/react-query";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { deleteShopAvatar } from "@/app/action/shop/deleteShopAvatar";
-import {
-  useChangeShopAvatar,
-  useShopConfigs,
-  useShopData,
-} from "@/hooks/hook.shop";
+import { useChangeShopAvatar, useShopConfigs } from "@/hooks/hook.shop";
 
 export default function Profilesetting() {
-  const { id, name } = useCurrentShop();
+  const { id } = useCurrentShop();
   const { data, isLoading } = useShopConfigs();
   const { user } = useUser();
   const queryClient = useQueryClient();
@@ -47,7 +38,7 @@ export default function Profilesetting() {
   const handleRemove = async () => {
     if (!data?.data?.avatar || !id || !user) return;
     try {
-      await deleteShopAvatar(data?.data?.avatar, id, user.id);
+      await changeAvatarMutate({ file: null });
       queryClient.invalidateQueries({
         queryKey: ["shop", "details"],
         exact: false,

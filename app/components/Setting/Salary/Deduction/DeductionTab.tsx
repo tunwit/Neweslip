@@ -1,15 +1,10 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, IconButton, Table } from "@mui/joy";
+import { Button } from "@mui/joy";
 import React, { useState } from "react";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSalaryFields } from "@/hooks/payroll/fields/useSalaryFields";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { deleteSalaryField } from "@/app/action/payroll/salaryField/deleteSalaryField";
-import AddEditIncomeModal from "../Income/AddEditIncomeModal";
 import AddEditDeductionModal from "./AddEditDeductionModal";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";

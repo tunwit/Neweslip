@@ -1,13 +1,5 @@
 "use client";
-import Image from "next/image";
-import Button from "@mui/joy/Button";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import EmployeesTable from "@/app/components/Employees/EmployeesTable";
-import dayjs from "dayjs";
-import { Checkbox, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
-import { Add } from "@mui/icons-material";
+import { Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import { useRouter } from "next/navigation";
 import MerchantTabs from "@/app/components/Setting/MerchantTabs";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";

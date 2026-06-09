@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { FileText, Download, X, Loader2, Package } from "lucide-react";
-import { Button, Checkbox, Modal, ModalDialog } from "@mui/joy";
+import { Checkbox, Modal, ModalDialog } from "@mui/joy";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError } from "@/utils/showSnackbar";
@@ -8,7 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { Link, usePathname } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { usePeriodSlips } from "@/hooks/payroll/period/hook.period";
 import { PeriodFilterContextDTO } from "@/types/type.period";
 

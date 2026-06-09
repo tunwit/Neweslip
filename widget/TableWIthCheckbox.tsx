@@ -1,9 +1,9 @@
 "use client";
 
-import { Checkbox, Table } from "@mui/joy";
+import { Checkbox } from "@mui/joy";
 import { Icon } from "@iconify/react";
 import React, { Dispatch, SetStateAction } from "react";
-import { useCheckBox, UseCheckBoxResult } from "@/hooks/useCheckBox";
+import { UseCheckBoxResult } from "@/hooks/useCheckBox";
 
 interface Column<T> {
   key: keyof T | string;

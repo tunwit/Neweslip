@@ -1,5 +1,3 @@
-import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import EmailForm from "./SMTPEmailForm";
 import { useTranslations } from "next-intl";
 import { useShopConfigs } from "@/hooks/hook.shop";
 import { Option, Select } from "@mui/joy";

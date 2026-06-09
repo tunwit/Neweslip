@@ -1,5 +1,3 @@
-import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
-import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
 import {
   useCreateCompensationField,
   useUpdateCompensationField,
@@ -7,10 +5,8 @@ import {
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
-import {
-  SALARY_FIELD_DEFINATION_TYPE,
-  SALARY_FIELD_STATUS,
-} from "@/types/enum/enum";
+
+
 import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
 import {
   CompensationFieldPublicDTO,
@@ -21,9 +17,6 @@ import { InputForm } from "@/widget/InputForm";
 import { useUser } from "@clerk/nextjs";
 import {
   Button,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,

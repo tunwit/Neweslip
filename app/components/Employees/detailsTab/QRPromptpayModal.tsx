@@ -1,5 +1,4 @@
 import { isValidPromptPay } from "@/lib/isValidPromtpay";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { QrCode } from "lucide-react";
 import { useTranslations } from "next-intl";

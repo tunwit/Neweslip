@@ -3,7 +3,6 @@ import { EntryBreakDownDTO } from "@/types/type.entry";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 
 interface SalaryBreakdownProps {
   breakdown: EntryBreakDownDTO;

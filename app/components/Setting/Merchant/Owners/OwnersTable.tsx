@@ -1,13 +1,10 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, IconButton, Table } from "@mui/joy";
+import { Button } from "@mui/joy";
 import React, { useState } from "react";
 import InvitationModal from "./InvitationModal";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { useCheckBox } from "@/hooks/useCheckBox";
-import { Owner } from "@/types/owner";
 import { useUser } from "@clerk/nextjs";
-import { deleteShopOwner } from "@/app/action/shop/deleteShopOwner";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";

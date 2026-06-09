@@ -1,15 +1,12 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, IconButton, Table } from "@mui/joy";
+import { Button } from "@mui/joy";
 import React, { useState } from "react";
 import AddBranchModal from "./AddEditBranchModal";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { deleteBranch } from "@/app/action/branch/deleteBranch";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import { useRouter } from "next/navigation";
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { useUser } from "@clerk/nextjs";
 import ConfirmModal from "@/widget/ConfirmModal";
 import { useTranslations } from "next-intl";

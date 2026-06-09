@@ -1,11 +1,3 @@
-import { employeesTable, shopsTable } from "@/db/schema";
-import {
-  InferColumnsDataTypes,
-  InferInsertModel,
-  InferModel,
-  InferSelectModel,
-} from "drizzle-orm";
-
 export enum SEND_EMAIL_METHOD {
   SMTP = "SMTP",
   RESEND = "RESEND",
@@ -53,7 +45,7 @@ export type UpdateShopDataDTO = Partial<{
   SMTPHost: string;
   SMTPPort: number;
   SMTPSecure: boolean;
-  
+
   send_email_method: SEND_EMAIL_METHOD;
   resend_api_key: string;
 
@@ -93,5 +85,5 @@ export type ChangePasswordDTO = {
 };
 
 export type ChangeAvatarDTO = {
-  file: File;
+  file: File | null;
 };

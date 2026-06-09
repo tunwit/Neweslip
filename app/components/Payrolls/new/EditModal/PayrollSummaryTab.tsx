@@ -1,6 +1,4 @@
 import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
-import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import { moneyFormat, toNumberIfWhole } from "@/utils/formmatter";
 import { Table } from "@mui/joy";
 import { useTranslations } from "next-intl";

@@ -1,9 +1,8 @@
 "use client";
 import { Button, Checkbox } from "@mui/joy";
-import React, { useState } from "react";
+import React from "react";
 import PendingElement from "./PendingElement";
 import dayjs from "dayjs";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { usePayrollPeriods } from "@/hooks/payroll/period/usePayrollPeriods";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useCheckBox } from "@/hooks/useCheckBox";

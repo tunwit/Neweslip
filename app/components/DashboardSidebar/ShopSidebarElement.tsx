@@ -1,9 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { createSlug } from "@/utils/createSlug";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { Avatar } from "@mui/joy";
 import { usePathname } from "next/navigation";
-import React from "react";
 
 interface ShopSidebarElementProps {
   id: number;
@@ -17,11 +15,9 @@ export default function ShopSidebarElement({
   selected = false,
   avatar,
 }: ShopSidebarElementProps) {
-  const pathName = usePathname();
-  const rest = pathName.split("/").slice(3).join("/");
   return (
     <Link
-      href={`/${createSlug(title, String(id))}/${rest}`}
+      href={`/${createSlug(title, String(id))}/employees`}
       className={`flex flex-row rounded-sm font-semibold gap-3 mr-3  py-2 px-[5%] items-center hover:bg-[#2b2b2b] ${selected ? "bg-[#313131] rounded-sm hover:bg-[#2b2b2b]" : ""}`}
     >
       <ChangableAvatar

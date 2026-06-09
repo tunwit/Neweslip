@@ -1,15 +1,8 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, Table } from "@mui/joy";
 import React from "react";
 import DocumentTable from "@/widget/Documents/DocumentTable";
-import { renameEmployeeDocument } from "@/app/action/employee/renameEmployeeDocument";
-import { EmployeeDocumentWithUploader } from "@/types/employeeDocument";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useUser } from "@clerk/nextjs";
-import { useQueryClient } from "@tanstack/react-query";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { uploadEmployeeDocuments } from "@/app/action/employee/uploadEmployeeDocument";
-import deleteEmployeeDocument from "@/app/action/employee/deleteEmployeeDocument";
 import { useTranslations } from "next-intl";
 import { useDocuments } from "@/hooks/hook.document";
 import { DocumentPublicDTO } from "@/types/type.document";

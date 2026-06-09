@@ -1,16 +1,9 @@
 "use client";
-import Image from "next/image";
 import Button from "@mui/joy/Button";
-import { Icon, loadIcon } from "@iconify/react/dist/iconify.js";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import EmployeesTable from "@/app/components/Employees/EmployeesTable";
-import { Add } from "@mui/icons-material";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
-import SnackBar from "@/widget/SnackBar";
-import { Suspense, useEffect, useState } from "react";
+import { useState } from "react";
 import { useDebounce } from "use-debounce";
-import { useQueryClient } from "@tanstack/react-query";
 import BranchSelector from "@/widget/BranchSelector";
 import StatusSelector from "@/widget/StatusSelector";
 import {
@@ -19,9 +12,7 @@ import {
   EMPLOYEE_STATUS,
 } from "@/types/enum/enum";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
 import { EmployeeTableWrapper } from "@/app/components/Employees/EmployeeTableWrapper";
-import Head from "next/head";
 import { useTranslations } from "next-intl";
 import OrderByFilter from "@/widget/OrderByFilter";
 export default function Home() {

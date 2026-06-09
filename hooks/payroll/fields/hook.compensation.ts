@@ -5,10 +5,8 @@ import {
   NewCompensationFieldDTO,
 } from "@/types/payroll/type.compensation";
 import { ApiResponse } from "@/types/response";
-import { extractSlug } from "@/utils/extractSlug";
 import { fetchwithauth } from "@/utils/fetcher";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
 
 type CreateFieldVars = {
   shopId: number;

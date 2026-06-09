@@ -14,7 +14,6 @@ import getFileIcon from "@/lib/getFileIcon";
 import { formatBytes } from "@/lib/unitConverter";
 import { formatModifiedTime } from "@/utils/formmatter";
 import { useTranslations } from "next-intl";
-import { UserPublicDTO } from "@/types/type.user";
 import { DocumentPublicDTO } from "@/types/type.document";
 import { Link } from "@/i18n/navigation";
 

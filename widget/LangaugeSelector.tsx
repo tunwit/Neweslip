@@ -4,7 +4,7 @@ import thai from "@/public/flagIcons/thai.svg";
 import eng from "@/public/flagIcons/eng.svg";
 import Image from "next/image";
 import { useLocale } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 
 const AVAILABLE_LANG = {

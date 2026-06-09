@@ -1,6 +1,6 @@
 "use client";
-import { Autocomplete, Option, Select } from "@mui/joy";
-import React, { useEffect } from "react";
+import { Option, Select } from "@mui/joy";
+import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import { useBranches } from "@/hooks/hook.branch";

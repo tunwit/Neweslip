@@ -1,5 +1,5 @@
 "use client";
-import { Autocomplete, Option, Select } from "@mui/joy";
+import { Option, Select } from "@mui/joy";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 

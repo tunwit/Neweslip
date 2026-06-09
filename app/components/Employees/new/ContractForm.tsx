@@ -2,20 +2,11 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
-  CircularProgress,
   FormControl,
   FormLabel,
-  Input,
-  Option,
-  Select,
 } from "@mui/joy";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { usePathname, useRouter } from "next/navigation";
-import React, { Suspense, useEffect } from "react";
-import { log } from "util";
+import React, { useEffect } from "react";
 import BankSelector from "../../../../widget/BankSelector";
-import { useSnackbar } from "@/hooks/useSnackBar";
 import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { contractSchema } from "@/schemas/createEmployeeForm/contractForm";
@@ -25,7 +16,7 @@ import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { InputForm } from "@/widget/InputForm";
 import { createEmployeeFormSchema } from "@/types/formField";
 import { ZodForm } from "@/lib/useZodForm";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import DatePickerLocalize from "@/widget/DatePickerLocalize";
 import { useTranslations } from "next-intl";
 

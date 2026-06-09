@@ -1,27 +1,18 @@
 import {
   Button,
-  Input,
   Modal,
-  ModalClose,
   ModalDialog,
-  ModalOverflow,
   Tab,
   tabClasses,
-  Table,
   TabList,
   TabPanel,
   Tabs,
   Textarea,
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
-import { PayrollRecord } from "@/types/payrollRecord";
-import { useRecordDetails } from "@/hooks/payroll/record/useRecordDetails";
-import { SALARY_FIELD_DEFINATION_TYPE } from "@/types/enum/enum";
 import PayrollTable from "./PayrollTable";
 import { calculateOT } from "@/lib/otCalculater";
 import { calculatePenalty } from "@/lib/penaltyCalculater";
-import { it } from "node:test";
-import { updatePayrollRecord } from "@/app/action/payroll/record/updatePayrollRecord";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useRouter } from "next/navigation";
 import { showError } from "@/utils/showSnackbar";
@@ -29,11 +20,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useUser } from "@clerk/nextjs";
 import Decimal from "decimal.js";
 import PayrollSummaryTab from "./PayrollSummaryTab";
-import { height } from "@mui/system";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
-import { useDebounce } from "use-debounce";
 import { EntryWithTotalDTO, UpdateBreakDownDTO } from "@/types/type.entry";
 import { PeriodPublicDTO } from "@/types/type.period";
 import { useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";

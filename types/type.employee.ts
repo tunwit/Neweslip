@@ -1,4 +1,3 @@
-import { InferInsertModel } from "drizzle-orm";
 import { EMPLOYEE_STATUS, GENDER } from "./enum/enum.employee";
 import { BranchPublicDTO } from "./type.branch";
 
@@ -79,5 +78,28 @@ export type NewEmployeeDTO = {
 
 export type UpdateEmployeeDTO = Partial<NewEmployeeDTO>;
 export type ChangeAvatarDTO = {
-  file: File;
+  file: File | null;
+};
+
+export type EmployeeStatsDTO = {
+  totalEmployees: number;
+  activeEmployees: number;
+  inActiveEmployee: number;
+  partTimeEmployees: number;
+  salary: {
+    totalSalary: number;
+    activeSalary: number;
+    inactiveSalary: number;
+    partTimeSalary: number;
+  };
+  statusDistribution: {
+    ACTIVE: number;
+    INACTIVE: number;
+    PARTTIME: number;
+  };
+  genderDistribution: {
+    MALE: number;
+    FEMALE: number;
+    OTHER: number;
+  };
 };

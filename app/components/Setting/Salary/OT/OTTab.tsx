@@ -7,7 +7,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 import AddEditOTModal from "./AddEditOTModal";
 import { useUser } from "@clerk/nextjs";
-import { deleteOTField } from "@/app/action/payroll/OTField/deleteOTField";
 import { useTranslations } from "next-intl";
 import { useDeleteOTField, useOTFields } from "@/hooks/payroll/fields/hook.ot";
 import { OTFieldPublicDTO } from "@/types/payroll/type.ot";

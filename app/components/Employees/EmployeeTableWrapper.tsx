@@ -7,10 +7,8 @@ import {
 } from "@/types/enum/enum";
 import { Button } from "@mui/joy";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { useQueryClient } from "@tanstack/react-query";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { showError, showSuccess } from "@/utils/showSnackbar";
-import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useDeleteEmployee, useEmployees } from "@/hooks/hook.employee";
 import Pagination from "../UI/Pagination";

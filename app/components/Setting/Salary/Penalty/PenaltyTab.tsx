@@ -6,9 +6,7 @@ import { showError, showSuccess } from "@/utils/showSnackbar";
 import { useQueryClient } from "@tanstack/react-query";
 import TableWithCheckBox from "@/widget/TableWIthCheckbox";
 
-import { PenaltyField } from "@/types/penaltyField";
 import AddEditPenaltyModal from "./AddEditPenaltyModal";
-import { deletePenaltyField } from "@/app/action/payroll/penaltyField/deletePenaltyField";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import {

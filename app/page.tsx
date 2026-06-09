@@ -6,6 +6,7 @@ import { Modal, ModalDialog } from "@mui/joy";
 
 export default function Home() {
   redirect(`/`);
+  
 
   return (
     <main className="min-h-screen w-full bg-white font-medium">

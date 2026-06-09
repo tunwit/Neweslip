@@ -4,24 +4,18 @@ import {
   Modal,
   ModalClose,
   ModalDialog,
-  ModalOverflow,
   Tab,
   tabClasses,
   TabList,
   TabPanel,
   Tabs,
-  Typography,
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
-import { Edit, Save } from "@mui/icons-material";
 import StatusSelector from "@/widget/StatusSelector";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import { FieldNamesMarkedBoolean, FormProvider } from "react-hook-form";
-import {
-  createEmployeeFormSchema,
-  updateEmployeeFormSchema,
-} from "@/types/formField";
+import { updateEmployeeFormSchema } from "@/types/formField";
 import EmployeeDetailsForm from "./detailsTab/EmployeeDetailsForm";
 import { EMPLOYEE_STATUS } from "@/types/enum/enum";
 import { useZodForm } from "@/lib/useZodForm";
@@ -207,7 +201,10 @@ export default function EmployeeDetailsModal({
   const handleRemove = async () => {
     if (!employee?.avatar || !shopId || !user) return;
     try {
-      // await deleteEmployeeAvatar(employee.avatar, employee.id, shopId, user.id);
+      await changeAvatarMutate({
+        employeeId: employeeId,
+        payload: { file: null },
+      });
       queryClient.invalidateQueries({
         queryKey: ["employees"],
         exact: false,
@@ -233,7 +230,7 @@ export default function EmployeeDetailsModal({
                   src={preview || data.data?.avatarUrl || ""}
                   editable={true}
                   size={80}
-                  fallbackTitle={employee?.firstName.charAt(0)}
+                  fallbackTitle={employee?.firstName?.charAt(0)}
                   onChange={handleSelectFile}
                   onRemove={handleRemove}
                 />

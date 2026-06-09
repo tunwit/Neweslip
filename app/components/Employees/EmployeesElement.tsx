@@ -1,8 +1,6 @@
 "use client";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Checkbox, Modal, ModalClose, ModalDialog, Typography } from "@mui/joy";
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
-import EmployeeDetailsModal from "./EmployeeDetailsModal";
+import { Checkbox } from "@mui/joy";
+import React, { Dispatch, SetStateAction } from "react";
 import EmployeeStatusBadge from "./EmployeeStatusBadge";
 import { EmployeeWithBranchDTO } from "@/types/type.employee";
 import { moneyFormat } from "@/utils/formmatter";
@@ -10,7 +8,6 @@ import { useCheckBox } from "@/hooks/useCheckBox";
 import { useLocale } from "next-intl";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function EmployeesElement({
   employee,

@@ -2,27 +2,17 @@
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { moneyFormat } from "@/utils/formmatter";
-import { usePayrollPeriod } from "@/hooks/payroll/period/usePayrollPeriod";
-import UsersIcon from "@/assets/icons/UsersIcon";
-import PeriodEmployeeTable from "@/app/components/Payrolls/new/PeriodEmployeeTable";
 import { useDebounce } from "use-debounce";
-import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import {
   PAY_PERIOD_STATUS,
-  SALARY_FIELD_DEFINATION_TYPE,
 } from "@/types/enum/enum";
 import SummaryCard from "@/app/components/Payrolls/summary/SummaryCard";
-import { usePayrollPeriodVerify } from "@/hooks/payroll/period/usePayrollPeriodVerify";
 import ProblemCard from "@/app/components/Payrolls/summary/problemCard";
 import { Modal, ModalDialog } from "@mui/joy";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FinalizeModal from "@/app/components/Payrolls/summary/FinalizeModal";
-import { PayrollRecord } from "@/types/payrollRecord";
-import {
-  PayrollPeriodSummary,
-  PayrollRecordSummary,
-} from "@/types/payrollPeriodSummary";
+
+
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import { useTranslations } from "next-intl";
 import SummarySection from "@/app/components/Payrolls/SummarySection";
@@ -31,13 +21,9 @@ import {
   usePeriod,
   usePeriodValidate,
 } from "@/hooks/payroll/period/hook.period";
-import { useEntry } from "@/hooks/payroll/entry/hook.entry";
 import {
   EntryBreakDownDTO,
-  EntryPublicDTO,
-  EntryWithTotalDTO,
 } from "@/types/type.entry";
-import { number } from "zod";
 
 export default function Home() {
   const { periodId } = useParams();

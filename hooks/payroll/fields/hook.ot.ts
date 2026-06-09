@@ -1,6 +1,4 @@
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { COMPEN_FIELD_DEFINATION_TYPE } from "@/types/enum/enum.compensation";
-import { CompensationFieldPublicDTO } from "@/types/payroll/type.compensation";
 import { NewOTFieldDTO, OTFieldPublicDTO } from "@/types/payroll/type.ot";
 import { ApiResponse } from "@/types/response";
 import { fetchwithauth } from "@/utils/fetcher";

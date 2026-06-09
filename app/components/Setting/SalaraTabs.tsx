@@ -1,4 +1,4 @@
-import { Button, Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
+import { Tab, TabList, TabPanel, Tabs, tabClasses } from "@mui/joy";
 import IncomeTab from "./Salary/Income/IncomeTab";
 import DeductionTab from "./Salary/Deduction/DeductionTab";
 import OTTab from "./Salary/OT/OTTab";

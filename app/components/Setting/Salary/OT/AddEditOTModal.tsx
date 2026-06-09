@@ -1,24 +1,16 @@
-import { createOTField } from "@/app/action/payroll/OTField/createOTField";
-import { createSalaryField } from "@/app/action/payroll/salaryField/createSalaryField";
-import { updateOTField } from "@/app/action/payroll/OTField/updateOTFIeld";
-import { updateSalaryFIeld } from "@/app/action/payroll/salaryField/updateSalaryField";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { useZodForm } from "@/lib/useZodForm";
 import { OTFieldSchema } from "@/schemas/setting/OTFieldForm";
-import { salaryFieldSchema } from "@/schemas/setting/salaryFieldForm";
 import {
   OT_METHOD,
   OT_TYPE,
-  SALARY_FIELD_DEFINATION_TYPE,
 } from "@/types/enum/enum";
-import { NewOtField, OtField } from "@/types/otField";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
 import {
   Button,
   FormControl,
   FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,
@@ -30,7 +22,6 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { Controller, FormProvider } from "react-hook-form";
-import { Decimal } from "decimal.js";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { NewOTFieldDTO, OTFieldPublicDTO } from "@/types/payroll/type.ot";

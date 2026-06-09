@@ -1,5 +1,4 @@
 import { redirect } from "@/i18n/navigation";
-import React from "react";
 
 export default async function SlugPage({
   params,

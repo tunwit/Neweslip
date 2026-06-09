@@ -1,9 +1,5 @@
-import {
-  OT_METHOD,
-  PENALTY_METHOD,
-  SALARY_FIELD_DEFINATION_TYPE,
-} from "@/types/enum/enum";
-import { PayrollRecordSummary } from "@/types/payrollPeriodSummary";
+
+
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";

@@ -9,6 +9,7 @@ import {
   ChangeAvatarDTO,
   EmployeeDetailedDTO,
   EmployeePublicDTO,
+  EmployeeStatsDTO,
   EmployeeWithBranchDTO,
   NewEmployeeDTO,
   UpdateEmployeeDTO,
@@ -95,16 +96,34 @@ export const useEmployees = ({
   });
 };
 
+export const useEmployeeStats = () => {
+  const { id: shopId } = useCurrentShop();
+  const query = useQuery<ApiResponse<EmployeeStatsDTO>>({
+    queryKey: ["employees", "stats", shopId],
+    queryFn: () =>
+      fetchwithauth({
+        endpoint: `/shops/${shopId}/employees/stats`,
+        method: "GET",
+      }),
+    enabled: shopId != null,
+    refetchOnWindowFocus: true,
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return query;
+};
+
 export const useEmployee = (employeeId: number) => {
   const { id: shopId } = useCurrentShop();
   const query = useQuery<ApiResponse<EmployeeDetailedDTO>>({
-    queryKey: ["employees", employeeId],
+    queryKey: ["employees", "empid", employeeId],
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}/employees/${employeeId}`,
         method: "GET",
       }),
-    enabled: shopId != null && employeeId != null,
+    enabled: shopId != null && employeeId != null && employeeId !== -1,
     refetchOnWindowFocus: true,
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
@@ -170,7 +189,7 @@ export function useChangeEmployeeAvatar() {
   return useMutation<EmployeePublicDTO, Error, ChangeAvatarVars>({
     mutationFn: ({ payload, employeeId }) => {
       const formData = new FormData();
-      formData.append("file", payload.file);
+      if (payload.file) formData.append("file", payload.file);
 
       return fetchwithauth({
         endpoint: `/shops/${shopId}/employees/${employeeId}/avatar`,

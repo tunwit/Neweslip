@@ -1,4 +1,3 @@
-import { employeeFilesTable } from "@/db/schema";
 import { shopFilesTable } from "@/db/schema/shopFilesTable";
 import { InferSelectModel } from "drizzle-orm";
 

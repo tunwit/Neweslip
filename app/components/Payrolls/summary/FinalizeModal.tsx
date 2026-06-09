@@ -1,18 +1,12 @@
 "use client";
-import { finalizePayroll } from "@/app/action/payroll/period/finalizePayroll";
-import UsersIcon from "@/assets/icons/UsersIcon";
 import { usePeriod } from "@/hooks/payroll/period/hook.period";
-import { PAYROLL_PROBLEM } from "@/types/enum/enum";
 import { ISSUE_TYPE, ValidationResultDTO } from "@/types/payroll/type.validate";
-import { PayrollPeriodSummary } from "@/types/payrollPeriodSummary";
-import { PayrollProblem } from "@/types/payrollProblem";
 import { PeriodSummaryDTO } from "@/types/type.period";
 import { dateFormat, formatMetaMoney, moneyFormat } from "@/utils/formmatter";
 import { showError } from "@/utils/showSnackbar";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Modal, ModalClose, ModalDialog } from "@mui/joy";
-import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction, useState } from "react";

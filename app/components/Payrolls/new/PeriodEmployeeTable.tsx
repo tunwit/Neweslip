@@ -1,8 +1,5 @@
 import { UseCheckBoxResult } from "@/hooks/useCheckBox";
-import { usePayrollPeriodSummary } from "@/hooks/payroll/period/usePayrollPeriodSummary";
 import { getLocalizedName } from "@/lib/getLocalizedName";
-import { PayrollPeriod } from "@/types/payrollPeriod";
-import { PayrollRecord } from "@/types/payrollRecord";
 import { moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Checkbox } from "@mui/joy";
@@ -15,7 +12,7 @@ import React, {
   useState,
 } from "react";
 import ChangableAvatar from "@/widget/ChangableAvatar";
-import { EntryPublicDTO, EntryWithTotalDTO } from "@/types/type.entry";
+import { EntryWithTotalDTO } from "@/types/type.entry";
 import { PeriodPublicDTO } from "@/types/type.period";
 
 interface PeriodEmployeeTableProps {

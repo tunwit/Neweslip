@@ -1,29 +1,10 @@
 import {
   Button,
   Modal,
-  ModalClose,
   ModalDialog,
-  ModalOverflow,
-  Option,
-  Select,
-  Typography,
 } from "@mui/joy";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import BranchSelector from "@/widget/BranchSelector";
-import { useCheckBox } from "@/hooks/useCheckBox";
-import TableWithCheckBox from "@/widget/TableWIthCheckbox";
-import { getRandomPastelColor } from "@/utils/generatePastelColor";
-import { createPayrollRecords } from "@/app/action/payroll/record/createPayrollRecord";
-import { showError, showSuccess } from "@/utils/showSnackbar";
-import { useQueryClient } from "@tanstack/react-query";
-import { useDebounce } from "use-debounce";
-import { useUser } from "@clerk/nextjs";
-import { useLocale, useTranslations } from "next-intl";
-import { getLocalizedName } from "@/lib/getLocalizedName";
-import ChangableAvatar from "@/widget/ChangableAvatar";
-import { useEmployees } from "@/hooks/hook.employee";
-import { useEntry } from "@/hooks/payroll/entry/hook.entry";
+import React from "react";
+import { useTranslations } from "next-intl";
 import { InputForm } from "@/widget/InputForm";
 import { useZodForm } from "@/lib/useZodForm";
 import normalizeNull from "@/utils/normallizeNull";

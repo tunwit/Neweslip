@@ -1,13 +1,10 @@
 import { BranchPublicDTO, NewBranchDTO } from "@/types/type.branch";
 import { ApiResponse } from "@/types/response";
-import { extractSlug } from "@/utils/extractSlug";
 import { fetchwithauth } from "@/utils/fetcher";
 import {
   useMutation,
   useQuery,
   useQueryClient,
-  UseQueryResult,
-  useSuspenseQuery,
 } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useCurrentShop } from "./shop/useCurrentShop";

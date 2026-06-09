@@ -1,33 +1,22 @@
 "use client";
-import Image from "next/image";
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import EmployeesTable from "@/app/components/Employees/EmployeesTable";
-import PendingElement from "@/app/components/Payrolls/PendingElement";
 import dayjs from "dayjs";
-import { Checkbox, Modal, ModalDialog } from "@mui/joy";
-import PendingSection from "@/app/components/Payrolls/PendingSection";
-import { Add, ChevronRight } from "@mui/icons-material";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { createPayrollPeriod } from "@/app/action/payroll/period/createPayrollPeriod";
-import { NewPayrollPeriod } from "@/types/payrollPeriod";
+import { Modal, ModalDialog } from "@mui/joy";
+import { Add } from "@mui/icons-material";
+import { useState } from "react";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { number } from "zod";
 import { useUser } from "@clerk/nextjs";
-import { usePayrollPeriods } from "@/hooks/payroll/period/usePayrollPeriods";
 import { PAY_PERIOD_STATUS } from "@/types/enum/enum";
 import PeriodsTable from "@/app/components/Payrolls/PeriodsTable";
 import { useTranslations } from "next-intl";
 import { usePeriods } from "@/hooks/payroll/period/hook.period";
 import { NewPeriodDTO } from "@/types/type.period";
-import ConfirmModal from "@/widget/ConfirmModal";
+import { useRouter } from "@/i18n/navigation";
 
 export default function PeriodsPage() {
   const rounter = useRouter();
-  const { id } = useCurrentShop();
+  const { id, slug } = useCurrentShop();
   const { user } = useUser();
   const [creatingPeriod, setCreatingPeriod] = useState(false);
   const { name } = useCurrentShop();
@@ -49,7 +38,7 @@ export default function PeriodsPage() {
 
       const period = await periods.create.mutateAsync({ payload });
       if (period.data?.id) {
-        rounter.push(`payrolls/edit?id=${period.data?.id}`);
+        rounter.push(`periods/${period.data?.id}/edit`);
       }
     } finally {
       setCreatingPeriod(false);

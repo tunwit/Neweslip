@@ -1,14 +1,7 @@
 "use client";
-import Image from "next/image";
-import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
-import EmployeesTable from "@/app/components/Employees/EmployeesTable";
-import PendingElement from "@/app/components/Payrolls/PendingElement";
-import dayjs from "dayjs";
-import { Checkbox } from "@mui/joy";
-import PendingSection from "@/app/components/Payrolls/PendingSection";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 
 export default function Home() {

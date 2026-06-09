@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useLocale, useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PeriodFilterContextDTO, PeriodSummaryDTO } from "@/types/type.period";
+import { PeriodFilterContextDTO } from "@/types/type.period";
 import { EntryBreakDownDTO } from "@/types/type.entry";
 import { getLocalizedName } from "@/lib/getLocalizedName";
 

@@ -1,5 +1,4 @@
 import { Link } from "@/i18n/navigation";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
 
 interface DashboardButtonProps {

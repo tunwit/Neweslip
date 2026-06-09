@@ -1,15 +1,12 @@
 import { useUpdateShop, useVerifyEmailConfig } from "@/hooks/hook.shop";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
-import { verify } from "@/lib/emailService";
 import { useZodForm } from "@/lib/useZodForm";
 import {
   ResendEmailConfigForm,
-  SMTPEmailConfigForm,
 } from "@/schemas/email/emailConfigForm";
 import {
   SEND_EMAIL_METHOD,
   ShopConfigDTO,
-  VerifyEmailDTO,
 } from "@/types/type.shop";
 import { showError, showSuccess } from "@/utils/showSnackbar";
 import { InputForm } from "@/widget/InputForm";
@@ -17,15 +14,10 @@ import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Option,
-  Select,
 } from "@mui/joy";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Controller, FormProvider } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 import z from "zod";
 
 interface EmailFormProps {

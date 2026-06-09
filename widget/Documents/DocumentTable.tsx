@@ -2,10 +2,9 @@ import RenameModal from "@/widget/Documents/RenameModal";
 import DocumentTableElement from "./DocumentTableElement";
 import { useState } from "react";
 import UploadDocumentModal from "@/widget/Documents/UploadDocumentModal";
-import { Button, Table } from "@mui/joy";
+import { Button } from "@mui/joy";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
 import { DocumentPublicDTO } from "@/types/type.document";
 
 interface DocumentTableProps<T> {

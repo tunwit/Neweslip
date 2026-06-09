@@ -8,7 +8,6 @@ import {
   PeriodFilterContextDTO,
   PeriodPublicDTO,
   PeriodSummaryDTO,
-  PeriodWithBreakdownsDTO,
   PeriodWithCountDTO,
   SendPayslipEmailDTO,
   UnlockPeriodDTO,
@@ -21,7 +20,6 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { number } from "zod";
 
 export function usePeriods() {
   const { id: shopId } = useCurrentShop();

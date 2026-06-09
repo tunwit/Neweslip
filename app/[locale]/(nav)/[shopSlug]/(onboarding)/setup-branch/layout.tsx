@@ -1,16 +1,4 @@
-import { validateSlug } from "@/lib/validateSlug";
-import { auth } from "@clerk/nextjs/server";
-import DashboardSidebar from "@/app/components/DashboardSidebar/DashboardSidebar";
-import Navbar from "@/app/components/Navbar/Navbar";
-import GlobalJobSnackbars from "@/widget/GlobalJobSnackbars";
-import { extractSlug } from "@/utils/extractSlug";
-import { ApiResponse } from "@/types/response";
-import {
-  SHOP_CONTEXT_STATUS,
-  ShopContextDTO,
-  UserShopStatusDTO,
-} from "@/types/type.user";
-import { fetchwithauth } from "@/utils/fetcher";
+import { SHOP_CONTEXT_STATUS } from "@/types/type.user";
 import { redirect } from "@/i18n/navigation";
 import { getShopContext } from "@/lib/server/context";
 

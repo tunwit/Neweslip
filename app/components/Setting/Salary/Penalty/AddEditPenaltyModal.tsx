@@ -6,21 +6,17 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,
   Option,
   Select,
-  Slider,
   ToggleButtonGroup,
 } from "@mui/joy";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { Controller, FormProvider } from "react-hook-form";
 import { PenaltyFieldSchema } from "@/schemas/setting/PenaltyFieldForm";
-import { createPenaltyField } from "@/app/action/payroll/penaltyField/createPenaltyField";
-import { updatePenaltyField } from "@/app/action/payroll/penaltyField/updatePenaltyFIeld";
 import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import {

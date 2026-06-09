@@ -1,23 +1,18 @@
 "use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, {
-  ChangeEvent,
   Dispatch,
   memo,
   SetStateAction,
-  useEffect,
-  useState,
 } from "react";
 import EmployeesElement from "./EmployeesElement";
-import { Checkbox, Table } from "@mui/joy";
-import { useEmployees } from "../../../hooks/employee/useEmployees";
-import { useEmployeeStats } from "@/hooks/employee/useEmployeeStats";
-import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
+import { Checkbox } from "@mui/joy";
 import { moneyFormat } from "@/utils/formmatter";
 import { PaginatedResponse } from "@/types/response";
 import { useCheckBox } from "@/hooks/useCheckBox";
 import { useTranslations } from "next-intl";
 import { EmployeeWithBranchDTO } from "@/types/type.employee";
+import { useEmployeeStats } from "@/hooks/hook.employee";
 
 interface EmployeesTableProps {
   data: PaginatedResponse<EmployeeWithBranchDTO[]> | undefined;
@@ -33,8 +28,7 @@ function EmployeesTable({
   setTargetEmployee,
   setOpenEmployeeModal,
 }: EmployeesTableProps) {
-  const { id } = useCurrentShop();
-  const { data: employeeStat } = useEmployeeStats({ shopId: id! });
+  const { data: employeeStat } = useEmployeeStats()
   const { checkall, uncheckall, isAllChecked, isSomeChecked } =
     useCheckBox<number>("allEmployeeTable");
   const t = useTranslations("employees");

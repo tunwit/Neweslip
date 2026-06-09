@@ -1,5 +1,4 @@
 import { DocumentPublicDTO } from "@/types/type.document";
-import { useUser } from "@clerk/nextjs";
 import { Button, Input, Modal, ModalClose, ModalDialog } from "@mui/joy";
 import { useTranslations } from "next-intl";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";

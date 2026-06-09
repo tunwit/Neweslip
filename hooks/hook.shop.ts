@@ -1,15 +1,11 @@
 import { ApiResponse } from "@/types/response";
 import { fetchwithauth } from "@/utils/fetcher";
-import { useSession } from "@clerk/nextjs";
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
-  UseQueryResult,
-  useSuspenseQuery,
 } from "@tanstack/react-query";
-import { Session } from "inspector/promises";
 import { useCurrentShop } from "./shop/useCurrentShop";
 import {
   ChangeAvatarDTO,
@@ -131,7 +127,7 @@ export function useChangeShopAvatar() {
   return useMutation({
     mutationFn: (payload: ChangeAvatarDTO) => {
       const formData = new FormData();
-      formData.append("file", payload.file);
+      if (payload.file) formData.append("file", payload.file);
 
       return fetchwithauth({
         endpoint: `/shops/${shopId}/avatar`,

@@ -1,6 +1,6 @@
 "use client";
 import { usePreviewSlip } from "@/hooks/payroll/entry/hook.entry";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function PreviewPage() {
   const { periodId, entryId } = useParams();

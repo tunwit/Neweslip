@@ -2,15 +2,11 @@
 import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useMemo, useState } from "react";
-import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
 import {
   useParams,
   usePathname,
   useRouter,
-  useSearchParams,
 } from "next/navigation";
-import { useCheckBox } from "@/hooks/useCheckBox";
-import { PayrollRecord } from "@/types/payrollRecord";
 import { dateFormat, dateTimeFormat, moneyFormat } from "@/utils/formmatter";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import { useDebounce } from "use-debounce";
@@ -24,8 +20,7 @@ import SummarySection from "@/app/components/Payrolls/SummarySection";
 import { useTranslations } from "next-intl";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { usePeriod, usePeriodSlips } from "@/hooks/payroll/period/hook.period";
-import { EntryBreakDownDTO, EntryWithTotalDTO } from "@/types/type.entry";
-import { useEntry, useEntryBreakdown } from "@/hooks/payroll/entry/hook.entry";
+import { EntryBreakDownDTO } from "@/types/type.entry";
 import AdvancedFilters from "@/widget/payroll/AdvancedFilters";
 import PaySlipGenerateModal from "@/app/components/Payrolls/view/PaySlipGenerateModal";
 import SendEmailsModal from "@/app/components/Payrolls/view/SendEmailsModal";
