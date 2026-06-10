@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
-import React from "react";
+import { useTranslations } from "next-intl";
+import React, { JSX } from "react";
 
 interface DashboardButtonProps {
   title: string;
@@ -7,16 +8,25 @@ interface DashboardButtonProps {
   selected?: boolean;
   id: string;
   href: string;
+  items:
+    | {
+        titleKey: string;
+        id: string;
+        icon: JSX.Element;
+        onclick: () => void;
+      }[]
+    | undefined;
 }
 
 export default function DashboardButton({
   title,
   icon,
   selected = false,
-  id,
+  items,
   href,
 }: DashboardButtonProps) {
   const IconComponent = icon;
+  const t = useTranslations("documents.name");
   return (
     <>
       <Link href={href}>
@@ -31,6 +41,17 @@ export default function DashboardButton({
           </p>
         </div>
       </Link>
+      {items && (
+        <ul className="px-12 text-[#7a7a7a] flex flex-col gap-2 list-disc">
+          {items.map((i, _) => {
+            return (
+              <li className="list-disc font-bold" key={_}>
+                <button onClick={i.onclick}>{t(i.titleKey)}</button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </>
   );
 }

@@ -241,6 +241,11 @@
   },
   "documents": {
     "label": "Documents",
+    "name": {
+      "pnd1": "PND 1",
+      "pnd1G": "PND 1 Kor",
+      "50Tw": "50 ทวิ"
+    },
     "load": {
       "loading_doc": "Loading documents"
     },
@@ -796,7 +801,8 @@
     "welcome": "Welcome Back",
     "signin_to_continue": "Sign in to continue to your account",
     "actions": {
-      "google": "continue with google"
+      "google": "continue with google",
+      "facebook": "continue with Facebook"
     },
     "info": {
       "secure": "Secure authentication"

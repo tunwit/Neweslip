@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 interface OrderByFilterProps<E extends Record<string, string>> {
   choices: E;
+  value: E[keyof E];
   onChange: (newvalue: E[keyof E]) => void;
   disable?: boolean;
   tPrefix: string;
@@ -12,6 +13,7 @@ interface OrderByFilterProps<E extends Record<string, string>> {
 
 export default function OrderByFilter<E extends Record<string, string>>({
   choices,
+  value,
   onChange,
   disable = false,
   tPrefix,
@@ -26,6 +28,7 @@ export default function OrderByFilter<E extends Record<string, string>>({
   return (
     <>
       <Select
+        value={value}
         disabled={disable}
         defaultValue={defaultValue}
         onChange={(_, newValue) => {

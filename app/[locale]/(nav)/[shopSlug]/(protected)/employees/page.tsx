@@ -97,7 +97,7 @@ export default function Home() {
               <BranchSelector
                 branchId={branchId}
                 onChange={(n) => {
-                  setBranchId(n);
+                  if (n) setBranchId(n);
                 }}
                 isEnableAll={true}
               />
@@ -107,8 +107,9 @@ export default function Home() {
                 {t("filters.sort_by.label")}
               </p>
               <OrderByFilter
+                value={sortBy}
                 onChange={(n) => {
-                  setSortBy(n);
+                  if (n) setSortBy(n);
                 }}
                 choices={EMPLOYEE_SORTBY}
                 tPrefix="sort_by"
@@ -119,8 +120,9 @@ export default function Home() {
                 {t("filters.order_by.label")}
               </p>
               <OrderByFilter
+                value={orderBy}
                 onChange={(n) => {
-                  setOrderBy(n);
+                  if (n) setOrderBy(n);
                 }}
                 choices={EMPLOYEE_ORDERBY}
                 tPrefix="order_by"

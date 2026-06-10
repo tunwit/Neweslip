@@ -11,6 +11,8 @@ import SettingIcon from "@/assets/icons/SettingIcon";
 import { useTranslations } from "next-intl";
 import { useOwnShop } from "@/hooks/hook.shop";
 import { ShopPublicDTO } from "@/types/type.shop";
+import DocumentSmallIcon from "@/assets/icons/DocumentSmallIcon";
+import { getDocumentPath } from "@/lib/downloadSystemDoc";
 
 const DashboardRails = [
   {
@@ -24,6 +26,26 @@ const DashboardRails = [
     icon: DocumentIcon,
     id: "documents",
     href: "/documents",
+    items: [
+      {
+        titleKey: "pnd1",
+        id: "pnd1",
+        icon: DocumentSmallIcon,
+        onclick: () => getDocumentPath("pnd1"),
+      },
+      {
+        titleKey: "pnd1G",
+        id: "pnd1G",
+        icon: DocumentSmallIcon,
+        onclick: () => getDocumentPath("pnd1G"),
+      },
+      {
+        titleKey: "50Tw",
+        id: "50Tw",
+        icon: DocumentSmallIcon,
+        onclick: () => getDocumentPath("50Tw"),
+      },
+    ],
   },
   {
     titleKey: "payrolls",
@@ -99,6 +121,7 @@ export default function DashboardSidebar() {
                 id={v.id}
                 selected={page == v.id}
                 href={`/${shopSlug}${v.href}`}
+                items={v.items}
               />
             );
           })}
