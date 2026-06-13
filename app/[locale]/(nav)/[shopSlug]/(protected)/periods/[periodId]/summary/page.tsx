@@ -146,7 +146,7 @@ export default function Home() {
       />
       <title>{periodData?.data?.name}</title>
       <div className="flex flex-col h-full overflow-y-auto">
-        <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0">
+        <section className="px-10 pb-5 bg-white w-full border-b border-gray-200 sticky top-0 z-999">
           <div className=" flex flex-row text-[#424242] text-xs mt-10">
             <p>
               {" "}

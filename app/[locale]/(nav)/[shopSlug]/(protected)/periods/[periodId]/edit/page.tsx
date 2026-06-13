@@ -184,7 +184,7 @@ export default function EditPeriodPage() {
     );
 
   return (
-    <main className="min-h-screen w-full bg-gray-100 font-medium ">
+    <main className=" w-full bg-gray-100 font-medium ">
       <PayrollsAddEmployeeModal
         open={openAdd}
         setOpen={setOpenAdd}
