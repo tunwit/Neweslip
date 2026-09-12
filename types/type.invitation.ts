@@ -1,5 +1,3 @@
-import { ShopPublicDTO } from "./type.shop";
-
 export enum INVITATION_STATUS {
   PENDING = "PENDING",
   ACCEPTED = "ACCEPTED",
@@ -20,7 +18,11 @@ export type InvitationPublicDTO = {
   email: string;
   createdBy: string;
   expiresAt: Date;
-  shop: ShopPublicDTO;
+  shop: {
+    id: number;
+    name: string;
+    avatar: string | null;
+  };
 };
 
 export type InvitationWithTokenDTO = InvitationPublicDTO & { token: string };

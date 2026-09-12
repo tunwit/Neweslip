@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import React, { JSX } from "react";
+import React from "react";
 
 interface DashboardButtonProps {
   title: string;
@@ -8,14 +8,14 @@ interface DashboardButtonProps {
   selected?: boolean;
   id: string;
   href: string;
-  items:
+  items?:
     | {
         titleKey: string;
         id: string;
-        icon: JSX.Element;
-        onclick: () => void;
+        icon: React.FC<React.SVGProps<SVGSVGElement>>;
+        onclick: () => void | Promise<void>;
       }[]
-    | undefined;
+    ;
 }
 
 export default function DashboardButton({

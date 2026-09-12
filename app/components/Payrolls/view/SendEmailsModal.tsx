@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Loader2, X } from "lucide-react";
 import { Checkbox, Input, Modal, ModalDialog } from "@mui/joy";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
@@ -59,6 +59,18 @@ export default function SendEmailsModal({
     });
     return emails;
   });
+
+  useEffect(() => {
+    setData(periodContext);
+    setOriginalEmails(
+      Object.fromEntries(
+        periodContext.breakdowns.map((breakdown) => [
+          breakdown.entry.id,
+          breakdown.entry.employee.email,
+        ]),
+      ),
+    );
+  }, [periodContext]);
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEmail, setEditingEmail] = useState(-1);
@@ -126,7 +138,7 @@ export default function SendEmailsModal({
 
     setData((prev) => ({
       ...prev,
-      breakdown: prev.breakdowns.map((breakdown) =>
+      breakdowns: prev.breakdowns.map((breakdown) =>
         breakdown.entry.id === recordId
           ? {
               ...breakdown,
@@ -146,7 +158,7 @@ export default function SendEmailsModal({
   const handleResetAllEmail = () => {
     setData((prev) => ({
       ...prev,
-      breakdown: prev.breakdowns.map((breakdown) => {
+      breakdowns: prev.breakdowns.map((breakdown) => {
         const originalEmail = originalEmails[breakdown.entry.id];
         return {
           ...breakdown,
@@ -215,9 +227,7 @@ export default function SendEmailsModal({
       // });
       // setOpen(false)
     } catch (error) {
-      console.log(error);
-
-      showError(error?.message ?? "Unexpected Error");
+      showError(error instanceof Error ? error.message : "Unexpected Error");
     } finally {
       setIsSubmitting(false);
     }

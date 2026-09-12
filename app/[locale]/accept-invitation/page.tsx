@@ -1,10 +1,6 @@
 "use client";
-import {
-  useSession,
-  useSignIn,
-  useSignUp,
-} from "@clerk/nextjs";
-import { Button, FormControl} from "@mui/joy";
+import { useSession, useSignIn } from "@clerk/nextjs";
+import { Button, FormControl } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { showError } from "@/utils/showSnackbar";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -19,7 +15,6 @@ export default function InvitaionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alreadyOwner, setAlreadyOwner] = useState(false);
   const [wrongEmail, setWrongEmail] = useState(false);
-  const { signUp } = useSignUp();
   const { signIn } = useSignIn();
   const inviteHook = useInvitation();
 
@@ -38,16 +33,19 @@ export default function InvitaionPage() {
   ) => {
     e?.preventDefault();
     setIsSubmitting(true);
-    if (!token) return;
+    if (!token) {
+      setIsSubmitting(false);
+      return;
+    }
 
     if (isSignedIn) {
       try {
         await acceptAsync();
         router.push("/");
-      } catch (err) {
-        console.log(err);
-
+      } catch {
         showError("Cannot accept invitation");
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       await signIn?.sso({
@@ -75,7 +73,7 @@ export default function InvitaionPage() {
         acceptHandler();
       }
     }
-  }, [isSignedIn, session, invitation, method]);
+  }, [isSignedIn, session, invitation, ownShops, method]);
 
   const loading = loadinginvitation || !sessionLoaded || loadingshops;
 

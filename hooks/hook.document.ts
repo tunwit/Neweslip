@@ -9,6 +9,8 @@ import {
 import { fetchwithauth } from "@/utils/fetcher";
 import {
   DocumentPublicDTO,
+  CreateDocResultDTO,
+  DocumentUploadTargetDTO,
   GetPresignDTO,
   NewDocumentDTO,
   RenameDocumentDTO,
@@ -69,22 +71,78 @@ export function useDocuments(scope: Scope, entityId?: number) {
 
   /* ---------- Create ---------- */
   const create = useMutation<
-    DocumentPublicDTO[],
+    ApiResponse<CreateDocResultDTO[]>,
     Error,
     { payload: NewDocumentDTO }
   >({
-    mutationFn: ({ payload }) => {
-      const formData = new FormData();
-      formData.set("tag", payload.tag);
-      payload.files.forEach((file) => {
-        formData.append("files", file);
+    mutationFn: async ({ payload }) => {
+      const targets = await fetchwithauth({
+        endpoint: `${basePath}/uploads/presign`,
+        method: "POST",
+        body: {
+          tag: payload.tag,
+          files: payload.files.map((file) => ({
+            fileName: file.name,
+            mimeType: file.type,
+            size: file.size,
+          })),
+        },
       });
 
-      return fetchwithauth({
-        endpoint: basePath,
+      const uploaded = await Promise.all(
+        (targets.data as DocumentUploadTargetDTO[]).map(async (target, index) => {
+          const file = payload.files[index];
+          if (!file) {
+            return {
+              fileName: target.fileName,
+              tag: payload.tag,
+              mimeType: "",
+              size: 0,
+              uploadedBy: "",
+              metadata: null,
+              success: false,
+              errorMessage: "Upload file is missing",
+            };
+          }
+
+          const response = await fetch(target.uploadUrl, {
+            method: "PUT",
+            headers: target.headers,
+            body: file,
+          });
+          if (!response.ok) {
+            return {
+              fileName: file.name,
+              tag: payload.tag,
+              mimeType: file.type,
+              size: file.size,
+              uploadedBy: "",
+              metadata: null,
+              success: false,
+              errorMessage: `R2 upload failed (${response.status})`,
+            };
+          }
+          return { key: target.key, fileName: file.name };
+        }),
+      );
+
+      const failures = uploaded.filter((result) => !("key" in result));
+      const completed = uploaded.filter(
+        (result): result is { key: string; fileName: string } => "key" in result,
+      );
+      if (completed.length === 0) {
+        return { success: true, data: failures };
+      }
+
+      const completion = await fetchwithauth({
+        endpoint: `${basePath}/uploads/complete`,
         method: "POST",
-        body: formData,
+        body: { tag: payload.tag, files: completed },
       });
+      return {
+        ...completion,
+        data: [...failures, ...(completion.data ?? [])],
+      };
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });

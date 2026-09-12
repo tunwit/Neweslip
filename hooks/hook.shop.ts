@@ -64,7 +64,7 @@ export const useShopData = () => {
 export const useShopConfigs = () => {
   const { id: shopId } = useCurrentShop();
   const query = useQuery<ApiResponse<ShopConfigDTO>>({
-    queryKey: ["shop", "config"],
+    queryKey: ["shop", "config", shopId],
     queryFn: () =>
       fetchwithauth({
         endpoint: `/shops/${shopId}?configs=true`,
@@ -72,7 +72,6 @@ export const useShopConfigs = () => {
       }),
     refetchOnWindowFocus: true,
     enabled: shopId !== null && shopId !== undefined,
-    placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -93,6 +92,7 @@ export function useUpdateShop() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["shop", "data", shopId] });
+      queryClient.invalidateQueries({ queryKey: ["shop", "config", shopId] });
     },
   });
 }

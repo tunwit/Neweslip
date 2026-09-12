@@ -30,7 +30,8 @@
     "employees": "Employees",
     "documents": "Documents",
     "payrolls": "Payrolls",
-    "settings": "Settings"
+    "settings": "Settings",
+    "no_shop_available": "No shop available"
   },
   "breadcrumb": {
     "dashboard": "Overview",

@@ -30,7 +30,8 @@
     "employees": "พนักงาน",
     "documents": "เอกสาร",
     "payrolls": "เงินเดือน",
-    "settings": "ตั้งค่า"
+    "settings": "ตั้งค่า",
+    "no_shop_available": "ไม่พบร้านค้า"
   },
   "breadcrumb": {
     "dashboard": "ภาพรวม",

@@ -66,11 +66,6 @@ export default function EditPeriodPage() {
   const { mutateAsync: deleteEntryMutate } = useEntry(Number(periodId)).remove;
   const slipMutate = usePeriodSlips(Number(periodId));
 
-  if (!periodId) {
-    const basePath = pathname.replace(/\/edit$/, "");
-    router.replace(basePath);
-  }
-
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(periodData?.data?.start_period || 0),
     to: new Date(periodData?.data?.end_period || 0),
@@ -121,6 +116,12 @@ export default function EditPeriodPage() {
     } finally {
     }
   };
+
+  useEffect(() => {
+    if (!periodId) {
+      router.replace(pathname.replace(/\/edit$/, ""));
+    }
+  }, [periodId, pathname, router]);
 
   useEffect(() => {
     if (!periodData?.data) return; //prevent firing too early
@@ -221,7 +222,7 @@ export default function EditPeriodPage() {
           </div>
           <div className="mt-3 flex flex-row justify-between">
             <input
-              defaultValue={periodTitle}
+              value={periodTitle ?? ""}
               onChange={(e) => setPeriodTitle(e.target.value)}
               className="text-black rounded-md text-3xl font-bold p-2"
             ></input>

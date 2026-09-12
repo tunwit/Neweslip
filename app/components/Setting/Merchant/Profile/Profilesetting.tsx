@@ -62,7 +62,7 @@ export default function Profilesetting() {
         />
         <p className="font-semibold">{data.data.name}</p>
         <div className="w-full">
-          <OverviewForm shopData={data?.data} />
+          <OverviewForm key={data.data.id} shopData={data.data} />
         </div>
       </div>
     </>

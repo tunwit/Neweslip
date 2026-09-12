@@ -1,6 +1,6 @@
 "use client";
 import DashboardButton from "./DashboardButton";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import useHamburger from "@/hooks/useHamburger";
 import UsersIcon from "@/assets/icons/UsersIcon";
 import MoneyIcon from "@/assets/icons/MoneyIcon";
@@ -16,6 +16,7 @@ import { Option } from "@mui/joy";
 import ChangableAvatar from "@/widget/ChangableAvatar";
 import { useCurrentShop } from "@/hooks/shop/useCurrentShop";
 import { createSlug } from "@/utils/createSlug";
+import { useRouter } from "@/i18n/navigation";
 
 const DashboardRails = [
   {
@@ -84,13 +85,21 @@ export default function DashboardSidebar() {
   const shopSlug = pathname[2];
   const page = pathname[3];
   const sidebarState = useHamburger((state) => state.open);
-  const { data } = useOwnShop();
+  const { data, isLoading } = useOwnShop();
   const t = useTranslations("navigation");
   const currentShop = useCurrentShop();
   const router = useRouter();
   const fullCurrentShopObject = data?.data?.find((shop: ShopPublicDTO) => {
     return shop.id === currentShop.id;
   });
+  if (isLoading) {
+    return (
+      <div
+        style={{ width: sidebarState ? "100%" : "0%" }}
+        className="transition-all duration-300 flex flex-col bg-[#1f1f1f] max-h-[calc(100vh-80px)] max-w-60 w-56 sticky top-0 left-0 shadow-2xl overflow-clip"
+      />
+    );
+  }
   if (!fullCurrentShopObject) {
     return (
       <div
@@ -98,7 +107,9 @@ export default function DashboardSidebar() {
         className="transition-all duration-300 flex flex-col bg-[#1f1f1f] text-black max-h-[calc(100vh-80px)]  max-w-60 w-56 sticky top-0 left-0 shadow-2xl overflow-clip"
       >
         <div className="px-3 flex flex-col text-sm gap-1">
-          <p className="text-white text-center mt-5">noShopAvailable</p>
+          <p className="text-white text-center mt-5">
+            {t("no_shop_available")}
+          </p>
         </div>
       </div>
     );
@@ -136,6 +147,7 @@ export default function DashboardSidebar() {
             startDecorator={
               <ChangableAvatar
                 size={30}
+                fallbackTitle={fullCurrentShopObject.name.charAt(0)}
                 src={fullCurrentShopObject.avatarUrl ?? ""}
               />
             }
@@ -168,13 +180,6 @@ export default function DashboardSidebar() {
               data?.data.map((shop: ShopPublicDTO) => {
                 return (
                   <Option value={shop} key={shop.id}>
-                    <ChangableAvatar
-                      size={25}
-                      fallbackTitle={shop.name}
-                      allowRemove={false}
-                      editable={false}
-                      src={shop.avatarUrl ?? ""}
-                    />{" "}
                     {shop.name}
                   </Option>
                 );

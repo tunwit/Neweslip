@@ -57,13 +57,13 @@ export default function PeriodEmployeeTable({
     );
   }, [displayEntries, searchQuery]);
 
-  const { toggle, isChecked, checkall, uncheckall, isSomeChecked } =
+  const { toggle, isChecked, isAllChecked, checkall, uncheckall, isSomeChecked } =
     checkBoxMethod;
 
   const handleAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!displayEntries) return;
+    if (!filterd.length) return;
     if (e.currentTarget.checked) {
-      checkall(displayEntries.map((r) => r.id));
+      checkall(filterd.map((r) => r.id));
     } else {
       uncheckall();
     }
@@ -81,7 +81,8 @@ export default function PeriodEmployeeTable({
               <tr className="bg-gray-100 h-15 rounded-t-md text-left ">
                 <th className="font-light text-sm pl-6 w-[6%]">
                   <Checkbox
-                    indeterminate={isSomeChecked(displayEntries.length)}
+                    checked={isAllChecked(filterd.length)}
+                    indeterminate={isSomeChecked(filterd.length)}
                     onChange={handleAllCheckbox}
                   />
                 </th>
@@ -217,7 +218,7 @@ export default function PeriodEmployeeTable({
                   <span className="flex gap-1">
                     {t("info.showing", { count: filterd.length })}{" "}
                     {totalEntries !== filterd.length && (
-                      <p className="text-xs pt-2">/ 5 คน</p>
+                      <span className="text-xs pt-1">/ {totalEntries}</span>
                     )}
                   </span>
                 </th>
@@ -229,7 +230,7 @@ export default function PeriodEmployeeTable({
                     <span className="flex flex-row-reverse gap-1">
                       {totalNetPay !== filteredTotalNet && (
                         <p className="text-xs font-normal pt-5">
-                          / {moneyFormat(filteredTotalNet || 0)}
+                          / {moneyFormat(totalNetPay || 0)}
                         </p>
                       )}
                       <p className="text-2xl font-bold text-gray-900 whitespace-nowrap">

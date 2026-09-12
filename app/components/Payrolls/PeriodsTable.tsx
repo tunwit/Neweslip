@@ -23,6 +23,12 @@ interface PeriodsTableProps {
   editable?: boolean;
 }
 
+const headerColors: Record<string, string> = {
+  gray: "bg-gray-50 border-gray-200",
+  green: "bg-green-50 border-green-200",
+  grey: "bg-gray-50 border-gray-200",
+};
+
 const getStatusBadge = (
   status: keyof typeof PAY_PERIOD_STATUS,
   t: _Translator<Record<string, any>, string>,
@@ -109,7 +115,7 @@ export default function PeriodsTable({
           })}
         />
         <div
-          className={`px-6 py-4 bg-${color}-50 border-b border-${color}-200 flex items-center justify-between`}
+          className={`px-6 py-4 border-b flex items-center justify-between ${headerColors[color] ?? headerColors.gray}`}
         >
           <div className="flex items-center gap-3">
             {editable && (

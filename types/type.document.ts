@@ -28,6 +28,16 @@ export type NewDocumentDTO = {
   tag: string;
 };
 
+export type DocumentUploadTargetDTO = {
+  key: string;
+  fileName: string;
+  uploadUrl: string;
+  headers: {
+    "Content-Type": string;
+    "Content-Disposition": string;
+  };
+};
+
 export type GetPresignDTO = {
   id: number;
 };

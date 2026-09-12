@@ -12,7 +12,7 @@ export function useInvitation() {
   const { id: shopId } = useCurrentShop();
   const queryClient = useQueryClient();
 
-  const queryKey = ["invitation"];
+  const queryKey = ["invitation", shopId];
 
   const create = useMutation<
     ApiResponse<CreateTokenRepounseDTO>,
@@ -50,7 +50,7 @@ export function useInvitation() {
     useMutation<ApiResponse<boolean>, Error>({
       mutationFn: () => {
         return fetchwithauth({
-          endpoint: `/shops/${shopId}/invitations/token/${token}/accept`,
+          endpoint: `/invitations/token/${token}/accept`,
           method: "POST",
         });
       },

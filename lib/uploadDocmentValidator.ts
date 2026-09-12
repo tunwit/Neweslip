@@ -1,4 +1,4 @@
-export const FILESIZELIMIT = 30 * 1024 * 1024
+export const FILESIZELIMIT = 10 * 1024 * 1024
 
 const forbiddenMimePatterns = [
   /^application\/x-msdownload/,     // exe, dll
