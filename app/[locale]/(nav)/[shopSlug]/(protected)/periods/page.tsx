@@ -32,8 +32,8 @@ export default function PeriodsPage() {
       if (!id || !user?.id) return;
       const payload: NewPeriodDTO = {
         name: `New payroll ${dayjs().format("YYYY-MM-DD")}`,
-        start_period: dayjs().toDate().toString(),
-        end_period: dayjs().toDate().toString(),
+        start_period: dayjs().format("YYYY-MM-DD"),
+        end_period: dayjs().format("YYYY-MM-DD"),
       };
 
       const period = await periods.create.mutateAsync({ payload });

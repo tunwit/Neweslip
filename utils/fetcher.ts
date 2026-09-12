@@ -10,7 +10,7 @@ interface FetchProps<TBody = any> {
 
 const backendUrl =
   typeof window === "undefined"
-    ? process.env.BACKEND_URL // server: use Docker hostname
+    ? process.env.INTERNAL_BACKEND_URL // server: use Docker hostname
     : process.env.NEXT_PUBLIC_BACKEND_URL; // browser: use localhost
 
 export const fetchwithauth = async ({
@@ -41,10 +41,7 @@ export const fetchwithauth = async ({
         : undefined,
   };
 
-  const res = await fetch(
-    `${backendUrl}${endpoint}`,
-    options,
-  );
+  const res = await fetch(`${backendUrl}${endpoint}`, options);
 
   if (!res.ok) {
     let errorBody: any;

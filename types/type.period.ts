@@ -57,8 +57,8 @@ export type NewPeriodDTO = {
 
 export type UpdatePeriodDTO = {
   name?: string | undefined;
-  start_period?: Date | undefined;
-  end_period?: Date | undefined;
+  start_period?: string | undefined;
+  end_period?: string | undefined;
   work_hours_per_day?: string | null | undefined;
   workdays_per_month?: string | null | undefined;
 };

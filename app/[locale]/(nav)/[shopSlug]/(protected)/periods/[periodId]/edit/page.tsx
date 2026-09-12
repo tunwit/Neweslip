@@ -3,6 +3,7 @@ import Button from "@mui/joy/Button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Add } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import PayrollsAddEmployeeModal from "@/app/components/Payrolls/new/AddModal/PayrollsAddEmployeeModal";
 import {
   useParams,
@@ -109,8 +110,8 @@ export default function EditPeriodPage() {
       return;
     const result = {
       name: titleDebounced,
-      start_period: new Date(debouncedDateRange?.from),
-      end_period: new Date(debouncedDateRange?.to),
+      start_period: dayjs(debouncedDateRange.from).format("YYYY-MM-DD"),
+      end_period: dayjs(debouncedDateRange.to).format("YYYY-MM-DD"),
     };
 
     try {

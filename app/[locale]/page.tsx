@@ -8,7 +8,6 @@ export default async function LocalePage({
 }) {
   const { locale } = await params;
   const shopStatus = await getShopStatus();
-
   if (!shopStatus?.hasShop) {
     redirect({ href: `/no-shop`, locale: locale });
   }

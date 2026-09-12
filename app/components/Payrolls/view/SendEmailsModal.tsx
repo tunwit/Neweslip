@@ -1,11 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Loader2, X } from "lucide-react";
-import {
-  Checkbox,
-  Input,
-  Modal,
-  ModalDialog,
-} from "@mui/joy";
+import { Checkbox, Input, Modal, ModalDialog } from "@mui/joy";
 import { dateFormat, moneyFormat } from "@/utils/formmatter";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { showError } from "@/utils/showSnackbar";
@@ -343,7 +338,7 @@ export default function SendEmailsModal({
               {data.breakdowns.map((breakdown) => {
                 const isEditing = editingEmail === breakdown.entry.id;
                 const isOverridden = isEmailOverridden(breakdown.entry.id);
-                const avatar = `${process.env.NEXT_PUBLIC_CDN_URL}/${breakdown.entry.employee.avatar}`;
+                const avatar = `${breakdown.entry.employee.avatar}`;
                 return (
                   <div
                     key={breakdown.entry.employee.id}
